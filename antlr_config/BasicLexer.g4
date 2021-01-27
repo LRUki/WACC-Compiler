@@ -20,13 +20,52 @@ DO: 'do' ;
 DONE: 'done' ;
 
 
-//operators
-PLUS: '+' ;
-MINUS: '-' ;
+
+SEMICOLON: ';' ;
+NEWPAIR: 'newpair' ;
+CALL: 'call' ;
+COMMA: ',' ;
+FST: 'fst' ;
+SND: 'snd' ;
+PAIR: 'pair' ;
+
+
+//base types
+
+INT: 'int' ;
+BOOL: 'bool' ;
+CHAR: 'char' ;
+STRING: 'string' ;
+
+//unary operators
+NOT: '!' ;
+LEN: 'len' ;
+ORD: 'ord' ;
+CHR: 'chr' ;
+
+//binary operators
+ADD: '+' ;
+SUB: '-' ;
+MULT: '*' ;
+DIV: '/' ;
+MOD: '%' ;
+GTE: '>=';
+GT: '>' ;
+LTE: '<=';
+LT: '<' ;
+EQ: '==';
+NEQ: '!=';
+AND: '&&';
+OR: '||';
 
 //brackets
 OPEN_PARENTHESES: '(' ;
 CLOSE_PARENTHESES: ')' ;
+L_SQUARE: '[' ;
+R_SQUARE: ']' ;
+L_CURLY: '{' ;
+R_CURLY: '}' ;
+
 
 //numbers
 fragment DIGIT: '0'..'9' ; 
