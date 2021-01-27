@@ -20,7 +20,6 @@ DO: 'do' ;
 DONE: 'done' ;
 
 
-
 SEMICOLON: ';' ;
 NEWPAIR: 'newpair' ;
 CALL: 'call' ;
@@ -28,10 +27,10 @@ COMMA: ',' ;
 FST: 'fst' ;
 SND: 'snd' ;
 PAIR: 'pair' ;
-
+TRUE: 'true' ;
+FALSE: 'false' ;
 
 //base types
-
 INT: 'int' ;
 BOOL: 'bool' ;
 CHAR: 'char' ;
@@ -66,13 +65,18 @@ R_SQUARE: ']' ;
 L_CURLY: '{' ;
 R_CURLY: '}' ;
 
-
 //numbers
 fragment DIGIT: '0'..'9' ; 
-
 INTEGER: DIGIT+ ;
 
+//identifiers
+fragment IDENTIFIER_FIRST: 'a'..'z' | '_' ;
+fragment IDENTIFER_REST: ('a'..'z'| '_' | 'A' .. 'Z' | DIGIT)*;
+IDENT: IDENTIFIER_FIRST IDENTIFER_REST;
 
+ESCAPE_CHARACTER: ('0' | 'b' | 't' | 'n' | 'f' | 'r' | '"' | '\'' | '\\') ;
+CHARACTER:~('\\' | '\'' | '"') | '\\' ESCAPE_CHARACTER;
 
-
-
+//string literal
+STRING_LIT: '"' (CHARACTER)* '"';
+CHARACTER_LIT: '\'' CHARACTER '\'';
