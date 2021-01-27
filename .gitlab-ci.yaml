@@ -1,19 +1,39 @@
-#image: 
+
+image: docker:latest
+
 stages:
   - build
-  - test
+  - frontend
+  - backend
+  - extension
 
 build:
   stage: build
   script:
     - echo "Building"
+    - echo "TODO: Add appropriate commands to build"
+    # make clean
+    # make
     
-# test only on the master branch
-test:
-  only:
-    - master
-  stage: test
+frontend:
+  stage: frontend test
   script:
-    - echo "Testing"
+    - echo "Testing the front end"
+    - echo "TODO: Add appropriate commands to test the front end of the compiler"
+    # test lexing
+    # test parsing
+    # test semantics
 
-# deploying section to be added #
+backend:
+  stage: backend test
+  script:
+    - echo "Testing the back end"
+    - echo "TODO: Add appropriate commands to test the back end of the compiler"
+    # test code generation
+
+extension:
+  stage: extension test
+  script:
+    - echo "Testing the extension"
+    - echo "TODO: Add appropriate commands to test the extension"
+
