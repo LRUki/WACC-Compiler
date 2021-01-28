@@ -81,6 +81,7 @@ fragment IDENTIFIER_FIRST: 'a'..'z' | '_' | 'A' .. 'Z' ;
 fragment IDENTIFER_REST: (IDENTIFIER_FIRST | DIGIT)*;
 IDENTIFIER:   IDENTIFIER_FIRST IDENTIFER_REST;
 
+WHITESPACE: (' ' | '\n' | '\t' | '\r')+ -> skip;
 ESCAPE_CHARACTER: ('0' | 'b' | 't' | 'n' | 'f' | 'r' | '"' | '\'' | '\\') ;
 CHARACTER:~('\\' | '\'' | '"') | '\\' ESCAPE_CHARACTER;
 
@@ -89,4 +90,4 @@ STRING_LIT: '"' (CHARACTER)* '"';
 CHARACTER_LIT: '\'' CHARACTER '\'';
 
 //comments
-COMMENT: '#' ~('\r' | '\n')*;
+COMMENT: '#' ~('\r' | '\n')* -> skip;
