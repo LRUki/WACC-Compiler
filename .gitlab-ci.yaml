@@ -1,0 +1,19 @@
+#image: 
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - echo "Building"
+    
+# test only on the master branch
+test:
+  only:
+    - master
+  stage: test
+  script:
+    - echo "Testing"
+
+# deploying section to be added #
