@@ -12,8 +12,8 @@ build:
   script:
     - echo "Building"
     - echo "TODO: Add appropriate commands to build"
-    # make clean
-    # make
+    - make clean
+    - make
     
 frontend:
   stage: frontend test
