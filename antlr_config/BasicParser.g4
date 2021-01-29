@@ -4,11 +4,11 @@ options {
   tokenVocab=BasicLexer;
 }
 
-binaryOper: ADD | SUB ;
+binaryOper: PLUS | MINUS ;
 
 expr: expr binaryOper expr
 | INTEGER
-| L_PAREN expr R_PAREN EOF
+| OPEN_PARENTHESES expr CLOSE_PARENTHESES
 ;
 
 // EOF indicates that the program must consume to the end of the input.
