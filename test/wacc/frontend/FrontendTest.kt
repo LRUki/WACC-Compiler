@@ -1,7 +1,7 @@
 package wacc.frontend
 
-import antlr.BasicLexer
-import antlr.BasicParser
+import antlr.WaccLexer
+import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.hamcrest.CoreMatchers.`is`
@@ -12,10 +12,10 @@ class FrontendTest {
     @Test
     fun `can parse simple expr`() {
         val input = CharStreams.fromString("1+2")
-        val lexer = BasicLexer(input)
+        val lexer = WaccLexer(input)
         val tokens = CommonTokenStream(lexer)
-        val parser = BasicParser(tokens)
-        val tree = parser.prog()
+        val parser = WaccParser(tokens)
+        val tree = parser.program()
 
         assertThat(tree.getChild(0).getChild(0).text, `is`("1"))
         assertThat(tree.getChild(1).text, `is`("+"))
