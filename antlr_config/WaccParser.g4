@@ -4,7 +4,7 @@ options {
   tokenVocab=WaccLexer;
 }
 
-prog: BEGIN func* stat END EOF;
+program: BEGIN func* stat END EOF;
 
 func: type IDENT L_PAREN paramList? R_PAREN IS stat END;
 
