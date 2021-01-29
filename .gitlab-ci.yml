@@ -1,0 +1,32 @@
+image: maven:3.6.3-jdk-11
+
+stages:
+  - build
+  - test-frontend
+  - test-backend
+  - test-extension
+
+build:
+  stage: build
+  script:
+    - echo "Building"
+    - make clean all
+
+test-frontend:
+  stage: test-frontend
+  script:
+    - echo "Testing the front end"
+    # test lexing
+    # test parsing
+    # test semantics
+
+test-backend:
+  stage: test-backend
+  script:
+    - echo "Testing the back end"
+    # test code generation
+
+test-extension:
+  stage: test-extension
+  script:
+    - echo "Testing the extension"
