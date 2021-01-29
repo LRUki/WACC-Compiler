@@ -16,7 +16,7 @@ test-frontend:
   stage: test-frontend
   script:
     - echo "Testing the front end"
-    - ./gradlew test
+    - gradle test
     # test lexing
     # test parsing
     # test semantics
