@@ -74,7 +74,7 @@ R_CURLY: '}' ;
 
 //numbers
 fragment DIGIT: '0'..'9' ; 
-INTEGER: DIGIT+ ;
+INTEGER_LIT: (ADD | SUB)? DIGIT+;
 
 //identifiers
 fragment IDENTIFIER_FIRST: 'a'..'z' | '_' | 'A' .. 'Z' ;
@@ -91,3 +91,4 @@ CHARACTER_LIT: '\'' CHARACTER '\'';
 
 //comments
 COMMENT: '#' ~('\r' | '\n')* -> skip;
+
