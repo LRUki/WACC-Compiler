@@ -12,10 +12,20 @@ paramList: param (COMMA param)*;
 
 param: type ident;
 
-stat: SKIP_TOKEN | (FREE | RETURN  | EXIT | PRINT | PRINTLN) expr | stat SEMICOLON stat;
+stat: SKIP_TOKEN
+      | type IDENTIFIER ASSIGN assignRhs
+      | assignLhs ASSIGN assignRhs
+      | READ assignLhs
+      | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr
+      | IF expr THEN stat ELSE stat FI
+      | WHILE expr DO stat DONE
+      | BEGIN stat END
+      | stat SEMICOLON stat;
+
+assignRhs: ;
+assignLhs: ;
 
 type: baseType;
-
 baseType: INT | BOOL | CHAR | STRING;
 
 expr: ident
