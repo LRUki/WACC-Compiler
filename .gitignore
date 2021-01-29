@@ -7,3 +7,7 @@ src/antlr
 
 #ignore other junk files
 *~
+
+.idea/
+antlr_config/.antlr/
+bin/
