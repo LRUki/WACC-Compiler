@@ -14,7 +14,7 @@ PRINTLN: 'println' ;
 IF: 'if' ;
 THEN: 'then' ;
 ELSE: 'else' ;
-FI: 'fi; ';
+FI: 'fi' ;
 WHILE: 'while' ;
 DO: 'do' ;
 DONE: 'done' ;
@@ -45,8 +45,8 @@ ORD: 'ord' ;
 CHR: 'chr' ;
 
 //binary operators
-ADD: '+' ;
-SUB: '-' ;
+PLUS: '+' ;
+MINUS: '-' ;
 MULT: '*' ;
 DIV: '/' ;
 MOD: '%' ;
@@ -68,23 +68,22 @@ L_CURLY: '{' ;
 R_CURLY: '}' ;
 
 //numbers
-DIGIT: '0'..'9' ; 
-
-
+NUMBER : DIGIT+ ;
+fragment DIGIT: [0-9] ; 
 
 //identifiers
-fragment IDENTIFIER_FIRST: 'a'..'z' | '_' | 'A' .. 'Z' ;
-fragment IDENTIFER_REST: (IDENTIFIER_FIRST | '0'..'9')* ;
-IDENTIFIER: IDENTIFIER_FIRST IDENTIFER_REST;
+fragment IDENT_FIRST: [_a-zA-Z] ; 
+fragment IDENT_REST: (IDENT_FIRST | DIGIT)* ;
+IDENT: IDENT_FIRST IDENT_REST;
 
-WHITESPACE: (' ' | '\n' | '\t' | '\r')+ -> skip ;
-ESCAPE_CHARACTER: ('0' | 'b' | 't' | 'n' | 'f' | 'r' | '"' | '\'' | '\\') ;
-CHARACTER: ~('\\' | '\'' | '"') | '\\' ESCAPE_CHARACTER ;
+WHITESPACE: [ \n\t\r]+ -> skip ;
+ESCAPE_CHARACTER: [0btnfr"'\\] ;
+CHARACTER: ~[\\'"] | '\\' ESCAPE_CHARACTER ;
 
 //string literal
 STR_LITER: '"' (CHARACTER)* '"' ;
-CHAR_LITER: '\'' CHARACTER '\'';
+CHAR_LITER: '\'' CHARACTER '\'' ;
 
 //comments
-COMMENT: '#' ~('\r' | '\n')* -> skip;
+COMMENT: '#' ~[\r\n]* -> skip ;
 
