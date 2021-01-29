@@ -1,39 +1,32 @@
-
-image: docker:latest
+image: maven:3.6.3-jdk-11
 
 stages:
   - build
-  - frontend
-  - backend
-  - extension
+  - test-frontend
+  - test-backend
+  - test-extension
 
 build:
   stage: build
   script:
     - echo "Building"
-    - echo "TODO: Add appropriate commands to build"
-    - make clean
-    - make
-    
-frontend:
-  stage: frontend test
+    - make clean all
+
+test-frontend:
+  stage: test-frontend
   script:
     - echo "Testing the front end"
-    - echo "TODO: Add appropriate commands to test the front end of the compiler"
     # test lexing
     # test parsing
     # test semantics
 
-backend:
-  stage: backend test
+test-backend:
+  stage: test-backend
   script:
     - echo "Testing the back end"
-    - echo "TODO: Add appropriate commands to test the back end of the compiler"
     # test code generation
 
-extension:
-  stage: extension test
+test-extension:
+  stage: test-extension
   script:
     - echo "Testing the extension"
-    - echo "TODO: Add appropriate commands to test the extension"
-
