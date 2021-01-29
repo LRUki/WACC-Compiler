@@ -33,23 +33,18 @@ TRUE: 'true' ;
 FALSE: 'false' ;
 
 //base types
-BASE_TYPE: INT | BOOL | CHAR | STRING;
 INT: 'int' ;
 BOOL: 'bool' ;
 CHAR: 'char' ;
 STRING: 'string' ;
 
 //unary operators
-UNARY_OP: NOT | LEN  | ORD | CHR;
 NOT: '!' ;
 LEN: 'len' ;
 ORD: 'ord' ;
 CHR: 'chr' ;
 
 //binary operators
-BINARY_OP: ADD | SUB | MULT | DIV |
-           MOD | GTE | GT | LTE | LT |
-           EQ | NEQ | AND | OR ;
 ADD: '+' ;
 SUB: '-' ;
 MULT: '*' ;
@@ -73,21 +68,22 @@ L_CURLY: '{' ;
 R_CURLY: '}' ;
 
 //numbers
-fragment DIGIT: '0'..'9' ; 
-INTEGER_LIT: (ADD | SUB)? DIGIT+;
+DIGIT: '0'..'9' ; 
+
+
 
 //identifiers
 fragment IDENTIFIER_FIRST: 'a'..'z' | '_' | 'A' .. 'Z' ;
-fragment IDENTIFER_REST: (IDENTIFIER_FIRST | DIGIT)*;
-IDENTIFIER:   IDENTIFIER_FIRST IDENTIFER_REST;
+fragment IDENTIFER_REST: (IDENTIFIER_FIRST | '0'..'9')* ;
+IDENTIFIER: IDENTIFIER_FIRST IDENTIFER_REST;
 
-WHITESPACE: (' ' | '\n' | '\t' | '\r')+ -> skip;
+WHITESPACE: (' ' | '\n' | '\t' | '\r')+ -> skip ;
 ESCAPE_CHARACTER: ('0' | 'b' | 't' | 'n' | 'f' | 'r' | '"' | '\'' | '\\') ;
-CHARACTER:~('\\' | '\'' | '"') | '\\' ESCAPE_CHARACTER;
+CHARACTER: ~('\\' | '\'' | '"') | '\\' ESCAPE_CHARACTER ;
 
 //string literal
-STRING_LIT: '"' (CHARACTER)* '"';
-CHARACTER_LIT: '\'' CHARACTER '\'';
+STR_LITER: '"' (CHARACTER)* '"' ;
+CHAR_LITER: '\'' CHARACTER '\'';
 
 //comments
 COMMENT: '#' ~('\r' | '\n')* -> skip;

@@ -6,24 +6,42 @@ options {
 
 program: BEGIN (func)* stat END;
 
-func: type IDENTIFIER L_PAREN (paramList)? R_PAREN IS stat 'end';
+func: type ident L_PAREN (paramList)? R_PAREN IS stat END;
 
 paramList: param (COMMA param)*;
 
-param: type IDENTIFIER;
+param: type ident;
 
 stat: SKIP_TOKEN | (FREE | RETURN  | EXIT | PRINT | PRINTLN) expr | stat SEMICOLON stat;
 
-type: BASE_TYPE;
+type: baseType;
 
+baseType: INT | BOOL | CHAR | STRING;
 
-expr: IDENTIFIER
-| INTEGER_LIT
-| UNARY_OP expr
-|expr BINARY_OP expr
+expr: ident
+| charLiter
+| intLiter
+| strLiter
+| unaryOper expr
+| expr binaryOper expr
 | L_PAREN expr R_PAREN 
 ;
 
+
+unaryOper: NOT | LEN  | ORD | CHR;
+
+binaryOper: ADD | SUB | MULT | DIV |
+            MOD | GTE | GT | LTE | LT |
+            EQ | NEQ | AND | OR ;
+
+
+ident: IDENTIFIER;
+
+intLiter: (ADD | SUB)? (DIGIT)+ ;
+
+strLiter: STR_LITER;
+
+charLiter: CHAR_LITER;
 
 
 // // EOF indicates that the program must consume to the end of the input.
