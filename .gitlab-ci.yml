@@ -16,6 +16,7 @@ test-frontend:
   stage: test-frontend
   script:
     - echo "Testing the front end"
+    - make clean all
     - ./gradlew test
     # test lexing
     # test parsing
