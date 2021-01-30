@@ -39,7 +39,13 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97219961-244d-471a-b754-6f0c46e355f2" name="Default Changelist" comment="" />
+    <list default="true" id="97219961-244d-471a-b754-6f0c46e355f2" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitlab-ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.gitlab-ci.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/wacc_23.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/wacc_23.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grunTester.sh" beforeDir="false" afterPath="$PROJECT_DIR$/testgrun" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result.out" beforeDir="false" afterPath="$PROJECT_DIR$/result.out" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,6 +65,11 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="wacc_23" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="wacc_23" type="f1a62948:ProjectNode" />
+                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
               </path>
             </expand>
             <select />
@@ -102,6 +113,7 @@
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
@@ -226,7 +238,28 @@
       <option name="project" value="LOCAL" />
       <updated>1611942994811</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Add build antlr before executing gradlew">
+      <created>1611948167134</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1611948167134</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Add calling grunTester to .gitlab-ci.yml">
+      <created>1611979917051</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1611979917051</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Fix grunTester.sh name in .gitlab-ci.yml">
+      <created>1611980087502</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1611980087502</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -260,25 +293,28 @@
     <MESSAGE value="Fix .gitlab-ci.yml syntax" />
     <MESSAGE value="Configure test environment and add simple test class for frontend" />
     <MESSAGE value="Convert the project to gradle" />
-    <option name="LAST_COMMIT_MESSAGE" value="Convert the project to gradle" />
+    <MESSAGE value="Add build antlr before executing gradlew" />
+    <MESSAGE value="Add calling grunTester to .gitlab-ci.yml" />
+    <MESSAGE value="Fix grunTester.sh name in .gitlab-ci.yml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix grunTester.sh name in .gitlab-ci.yml" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1237" height="192" key="GridCell.Tab.0.bottom" timestamp="1611943836617">
+    <state width="1237" height="178" key="GridCell.Tab.0.bottom" timestamp="1611980517783">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1237" height="192" key="GridCell.Tab.0.bottom/0.0.1280.690@0.0.1280.690" timestamp="1611943836617" />
-    <state width="1237" height="192" key="GridCell.Tab.0.center" timestamp="1611943836617">
+    <state width="1237" height="178" key="GridCell.Tab.0.bottom/0.0.1280.690@0.0.1280.690" timestamp="1611980517783" />
+    <state width="1237" height="178" key="GridCell.Tab.0.center" timestamp="1611980517783">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1237" height="192" key="GridCell.Tab.0.center/0.0.1280.690@0.0.1280.690" timestamp="1611943836617" />
-    <state width="1237" height="192" key="GridCell.Tab.0.left" timestamp="1611943836617">
+    <state width="1237" height="178" key="GridCell.Tab.0.center/0.0.1280.690@0.0.1280.690" timestamp="1611980517783" />
+    <state width="1237" height="178" key="GridCell.Tab.0.left" timestamp="1611980517782">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1237" height="192" key="GridCell.Tab.0.left/0.0.1280.690@0.0.1280.690" timestamp="1611943836617" />
-    <state width="1237" height="192" key="GridCell.Tab.0.right" timestamp="1611943836617">
+    <state width="1237" height="178" key="GridCell.Tab.0.left/0.0.1280.690@0.0.1280.690" timestamp="1611980517782" />
+    <state width="1237" height="178" key="GridCell.Tab.0.right" timestamp="1611980517783">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1237" height="192" key="GridCell.Tab.0.right/0.0.1280.690@0.0.1280.690" timestamp="1611943836617" />
+    <state width="1237" height="178" key="GridCell.Tab.0.right/0.0.1280.690@0.0.1280.690" timestamp="1611980517783" />
     <state width="1237" height="208" key="GridCell.Tab.1.bottom" timestamp="1611941570548">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
