@@ -6,28 +6,19 @@ import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.TokenStream
+import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
+import org.junit.Assert
 import org.junit.Assert.assertThat
 import org.junit.Test
+import java.lang.AssertionError
 
 class ParserTest {
 
-
     @Test
-    fun lexicalAnalyserGivesCorrectTokens (){
-        val input = CharStreams.fromString("begin skip end ")
-        val lexer = WaccLexer(input)
-        assertThat(lexer.nextToken().text, `is`("begin"))
-        assertThat(lexer.nextToken().text, `is`("skip"))
-        assertThat(lexer.nextToken().text, `is`("end"))
-    }
-
-
-    @Test
-    fun `can parse simple expr`() {
+    fun canParseSimpleInput() {
         val input = CharStreams.fromString("begin 1+2 end")
         val lexer = WaccLexer(input)
-
 
         val tokens = BufferedTokenStream(lexer)
         val parser = WaccParser(tokens)
@@ -38,4 +29,20 @@ class ParserTest {
         assertThat(tree.getChild(3).text, `is`("2"))
         assertThat(tree.getChild(4).text, `is`("end"))
     }
+
+    @Test
+    fun canHandleMalformedPrograms() {}
+
+    @Test
+    fun doesNotRecogniseIncorrectTokens() {}
+//        val input = CharStreams.fromString("begin ski end ")
+//        val lexer = WaccLexer(input)
+//        Assert.assertThat(lexer.nextToken().text, CoreMatchers.`is`("begin"))
+//        try {
+//            lexer.nextToken().text
+//        }catch (error: AssertionError){
+//            return
+//        }
+////        fail("Lexer recognises an token that it shouldn't")
+//    }
 }
