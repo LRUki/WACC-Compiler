@@ -19,4 +19,4 @@ do
     fi
 done
 
-[ -s error.out ] && exit 1 || echo "All test cases pass!"
+[ -s error.out ] && exit 1 || echo "All test cases pass!" && rm error.out
