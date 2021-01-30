@@ -3,23 +3,20 @@
 echo 'Testing grun...'
 
 make
-rm -f result.out
-touch result.out
+rm -f error.out
+touch error.out
 
 for FILE in `find ./src/test/valid -type f -name '*.wacc'` 
 do
     ERROR=$(./grun antlr.Wacc program $FILE 2>&1 >/dev/null)
-    if [ -z $ERROR]
+    if [ -z $ERROR ]
     then 
         echo "Success $FILE"
     else
         echo "Failed $FILE"
-        echo $FILE >> result.out 
-        echo $ERROR "\n" >> result.out
+        echo $FILE >> error.out
+        echo $ERROR "\n" >> error.out
     fi
 done
 
-[ -s result.out ] && exit 1 || echo "all test cases pass!" >> result.out
-
-
-
+[ -s error.out ] && exit 1 || echo "All test cases pass!"
