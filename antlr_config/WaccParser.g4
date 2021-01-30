@@ -41,7 +41,7 @@ type: (baseType | pairType) arrayType* ;
 
 baseType: INT | BOOL | CHAR | STRING ;
 
-arrayType: type L_SQUARE R_SQUARE ;
+arrayType: L_SQUARE R_SQUARE ;
 
 pairType: PAIR L_PAREN pairElemType COMMA pairElemType R_PAREN ;
 
