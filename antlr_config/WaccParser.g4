@@ -37,11 +37,11 @@ argList: expr (COMMA expr)* ;
 pairElem: FST expr
         | SND expr ;
 
-type: (baseType | pairType) arrayType* ;
+type: baseType | pairType | arrayType ;
 
 baseType: INT | BOOL | CHAR | STRING ;
 
-arrayType: L_SQUARE R_SQUARE ;
+arrayType: (baseType | pairType) (L_SQUARE R_SQUARE)+ ;
 
 pairType: PAIR L_PAREN pairElemType COMMA pairElemType R_PAREN ;
 
