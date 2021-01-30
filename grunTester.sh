@@ -17,7 +17,7 @@ do
     fi
 done
 
-[ -s result.out ] || echo "all test cases pass!" >> result.out
+[ -s result.out ] && exit 1 || echo "all test cases pass!" >> result.out
 
 
 
