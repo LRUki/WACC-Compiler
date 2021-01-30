@@ -11,7 +11,7 @@ test-antlr:
   script:
     - echo "Building"
     - make clean all
-    - ./grunTester.sh
+    - ./testgrun
 
 test-frontend:
   stage: test-frontend

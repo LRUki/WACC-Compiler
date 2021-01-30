@@ -1,4 +1,6 @@
-echo 'running grunTester'
+#!/bin/bash
+
+echo 'Testing grun...'
 
 make
 rm -f result.out
