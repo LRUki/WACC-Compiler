@@ -1,16 +1,17 @@
 image: maven:3.6.3-jdk-11
 
 stages:
-  - build
+  - test-antlr
   - test-frontend
   - test-backend
   - test-extension
 
-build:
-  stage: build
+test-antlr:
+  stage: test-antlr
   script:
     - echo "Building"
     - make clean all
+    - ./testgrun
 
 test-frontend:
   stage: test-frontend

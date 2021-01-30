@@ -71,10 +71,8 @@ R_CURLY: '}' ;
 NUMBER : DIGIT+ ;
 fragment DIGIT: [0-9] ; 
 
-//identifiers
-fragment IDENT_FIRST: [_a-zA-Z] ; 
-fragment IDENT_REST: (IDENT_FIRST | DIGIT)* ;
-IDENT: IDENT_FIRST IDENT_REST;
+//identifier
+IDENT: ([a-zA-Z] | '_')(([a-zA-Z0-9]) | '_')* ;
 
 WHITESPACE: [ \n\t\r]+ -> skip ;
 ESCAPE_CHARACTER: [0btnfr"'\\] ;
@@ -85,5 +83,5 @@ STR_LITER: '"' (CHARACTER)* '"' ;
 CHAR_LITER: '\'' CHARACTER '\'' ;
 
 //comments
-COMMENT: '#' ~[\r\n]* -> skip ;
+COMMENT: '#' .*? [\n\r] -> skip;
 

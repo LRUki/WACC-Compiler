@@ -5,4 +5,5 @@
       <map />
     </option>
   </component>
+  <component name="ExternalSystem" externalSystem="GRADLE" externalSystemModuleGroup="wacc" externalSystemModuleVersion="1.0-SNAPSHOT" linkedProjectId="wacc_23" linkedProjectPath="$MODULE_DIR$" rootProjectPath="$MODULE_DIR$" />
 </module>

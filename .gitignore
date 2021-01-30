@@ -11,3 +11,4 @@ src/antlr
 .idea/
 antlr_config/.antlr/
 bin/
+./result.out
