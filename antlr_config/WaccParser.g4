@@ -49,7 +49,13 @@ pairElemType: baseType
             | arrayType
             | PAIR ;
             
-expr: intLiter
+expr: expr binop1 expr    
+    | expr binop2 expr    
+    | expr binop3 expr    
+    | expr binop4 expr    
+    | expr binop5 expr    
+    | expr binop6 expr    
+    | intLiter 
     | boolLiter
     | charLiter
     | strLiter
@@ -57,14 +63,16 @@ expr: intLiter
     | IDENT
     | arrayElem
     | unaryOper expr
-    | expr binaryOper expr
     | L_PAREN expr R_PAREN ;
 
 unaryOper: NOT | MINUS | LEN | ORD | CHR;
 
-binaryOper: MULT | DIV | MOD | PLUS
-            | MINUS | GT | GTE | LT | LTE
-            | EQ | NEQ | AND | OR ;
+binop1: MULT | DIV | MOD;
+binop2: PLUS | MINUS;
+binop3: LTE | LT  | GTE | GT;
+binop4: EQ  | NEQ;
+binop5: AND;
+binop6: OR;
 
 arrayElem: IDENT (L_SQUARE expr R_SQUARE)+ ;
 
@@ -79,7 +87,4 @@ charLiter: CHAR_LITER;
 arrayLiter: L_SQUARE (expr (COMMA expr)*)? R_SQUARE ;
 
 pairLiter: NULL ;
-
-// // EOF indicates that the program must consume to the end of the input.
-// prog: (expr)*  EOF ;
 
