@@ -15,6 +15,14 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         encSymbolTable?.addChildSymbolTable(this)
     }
 
+    private fun getTopSymbolTable(): SymbolTable {
+        var currentSymbolTable: SymbolTable = this
+        while (currentSymbolTable.encSymbolTable != null) {
+            currentSymbolTable = currentSymbolTable.encSymbolTable!!
+        }
+        return currentSymbolTable
+    }
+
     private fun lookup(name:String) : Optional<Identifier> {
         val value = currSymbolTable[name]
         if (value != null) {
