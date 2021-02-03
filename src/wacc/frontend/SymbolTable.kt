@@ -1,5 +1,6 @@
 package wacc.frontend
 
+import wacc.frontend.identifierObjs.Identifier
 import java.util.*
 
 class SymbolTable(private val encSymbolTable: SymbolTable?) {
@@ -24,7 +25,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return value
     }
 
-    fun add(name:String, obj:Identifier) {
+    fun add(name:String, obj: Identifier) {
         table[name] = obj
     }
 
