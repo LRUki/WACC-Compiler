@@ -5,10 +5,18 @@ import java.util.*
 
 class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
-    var table: MutableMap<String, Identifier> = mutableMapOf()
+    // A symbol table consists of a HashMap and a list of children.
+    private val currSymbolTable: HashMap<String, Identifier> = HashMap()
+    var childSymbolTables: MutableList<SymbolTable> = mutableListOf()
+
+    // Creating a new symbol table adds it to the parent
+    // symbol table's children (if parent exists)
+    init {
+        encSymbolTable?.addChildSymbolTable(this)
+    }
 
     private fun lookup(name:String) : Optional<Identifier> {
-        val value = table[name]
+        val value = currSymbolTable[name]
         if (value != null) {
             return Optional.of(value)
         }
@@ -26,7 +34,10 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     fun add(name:String, obj: Identifier) {
-        table[name] = obj
+        currSymbolTable[name] = obj
     }
 
+    private fun addChildSymbolTable(child:SymbolTable) {
+        childSymbolTables.add(child)
+    }
 }
