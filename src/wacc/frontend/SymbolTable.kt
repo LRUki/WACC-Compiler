@@ -7,7 +7,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
     var table: MutableMap<String, Identifier> = mutableMapOf()
 
-    fun lookup(name:String) : Optional<Identifier> {
+    private fun lookup(name:String) : Optional<Identifier> {
         val value = table[name]
         if (value != null) {
             return Optional.of(value)
@@ -15,8 +15,8 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return Optional.empty()
     }
 
-    fun lookupAll(name:String) : Optional<Identifier> {
-        var value = lookup(name)
+    private fun lookupAll(name:String) : Optional<Identifier> {
+        val value = lookup(name)
         if (value.isEmpty){
             if (encSymbolTable != null) {
                 return encSymbolTable.lookupAll(name)
