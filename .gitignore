@@ -13,3 +13,4 @@ antlr_config/gen
 gen
 build
 error.out
+.gradle

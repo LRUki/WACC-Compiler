@@ -96,8 +96,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitBaseType(ctx: WaccParser.BaseTypeContext): AST {
-        println(ctx.text)
-
         val baseType = when(ctx.text) {
             "int" -> BaseType.INT
             "bool" -> BaseType.BOOL
