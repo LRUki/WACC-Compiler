@@ -4,14 +4,11 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.TokenStream
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert
 import org.junit.Assert.assertThat
 import org.junit.Test
-import java.lang.AssertionError
+import java.io.File
+
 
 class ParserTest {
 
@@ -45,4 +42,25 @@ class ParserTest {
 //        }
 ////        fail("Lexer recognises an token that it shouldn't")
 //    }
+
+    @Test
+    fun validFilesReturn0ExitCode(){
+    File("wacc_examples/valid").walkTopDown().forEach {
+        if(it.isFile && it.endsWith(".wacc")){
+
+        }
+
+    }
+            //.walkTopDown().forEach {
+//        if (it.path.endsWith(".wacc")) {
+//            val result = CompilerEmulator(it, PARSE_ONLY ,PrintStream(NullOutputStream())).run()
+//            val exitCode = result.exitCode
+//            if (it.path.contains("syntaxErr")) {
+//                assertTrue(exitCode == 100)
+//            } else {
+//                assertTrue(exitCode == 0 || exitCode == 200)
+//            }
+//        }
+//    }
+    }
 }
