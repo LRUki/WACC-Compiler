@@ -28,9 +28,9 @@ assignLhs: ident
 
 assignRhs: expr
          | arrayLiter
-         | NEWPAIR L_PAREN expr COMMA expr R_PAREN 
-         | pairElem 
-         | CALL ident L_PAREN argList? R_PAREN ;
+         | NEWPAIR L_PAREN expr COMMA expr R_PAREN
+         | pairElem
+         | CALL ident L_PAREN argList? R_PAREN;
 
 argList: expr (COMMA expr)* ;
 
@@ -69,7 +69,7 @@ unaryOper: NOT | MINUS | LEN | ORD | CHR;
 
 binop1: MULT | DIV | MOD;
 binop2: PLUS | MINUS;
-binop3: LTE | LT  | GTE | GT;
+binop3: LTE | LT | GTE | GT;
 binop4: EQ  | NEQ;
 binop5: AND;
 binop6: OR;
