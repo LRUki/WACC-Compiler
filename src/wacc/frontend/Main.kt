@@ -19,6 +19,6 @@ fun main() {
 //    println(tree.toStringTree())
 
     val visitor = BuildAstVisitor()
-    val AstRoot = visitor.visit(tree)
-
+    val astRoot = visitor.visit(tree)
+    println()
 }

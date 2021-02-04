@@ -12,3 +12,4 @@ src/antlr
 antlr_config/.antlr/
 bin/
 ./result.out
+/build/

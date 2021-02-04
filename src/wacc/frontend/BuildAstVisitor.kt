@@ -2,17 +2,28 @@ package wacc.frontend
 
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
-import antlr.WaccParserVisitor
-import org.antlr.v4.runtime.tree.ErrorNode
-import org.antlr.v4.runtime.tree.ParseTree
-import org.antlr.v4.runtime.tree.RuleNode
-import org.antlr.v4.runtime.tree.TerminalNode
-import wacc.frontend.ast.AstNode
+import wacc.frontend.ast.*
 
 class BuildAstVisitor : WaccParserBaseVisitor<AstNode>() {
 
-    override fun visitProgram(ctx: WaccParser.ProgramContext?): AstNode {
-        return visitChildren(ctx)
+    override fun visitProgram(ctx: WaccParser.ProgramContext): AstNode {
+        var funcList = emptyList<FuncAST>()
+        for (i in 1..ctx.childCount - 3) { // Read all func
+            val c = ctx.getChild(i)
+            val childResult = c.accept(this)
+            if (childResult is FuncAST) {
+                funcList = funcList + childResult
+            }
+        }
+
+        var stat : StatAST? = null
+        val c = ctx.getChild(ctx.childCount - 3)
+        val childResult = c.accept(this)
+        if (childResult is StatAST) {
+            stat = childResult
+        }
+
+        return ProgramAST(funcList, stat!!)
     }
 
     override fun visitFunc(ctx: WaccParser.FuncContext?): AstNode {
@@ -32,15 +43,29 @@ class BuildAstVisitor : WaccParserBaseVisitor<AstNode>() {
     }
 
     override fun visitIfStat(ctx: WaccParser.IfStatContext?): AstNode {
-        return visitChildren(ctx)
+        return IfStatAST()
     }
 
     override fun visitBlockStat(ctx: WaccParser.BlockStatContext?): AstNode {
         return visitChildren(ctx)
     }
 
-    override fun visitMultiStat(ctx: WaccParser.MultiStatContext?): AstNode {
-        return visitChildren(ctx)
+    override fun visitMultiStat(ctx: WaccParser.MultiStatContext): AstNode {
+        var stat1 : StatAST? = null
+        val c1 = ctx.getChild(0)
+        val childResult1 = c1.accept(this)
+        if (childResult1 is StatAST) {
+            stat1 = childResult1
+        }
+
+        var stat2 : StatAST? = null
+        val c2 = ctx.getChild(2)
+        val childResult2 = c2.accept(this)
+        if (childResult2 is StatAST) {
+            stat2 = childResult2
+        }
+
+        return MultiStatAST(stat1!!, stat2!!)
     }
 
     override fun visitSkipStat(ctx: WaccParser.SkipStatContext?): AstNode {
@@ -56,7 +81,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AstNode>() {
     }
 
     override fun visitDeclareStat(ctx: WaccParser.DeclareStatContext?): AstNode {
-        return visitChildren(ctx)
+        return DeclareStatAST()
     }
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext?): AstNode {
