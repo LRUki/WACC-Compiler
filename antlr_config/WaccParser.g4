@@ -6,14 +6,14 @@ options {
 
 program: BEGIN func* stat END EOF;
 
-func: type IDENT L_PAREN paramList? R_PAREN IS stat END;
+func: type ident L_PAREN paramList? R_PAREN IS stat END;
 
 paramList: param (COMMA param)*;
 
 param: type IDENT;
 
 stat: SKIP_TOKEN
-      | type IDENT ASSIGN assignRhs
+      | type ident ASSIGN assignRhs
       | assignLhs ASSIGN assignRhs
       | READ assignLhs
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr
@@ -22,7 +22,7 @@ stat: SKIP_TOKEN
       | BEGIN stat END
       | stat SEMICOLON stat;
 
-assignLhs: IDENT
+assignLhs: ident
          | arrayElem
          | pairElem ;
 
@@ -30,7 +30,7 @@ assignRhs: expr
          | arrayLiter
          | NEWPAIR L_PAREN expr COMMA expr R_PAREN 
          | pairElem 
-         | CALL IDENT L_PAREN argList? R_PAREN ;
+         | CALL ident L_PAREN argList? R_PAREN ;
 
 argList: expr (COMMA expr)* ;
 
@@ -60,7 +60,7 @@ expr: expr binop1 expr
     | charLiter
     | strLiter
     | pairLiter
-    | IDENT
+    | ident
     | arrayElem
     | unaryOper expr
     | L_PAREN expr R_PAREN ;
@@ -74,7 +74,7 @@ binop4: EQ  | NEQ;
 binop5: AND;
 binop6: OR;
 
-arrayElem: IDENT (L_SQUARE expr R_SQUARE)+ ;
+arrayElem: ident (L_SQUARE expr R_SQUARE)+ ;
 
 intLiter: (PLUS | MINUS)? NUMBER ;
 
@@ -87,4 +87,6 @@ charLiter: CHAR_LITER;
 arrayLiter: L_SQUARE (expr (COMMA expr)*)? R_SQUARE ;
 
 pairLiter: NULL ;
+
+ident: IDENT ;
 
