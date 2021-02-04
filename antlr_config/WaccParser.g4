@@ -10,17 +10,17 @@ func: type ident L_PAREN paramList? R_PAREN IS stat END;
 
 paramList: param (COMMA param)*;
 
-param: type IDENT;
+param: type ident;
 
-stat: SKIP_TOKEN
-      | type ident ASSIGN assignRhs
-      | assignLhs ASSIGN assignRhs
-      | READ assignLhs
-      | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr
-      | IF expr THEN stat ELSE stat FI
-      | WHILE expr DO stat DONE
-      | BEGIN stat END
-      | stat SEMICOLON stat;
+stat: SKIP_TOKEN                                      #skipStat
+      | type ident ASSIGN assignRhs                   #declareStat
+      | assignLhs ASSIGN assignRhs                    #assignStat
+      | READ assignLhs                                #readStat
+      | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
+      | IF expr THEN stat ELSE stat FI                #ifStat
+      | WHILE expr DO stat DONE                       #whileStat
+      | BEGIN stat END                                #blockStat
+      | stat SEMICOLON stat                           #multiStat;
 
 assignLhs: ident
          | arrayElem
