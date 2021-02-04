@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="wacc.frontend.FrontendTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-01-29T18:29:54" hostname="DESKTOP-38HH2DA" time="0.266">
-  <properties/>
-  <testcase name="can parse simple expr" classname="wacc.frontend.FrontendTest" time="0.266"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[line 1:1 extraneous input '+' expecting {<EOF>, '(', INTEGER}
-]]></system-err>
-</testsuite>
