@@ -1,6 +1,5 @@
 #ignore generated binary files and auto-generated ANTLR code
 bin
-src/antlr
 
 #ignore Java class files
 *.class
@@ -8,8 +7,9 @@ src/antlr
 #ignore other junk files
 *~
 
-.idea/
-antlr_config/.antlr/
-bin/
-./result.out
-/build/
+.idea
+antlr_config/.antlr
+antlr_config/gen
+gen
+build
+error.out
