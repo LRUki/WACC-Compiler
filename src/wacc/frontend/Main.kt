@@ -8,7 +8,7 @@ import java.io.File
 
 fun main() {
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid")
+    val folder = File("wacc_examples/valid/advanced/hashTable.wacc")
     val list = actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
@@ -16,9 +16,11 @@ fun main() {
         val tokens = CommonTokenStream(lexer)
         val parser = WaccParser(tokens)
         val tree = parser.program()
-
+        val syntaxVisitor = SyntaxVisitor()
+        syntaxVisitor.visit(tree)
         val visitor = BuildAstVisitor()
-        visitor.visit(tree)
+        val ast = visitor.visit(tree)
+        ast
     }
 
     println()

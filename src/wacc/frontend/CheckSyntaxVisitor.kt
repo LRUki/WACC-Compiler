@@ -47,7 +47,7 @@ class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
         }
 
         if(!functionEndsWithExitOrReturn){
-            syntaxError()
+            syntaxError("Function missing exit or return")
         }
 
         return null
@@ -57,14 +57,13 @@ class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
         try {
             (ctx.text).toInt()
         } catch (e: NumberFormatException) {
-            syntaxError()
+            syntaxError("Int out of bound")
         }
         return null
     }
 
-    private fun syntaxError() {
-        System.err.println("#syntax error#")
-        exit(100)
+    private fun syntaxError(message: String) {
+        throw IllegalArgumentException(message)
     }
 
 
