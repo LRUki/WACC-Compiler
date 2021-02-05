@@ -8,7 +8,7 @@ import java.io.File
 
 fun main() {
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/IO")
+    val folder = File("wacc_examples/valid/scope")
     val list = actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
@@ -18,7 +18,7 @@ fun main() {
         val tree = parser.program()
 
         val visitor = BuildAstVisitor()
-        val astRoot = visitor.visit(tree)
+        visitor.visit(tree)
     }
 
     println()

@@ -23,4 +23,6 @@ class IfStatAST(val cond: ExprAST, val thenBody: StatAST, val elseBody: StatAST)
 
 class WhileStatAST(val cond: ExprAST, val body: StatAST) : StatAST
 
-class MultiStatAST(val stat1: StatAST, val stat2: StatAST) : StatAST
+class BlockStatAST(val body: StatAST) : StatAST
+
+class MultiStatAST(val stats: List<StatAST>) : StatAST

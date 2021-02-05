@@ -62,7 +62,7 @@ expr: expr binop1 expr     #binopExpr
     | pairLiter            #singletonExpr
     | ident                #singletonExpr
     | arrayElem            #singletonExpr
-    | unop expr       #unopExpr
+    | unop expr            #unopExpr
     | L_PAREN expr R_PAREN #parenExpr;
 
 unop: NOT | MINUS | LEN | ORD | CHR;
