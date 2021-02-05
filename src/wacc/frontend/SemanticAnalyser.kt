@@ -1,7 +1,5 @@
 package wacc.frontend
 
-import wacc.frontend.identifierObjs.Identifier
-
 class SemanticAnalyser {
 
     private val topSymbolTable = SymbolTable(null)

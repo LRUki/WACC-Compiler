@@ -1,4 +1,4 @@
-package wacc.frontend.identifierObjs
+package wacc.frontend.identifiers
 
 /* Types should store something (...) */
 enum class Type(){

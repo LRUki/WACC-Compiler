@@ -1,4 +1,4 @@
-package wacc.frontend.identifierObjs
+package wacc.frontend.identifiers
 
 class Program() : Identifier(Type.PROGRAM) {
         //private val stat: Statement

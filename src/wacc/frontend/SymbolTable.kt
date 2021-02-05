@@ -1,6 +1,6 @@
 package wacc.frontend
 
-import wacc.frontend.identifierObjs.Identifier
+import wacc.frontend.identifiers.Identifier
 import java.util.*
 
 class SymbolTable(private val encSymbolTable: SymbolTable?) {

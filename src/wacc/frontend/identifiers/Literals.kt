@@ -1,4 +1,4 @@
-package wacc.frontend.identifierObjs
+package wacc.frontend.identifiers
 
 class BoolLit(private val value: Boolean) : BOOL() {
     fun getValue(): Boolean {

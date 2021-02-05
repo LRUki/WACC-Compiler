@@ -1,4 +1,4 @@
-package wacc.frontend.identifierObjs
+package wacc.frontend.identifiers
 
 interface Statement {
     fun getStatType():StatType

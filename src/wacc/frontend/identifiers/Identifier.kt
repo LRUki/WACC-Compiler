@@ -1,4 +1,4 @@
-package wacc.frontend.identifierObjs
+package wacc.frontend.identifiers
 
 open class Identifier(private val type: Type) {
 
