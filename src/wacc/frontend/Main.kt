@@ -8,7 +8,7 @@ import java.io.File
 
 fun main() {
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/scope")
+    val folder = File("wacc_examples/valid")
     val list = actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())

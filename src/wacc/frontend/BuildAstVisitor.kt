@@ -4,9 +4,13 @@ import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
 import wacc.frontend.ast.*
 import wacc.frontend.ast.array.ArrayElemAST
+import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.expression.*
+import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
 
@@ -23,19 +27,22 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return ProgramAST(funcList, stat)
     }
 
-    override fun visitFunc(ctx: WaccParser.FuncContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+    override fun visitFunc(ctx: WaccParser.FuncContext): AST {
+        var paramList = emptyList<ParamAST>()
+        if (ctx.paramList() != null) {
+            for (param in ctx.paramList().param()) {
+                paramList += visit(param) as ParamAST
+            }
+        }
+        return FuncAST(visit(ctx.type()) as TypeAST,
+                visit(ctx.ident()) as IdentAST,
+                paramList,
+                visit(ctx.stat()) as StatAST
+        )
     }
 
-    override fun visitParamList(ctx: WaccParser.ParamListContext?): AST {
-        TODO()
-        return visitChildren(ctx)
-    }
-
-    override fun visitParam(ctx: WaccParser.ParamContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+    override fun visitParam(ctx: WaccParser.ParamContext): AST {
+        return ParamAST(visit(ctx.type()) as TypeAST, visit(ctx.ident()) as IdentAST)
     }
 
     override fun visitReadStat(ctx: WaccParser.ReadStatContext): AST {
@@ -105,14 +112,17 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                     visit(ctx.expr(0)) as ExprAST,
                     visit(ctx.expr(1)) as ExprAST
             )
-            ctx.CALL() != null -> TODO("call")
+            ctx.CALL() != null -> {
+                var argList = emptyList<ExprAST>()
+                if (ctx.argList() != null) {
+                    for (expr in ctx.argList().expr()) {
+                        argList += visit(expr) as ExprAST
+                    }
+                }
+                CallRhsAST(visit(ctx.ident()) as IdentAST, argList)
+            }
             else -> visitChildren(ctx)
         }
-    }
-
-    override fun visitArgList(ctx: WaccParser.ArgListContext?): AST {
-        TODO()
-        return visitChildren(ctx)
     }
 
     override fun visitPairElem(ctx: WaccParser.PairElemContext): AST {
@@ -161,10 +171,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         val unopContext = ctx.unop()
         val unOp = when {
             unopContext.NOT() != null -> UnOp.NOT
-            unopContext.MINUS() != null ->UnOp.MINUS
-            unopContext.LEN() != null ->UnOp.LEN
-            unopContext.ORD() != null ->UnOp.ORD
-            unopContext.CHR() != null ->UnOp.CHR
+            unopContext.MINUS() != null -> UnOp.MINUS
+            unopContext.LEN() != null -> UnOp.LEN
+            unopContext.ORD() != null -> UnOp.ORD
+            unopContext.CHR() != null -> UnOp.CHR
             else -> throw RuntimeException()
         }
         return UnOpExprAST(unOp, visit(ctx.expr()) as ExprAST)

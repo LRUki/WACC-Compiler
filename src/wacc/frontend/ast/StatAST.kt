@@ -2,6 +2,8 @@ package wacc.frontend.ast
 
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.expression.ExprAST
+import wacc.frontend.ast.expression.IdentAST
 
 interface StatAST : AST
 

@@ -1,4 +1,4 @@
-package wacc.frontend.ast
+package wacc.frontend.ast.expression
 
 import wacc.frontend.ast.assign.LhsAST
 
