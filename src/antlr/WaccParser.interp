@@ -146,7 +146,7 @@ arrayType
 pairType
 pairElemType
 expr
-unaryOper
+unop
 binop1
 binop2
 binop3

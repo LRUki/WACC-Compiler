@@ -7,20 +7,31 @@ import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
 fun main() {
-    println("Input: ")
-
 //    val input = CharStreams.fromStream(System.`in`)
-    val input = CharStreams.fromStream(File("wacc_examples/valid/expressions/intExpr1.wacc").inputStream())
-    val lexer = WaccLexer(input)
-    val tokens = CommonTokenStream(lexer)
-    val parser = WaccParser(tokens)
-    val tree = parser.program()
+    val folder = File("wacc_examples/valid")
+    val list = actionOnFiles(folder) { file ->
+        println(file.path)
+        val input = CharStreams.fromStream(file.inputStream())
+        val lexer = WaccLexer(input)
+        val tokens = CommonTokenStream(lexer)
+        val parser = WaccParser(tokens)
+        val tree = parser.program()
 
-    //check for syntax
-    val syntaxVisitor = SyntaxVisitor()
-    syntaxVisitor.visit(tree)
-    
-    val visitor = BuildAstVisitor()
-    val astRoot = visitor.visit(tree)
+        val visitor = BuildAstVisitor()
+        visitor.visit(tree)
+    }
+
     println()
+}
+
+fun <T> actionOnFiles(file: File, action: (File) -> T): List<T> {
+    var list = emptyList<T>()
+    if (file.isDirectory) {
+        for (subFile in file.listFiles()) {
+            list += actionOnFiles(subFile, action)
+        }
+    } else {
+        list += action(file)
+    }
+    return list
 }
