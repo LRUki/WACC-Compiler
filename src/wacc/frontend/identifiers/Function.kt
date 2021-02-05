@@ -6,5 +6,4 @@ import wacc.frontend.ast.AST
 class Function (val name: String,
                 val returnType: Identifier,
                 val parameters: List<Param>,
-                val symbolTable: SymbolTable,
-                val node: AST) : Identifier(Type.NULL, node)
+                val symbolTable: SymbolTable) : Identifier(Type.NULL)
