@@ -2,7 +2,7 @@ package wacc.frontend.ast
 
 interface ExprAST : RhsAST
 
-class BinOpExprAST(val binOp : BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST
+class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST
 
 enum class BinOp {
     MULT, DIV, MOD,
@@ -11,4 +11,10 @@ enum class BinOp {
     EQ, NEQ,
     AND,
     OR
+}
+
+class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST
+
+enum class UnOp {
+    NOT, MINUS, LEN, ORD, CHR
 }

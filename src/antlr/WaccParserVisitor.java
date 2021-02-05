@@ -180,11 +180,11 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParenExpr(WaccParser.ParenExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link WaccParser#unaryOper}.
+	 * Visit a parse tree produced by {@link WaccParser#unop}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitUnaryOper(WaccParser.UnaryOperContext ctx);
+	T visitUnop(WaccParser.UnopContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link WaccParser#binop1}.
 	 * @param ctx the parse tree

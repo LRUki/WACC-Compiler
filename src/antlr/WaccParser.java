@@ -30,7 +30,7 @@ public class WaccParser extends Parser {
 		RULE_program = 0, RULE_func = 1, RULE_paramList = 2, RULE_param = 3, RULE_stat = 4, 
 		RULE_assignLhs = 5, RULE_assignRhs = 6, RULE_argList = 7, RULE_pairElem = 8, 
 		RULE_type = 9, RULE_baseType = 10, RULE_arrayType = 11, RULE_pairType = 12, 
-		RULE_pairElemType = 13, RULE_expr = 14, RULE_unaryOper = 15, RULE_binop1 = 16, 
+		RULE_pairElemType = 13, RULE_expr = 14, RULE_unop = 15, RULE_binop1 = 16, 
 		RULE_binop2 = 17, RULE_binop3 = 18, RULE_binop4 = 19, RULE_binop5 = 20, 
 		RULE_binop6 = 21, RULE_arrayElem = 22, RULE_intLiter = 23, RULE_boolLiter = 24, 
 		RULE_strLiter = 25, RULE_charLiter = 26, RULE_arrayLiter = 27, RULE_pairLiter = 28, 
@@ -39,9 +39,9 @@ public class WaccParser extends Parser {
 		return new String[] {
 			"program", "func", "paramList", "param", "stat", "assignLhs", "assignRhs", 
 			"argList", "pairElem", "type", "baseType", "arrayType", "pairType", "pairElemType", 
-			"expr", "unaryOper", "binop1", "binop2", "binop3", "binop4", "binop5", 
-			"binop6", "arrayElem", "intLiter", "boolLiter", "strLiter", "charLiter", 
-			"arrayLiter", "pairLiter", "ident"
+			"expr", "unop", "binop1", "binop2", "binop3", "binop4", "binop5", "binop6", 
+			"arrayElem", "intLiter", "boolLiter", "strLiter", "charLiter", "arrayLiter", 
+			"pairLiter", "ident"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -1327,8 +1327,8 @@ public class WaccParser extends Parser {
 		}
 	}
 	public static class UnopExprContext extends ExprContext {
-		public UnaryOperContext unaryOper() {
-			return getRuleContext(UnaryOperContext.class,0);
+		public UnopContext unop() {
+			return getRuleContext(UnopContext.class,0);
 		}
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -1503,7 +1503,7 @@ public class WaccParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(212);
-				unaryOper();
+				unop();
 				setState(213);
 				expr(2);
 				}
@@ -1626,26 +1626,26 @@ public class WaccParser extends Parser {
 		return _localctx;
 	}
 
-	public static class UnaryOperContext extends ParserRuleContext {
+	public static class UnopContext extends ParserRuleContext {
 		public TerminalNode NOT() { return getToken(WaccParser.NOT, 0); }
 		public TerminalNode MINUS() { return getToken(WaccParser.MINUS, 0); }
 		public TerminalNode LEN() { return getToken(WaccParser.LEN, 0); }
 		public TerminalNode ORD() { return getToken(WaccParser.ORD, 0); }
 		public TerminalNode CHR() { return getToken(WaccParser.CHR, 0); }
-		public UnaryOperContext(ParserRuleContext parent, int invokingState) {
+		public UnopContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_unaryOper; }
+		@Override public int getRuleIndex() { return RULE_unop; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitUnaryOper(this);
+			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitUnop(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final UnaryOperContext unaryOper() throws RecognitionException {
-		UnaryOperContext _localctx = new UnaryOperContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_unaryOper);
+	public final UnopContext unop() throws RecognitionException {
+		UnopContext _localctx = new UnopContext(_ctx, getState());
+		enterRule(_localctx, 30, RULE_unop);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);

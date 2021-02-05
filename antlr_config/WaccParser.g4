@@ -62,10 +62,10 @@ expr: expr binop1 expr     #binopExpr
     | pairLiter            #singletonExpr
     | ident                #singletonExpr
     | arrayElem            #singletonExpr
-    | unaryOper expr       #unopExpr
+    | unop expr       #unopExpr
     | L_PAREN expr R_PAREN #parenExpr;
 
-unaryOper: NOT | MINUS | LEN | ORD | CHR;
+unop: NOT | MINUS | LEN | ORD | CHR;
 
 binop1: MULT | DIV | MOD;
 binop2: PLUS | MINUS;
