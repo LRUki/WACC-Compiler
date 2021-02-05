@@ -3,6 +3,8 @@ package wacc.frontend
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
 import wacc.frontend.ast.*
+import wacc.frontend.ast.assign.LhsAST
+import wacc.frontend.ast.assign.RhsAST
 
 class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
@@ -78,9 +80,9 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return ActionStatAST(action, visit(ctx.expr()) as ExprAST)
     }
 
-    override fun visitAssignStat(ctx: WaccParser.AssignStatContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+    override fun visitAssignStat(ctx: WaccParser.AssignStatContext): AST {
+        return AssignStatAST(visit(ctx.assignLhs()) as LhsAST,
+                visit(ctx.assignRhs()) as RhsAST)
     }
 
     override fun visitDeclareStat(ctx: WaccParser.DeclareStatContext): AST {
@@ -95,7 +97,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext?): AST {
-        TODO()
         return visitChildren(ctx)
     }
 
@@ -132,19 +133,26 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return BaseTypeAST(baseType)
     }
 
-    override fun visitArrayType(ctx: WaccParser.ArrayTypeContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+    override fun visitArrayType(ctx: WaccParser.ArrayTypeContext): AST {
+        val dimension = ctx.L_SQUARE().size
+        val innerType = visit(ctx.getChild(0)) as TypeAST
+        var output = innerType
+        for (i in 1..dimension) {
+            output = ArrayTypeAST(output)
+        }
+        return output
     }
 
-    override fun visitPairType(ctx: WaccParser.PairTypeContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+    override fun visitPairType(ctx: WaccParser.PairTypeContext): AST {
+        return PairTypeAST(visit(ctx.pairElemType(0)) as TypeAST, visit(ctx.pairElemType(1)) as TypeAST)
     }
 
-    override fun visitPairElemType(ctx: WaccParser.PairElemTypeContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+    override fun visitPairElemType(ctx: WaccParser.PairElemTypeContext): AST {
+        return if (ctx.PAIR() != null) {
+            InnerPairTypeAST()
+        } else {
+            visitChildren(ctx)
+        }
     }
 
     override fun visitUnopExpr(ctx: WaccParser.UnopExprContext): AST {

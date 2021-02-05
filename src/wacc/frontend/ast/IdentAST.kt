@@ -1,3 +1,5 @@
 package wacc.frontend.ast
 
-class IdentAST(val name: String) : ExprAST
+import wacc.frontend.ast.assign.LhsAST
+
+class IdentAST(val name: String) : ExprAST, LhsAST

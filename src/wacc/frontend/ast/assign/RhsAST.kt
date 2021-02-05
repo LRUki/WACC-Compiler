@@ -1,4 +1,6 @@
-package wacc.frontend.ast
+package wacc.frontend.ast.assign
+
+import wacc.frontend.ast.AST
 
 interface RhsAST : AST
 

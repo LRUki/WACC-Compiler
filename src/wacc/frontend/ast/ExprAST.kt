@@ -1,5 +1,7 @@
 package wacc.frontend.ast
 
+import wacc.frontend.ast.assign.RhsAST
+
 interface ExprAST : RhsAST
 
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST
