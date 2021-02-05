@@ -1,17 +1,7 @@
 package wacc.frontend.identifiers
 
-import kotlin.String
+import wacc.frontend.ast.AST
 
-open class Identifier(val type: Type) {
-//    open fun getBaseType(): Identifier {
-//        return this
-//    }
-}
+open class Identifier(val type: Type, node: AST)
 
-class Variable(type: Type) : Identifier(type)
-
-//ARGS(),
-//FUNC(),
-//STAT(),
-//PROGRAM(-1),
-//NONE();
+class Variable(type: Type, node: AST) : Identifier(type, node)

@@ -1,8 +1,10 @@
 package wacc.frontend.identifiers
 
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.AST
 
-class Function (private val name: String,
-                private val returnType: Identifier,
-                private val parameters: List<Param>,
-                private val symbolTable: SymbolTable)
+class Function (val name: String,
+                val returnType: Identifier,
+                val parameters: List<Param>,
+                val symbolTable: SymbolTable,
+                val node: AST) : Identifier(Type.NULL, node)

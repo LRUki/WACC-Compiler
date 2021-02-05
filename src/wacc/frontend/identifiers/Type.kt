@@ -1,6 +1,7 @@
 package wacc.frontend.identifiers
 
-/* Types should store something (...) */
+import wacc.frontend.ast.AST
+
 enum class Type(){
     INT,
     BOOL,
@@ -9,25 +10,14 @@ enum class Type(){
     PAIR,
     ARRAY,
     NULL
-//    PROGRAM
-//    STRING(),
-//    ARGS(),
-//    FUNC(),
-//    STAT(),
-//    NONE();
 }
 
-open class INT : Identifier(Type.INT)
-open class BOOL : Identifier(Type.BOOL)
-open class CHAR : Identifier(Type.CHAR)
+open class INT(node: AST) : Identifier(Type.INT, node)
+open class BOOL(node: AST) : Identifier(Type.BOOL, node)
+open class CHAR(node: AST) : Identifier(Type.CHAR, node)
+open class STRING(node: AST) : Identifier(Type.STRING, node)
 
-open class STRING : Identifier(Type.STRING)
-//open class StringType : ARRAY(Type.CHAR) {
-//    override fun getType(): Type {
-//        return Type.ARRAY
-//    }
-//}
 
-open class PAIR(val first: Identifier,   val second: Identifier) : Identifier(Type.PAIR)
-
-open class ARRAY(private val arrayType: Type, dimension: Int) : Identifier(Type.ARRAY)
+open class PAIR(node: AST) : Identifier(Type.PAIR, node)
+open class ARRAY(private val arrayType: Type, dimension: Int, node: AST) : Identifier(Type.ARRAY, node)
+class Param(val ident: Identifier, node: AST) : Identifier(ident.type, node)

@@ -24,8 +24,9 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
         var stat = visit(ctx.stat()) as StatAST
 
+        val astNode = ProgramAST(funcList, statToList(stat))
+//        astNode.check()
         val result = ProgramAST(funcList, statToList(stat))
-        result.check()
         return result
     }
 
@@ -94,9 +95,11 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitDeclareStat(ctx: WaccParser.DeclareStatContext): AST {
-        return DeclareStatAST(visit(ctx.type()) as TypeAST,
+        val result = DeclareStatAST(visit(ctx.type()) as TypeAST,
                 visit(ctx.ident()) as IdentAST,
                 visit(ctx.assignRhs()) as RhsAST)
+//        result.check()
+        return result;
     }
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
