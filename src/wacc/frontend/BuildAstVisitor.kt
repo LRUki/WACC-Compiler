@@ -12,8 +12,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         for (i in 1..ctx.childCount - 4) { // Read all func
             funcList = funcList + ctx.getChild(i).accept(this) as FuncAST
         }
-        val a = ctx.func(0)
-        visitChildren(a)
 
         return ProgramAST(funcList, ctx.getChild(ctx.childCount - 3).accept(this) as StatAST)
     }
