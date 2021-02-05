@@ -9,23 +9,7 @@ import java.io.File
 import java.lang.System.exit
 import kotlin.system.exitProcess
 
-fun main(){
-//    val input = CharStreams.fromStream(File("wacc_examples/invalid/syntaxErr/function/mutualRecursionNoReturn.wacc").inputStream())
-//    val input = CharStreams.fromStream(File("wacc_examples/invalid/syntaxErr/function/functionJunkAfterReturn.wacc").inputStream())
-//    val input = CharStreams.fromStream(File("wacc_examples/invalid/syntaxErr/function/functionConditionalNoReturn.wacc").inputStream())
-//    val input = CharStreams.fromStream(File("wacc_examples/invalid/syntaxErr/function/functionReturnInLoop.wacc").inputStream())
-//    val input = CharStreams.fromStream(File("wacc_examples/invalid/syntaxErr/function/functionNoReturn.wacc").inputStream())
-    val input = CharStreams.fromStream(File("wacc_examples/invalid/syntaxErr/variables/bigIntAssignment.wacc").inputStream())
-
-//    val input = CharStreams.fromStream(File("wacc_examples/valid/function/nested_functions/functionConditionalReturn.wacc").inputStream())
-    val lexer = WaccLexer(input)
-    val tokens = CommonTokenStream(lexer)
-    val parser = WaccParser(tokens)
-    val tree = parser.program()
-    val visitor = SyntaxVisitor()
-    visitor.visit(tree)
-}
-class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
+class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
 
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
         //check if function ends with return or exit
@@ -38,7 +22,7 @@ class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
                     && isExitOrReturn(elseLastStat)
         }
         if(!functionEndsWithExitOrReturn){
-            syntaxError()
+            syntaxError("Function missing exit or return")
         }
         return null
     }
@@ -47,14 +31,13 @@ class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
         try {
             (ctx.text).toInt()
         } catch (e: NumberFormatException) {
-            syntaxError()
+            syntaxError("Int out of bound")
         }
         return null
     }
 
-    private fun syntaxError() {
-        System.err.println("#syntax error#")
-        exit(100)
+    private fun syntaxError(message: String) {
+        throw IllegalArgumentException(message)
     }
 
     //checks if the given statement is EXIT or RETURN

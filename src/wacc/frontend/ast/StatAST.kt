@@ -21,10 +21,10 @@ enum class Action {
     FREE, RETURN, EXIT, PRINT, PRINTLN
 }
 
-class IfStatAST(val cond: ExprAST, val thenBody: StatAST, val elseBody: StatAST) : StatAST
+class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: List<StatAST>) : StatAST
 
-class WhileStatAST(val cond: ExprAST, val body: StatAST) : StatAST
+class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST
 
-class BlockStatAST(val body: StatAST) : StatAST
+class BlockStatAST(val body: List<StatAST>) : StatAST
 
 class MultiStatAST(val stats: List<StatAST>) : StatAST

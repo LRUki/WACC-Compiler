@@ -24,7 +24,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
         var stat = visit(ctx.stat()) as StatAST
 
-        return ProgramAST(funcList, stat)
+        return ProgramAST(funcList, statToList(stat))
     }
 
     override fun visitFunc(ctx: WaccParser.FuncContext): AST {
@@ -37,7 +37,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return FuncAST(visit(ctx.type()) as TypeAST,
                 visit(ctx.ident()) as IdentAST,
                 paramList,
-                visit(ctx.stat()) as StatAST
+                statToList(visit(ctx.stat()) as StatAST)
         )
     }
 
@@ -51,12 +51,12 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitIfStat(ctx: WaccParser.IfStatContext): AST {
         return IfStatAST(visit(ctx.expr()) as ExprAST,
-                visit(ctx.stat(0)) as StatAST,
-                visit(ctx.stat(1)) as StatAST)
+                statToList(visit(ctx.stat(0)) as StatAST),
+                statToList(visit(ctx.stat(1)) as StatAST))
     }
 
     override fun visitBlockStat(ctx: WaccParser.BlockStatContext): AST {
-        return BlockStatAST(visit(ctx.stat()) as StatAST)
+        return BlockStatAST(statToList(visit(ctx.stat()) as StatAST))
     }
 
     override fun visitMultiStat(ctx: WaccParser.MultiStatContext): AST {
@@ -99,7 +99,15 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
         return WhileStatAST(visit(ctx.expr()) as ExprAST,
-                visit(ctx.stat()) as StatAST)
+                statToList(visit(ctx.stat()) as StatAST))
+    }
+
+    private fun statToList(stat: StatAST): List<StatAST> {
+        return if (stat is MultiStatAST) {
+            stat.stats
+        } else {
+            listOf(stat)
+        }
     }
 
     override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext?): AST {
