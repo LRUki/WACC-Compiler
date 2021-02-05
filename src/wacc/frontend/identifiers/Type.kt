@@ -12,12 +12,12 @@ enum class Type(){
     NULL
 }
 
-open class INT(node: AST) : Identifier(Type.INT, node)
-open class BOOL(node: AST) : Identifier(Type.BOOL, node)
-open class CHAR(node: AST) : Identifier(Type.CHAR, node)
-open class STRING(node: AST) : Identifier(Type.STRING, node)
+open class INT() : Identifier(Type.INT)
+open class BOOL() : Identifier(Type.BOOL)
+open class CHAR() : Identifier(Type.CHAR)
+open class STRING() : Identifier(Type.STRING)
 
 
-open class PAIR(node: AST) : Identifier(Type.PAIR, node)
+open class PAIR() : Identifier(Type.PAIR)
 open class ARRAY(private val arrayType: Type, dimension: Int, node: AST) : Identifier(Type.ARRAY, node)
 class Param(val ident: Identifier, node: AST) : Identifier(ident.type, node)

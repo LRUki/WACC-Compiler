@@ -4,7 +4,11 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
+import wacc.frontend.ast.expression.BoolLiterAST
+import wacc.frontend.ast.expression.CharLiterAST
+import wacc.frontend.ast.expression.IntLiterAST
 import java.io.File
+import wacc.frontend.identifiers.*
 
 fun main() {
 //    val input = CharStreams.fromStream(System.`in`)
@@ -23,6 +27,16 @@ fun main() {
     }
 
     println()
+}
+fun createTopLevelST(): SymbolTable {
+    val topSymbolTable = SymbolTable(null)
+    topSymbolTable.add("int", INT())
+    topSymbolTable.add("char", CHAR())
+    topSymbolTable.add("bool", BOOL())
+    topSymbolTable.add("string", STRING())
+    topSymbolTable.add("pair", PAIR())
+
+    return topSymbolTable
 }
 
 fun <T> actionOnFiles(file: File, action: (File) -> T): List<T> {
