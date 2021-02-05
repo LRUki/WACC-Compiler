@@ -49,21 +49,21 @@ pairElemType: baseType
             | arrayType
             | PAIR ;
             
-expr: expr binop1 expr    
-    | expr binop2 expr    
-    | expr binop3 expr    
-    | expr binop4 expr    
-    | expr binop5 expr    
-    | expr binop6 expr    
-    | intLiter 
-    | boolLiter
-    | charLiter
-    | strLiter
-    | pairLiter
-    | ident
-    | arrayElem
-    | unaryOper expr
-    | L_PAREN expr R_PAREN ;
+expr: expr binop1 expr     #binopExpr
+    | expr binop2 expr     #binopExpr
+    | expr binop3 expr     #binopExpr
+    | expr binop4 expr     #binopExpr
+    | expr binop5 expr     #binopExpr
+    | expr binop6 expr     #binopExpr
+    | intLiter             #singletonExpr
+    | boolLiter            #singletonExpr
+    | charLiter            #singletonExpr
+    | strLiter             #singletonExpr
+    | pairLiter            #singletonExpr
+    | ident                #singletonExpr
+    | arrayElem            #singletonExpr
+    | unaryOper expr       #unopExpr
+    | L_PAREN expr R_PAREN #parenExpr;
 
 unaryOper: NOT | MINUS | LEN | ORD | CHR;
 

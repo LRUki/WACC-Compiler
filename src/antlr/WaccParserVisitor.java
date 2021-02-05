@@ -152,11 +152,33 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPairElemType(WaccParser.PairElemTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link WaccParser#expr}.
+	 * Visit a parse tree produced by the {@code unopExpr}
+	 * labeled alternative in {@link WaccParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpr(WaccParser.ExprContext ctx);
+	T visitUnopExpr(WaccParser.UnopExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code singletonExpr}
+	 * labeled alternative in {@link WaccParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSingletonExpr(WaccParser.SingletonExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code binopExpr}
+	 * labeled alternative in {@link WaccParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinopExpr(WaccParser.BinopExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code parenExpr}
+	 * labeled alternative in {@link WaccParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParenExpr(WaccParser.ParenExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link WaccParser#unaryOper}.
 	 * @param ctx the parse tree

@@ -2,18 +2,17 @@ package wacc.frontend
 
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
-import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.ast.*
 
 class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitProgram(ctx: WaccParser.ProgramContext): AST {
         var funcList = emptyList<FuncAST>()
-        for (i in 1..ctx.childCount - 4) { // Read all func
-            funcList = funcList + ctx.getChild(i).accept(this) as FuncAST
+        for (func in ctx.func()) { // Read all func, skip "begin", "end" and EOF
+            funcList = funcList + visit(func) as FuncAST
         }
 
-        return ProgramAST(funcList, ctx.getChild(ctx.childCount - 3).accept(this) as StatAST)
+        return ProgramAST(funcList, visit(ctx.stat()) as StatAST)
     }
 
     override fun visitFunc(ctx: WaccParser.FuncContext?): AST {
@@ -32,8 +31,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return visitChildren(ctx)
     }
 
-    override fun visitIfStat(ctx: WaccParser.IfStatContext?): AST {
-        return IfStatAST()
+    override fun visitIfStat(ctx: WaccParser.IfStatContext): AST {
+        return IfStatAST(visit(ctx.expr()) as ExprAST,
+                visit(ctx.stat(0)) as StatAST,
+                visit(ctx.stat(1)) as StatAST)
     }
 
     override fun visitBlockStat(ctx: WaccParser.BlockStatContext?): AST {
@@ -41,16 +42,24 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitMultiStat(ctx: WaccParser.MultiStatContext): AST {
-        return MultiStatAST(ctx.getChild(0).accept(this) as StatAST,
-                ctx.getChild(2).accept(this) as StatAST)
+        return MultiStatAST(visit(ctx.stat(0)) as StatAST,
+                visit(ctx.stat(1)) as StatAST)
     }
 
     override fun visitSkipStat(ctx: WaccParser.SkipStatContext?): AST {
         return visitChildren(ctx)
     }
 
-    override fun visitActionStat(ctx: WaccParser.ActionStatContext?): AST {
-        return visitChildren(ctx)
+    override fun visitActionStat(ctx: WaccParser.ActionStatContext): AST {
+        val action = when {
+            ctx.FREE() != null -> Action.FREE
+            ctx.RETURN() != null -> Action.RETURN
+            ctx.EXIT() != null -> Action.EXIT
+            ctx.PRINT() != null -> Action.PRINT
+            ctx.PRINTLN() != null -> Action.PRINTLN
+            else -> throw RuntimeException()
+        }
+        return ActionStatAST(action, visit(ctx.expr()) as ExprAST)
     }
 
     override fun visitAssignStat(ctx: WaccParser.AssignStatContext?): AST {
@@ -58,9 +67,9 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitDeclareStat(ctx: WaccParser.DeclareStatContext): AST {
-        return DeclareStatAST(ctx.getChild(0).accept(this) as TypeAST,
-                ctx.getChild(1).accept(this) as IdentAST,
-                ctx.getChild(3).accept(this) as RhsAST)
+        return DeclareStatAST(visit(ctx.type()) as TypeAST,
+                visit(ctx.ident()) as IdentAST,
+                visit(ctx.assignRhs()) as RhsAST)
     }
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext?): AST {
@@ -72,15 +81,11 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitAssignRhs(ctx: WaccParser.AssignRhsContext): AST {
-        if (ctx.getChild(0).text == "newpair") {
-
-        } else if  (ctx.getChild(0).text == "newpair") {
-
-        } else {
-            return visitChildren(ctx)
+        return when {
+            ctx.NEWPAIR() != null -> TODO("newpair")
+            ctx.CALL() != null -> TODO("call")
+            else -> visitChildren(ctx)
         }
-
-        return visitChildren(ctx)
     }
 
     override fun visitArgList(ctx: WaccParser.ArgListContext?): AST {
@@ -96,11 +101,11 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitBaseType(ctx: WaccParser.BaseTypeContext): AST {
-        val baseType = when(ctx.text) {
-            "int" -> BaseType.INT
-            "bool" -> BaseType.BOOL
-            "char" -> BaseType.CHAR
-            "string" -> BaseType.STRING
+        val baseType = when {
+            ctx.INT() != null -> BaseType.INT
+            ctx.BOOL() != null -> BaseType.BOOL
+            ctx.CHAR() != null -> BaseType.CHAR
+            ctx.STRING() != null -> BaseType.STRING
             else -> throw RuntimeException()
         }
         return BaseTypeAST(baseType)
@@ -118,50 +123,41 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return visitChildren(ctx)
     }
 
-    override fun visitExpr(ctx: WaccParser.ExprContext): AST {
-        if (ctx.childCount == 3) {
-            if (ctx.getChild(0).text == "(") {
-                return ctx.getChild(1).accept(this)
-            } else {
-                val binop = when(ctx.getChild(1).text) {
-                    "+" -> BinOp.PLUS
-                    "*" -> BinOp.MULT
-                    else -> throw RuntimeException()
-                }
-                return BinOpExprAST(binop,
-                        ctx.getChild(0).accept(this) as ExprAST,
-                        ctx.getChild(2).accept(this) as ExprAST)
-            }
-        } else {
-            return visitChildren(ctx)
+    override fun visitUnopExpr(ctx: WaccParser.UnopExprContext?): AST? {
+        return visitChildren(ctx)
+    }
+
+    override fun visitSingletonExpr(ctx: WaccParser.SingletonExprContext?): AST? {
+        return visitChildren(ctx)
+    }
+
+    override fun visitBinopExpr(ctx: WaccParser.BinopExprContext): AST? {
+        val binop = when (ctx.getChild(1).text) {
+            "+" -> BinOp.PLUS
+            "-" -> BinOp.MINUS;
+            "*" -> BinOp.MULT
+            "/" -> BinOp.DIV
+            "%" -> BinOp.MOD
+            ">=" -> BinOp.GTE
+            ">" -> BinOp.GT
+            "<=" -> BinOp.LTE
+            "<" -> BinOp.LT
+            "==" -> BinOp.EQ
+            "!=" -> BinOp.NEQ
+            "&&" -> BinOp.AND
+            "||" -> BinOp.OR
+            else -> throw RuntimeException()
         }
+        return BinOpExprAST(binop,
+                visit(ctx.expr(0)) as ExprAST,
+                visit(ctx.expr(1)) as ExprAST)
+    }
+
+    override fun visitParenExpr(ctx: WaccParser.ParenExprContext): AST? {
+        return visit(ctx.expr())
     }
 
     override fun visitUnaryOper(ctx: WaccParser.UnaryOperContext?): AST {
-        return visitChildren(ctx)
-    }
-
-    override fun visitBinop1(ctx: WaccParser.Binop1Context): AST {
-        return visitChildren(ctx)
-    }
-
-    override fun visitBinop2(ctx: WaccParser.Binop2Context): AST {
-        return visitChildren(ctx)
-    }
-
-    override fun visitBinop3(ctx: WaccParser.Binop3Context): AST {
-        return visitChildren(ctx)
-    }
-
-    override fun visitBinop4(ctx: WaccParser.Binop4Context): AST {
-        return visitChildren(ctx)
-    }
-
-    override fun visitBinop5(ctx: WaccParser.Binop5Context): AST {
-        return visitChildren(ctx)
-    }
-
-    override fun visitBinop6(ctx: WaccParser.Binop6Context): AST {
         return visitChildren(ctx)
     }
 
@@ -177,8 +173,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return visitChildren(ctx)
     }
 
-    override fun visitStrLiter(ctx: WaccParser.StrLiterContext?): AST {
-        return visitChildren(ctx)
+    override fun visitStrLiter(ctx: WaccParser.StrLiterContext): AST {
+        val text = ctx.text
+        val trimmedText = text.substring(1, text.length - 1)
+        return return StrLiterAST(trimmedText)
     }
 
     override fun visitCharLiter(ctx: WaccParser.CharLiterContext?): AST {

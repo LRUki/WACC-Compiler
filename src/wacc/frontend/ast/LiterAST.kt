@@ -1,3 +1,7 @@
 package wacc.frontend.ast
 
-class IntLiterAST(val num: Int): ExprAST
+interface LiterAST: ExprAST
+
+class IntLiterAST(val value: Int): LiterAST
+
+class StrLiterAST(val value: String): LiterAST
