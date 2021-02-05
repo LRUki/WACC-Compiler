@@ -42,9 +42,8 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return visitChildren(ctx)
     }
 
-    override fun visitReadStat(ctx: WaccParser.ReadStatContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+    override fun visitReadStat(ctx: WaccParser.ReadStatContext): AST {
+        return ReadStatAST(visit(ctx.assignLhs()) as LhsAST)
     }
 
     override fun visitIfStat(ctx: WaccParser.IfStatContext): AST {
@@ -64,8 +63,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitSkipStat(ctx: WaccParser.SkipStatContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+        return SkipStatAST()
     }
 
     override fun visitActionStat(ctx: WaccParser.ActionStatContext): AST {
@@ -91,9 +89,9 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                 visit(ctx.assignRhs()) as RhsAST)
     }
 
-    override fun visitWhileStat(ctx: WaccParser.WhileStatContext?): AST {
-        TODO()
-        return visitChildren(ctx)
+    override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
+        return WhileStatAST(visit(ctx.expr()) as ExprAST,
+                visit(ctx.stat()) as StatAST)
     }
 
     override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext?): AST {
