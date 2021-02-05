@@ -10,11 +10,12 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
     var childSymbolTables: MutableList<SymbolTable> = mutableListOf()
 
     // Creating a new symbol table adds it to the parent
-    // symbol table's children (if parent exists)
+    // symbol table's children list (if parent exists)
     init {
         encSymbolTable?.addChildSymbolTable(this)
     }
 
+    // Gets the top most symbol table
     private fun getTopSymbolTable(): SymbolTable {
         var currentSymbolTable: SymbolTable = this
         while (currentSymbolTable.encSymbolTable != null) {

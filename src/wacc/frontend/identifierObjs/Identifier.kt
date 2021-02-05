@@ -1,7 +1,5 @@
 package wacc.frontend.identifierObjs
 
-
-
 open class Identifier(private val type: Type) {
 
     open fun getType(): Type {
@@ -10,8 +8,6 @@ open class Identifier(private val type: Type) {
     open fun getBaseType(): Identifier {
         return this
     }
-
-
 }
 
 class IDENT(type: Type, private val name: String) : Identifier(type) {
