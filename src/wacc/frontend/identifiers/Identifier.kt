@@ -1,21 +1,14 @@
 package wacc.frontend.identifiers
 
-open class Identifier(private val type: Type) {
+import kotlin.String
 
-    open fun getType(): Type {
-        return type
-    }
-    open fun getBaseType(): Identifier {
-        return this
-    }
+open class Identifier(val type: Type) {
+//    open fun getBaseType(): Identifier {
+//        return this
+//    }
 }
 
-class IDENT(type: Type, private val name: String) : Identifier(type) {
-    override fun toString(): String {
-        return name
-    }
-}
-
+class Variable(type: Type) : Identifier(type)
 
 //ARGS(),
 //FUNC(),
