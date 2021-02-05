@@ -16,8 +16,10 @@ fun main() {
     val parser = WaccParser(tokens)
     val tree = parser.program()
 
-//    println(tree.toStringTree())
-
+    //check for syntax
+    val syntaxVisitor = SyntaxVisitor()
+    syntaxVisitor.visit(tree)
+    
     val visitor = BuildAstVisitor()
     val astRoot = visitor.visit(tree)
     println()
