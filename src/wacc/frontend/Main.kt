@@ -10,7 +10,7 @@ fun main() {
     println("Input: ")
 
 //    val input = CharStreams.fromStream(System.`in`)
-    val input = CharStreams.fromStream(File("wacc_examples/valid/expressions/intExpr1.wacc").inputStream())
+    val input = CharStreams.fromStream(File("wacc_examples/valid/expressions/notequalsExpr.wacc").inputStream())
     val lexer = WaccLexer(input)
     val tokens = CommonTokenStream(lexer)
     val parser = WaccParser(tokens)

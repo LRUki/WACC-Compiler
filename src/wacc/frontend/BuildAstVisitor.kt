@@ -12,7 +12,17 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             funcList = funcList + visit(func) as FuncAST
         }
 
-        return ProgramAST(funcList, visit(ctx.stat()) as StatAST)
+        var stat = visit(ctx.stat()) as StatAST
+
+        return ProgramAST(funcList, flatten(stat))
+    }
+
+    private fun flatten(stat: StatAST): List<StatAST> {
+        return if (stat is MultiStatAST) {
+            flatten(stat.stat1) + flatten(stat.stat2)
+        } else {
+            listOf(stat)
+        }
     }
 
     override fun visitFunc(ctx: WaccParser.FuncContext?): AST {
