@@ -6,31 +6,31 @@ options {
 
 program: BEGIN func* stat END EOF;
 
-func: type IDENT L_PAREN paramList? R_PAREN IS stat END;
+func: type ident L_PAREN paramList? R_PAREN IS stat END;
 
 paramList: param (COMMA param)*;
 
-param: type IDENT;
+param: type ident;
 
-stat: SKIP_TOKEN
-      | type IDENT ASSIGN assignRhs
-      | assignLhs ASSIGN assignRhs
-      | READ assignLhs
-      | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr
-      | IF expr THEN stat ELSE stat FI
-      | WHILE expr DO stat DONE
-      | BEGIN stat END
-      | stat SEMICOLON stat;
+stat: SKIP_TOKEN                                      #skipStat
+      | type ident ASSIGN assignRhs                   #declareStat
+      | assignLhs ASSIGN assignRhs                    #assignStat
+      | READ assignLhs                                #readStat
+      | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
+      | IF expr THEN stat ELSE stat FI                #ifStat
+      | WHILE expr DO stat DONE                       #whileStat
+      | BEGIN stat END                                #blockStat
+      | stat SEMICOLON stat                           #multiStat;
 
-assignLhs: IDENT
+assignLhs: ident
          | arrayElem
          | pairElem ;
 
 assignRhs: expr
          | arrayLiter
-         | NEWPAIR L_PAREN expr COMMA expr R_PAREN 
-         | pairElem 
-         | CALL IDENT L_PAREN argList? R_PAREN ;
+         | NEWPAIR L_PAREN expr COMMA expr R_PAREN
+         | pairElem
+         | CALL ident L_PAREN argList? R_PAREN;
 
 argList: expr (COMMA expr)* ;
 
@@ -49,24 +49,32 @@ pairElemType: baseType
             | arrayType
             | PAIR ;
             
-expr: intLiter
-    | boolLiter
-    | charLiter
-    | strLiter
-    | pairLiter
-    | IDENT
-    | arrayElem
-    | unaryOper expr
-    | expr binaryOper expr
-    | L_PAREN expr R_PAREN ;
+expr: expr binop1 expr     #binopExpr
+    | expr binop2 expr     #binopExpr
+    | expr binop3 expr     #binopExpr
+    | expr binop4 expr     #binopExpr
+    | expr binop5 expr     #binopExpr
+    | expr binop6 expr     #binopExpr
+    | intLiter             #singletonExpr
+    | boolLiter            #singletonExpr
+    | charLiter            #singletonExpr
+    | strLiter             #singletonExpr
+    | pairLiter            #singletonExpr
+    | ident                #singletonExpr
+    | arrayElem            #singletonExpr
+    | unop expr            #unopExpr
+    | L_PAREN expr R_PAREN #parenExpr;
 
-unaryOper: NOT | MINUS | LEN | ORD | CHR;
+unop: NOT | MINUS | LEN | ORD | CHR;
 
-binaryOper: MULT | DIV | MOD | PLUS
-            | MINUS | GT | GTE | LT | LTE
-            | EQ | NEQ | AND | OR ;
+binop1: MULT | DIV | MOD;
+binop2: PLUS | MINUS;
+binop3: LTE | LT | GTE | GT;
+binop4: EQ  | NEQ;
+binop5: AND;
+binop6: OR;
 
-arrayElem: IDENT (L_SQUARE expr R_SQUARE)+ ;
+arrayElem: ident (L_SQUARE expr R_SQUARE)+ ;
 
 intLiter: (PLUS | MINUS)? NUMBER ;
 
@@ -80,6 +88,5 @@ arrayLiter: L_SQUARE (expr (COMMA expr)*)? R_SQUARE ;
 
 pairLiter: NULL ;
 
-// // EOF indicates that the program must consume to the end of the input.
-// prog: (expr)*  EOF ;
+ident: IDENT ;
 
