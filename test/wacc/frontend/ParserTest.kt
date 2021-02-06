@@ -14,7 +14,7 @@ class ParserTest {
 
 
     @Test
-    fun lexicalAnalyserGivesCorrectTokens (){
+    fun `lexical analyser gives correct tokens`() {
         val input = CharStreams.fromString("begin skip end ")
         val lexer = WaccLexer(input)
         assertThat(lexer.nextToken().text, `is`("begin"))
