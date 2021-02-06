@@ -14,6 +14,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
 //        get types of exp1 and exp2
 //        check types same and either bool or int
 //        type = ---
+        TODO()
     }
 }
 

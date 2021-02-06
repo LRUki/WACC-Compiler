@@ -14,11 +14,12 @@ class SkipStatAST : StatAST
 
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST {
     override fun check(): Boolean {
-        val isTypeCorrect = SymbolTable.currentST.lookupAll(getTypeString(type))
+//        val isTypeCorrect = SymbolTable.currentST.lookupAll(getTypeString(type))
 
         val identName = SymbolTable.currentST.lookup(ident.name)
         val rhsType = rhs.check()
-
+        TODO()
+    }
 }
 
 class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST
