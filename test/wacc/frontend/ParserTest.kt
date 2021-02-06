@@ -1,11 +1,12 @@
 package wacc.frontend
 
+import TestCompiler
 import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
 import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert.assertThat
+import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
 
@@ -46,10 +47,11 @@ class ParserTest {
     @Test
     fun validFilesReturn0ExitCode(){
     File("wacc_examples/valid").walkTopDown().forEach {
-        if(it.isFile && it.endsWith(".wacc")){
-
+        if(it.path.endsWith("wacc")){
+            val result = TestCompiler(it.path).testCompile()
+            val exitCode = result?.exitCode
+            assertTrue(exitCode == 0)
         }
-
     }
             //.walkTopDown().forEach {
 //        if (it.path.endsWith(".wacc")) {

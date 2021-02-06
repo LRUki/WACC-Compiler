@@ -3,6 +3,7 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
+import wacc.frontend.BuildAstVisitor
 import wacc.frontend.exceptions.SemanticException
 import wacc.frontend.exceptions.SyntaxException
 
@@ -16,10 +17,12 @@ class TestCompiler(private val fileName: String){
         val lexer = WaccLexer(input)
         val tokens = CommonTokenStream(lexer)
         val parser = WaccParser(tokens)
+        val visitor = BuildAstVisitor()
         var exitCode = 0
         var exception: Exception? = null
-        val ast = try {
-            //analysis
+        try {
+            val tree = parser.program()
+            val ast = visitor.visit(tree)
         }catch (syntax: SyntaxException) {
             System.err.println("Syntax Error in file: fileName")
             exception = syntax
@@ -35,7 +38,7 @@ class TestCompiler(private val fileName: String){
             System.err.println("An exception was thrown that was not syntax or semantic")
             exitCode = 1
         }
-        println("No Errors in file: fileName")
+        println("No Errors in file (0 exit code) : $fileName")
         return CompilerResult(0, null)
     }
 
