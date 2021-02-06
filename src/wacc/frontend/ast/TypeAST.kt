@@ -21,6 +21,15 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST {
     }
 }
 
-class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST
+class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST {
+    override fun check(): Boolean {
+        TODO("Not yet implemented")
+    }
+}
 
 class InnerPairTypeAST : TypeAST // For pairElemType: baseType PAIR ;
+{
+    override fun check(): Boolean {
+        TODO("Not yet implemented")
+    }
+}
