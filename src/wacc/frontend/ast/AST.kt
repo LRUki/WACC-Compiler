@@ -1,6 +1,5 @@
 package wacc.frontend.ast
 
-interface AST
-//{
-//     fun check(): Boolean
-//}
+interface AST {
+     fun check(): Boolean
+}

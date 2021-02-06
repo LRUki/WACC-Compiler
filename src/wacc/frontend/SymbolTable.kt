@@ -1,22 +1,20 @@
 package wacc.frontend
 
+import wacc.frontend.ast.TypeAST
 import wacc.frontend.identifiers.Identifier
 import java.util.*
 
 class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
-    // A symbol table consists of a HashMap and a list of children.
-    private val currSymbolTable: HashMap<String, Identifier> = HashMap()
-    var childSymbolTables: MutableList<SymbolTable> = mutableListOf()
-
-    // Creating a new symbol table adds it to the parent
-    // symbol table's children list (if parent exists)
-    init {
-        encSymbolTable?.addChildSymbolTable(this)
+    companion object {
+        lateinit var currentST : SymbolTable
     }
 
+    // A symbol table consists of a HashMap and a list of children.
+    val currSymbolTable: HashMap<String, Identifier> = HashMap()
+
     // Gets the top most symbol table
-    private fun getTopSymbolTable(): SymbolTable {
+    fun getTopSymbolTable(): SymbolTable {
         var currentSymbolTable: SymbolTable = this
         while (currentSymbolTable.encSymbolTable != null) {
             currentSymbolTable = currentSymbolTable.encSymbolTable!!
@@ -24,7 +22,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return currentSymbolTable
     }
 
-    private fun lookup(name:String) : Optional<Identifier> {
+    fun lookup(name:String) : Optional<Identifier> {
         val value = currSymbolTable[name]
         if (value != null) {
             return Optional.of(value)
@@ -32,7 +30,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return Optional.empty()
     }
 
-    private fun lookupAll(name:String) : Optional<Identifier> {
+    fun lookupAll(name:String) : Optional<Identifier> {
         val value = lookup(name)
         if (value.isEmpty){
             if (encSymbolTable != null) {
@@ -46,7 +44,4 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         currSymbolTable[name] = obj
     }
 
-    private fun addChildSymbolTable(child:SymbolTable) {
-        childSymbolTables.add(child)
-    }
 }

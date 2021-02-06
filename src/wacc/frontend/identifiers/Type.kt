@@ -19,5 +19,9 @@ open class STRING() : Identifier(Type.STRING)
 
 
 open class PAIR() : Identifier(Type.PAIR)
-open class ARRAY(private val arrayType: Type, dimension: Int, node: AST) : Identifier(Type.ARRAY, node)
+open class ARRAY(arrayType: Type, val dimension: Int) : Identifier(arrayType) {
+    override fun isArray() : Boolean {
+        return true
+    }
+}
 class Param(val ident: Identifier, node: AST) : Identifier(ident.type, node)
