@@ -18,7 +18,8 @@ test-frontend:
   script:
     - echo "Testing the front end"
     - make clean all
-    - ./gradlew test
+    - echo "Testing syntax"
+    - ./gradlew test --tests wacc.frontend.SyntaxTest
     # test lexing
     # test parsing
     # test semantics
