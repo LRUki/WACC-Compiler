@@ -1,40 +1,8 @@
 package wacc.frontend
-import antlr.WaccLexer
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
-import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CommonTokenStream
-import java.io.File
-import java.lang.Exception
-import java.lang.System.exit
-import java.io.PrintStream
 
-fun main(){
-    //overrides the printstream to list for stand error and throw exception
-    class CustomPrintStream(out: PrintStream?) : PrintStream(out) {
-        override fun print(s: String) {
-            throw Exception("Syntax failure!")
-        }
-    }
-
-    System.setErr(CustomPrintStream(System.err));
-    val folder = File("wacc_examples/invalid/syntaxErr")
-    val list = actionOnFiles(folder) { file ->
-        val input = CharStreams.fromStream(file.inputStream())
-        val lexer = WaccLexer(input)
-        try{
-            val tokens = CommonTokenStream(lexer)
-            val parser = WaccParser(tokens)
-            val tree = parser.program()
-            val syntaxVisitor = SyntaxVisitor()
-            syntaxVisitor.visit(tree)
-            System.out.println("shouldn't reach here!" + file.path)
-        }catch(e:Exception){
-            println(file.path + " syntax failure as expected!")
-        }
-    }
-}
-class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
+class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
         //check if function ends with return or exit
         val lastStat: WaccParser.StatContext = getLastStat(ctx.stat())
@@ -65,8 +33,6 @@ class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
     private fun syntaxError(message: String) {
         throw IllegalArgumentException(message)
     }
-
-
 
     //recursively search for the last statement
     private fun getLastStat(stat: WaccParser.StatContext): WaccParser.StatContext {

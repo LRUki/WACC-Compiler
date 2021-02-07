@@ -16,8 +16,8 @@ fun main() {
         val tokens = CommonTokenStream(lexer)
         val parser = WaccParser(tokens)
         val tree = parser.program()
-        val syntaxVisitor = SyntaxVisitor()
-        syntaxVisitor.visit(tree)
+        val checkSyntaxVisitor = CheckSyntaxVisitor()
+        checkSyntaxVisitor.visit(tree)
         val visitor = BuildAstVisitor()
         val ast = visitor.visit(tree)
         ast
