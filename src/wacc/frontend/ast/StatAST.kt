@@ -1,10 +1,13 @@
 package wacc.frontend.ast
 
 import wacc.frontend.*
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.pair.PairElemAST
+import java.util.*
 
 interface StatAST : AST
 
@@ -39,7 +42,30 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST): S
 
 class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
     override fun check(): Boolean {
-        TODO("Not yet implemented")
+        lhs.check()
+        rhs.check()
+        val leftType = lhs.getRealType()
+        val rightType = rhs.getRealType()
+        var identifiable: Optional<Identifiable> = Optional.empty()
+        if(lhs is IdentAST){
+            identifiable = SymbolTable.currentST.lookupAll(lhs.name)
+        }
+        if(lhs is ArrayElemAST){
+            identifiable = SymbolTable.currentST.lookupAll(lhs.ident.name)
+        }
+        if(lhs is PairElemAST){
+            //nothing needs doing
+        }
+        if(identifiable.isPresent){
+            if(!leftType.equals(rightType)){
+                println("Types $leftType and $rightType are not equal.")
+                println("Assignment cannot occur.")
+                return false;
+            }
+            return true;
+        }
+        println("Left hand side has not been declared previously in the program.")
+        return false;
     }
 }
 
