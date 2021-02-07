@@ -7,6 +7,6 @@ import wacc.frontend.ast.assign.LhsAST
 
 class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>): ExprAST, LhsAST {
     override fun getRealType(): TypeAST {
-        TODO("Not yet implemented")
+        return ident.getRealType()
     }
 }

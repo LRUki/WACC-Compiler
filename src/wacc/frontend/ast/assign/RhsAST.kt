@@ -1,6 +1,7 @@
 package wacc.frontend.ast.assign
 
 import wacc.frontend.ast.AST
+import wacc.frontend.ast.PairTypeAST
 import wacc.frontend.ast.TypeAST
 import wacc.frontend.ast.Typed
 import wacc.frontend.ast.expression.ExprAST
@@ -14,7 +15,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
     }
 
     override fun getRealType(): TypeAST {
-        TODO("Not yet implemented")
+        return PairTypeAST(fst.getRealType(), snd.getRealType())
     }
 
 }
@@ -25,7 +26,8 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST {
     }
 
     override fun getRealType(): TypeAST {
-        TODO("Not yet implemented")
+        return ident.getRealType()
+        //Look up in the top level symbol table for the function return type
     }
 
 }

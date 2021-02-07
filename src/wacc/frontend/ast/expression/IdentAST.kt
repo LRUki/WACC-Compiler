@@ -13,6 +13,6 @@ class IdentAST(val name: String) : ExprAST, LhsAST {
     }
 
     override fun getRealType(): TypeAST {
-        TODO("Not yet implemented")
+        TODO("Symbol table lookup of name from current scope upward")
     }
 }

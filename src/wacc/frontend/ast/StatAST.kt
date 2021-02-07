@@ -20,7 +20,7 @@ class SkipStatAST : StatAST {
 //j `newpair' `(' hexpri `,' hexpri `)'
 //j hpair-elemi
 //j `call' hidenti `(' harg-listi? `)'
-class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable {
+class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST): StatAST, Identifiable {
     override fun check(): Boolean {
         rhs.check()
 //        val rhsType = getRealType(rhs)
