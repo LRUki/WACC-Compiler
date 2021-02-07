@@ -45,24 +45,37 @@ class ParserTest {
 //    }
 
     @Test
-    fun validFilesReturn0ExitCode(){
+    fun validFilesReturnExitCode0(){
     File("wacc_examples/valid").walkTopDown().forEach {
-        if(it.path.endsWith("wacc")){
+        if (it.path.endsWith("wacc")) {
             val result = TestCompiler(it.path).testCompile()
             val exitCode = result?.exitCode
             assertTrue(exitCode == 0)
+            }
         }
     }
-            //.walkTopDown().forEach {
-//        if (it.path.endsWith(".wacc")) {
-//            val result = CompilerEmulator(it, PARSE_ONLY ,PrintStream(NullOutputStream())).run()
-//            val exitCode = result.exitCode
-//            if (it.path.contains("syntaxErr")) {
+
+//    @Test
+//    fun filesWithSyntaxErrorReturnExitCode100() {
+//    File("wacc_examples/invalid/syntaxErr").walkTopDown().forEach {
+//            if (it.path.endsWith("wacc")) {
+//                val result = TestCompiler(it.path).testCompile()
+//                val exitCode = result?.exitCode
 //                assertTrue(exitCode == 100)
-//            } else {
-//                assertTrue(exitCode == 0 || exitCode == 200)
 //            }
 //        }
 //    }
-    }
+
+//    @Test
+//    fun filesWithSemanticErrorReturnExitCode200() {
+//    File("wacc_examples/invalid/syntaxErr").walkTopDown().forEach {
+//            if (it.path.endsWith("wacc")) {
+//                val result = TestCompiler(it.path).testCompile()
+//                val exitCode = result?.exitCode
+//                assertTrue(exitCode == 200)
+//            }
+//        }
+//    }
+
+
 }
