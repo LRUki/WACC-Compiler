@@ -31,7 +31,7 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     }
 
     private fun syntaxError(message: String) {
-        throw IllegalArgumentException(message)
+        throw Exception("syntax error: $message")
     }
 
     //recursively search for the last statement
