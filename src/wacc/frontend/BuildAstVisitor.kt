@@ -26,8 +26,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
         val astNode = ProgramAST(funcList, statToList(stat))
         astNode.check()
-        val result = ProgramAST(funcList, statToList(stat))
-        return result
+        return astNode
     }
 
     override fun visitFunc(ctx: WaccParser.FuncContext): AST {

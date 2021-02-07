@@ -4,15 +4,14 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
+import wacc.frontend.ast.BaseType
 import wacc.frontend.ast.DeclareStatAST
 import java.io.File
 
 
-
-
 fun main() {
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid")
+    val folder = File("wacc_examples/valid/expressions/intCalc.wacc")
     val list = actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
@@ -25,6 +24,7 @@ fun main() {
         SymbolTable.currentST = topST
         val visitor = BuildAstVisitor()
         val ast = visitor.visit(tree)
+
         ast
     }
 

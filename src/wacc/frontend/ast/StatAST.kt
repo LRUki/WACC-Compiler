@@ -23,13 +23,17 @@ class SkipStatAST : StatAST {
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST): StatAST, Identifiable {
     override fun check(): Boolean {
         rhs.check()
-//        val rhsType = getRealType(rhs)
-
-
+        val rhsType = rhs.getRealType()
+        if (type.equals(rhsType)) {
+            println("Types are equal")
+        } else {
+            println("Types are not equal")
+        }
+        //TODO need to check its a valid type -- add to top level symbol table
         val isTypeCorrect = SymbolTable.currentST.lookupAll(getTypeString(type))
         val identName = SymbolTable.currentST.lookup(ident.name)
-        TODO()
         //Does exist in scope
+        return true
     }
 }
 
