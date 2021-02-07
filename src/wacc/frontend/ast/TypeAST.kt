@@ -1,6 +1,6 @@
 package wacc.frontend.ast
 
-import java.lang.reflect.Type
+import wacc.frontend.SymbolTable
 
 
 interface TypeAST : AST {
@@ -16,7 +16,7 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
         return type == (that as BaseTypeAST).type
     }
 
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
@@ -27,7 +27,7 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST {
     }
 
     //compare dimension here
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
@@ -44,7 +44,7 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST {
 
     // innerpair types
     // pair (pair (1, 2)) 3
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
@@ -58,7 +58,7 @@ class InnerPairTypeAST : TypeAST {// For pairElemType: baseType PAIR ;
         return false
     }
 
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }

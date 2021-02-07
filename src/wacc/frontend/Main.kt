@@ -4,14 +4,16 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import wacc.frontend.ast.BaseType
-import wacc.frontend.ast.DeclareStatAST
+import wacc.frontend.ast.*
+import wacc.frontend.ast.expression.ExprAST
+import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.IntLiterAST
 import java.io.File
 
 
 fun main() {
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/expressions/intCalc.wacc")
+    val folder = File("wacc_examples/valid/expressions/charComparisonExpr.wacc")
     val list = actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
@@ -33,14 +35,13 @@ fun main() {
 
 fun createTopLevelST(): SymbolTable {
     val topSymbolTable = SymbolTable(null)
-//    topSymbolTable.add("int", DeclareStatAST())
-//    topSymbolTable.add("char", CHAR())
-//    topSymbolTable.add("bool", BOOL())
-//    topSymbolTable.add("string", STRING())
-//    topSymbolTable.add("pair", PAIR())
-//    topSymbolTable.add("array", ARRAY(Type.NULL, 0))
-
-
+    val emptyRHS = IntLiterAST(0)
+    topSymbolTable.add("int", DeclareStatAST(BaseTypeAST(BaseType.INT), IdentAST("int"), emptyRHS))
+    topSymbolTable.add("char", DeclareStatAST(BaseTypeAST(BaseType.CHAR), IdentAST("char"), emptyRHS))
+    topSymbolTable.add("bool", DeclareStatAST(BaseTypeAST(BaseType.BOOL), IdentAST("bool"), emptyRHS))
+    topSymbolTable.add("string", DeclareStatAST(BaseTypeAST(BaseType.STRING), IdentAST("string"), emptyRHS))
+    topSymbolTable.add("pair", DeclareStatAST(PairTypeAST(BaseTypeAST(BaseType.ANY), BaseTypeAST(BaseType.ANY)), IdentAST("pair"), emptyRHS))
+    topSymbolTable.add("array", DeclareStatAST(ArrayTypeAST(BaseTypeAST(BaseType.ANY), 0), IdentAST("array"), emptyRHS))
     return topSymbolTable
 }
 

@@ -8,12 +8,7 @@ import wacc.frontend.ast.expression.IdentAST
 
 interface StatAST : AST
 
-class SkipStatAST : StatAST {
-    override fun check(): Boolean {
-        TODO("Not yet implemented")
-    }
-}
-
+class SkipStatAST : StatAST
 // int x = 5 + 6;
 //::= hexpri
 //j harray-liter i
@@ -21,36 +16,40 @@ class SkipStatAST : StatAST {
 //j hpair-elemi
 //j `call' hidenti `(' harg-listi? `)'
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST): StatAST, Identifiable {
-    override fun check(): Boolean {
-        rhs.check()
+    override fun check(table: SymbolTable): Boolean {
+        rhs.check(table)
+        val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType()
-        if (type.equals(rhsType)) {
-            println("Types are equal")
-        } else {
-            println("Types are not equal")
+        if (!identName.isEmpty) {
+            semanticError("Variable with that name already exists")
         }
+        val isTypeCorrect = table.lookupAll(getTypeString(type))
         //TODO need to check its a valid type -- add to top level symbol table
-        val isTypeCorrect = SymbolTable.currentST.lookupAll(getTypeString(type))
-        val identName = SymbolTable.currentST.lookup(ident.name)
-        //Does exist in scope
+
+        if (!type.equals(rhsType)) {
+            semanticError("Type mismatch - LHS and RHS not compatible")//TODO(Make error message better)
+//            semanticError("Expected type $type but actual type $rhsType")
+        }
+        table.add(ident.name, this)
+
         return true
     }
 }
 
 class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
 
 class ReadStatAST(val expr: LhsAST) : StatAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
 
 class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
@@ -60,25 +59,25 @@ enum class Action {
 }
 
 class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: List<StatAST>) : StatAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
 
 class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
 
 class BlockStatAST(val body: List<StatAST>) : StatAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }
 
 class MultiStatAST(val stats: List<StatAST>) : StatAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 }

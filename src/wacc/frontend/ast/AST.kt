@@ -1,7 +1,9 @@
 package wacc.frontend.ast
 
+import wacc.frontend.SymbolTable
+
 interface AST {
-     fun check(): Boolean {
+     fun check(table: SymbolTable): Boolean {
           return true
      }
 }

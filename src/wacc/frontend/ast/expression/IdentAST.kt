@@ -1,10 +1,11 @@
 package wacc.frontend.ast.expression
 
+import wacc.frontend.SymbolTable
 import wacc.frontend.ast.TypeAST
 import wacc.frontend.ast.assign.LhsAST
 
 class IdentAST(val name: String) : ExprAST, LhsAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 

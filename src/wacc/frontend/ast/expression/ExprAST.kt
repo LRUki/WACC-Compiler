@@ -1,5 +1,6 @@
 package wacc.frontend.ast.expression
 
+import wacc.frontend.SymbolTable
 import wacc.frontend.ast.TypeAST
 import wacc.frontend.ast.assign.RhsAST
 
@@ -9,7 +10,7 @@ interface ExprAST : RhsAST
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST {
 //    lateinit var type : Type
 
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
 //        get types of exp1 and exp2
 //        check types same and either bool or int
 //        type = ---
@@ -32,7 +33,7 @@ enum class BinOp {
 }
 
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST {
-    override fun check(): Boolean {
+    override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
     }
 

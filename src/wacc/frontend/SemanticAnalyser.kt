@@ -6,6 +6,13 @@ import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.*
+import kotlin.system.exitProcess
+
+fun semanticError(message : String) {
+    System.err.println("#semantic error# $message")
+    exitProcess(200)
+}
+
 
 fun getTypeString(typeAST: TypeAST): String {
     return when (typeAST) {

@@ -4,4 +4,12 @@ interface Typed {
     fun getRealType() : TypeAST
 }
 
-interface Identifiable
+interface Identifiable {
+    fun isDeclarable() : Boolean {
+        return true
+    }
+
+    fun isReturnable() : Boolean {
+        return true
+    }
+}
