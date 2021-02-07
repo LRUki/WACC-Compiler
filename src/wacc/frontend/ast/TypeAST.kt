@@ -4,7 +4,13 @@ import wacc.frontend.SymbolTable
 
 
 interface TypeAST : AST {
-    fun equals(that: TypeAST): Boolean
+    // Compares the underlying type in two TypeASTs
+    override fun equals(other: Any?): Boolean
+
+    // Checks that the type exits in the symbol table
+    fun isValidType(table: SymbolTable): Boolean {
+        return true
+    }
 }
 
 enum class BaseType {
@@ -12,8 +18,20 @@ enum class BaseType {
 }
 
 class BaseTypeAST(val type: BaseType) : TypeAST {
-    override fun equals(that: TypeAST): Boolean {
-        return type == (that as BaseTypeAST).type
+
+    override fun equals(other: Any?): Boolean {
+        if (other is TypeAST) {
+            return type == (other as BaseTypeAST).type
+        }
+        return false
+    }
+
+    override fun isValidType(table: SymbolTable): Boolean {
+        return table.lookup(type.name.toLowerCase()).isPresent
+    }
+
+    override fun hashCode(): Int {
+        return type.hashCode()
     }
 
     override fun check(table: SymbolTable): Boolean {
@@ -22,8 +40,22 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
 }
 
 class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST {
-    override fun equals(that: TypeAST): Boolean {
-        return that.equals(type)
+
+    override fun equals(other: Any?): Boolean {
+        if (other is TypeAST) {
+            return other.equals(type)
+        }
+        return false
+    }
+
+    override fun isValidType(table: SymbolTable): Boolean {
+        return type.isValidType(table)
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + dimension
+        return result
     }
 
     //compare dimension here
@@ -33,13 +65,23 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST {
 }
 
 class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST {
-    override fun equals(that: TypeAST): Boolean {
-        if (that is InnerPairTypeAST) {
+    override fun equals(other: Any?): Boolean {
+        if (other is InnerPairTypeAST) {
             return true
-        } else if (that is PairTypeAST) {
-            return type1.equals(that.type1) && type2.equals(that.type2)
+        } else if (other is PairTypeAST) {
+            return type1.equals(other.type1) && type2.equals(other.type2)
         }
         return false
+    }
+
+    override fun isValidType(table: SymbolTable): Boolean {
+        return type1.isValidType(table) && type2.isValidType(table)
+    }
+
+    override fun hashCode(): Int {
+        var result = type1.hashCode()
+        result = 31 * result + type2.hashCode()
+        return result
     }
 
     // innerpair types
@@ -49,10 +91,12 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST {
     }
 }
 
+
 //TODO think about this later
-class InnerPairTypeAST : TypeAST {// For pairElemType: baseType PAIR ;
-    override fun equals(that: TypeAST): Boolean {
-        if (that is PairTypeAST || that is InnerPairTypeAST) {
+class InnerPairTypeAST : TypeAST {
+    // For pairElemType: baseType PAIR ;
+    override fun equals(other: Any?): Boolean {
+        if (other is PairTypeAST || other is InnerPairTypeAST) {
             return true
         }
         return false
@@ -60,5 +104,9 @@ class InnerPairTypeAST : TypeAST {// For pairElemType: baseType PAIR ;
 
     override fun check(table: SymbolTable): Boolean {
         TODO("Not yet implemented")
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
     }
 }

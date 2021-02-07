@@ -23,7 +23,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST): S
         if (!identName.isEmpty) {
             semanticError("Variable with that name already exists")
         }
-        val isTypeCorrect = table.lookupAll(getTypeString(type))
+        val isTypeCorrect = table.lookupAll()
         //TODO need to check its a valid type -- add to top level symbol table
 
         if (!type.equals(rhsType)) {
