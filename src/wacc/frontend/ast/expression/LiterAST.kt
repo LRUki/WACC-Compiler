@@ -1,17 +1,45 @@
 package wacc.frontend.ast.expression
 
+import wacc.frontend.ast.BaseType
+import wacc.frontend.ast.BaseTypeAST
+import wacc.frontend.ast.TypeAST
 import wacc.frontend.ast.assign.RhsAST
 
 interface LiterAST: ExprAST
 
-class IntLiterAST(val value: Int): LiterAST
+class IntLiterAST(val value: Int): LiterAST {
+    override fun getRealType(): TypeAST {
+        return BaseTypeAST(BaseType.INT)
+    }
+}
 
-class BoolLiterAST(val value: Boolean): LiterAST
+class BoolLiterAST(val value: Boolean): LiterAST {
+    override fun getRealType(): TypeAST {
+        return BaseTypeAST(BaseType.BOOL)
+    }
+}
 
-class StrLiterAST(val value: String): LiterAST
+class StrLiterAST(val value: String): LiterAST {
+    override fun getRealType(): TypeAST {
+        return BaseTypeAST(BaseType.STRING)
+    }
+}
 
-class CharLiterAST(val value: Char): LiterAST
+class CharLiterAST(val value: Char): LiterAST {
+    override fun getRealType(): TypeAST {
+        return BaseTypeAST(BaseType.CHAR)
+    }
+}
 
-class NullPairLiterAST: LiterAST
+class NullPairLiterAST: LiterAST {
+    override fun getRealType(): TypeAST {
+        return BaseTypeAST(BaseType.ANY)
+    }
+}
 
-class ArrayLiterAST(val values: List<ExprAST>): RhsAST
+//TODO cover case empty array
+class ArrayLiterAST(val values: List<ExprAST>): RhsAST {
+    override fun getRealType(): TypeAST {
+        return values[0].getRealType()
+    }
+}

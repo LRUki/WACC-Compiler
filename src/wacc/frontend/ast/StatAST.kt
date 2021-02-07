@@ -14,19 +14,22 @@ class SkipStatAST : StatAST {
     }
 }
 
-// int x =
+// int x = 5 + 6;
 //::= hexpri
 //j harray-liter i
 //j `newpair' `(' hexpri `,' hexpri `)'
 //j hpair-elemi
 //j `call' hidenti `(' harg-listi? `)'
-class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST {
+class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable {
     override fun check(): Boolean {
-        val isTypeCorrect = SymbolTable.currentST.lookupAll(getTypeString(type))
+        rhs.check()
+//        val rhsType = getRealType(rhs)
 
+
+        val isTypeCorrect = SymbolTable.currentST.lookupAll(getTypeString(type))
         val identName = SymbolTable.currentST.lookup(ident.name)
-        val rhsType = getRhsType(rhs)
         TODO()
+        //Does exist in scope
     }
 }
 

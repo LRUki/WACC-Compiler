@@ -6,7 +6,6 @@ import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.*
-import wacc.frontend.identifiers.*
 
 fun getTypeString(typeAST: TypeAST): String {
     return when (typeAST) {
@@ -29,12 +28,12 @@ fun getExprType(exprAST: ExprAST): String {
         is IntLiterAST -> "int"
         is BoolLiterAST -> "bool"
         is StrLiterAST -> "string"
+        //CHECK COMPLETE
         is CharLiterAST -> "char"
 
         is NullPairLiterAST -> "TODO" // TODO
         is ArrayElemAST -> "TODO" // TODO
         is IdentAST -> "TODO" // TODO
-        //CHECK COMPLETE
 
         else -> throw RuntimeException()
     }
@@ -44,7 +43,7 @@ fun getRhsType(rhsAST: RhsAST): String {
     return when (rhsAST) {
         is ExprAST -> getExprType(rhsAST)
         is ArrayLiterAST -> getExprType(rhsAST.values[0])
-        is NewPairRhsAST -> "pair"
+//        is NewPairRhsAST -> "pair" recurse
         is CallRhsAST -> "TODO" //TODO
         else -> throw RuntimeException()
     }

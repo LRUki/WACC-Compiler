@@ -7,7 +7,9 @@
 # Program:
 
 begin
-  int[] a = [1,2,3];
+  # int[] a = [1,2,3];
+  pair(pair, int) a = newpair(null, 2);
+  pair(pair, char) d  = newpair(a, 'b') ;
   int[] b = [3,4];
   int[][] c = [a,b] ;
   println c[0][2] ;

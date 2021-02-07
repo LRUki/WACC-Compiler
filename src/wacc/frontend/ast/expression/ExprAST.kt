@@ -1,13 +1,15 @@
 package wacc.frontend.ast.expression
 
+import wacc.frontend.ast.TypeAST
+import wacc.frontend.ast.Typed
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.identifiers.Type
-
+//import wacc.frontend.identifiers.Type
 
 interface ExprAST : RhsAST
 // Result == "no"
+// + (+ 3 4) 6
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST {
-    lateinit var type : Type
+//    lateinit var type : Type
 
     override fun check(): Boolean {
         TODO()
@@ -17,6 +19,11 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
 //        type = ---
         TODO()
     }
+
+    override fun getRealType(): TypeAST {
+        return expr1.getRealType()
+    }
+
 }
 
 enum class BinOp {
@@ -30,6 +37,10 @@ enum class BinOp {
 
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST {
     override fun check(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun getRealType(): TypeAST {
         TODO("Not yet implemented")
     }
 }

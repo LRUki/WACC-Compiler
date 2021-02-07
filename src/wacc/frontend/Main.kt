@@ -4,8 +4,8 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
+import wacc.frontend.ast.DeclareStatAST
 import java.io.File
-import wacc.frontend.identifiers.*
 
 
 
@@ -33,12 +33,12 @@ fun main() {
 
 fun createTopLevelST(): SymbolTable {
     val topSymbolTable = SymbolTable(null)
-    topSymbolTable.add("int", INT())
-    topSymbolTable.add("char", CHAR())
-    topSymbolTable.add("bool", BOOL())
-    topSymbolTable.add("string", STRING())
-    topSymbolTable.add("pair", PAIR())
-    topSymbolTable.add("array", ARRAY(Type.NULL, 0))
+//    topSymbolTable.add("int", DeclareStatAST())
+//    topSymbolTable.add("char", CHAR())
+//    topSymbolTable.add("bool", BOOL())
+//    topSymbolTable.add("string", STRING())
+//    topSymbolTable.add("pair", PAIR())
+//    topSymbolTable.add("array", ARRAY(Type.NULL, 0))
 
 
     return topSymbolTable

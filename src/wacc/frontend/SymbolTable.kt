@@ -1,7 +1,6 @@
 package wacc.frontend
 
-import wacc.frontend.ast.TypeAST
-import wacc.frontend.identifiers.Identifier
+import wacc.frontend.ast.Identifiable
 import java.util.*
 
 class SymbolTable(private val encSymbolTable: SymbolTable?) {
@@ -11,7 +10,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     // A symbol table consists of a HashMap and a list of children.
-    val currSymbolTable: HashMap<String, Identifier> = HashMap()
+    val currSymbolTable: HashMap<String, Identifiable> = HashMap()
 
     // Gets the top most symbol table
     fun getTopSymbolTable(): SymbolTable {
@@ -22,7 +21,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return currentSymbolTable
     }
 
-    fun lookup(name:String) : Optional<Identifier> {
+    fun lookup(name:String) : Optional<Identifiable> {
         val value = currSymbolTable[name]
         if (value != null) {
             return Optional.of(value)
@@ -30,7 +29,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return Optional.empty()
     }
 
-    fun lookupAll(name:String) : Optional<Identifier> {
+    fun lookupAll(name:String) : Optional<Identifiable> {
         val value = lookup(name)
         if (value.isEmpty){
             if (encSymbolTable != null) {
@@ -40,7 +39,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return value
     }
 
-    fun add(name:String, obj: Identifier) {
+    fun add(name:String, obj: Identifiable) {
         currSymbolTable[name] = obj
     }
 

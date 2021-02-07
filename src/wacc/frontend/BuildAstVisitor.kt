@@ -25,7 +25,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         var stat = visit(ctx.stat()) as StatAST
 
         val astNode = ProgramAST(funcList, statToList(stat))
-//        astNode.check()
+        astNode.check()
         val result = ProgramAST(funcList, statToList(stat))
         return result
     }

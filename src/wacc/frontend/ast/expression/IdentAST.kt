@@ -1,5 +1,6 @@
 package wacc.frontend.ast.expression
 
+import wacc.frontend.ast.TypeAST
 import wacc.frontend.ast.assign.LhsAST
 
 class IdentAST(val name: String) : ExprAST, LhsAST {
@@ -9,5 +10,9 @@ class IdentAST(val name: String) : ExprAST, LhsAST {
 
     override fun toString(): String {
         return name
+    }
+
+    override fun getRealType(): TypeAST {
+        TODO("Not yet implemented")
     }
 }
