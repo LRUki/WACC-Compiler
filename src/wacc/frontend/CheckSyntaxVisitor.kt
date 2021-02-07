@@ -15,7 +15,7 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         }
 
         if(!functionEndsWithExitOrReturn){
-            syntaxError("Function missing exit or return")
+            syntaxError()
         }
 
         return null
@@ -25,13 +25,14 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         try {
             (ctx.text).toInt()
         } catch (e: NumberFormatException) {
-            syntaxError("Int out of bound")
+            syntaxError()
         }
         return null
     }
 
-    private fun syntaxError(message: String) {
-        throw Exception("syntax error: $message")
+    private fun syntaxError() {
+        System.err.println("#syntax error#")
+        System.exit(100)
     }
 
     //recursively search for the last statement
