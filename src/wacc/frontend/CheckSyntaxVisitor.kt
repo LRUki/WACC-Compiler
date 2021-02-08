@@ -1,6 +1,7 @@
 package wacc.frontend
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.exception.SyntaxErrorException
 
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
@@ -16,7 +17,7 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         }
 
         if(!functionEndsWithExitOrReturn){
-            syntaxError("function missing exit or return")
+            syntaxError(ctx,"function missing exit or return")
         }
 
         return null
@@ -26,13 +27,15 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         try {
             (ctx.text).toInt()
         } catch (e: NumberFormatException) {
-            syntaxError("int out of bound")
+            syntaxError(ctx, "int out of bound")
         }
         return null
     }
 
-    private fun syntaxError(message:String){
-        throw SyntaxErrorException("syntax error: $message")
+    private fun syntaxError(ctx: ParserRuleContext, message:String){
+        throw SyntaxErrorException("syntax error: " +
+            "line: " + ctx.start.line.toString() + ":" + ctx.start.charPositionInLine
+                .toString() + " " + message)
     }
 
 
