@@ -8,26 +8,47 @@ import wacc.frontend.ast.*
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.IntLiterAST
+import wacc.frontend.exception.SemanticErrorException
+import wacc.frontend.exception.SyntaxErrorException
+import wacc.frontend.exception.SyntaxErrorListener
 import java.io.File
 
 
 fun main() {
+
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/IO/read/echoBigInt.wacc")
+    val folder = File("wacc_examples/valid/")
     val list = actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
         val lexer = WaccLexer(input)
+        lexer.removeErrorListeners()
+        lexer.addErrorListener(SyntaxErrorListener())
         val tokens = CommonTokenStream(lexer)
         val parser = WaccParser(tokens)
-        val tree = parser.program()
+        parser.removeErrorListeners()
+        parser.addErrorListener(SyntaxErrorListener())
 
-        val topST = createTopLevelST()
-        SymbolTable.currentST = topST
-        val visitor = BuildAstVisitor()
-        val ast = visitor.visit(tree)
+        try{
+            val tree = parser.program()
+            val checkSyntaxVisitor = CheckSyntaxVisitor()
+            checkSyntaxVisitor.visit(tree)
+            val visitor = BuildAstVisitor()
+            val topST = createTopLevelST()
+            SymbolTable.currentST = topST
+            val ast = visitor.visit(tree)
+            ast
+        }catch (e: SyntaxErrorException){
+            System.err.println(e.message)
+//            exit(100)
+        }catch (e: SemanticErrorException){
+            System.err.println(e.message)
+//            exit(200)
+        }
 
-        ast
+
+
+
     }
 
     println()

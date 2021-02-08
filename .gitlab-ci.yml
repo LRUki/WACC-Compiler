@@ -18,10 +18,10 @@ test-frontend:
   script:
     - echo "Testing the front end"
     - make clean all
-    - ./gradlew test
-    # test lexing
-    # test parsing
-    # test semantics
+    - echo "Testing syntax"
+    - ./gradlew test --tests wacc.frontend.LexerTest #test lexing
+    - ./gradlew test --tests wacc.frontend.SyntaxTest #test syntax
+    - ./gradlew test --tests wacc.frontend.ExitCodeTest #test exit code
 
 test-backend:
   stage: test-backend
