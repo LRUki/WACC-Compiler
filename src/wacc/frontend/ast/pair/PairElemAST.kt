@@ -8,7 +8,8 @@ import wacc.frontend.ast.assign.RhsAST
 
 class PairElemAST(val choice: PairChoice, val expr: ExprAST): LhsAST, RhsAST {
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+        expr.check(table)
+        return true
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {

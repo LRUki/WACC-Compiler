@@ -1,6 +1,7 @@
 package wacc.frontend.ast
 
 import wacc.frontend.SymbolTable
+import wacc.frontend.exception.SemanticException
 
 interface TypeAST : AST {
     // Compares the underlying type in two TypeASTs
@@ -34,7 +35,10 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
     }
 
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+         if (table.lookup(type.name.toLowerCase()).isEmpty) {
+             SemanticException("Invalid type $type does not exist")
+         }
+        return true
     }
 }
 
@@ -59,7 +63,8 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST,Identifiable
 
     //compare dimension here
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+        type.check(table)
+        return true
     }
 }
 
@@ -86,7 +91,9 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST,Identifiable
     // innerpair types
     // pair (pair (1, 2)) 3
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+        type1.check(table)
+        type2.check(table)
+        return true
     }
 }
 
@@ -99,10 +106,6 @@ class InnerPairTypeAST : TypeAST {
             return true
         }
         return false
-    }
-
-    override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
     }
 
     override fun hashCode(): Int {

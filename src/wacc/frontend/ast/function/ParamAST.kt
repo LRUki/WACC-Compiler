@@ -8,6 +8,7 @@ import wacc.frontend.ast.expression.IdentAST
 
 class ParamAST(val type: TypeAST, val ident: IdentAST): AST, Identifiable {
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+        //Check that the type is valid
+        return true
     }
 }
