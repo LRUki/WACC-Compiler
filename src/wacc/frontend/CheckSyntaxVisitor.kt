@@ -1,40 +1,10 @@
 package wacc.frontend
-import antlr.WaccLexer
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
-import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CommonTokenStream
-import java.io.File
-import java.lang.Exception
-import java.lang.System.exit
-import java.io.PrintStream
+import org.antlr.v4.runtime.ParserRuleContext
+import wacc.frontend.exception.SyntaxErrorException
 
-fun main(){
-    //overrides the printstream to list for stand error and throw exception
-    class CustomPrintStream(out: PrintStream?) : PrintStream(out) {
-        override fun print(s: String) {
-            throw Exception("Syntax failure!")
-        }
-    }
-
-    System.setErr(CustomPrintStream(System.err));
-    val folder = File("wacc_examples/invalid/syntaxErr")
-    val list = actionOnFiles(folder) { file ->
-        val input = CharStreams.fromStream(file.inputStream())
-        val lexer = WaccLexer(input)
-        try{
-            val tokens = CommonTokenStream(lexer)
-            val parser = WaccParser(tokens)
-            val tree = parser.program()
-            val syntaxVisitor = SyntaxVisitor()
-            syntaxVisitor.visit(tree)
-            System.out.println("shouldn't reach here!" + file.path)
-        }catch(e:Exception){
-            println(file.path + " syntax failure as expected!")
-        }
-    }
-}
-class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
+class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
         //check if function ends with return or exit
         val lastStat: WaccParser.StatContext = getLastStat(ctx.stat())
@@ -47,7 +17,7 @@ class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
         }
 
         if(!functionEndsWithExitOrReturn){
-            syntaxError("Function missing exit or return")
+            syntaxError(ctx,"function missing exit or return")
         }
 
         return null
@@ -57,15 +27,16 @@ class SyntaxVisitor : WaccParserBaseVisitor<Void>() {
         try {
             (ctx.text).toInt()
         } catch (e: NumberFormatException) {
-            syntaxError("Int out of bound")
+            syntaxError(ctx, "int out of bound")
         }
         return null
     }
 
-    private fun syntaxError(message: String) {
-        throw IllegalArgumentException(message)
+    private fun syntaxError(ctx: ParserRuleContext, message:String){
+        throw SyntaxErrorException("syntax error: " +
+            "line: " + ctx.start.line.toString() + ":" + ctx.start.charPositionInLine
+                .toString() + " " + message)
     }
-
 
 
     //recursively search for the last statement
