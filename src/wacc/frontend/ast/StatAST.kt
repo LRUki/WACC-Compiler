@@ -1,6 +1,7 @@
 package wacc.frontend.ast
 
 import wacc.frontend.*
+import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
@@ -10,7 +11,7 @@ import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.exception.SemanticException
-import kotlin.system.exitProcess
+
 
 interface StatAST : AST
 
@@ -102,8 +103,12 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
                 }
                 SemanticException("Expected type INT actual type $exprType")
             }
-            Action.PRINT -> {return true}
-            Action.PRINTLN -> {return true}
+            Action.PRINT -> {
+                return true
+            }
+            Action.PRINTLN -> {
+                return true
+            }
         }
         return false
     }
@@ -115,24 +120,48 @@ enum class Action {
 
 class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: List<StatAST>) : StatAST {
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+        //cond is bool
+        cond.check(table)
+        val condType = cond.getRealType(table)
+        if (!condType.equals(defBoolTypeAST)) {
+            SemanticException("If condition must be a Boolean but was $condType")
+        }
+
+        val thenST = SymbolTable(table)
+        thenBody.forEach { it.check(thenST) }
+
+        val elseST = SymbolTable(table)
+        elseBody.forEach { it.check(elseST) }
+
+        return true;
     }
 }
 
 class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST {
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+        cond.check(table)
+        val condType = cond.getRealType(table)
+        if (!condType.equals(defBoolTypeAST)) {
+            SemanticException("If condition must be a Boolean but was $condType")
+        }
+        val blockST = SymbolTable(table)
+        body.forEach { it.check(blockST) }
+        return true
     }
 }
 
 class BlockStatAST(val body: List<StatAST>) : StatAST {
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+        val blockST = SymbolTable(table)
+        body.forEach { it.check(blockST) }
+        return true
     }
 }
 
 class MultiStatAST(val stats: List<StatAST>) : StatAST {
     override fun check(table: SymbolTable): Boolean {
-        TODO("Not yet implemented")
+        val blockST = SymbolTable(table)
+        stats.forEach { it.check(blockST) }
+        return true
     }
 }
