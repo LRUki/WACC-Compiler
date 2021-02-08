@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.junit.Assert.*
 import org.junit.Test
 import wacc.frontend.exception.SyntaxErrorException
+import wacc.frontend.exception.SyntaxErrorListener
 import java.io.File
 
 

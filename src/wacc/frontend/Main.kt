@@ -6,13 +6,14 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.frontend.exception.SemanticErrorException
 import wacc.frontend.exception.SyntaxErrorException
+import wacc.frontend.exception.SyntaxErrorListener
 import java.io.File
-import java.lang.System.exit
 
 fun main() {
+//    val errorListener = ErrorListener()
 //    val input = CharStreams.fromStream(System.`in`)
 //    val folder = File("wacc_examples/valid/advanced/hashTable.wacc")
-    val folder = File("wacc_examples/invalid/syntaxErr/")
+    val folder = File("wacc_examples/valid")
     actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
@@ -30,13 +31,15 @@ fun main() {
             checkSyntaxVisitor.visit(tree)
             val visitor = BuildAstVisitor()
             val ast = visitor.visit(tree)
+            ast
         }catch (e: SyntaxErrorException){
-            System.err.println(e.message + "100")
+            System.err.println(e.message)
 //            exit(100)
         }catch (e: SemanticErrorException){
             System.err.println(e.message)
-            exit(200)
+//            exit(200)
         }
+
 
     }
 
