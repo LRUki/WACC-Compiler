@@ -1,6 +1,7 @@
 package wacc.frontend.ast.array
 
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.BaseType.ARRAY
 import wacc.frontend.ast.TypeAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST

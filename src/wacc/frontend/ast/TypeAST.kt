@@ -2,7 +2,6 @@ package wacc.frontend.ast
 
 import wacc.frontend.SymbolTable
 
-
 interface TypeAST : AST {
     // Compares the underlying type in two TypeASTs
     override fun equals(other: Any?): Boolean
@@ -13,8 +12,8 @@ interface TypeAST : AST {
     }
 }
 
-enum class BaseType(val innerType: BaseType? = null) {
-    INT, BOOL, CHAR, STRING, ANY, ARRAY
+enum class BaseType(val innerType: BaseTypeAST? = null) {
+    INT, BOOL, CHAR, STRING, ANY, ARRAY()
 }
 
 class BaseTypeAST(val type: BaseType) : TypeAST {
@@ -39,7 +38,7 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
     }
 }
 
-class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST {
+class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST,Identifiable {
 
     override fun equals(other: Any?): Boolean {
         if (other is TypeAST) {
@@ -64,7 +63,7 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST {
     }
 }
 
-class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST {
+class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST,Identifiable {
     override fun equals(other: Any?): Boolean {
         if (other is InnerPairTypeAST) {
             return true

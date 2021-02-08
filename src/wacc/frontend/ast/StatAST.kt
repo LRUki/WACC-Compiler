@@ -74,11 +74,18 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
     override fun check(table: SymbolTable): Boolean {
         expr.check(table)
         val exprType = expr.getRealType(table)
-//        when(action) {
-//            Action.FREE -> {
-//
-//            }
-//        }
+        when(action) {
+            Action.FREE -> {
+                if(exprType is ArrayTypeAST ||
+                   exprType is PairTypeAST){
+                    return true;
+                }else{
+                    println("Cannot free a something that is not an array or pair")
+                    return false;
+                }
+            }
+
+        }
         return true
     }
 }
