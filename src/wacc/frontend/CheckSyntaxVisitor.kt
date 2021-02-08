@@ -1,29 +1,25 @@
 package wacc.frontend
-
-import antlr.WaccLexer
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
-import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CommonTokenStream
-import java.io.File
-import java.lang.System.exit
-import kotlin.system.exitProcess
+import org.antlr.v4.runtime.ParserRuleContext
+import wacc.frontend.exception.SyntaxException
 
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
-
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
         //check if function ends with return or exit
         val lastStat: WaccParser.StatContext = getLastStat(ctx.stat())
         var functionEndsWithExitOrReturn = isExitOrReturn(lastStat)
+
+        //if the last statement is ifStat, check both branch ends with return/exit
         if (lastStat is WaccParser.IfStatContext){
-            val ifLastStat = getLastStat(lastStat.stat(0))
-            val elseLastStat = getLastStat(lastStat.stat(1))
-            functionEndsWithExitOrReturn = isExitOrReturn(ifLastStat)
-                    && isExitOrReturn(elseLastStat)
+            functionEndsWithExitOrReturn =
+                ifStatEndsWithExitOrReturn(lastStat)
         }
+
         if(!functionEndsWithExitOrReturn){
-            syntaxError("Function missing exit or return")
+            syntaxError(ctx,"function missing exit or return")
         }
+
         return null
     }
 
@@ -31,23 +27,17 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         try {
             (ctx.text).toInt()
         } catch (e: NumberFormatException) {
-            syntaxError("Int out of bound")
+            syntaxError(ctx, "int out of bound")
         }
         return null
     }
 
-    private fun syntaxError(message: String) {
-        throw IllegalArgumentException(message)
+    private fun syntaxError(ctx: ParserRuleContext, message:String){
+        throw SyntaxException("syntax error: " +
+            "line: " + ctx.start.line.toString() + ":" + ctx.start.charPositionInLine
+                .toString() + " " + message)
     }
 
-    //checks if the given statement is EXIT or RETURN
-    private fun isExitOrReturn(statCtx: WaccParser.StatContext):Boolean {
-        if(statCtx is WaccParser.ActionStatContext &&
-            (statCtx.EXIT() != null || statCtx.RETURN() != null)){
-            return true
-        }
-        return false
-    }
 
     //recursively search for the last statement
     private fun getLastStat(stat: WaccParser.StatContext): WaccParser.StatContext {
@@ -62,5 +52,33 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         }
 
         return stat
+    }
+
+    //check if statement ends with return/exit
+    private fun ifStatEndsWithExitOrReturn(stat: WaccParser.IfStatContext) : Boolean {
+        //check if branch ends with return/exit
+        val ifLastStat = getLastStat(stat.stat(0))
+        var endsWithExitOrReturn = isExitOrReturn(ifLastStat)
+        if(!endsWithExitOrReturn && ifLastStat is WaccParser.IfStatContext){
+            endsWithExitOrReturn = ifStatEndsWithExitOrReturn(ifLastStat)
+        }
+
+        //check else branch ends with return/exit
+        val elseLastStat = getLastStat(stat.stat(1))
+        if(endsWithExitOrReturn
+            && elseLastStat is WaccParser.IfStatContext){
+            endsWithExitOrReturn = ifStatEndsWithExitOrReturn(elseLastStat)
+        }
+
+        return endsWithExitOrReturn
+    }
+
+    //checks if the given statement is EXIT or RETURN
+    private fun isExitOrReturn(statCtx: WaccParser.StatContext):Boolean {
+        if(statCtx is WaccParser.ActionStatContext &&
+            (statCtx.EXIT() != null || statCtx.RETURN() != null)){
+            return true
+        }
+        return false
     }
 }
