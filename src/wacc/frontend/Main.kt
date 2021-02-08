@@ -10,7 +10,7 @@ import wacc.frontend.exception.SyntaxErrorListener
 import java.io.File
 
 fun main() {
-//    val errorListener = ErrorListener()
+
 //    val input = CharStreams.fromStream(System.`in`)
 //    val folder = File("wacc_examples/valid/advanced/hashTable.wacc")
     val folder = File("wacc_examples/valid")
