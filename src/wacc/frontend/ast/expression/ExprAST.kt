@@ -17,8 +17,8 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         TODO()
     }
 
-    override fun getRealType(): TypeAST {
-        return expr1.getRealType()
+    override fun getRealType(table: SymbolTable): TypeAST {
+        return expr1.getRealType(table)
     }
 
 }
@@ -37,8 +37,8 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST {
         TODO("Not yet implemented")
     }
 
-    override fun getRealType(): TypeAST {
-        return expr.getRealType()
+    override fun getRealType(table: SymbolTable): TypeAST {
+        return expr.getRealType(table)
     }
 }
 

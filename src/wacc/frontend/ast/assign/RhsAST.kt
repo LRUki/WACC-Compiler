@@ -15,8 +15,8 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         TODO("Not yet implemented")
     }
 
-    override fun getRealType(): TypeAST {
-        return PairTypeAST(fst.getRealType(), snd.getRealType())
+    override fun getRealType(table: SymbolTable): TypeAST {
+        return PairTypeAST(fst.getRealType(table), snd.getRealType(table))
     }
 
 }
@@ -26,8 +26,8 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST {
         TODO("Not yet implemented")
     }
 
-    override fun getRealType(): TypeAST {
-        return ident.getRealType()
+    override fun getRealType(table: SymbolTable): TypeAST {
+        return ident.getRealType(table)
         //Look up in the top level symbol table for the function return type
     }
 

@@ -8,9 +8,21 @@ import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.*
 import kotlin.system.exitProcess
 
-fun semanticError(message : String) {
-    System.err.println("#semantic error# $message")
-    exitProcess(200)
+class SemanticAnalyser {
+    companion object {
+        val defCharTypeAST = BaseTypeAST(BaseType.CHAR)
+        val defIntTypeAST = BaseTypeAST(BaseType.INT)
+        val defBoolTypeAST = BaseTypeAST(BaseType.BOOL)
+        val defStringTypeAST = BaseTypeAST(BaseType.STRING)
+        val defAnyTypeAST = BaseTypeAST(BaseType.ANY)
+
+        fun semanticError(message: String) {
+            System.err.println("#semantic error# $message")
+            exitProcess(200)
+        }
+    }
+
+
 }
 
 

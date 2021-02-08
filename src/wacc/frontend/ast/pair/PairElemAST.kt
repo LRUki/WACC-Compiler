@@ -11,8 +11,8 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST): LhsAST, RhsAST {
         TODO("Not yet implemented")
     }
 
-    override fun getRealType(): TypeAST {
-        return expr.getRealType()
+    override fun getRealType(table: SymbolTable): TypeAST {
+        return expr.getRealType(table)
     }
 }
 

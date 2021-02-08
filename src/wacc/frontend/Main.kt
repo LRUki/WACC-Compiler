@@ -13,7 +13,7 @@ import java.io.File
 
 fun main() {
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/expressions/charComparisonExpr.wacc")
+    val folder = File("wacc_examples/valid/IO/read/echoBigInt.wacc")
     val list = actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
