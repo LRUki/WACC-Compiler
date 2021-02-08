@@ -15,6 +15,7 @@ class SemanticAnalyser {
         val defBoolTypeAST = BaseTypeAST(BaseType.BOOL)
         val defStringTypeAST = BaseTypeAST(BaseType.STRING)
         val defAnyTypeAST = BaseTypeAST(BaseType.ANY)
+        val defArrayTypeAST = ArrayTypeAST(defAnyTypeAST, 1)
 
         fun semanticError(message: String) {
             System.err.println("#semantic error# $message")
