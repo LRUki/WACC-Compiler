@@ -12,7 +12,7 @@ interface TypeAST : AST {
     }
 }
 
-enum class BaseType(val innerType: BaseTypeAST? = null) {
+enum class BaseType(val innerType: BaseType? = null) {
     INT, BOOL, CHAR, STRING, ANY, ARRAY()
 }
 

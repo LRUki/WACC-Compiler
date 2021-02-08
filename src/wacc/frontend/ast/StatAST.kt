@@ -8,6 +8,9 @@ import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.exception.SemanticException
+import kotlin.system.exitProcess
 
 interface StatAST : AST
 
@@ -70,23 +73,39 @@ class ReadStatAST(val expr: LhsAST) : StatAST {
     }
 }
 
+//int[] a = [0]
 class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
     override fun check(table: SymbolTable): Boolean {
         expr.check(table)
         val exprType = expr.getRealType(table)
-        when(action) {
+        when (action) {
             Action.FREE -> {
-                if(exprType is ArrayTypeAST ||
-                   exprType is PairTypeAST){
+                if (exprType is ArrayTypeAST || exprType is PairTypeAST) {
                     return true;
-                }else{
-                    println("Cannot free a something that is not an array or pair")
-                    return false;
                 }
+                SemanticException("Actual type ${exprType}: Expected Array or Pair type")
             }
-
+            Action.RETURN -> {
+                val closestFunc = table.lookupFirstFunc()
+                if (closestFunc.isEmpty) {
+                    SemanticException("A return token is outside of a function scope")
+                }
+                val returnType = (closestFunc as FuncAST).type
+                if (!returnType.equals(exprType)) {
+                    SemanticException("Expected $returnType but actual type $exprType")
+                }
+                return true
+            }
+            Action.EXIT -> {
+                if (exprType.equals(defIntTypeAST)) {
+                    return true
+                }
+                SemanticException("Expected type INT actual type $exprType")
+            }
+            Action.PRINT -> {return true}
+            Action.PRINTLN -> {return true}
         }
-        return true
+        return false
     }
 }
 

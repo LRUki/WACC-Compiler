@@ -1,12 +1,13 @@
 package wacc.frontend
 
 import wacc.frontend.ast.Identifiable
+import wacc.frontend.ast.function.FuncAST
 import java.util.*
 
 class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
     companion object {
-        lateinit var currentST : SymbolTable
+        lateinit var currentST: SymbolTable
     }
 
     // A symbol table consists of a HashMap and a list of children.
@@ -21,7 +22,7 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return currentSymbolTable
     }
 
-    fun lookup(name:String) : Optional<Identifiable> {
+    fun lookup(name: String): Optional<Identifiable> {
         val value = currSymbolTable[name]
         if (value != null) {
             return Optional.of(value)
@@ -29,9 +30,9 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return Optional.empty()
     }
 
-    fun lookupAll(name:String) : Optional<Identifiable> {
+    fun lookupAll(name: String): Optional<Identifiable> {
         val value = lookup(name)
-        if (value.isEmpty){
+        if (value.isEmpty) {
             if (encSymbolTable != null) {
                 return encSymbolTable.lookupAll(name)
             }
@@ -39,7 +40,19 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return value
     }
 
-    fun add(name:String, obj: Identifiable) {
+    fun lookupFirstFunc(): Optional<Identifiable> {
+        if (encSymbolTable == null) {
+            return Optional.empty()
+        }
+        currSymbolTable.values.forEach {
+            if (it is FuncAST) {
+                return Optional.of(it)
+            }
+        }
+        return encSymbolTable.lookupFirstFunc()
+    }
+
+    fun add(name: String, obj: Identifiable) {
         currSymbolTable[name] = obj
     }
 

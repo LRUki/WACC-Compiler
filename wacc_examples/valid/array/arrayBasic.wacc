@@ -6,6 +6,7 @@
 # Program:
 
 begin
-  int[] a = [0]
+  char a = '0' ;
+  free a
 end
 
