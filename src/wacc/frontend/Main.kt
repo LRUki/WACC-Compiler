@@ -5,11 +5,10 @@ import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.frontend.ast.*
-import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.IntLiterAST
-import wacc.frontend.exception.SemanticErrorException
-import wacc.frontend.exception.SyntaxErrorException
+import wacc.frontend.exception.SemanticException
+import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.SyntaxErrorListener
 import java.io.File
 
@@ -38,10 +37,10 @@ fun main() {
             SymbolTable.currentST = topST
             val ast = visitor.visit(tree)
             ast
-        }catch (e: SyntaxErrorException){
+        }catch (e: SyntaxException){
             System.err.println(e.message)
 //            exit(100)
-        }catch (e: SemanticErrorException){
+        }catch (e: SemanticException){
             System.err.println(e.message)
 //            exit(200)
         }

@@ -5,8 +5,8 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.frontend.BuildAstVisitor
 import wacc.frontend.CheckSyntaxVisitor
-import wacc.frontend.exception.SemanticErrorException
-import wacc.frontend.exception.SyntaxErrorException
+import wacc.frontend.exception.SemanticException
+import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.SyntaxErrorListener
 
 import java.lang.Exception
@@ -31,16 +31,16 @@ class CompilerEmulator(private val fileName: String){
             val checkSyntaxVisitor = CheckSyntaxVisitor()
             checkSyntaxVisitor.visit(tree)
             visitor.visit(tree)
-        } catch(e: SyntaxErrorException) {
-            System.err.println("Syntax Error in file: fileName")
+        } catch(e: SyntaxException) {
+            System.err.println("Syntax Error in file: $fileName")
             exception = e
             exitCode = 100
-        } catch(e: SemanticErrorException){
-            System.err.println("Semantic Error in file: fileName")
+        } catch(e: SemanticException){
+            System.err.println("Semantic Error in file: $fileName")
             exception = e
             exitCode = 200
         } catch(e:Exception) {
-            System.err.println("Error in file: fileName")
+            System.err.println("Error in file: $fileName" + e.message)
             System.err.println("An exception was thrown that was not syntax or semantic")
             exitCode = 1
         }

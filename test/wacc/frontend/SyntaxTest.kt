@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.junit.Assert.*
 import org.junit.Test
-import wacc.frontend.exception.SyntaxErrorException
+import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.SyntaxErrorListener
 import java.io.File
 
@@ -26,7 +26,7 @@ class SyntaxTest {
             parser.addErrorListener(SyntaxErrorListener())
             try {
                 parser.program()
-            }catch(e:SyntaxErrorException){
+            }catch(e:SyntaxException){
                 throw Error("antlr fails to parse valid file: " + file.path)
             }
         }
@@ -46,7 +46,7 @@ class SyntaxTest {
             try {
                 val checkSyntaxVisitor = CheckSyntaxVisitor()
                 checkSyntaxVisitor.visit(tree)
-            }catch(e:SyntaxErrorException){
+            }catch(e:SyntaxException){
                 throw Error("syntax error on valid file: " + file.path)
             }
         }
@@ -68,7 +68,7 @@ class SyntaxTest {
                 val checkSyntaxVisitor = CheckSyntaxVisitor()
                 checkSyntaxVisitor.visit(tree)
                 throw Error("failed to detect invalid file: " + file.path)
-            }catch(e:SyntaxErrorException){
+            }catch(e:SyntaxException){
                 assertTrue(e.message!!.contains("syntax error"))
             }
         }

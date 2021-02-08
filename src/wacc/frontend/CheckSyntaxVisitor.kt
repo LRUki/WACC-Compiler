@@ -2,7 +2,7 @@ package wacc.frontend
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
 import org.antlr.v4.runtime.ParserRuleContext
-import wacc.frontend.exception.SyntaxErrorException
+import wacc.frontend.exception.SyntaxException
 
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
@@ -33,7 +33,7 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     }
 
     private fun syntaxError(ctx: ParserRuleContext, message:String){
-        throw SyntaxErrorException("syntax error: " +
+        throw SyntaxException("syntax error: " +
             "line: " + ctx.start.line.toString() + ":" + ctx.start.charPositionInLine
                 .toString() + " " + message)
     }
