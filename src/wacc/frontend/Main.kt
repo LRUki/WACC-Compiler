@@ -14,9 +14,9 @@ import java.io.File
 
 
 fun main() {
-
+    var wrong = 0
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/")
+    val folder = File("wacc_examples/valid/expressions")
     val list = actionOnFiles(folder) { file ->
         println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
@@ -42,6 +42,7 @@ fun main() {
 //            exit(100)
         }catch (e: SemanticException){
             System.err.println(e.message)
+            wrong++
 //            exit(200)
         }
 
@@ -50,7 +51,7 @@ fun main() {
 
     }
 
-    println()
+    println("Wrong $wrong")
 }
 
 fun createTopLevelST(): SymbolTable {

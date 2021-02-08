@@ -1,12 +1,12 @@
 package wacc.frontend.ast.function
 
+import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.Identifiable
 import wacc.frontend.ast.StatAST
 import wacc.frontend.ast.TypeAST
 import wacc.frontend.ast.expression.IdentAST
-import wacc.frontend.exception.SemanticException
 
 class FuncAST(val type: TypeAST, val ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AST, Identifiable {
@@ -22,7 +22,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
     fun checkNameAndAddToST(table : SymbolTable) {
         val fName = table.lookup(ident.name)
         if (fName.isPresent) {
-            SemanticException("Invalid function name ${fName.get()}")
+            semanticError("Invalid function name ${fName.get()}")
         }
         paramList.forEach { it.check(table) }
         table.add(ident.name, this)

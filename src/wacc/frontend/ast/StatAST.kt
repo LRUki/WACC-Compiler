@@ -10,7 +10,6 @@ import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
-import wacc.frontend.exception.SemanticException
 
 
 interface StatAST : AST
@@ -84,16 +83,16 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
                 if (exprType is ArrayTypeAST || exprType is PairTypeAST) {
                     return true;
                 }
-                SemanticException("Actual type ${exprType}: Expected Array or Pair type")
+                semanticError("Actual type ${exprType}: Expected Array or Pair type")
             }
             Action.RETURN -> {
                 val closestFunc = table.lookupFirstFunc()
                 if (closestFunc.isEmpty) {
-                    SemanticException("A return token is outside of a function scope")
+                    semanticError("A return token is outside of a function scope")
                 }
-                val returnType = (closestFunc as FuncAST).type
+                val returnType = (closestFunc.get() as FuncAST).type
                 if (!returnType.equals(exprType)) {
-                    SemanticException("Expected $returnType but actual type $exprType")
+                    semanticError("Expected $returnType but actual type $exprType")
                 }
                 return true
             }
@@ -101,7 +100,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
                 if (exprType.equals(defIntTypeAST)) {
                     return true
                 }
-                SemanticException("Expected type INT actual type $exprType")
+                semanticError("Expected type INT actual type $exprType")
             }
             Action.PRINT -> {
                 return true
@@ -124,7 +123,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         cond.check(table)
         val condType = cond.getRealType(table)
         if (!condType.equals(defBoolTypeAST)) {
-            SemanticException("If condition must be a Boolean but was $condType")
+            semanticError("If condition must be a Boolean but was $condType")
         }
 
         val thenST = SymbolTable(table)
@@ -142,7 +141,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST {
         cond.check(table)
         val condType = cond.getRealType(table)
         if (!condType.equals(defBoolTypeAST)) {
-            SemanticException("If condition must be a Boolean but was $condType")
+            semanticError("If condition must be a Boolean but was $condType")
         }
         val blockST = SymbolTable(table)
         body.forEach { it.check(blockST) }

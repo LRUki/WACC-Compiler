@@ -1,7 +1,7 @@
 package wacc.frontend.ast
 
+import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
-import wacc.frontend.exception.SemanticException
 
 interface TypeAST : AST {
     // Compares the underlying type in two TypeASTs
@@ -36,7 +36,7 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
 
     override fun check(table: SymbolTable): Boolean {
          if (table.lookup(type.name.toLowerCase()).isEmpty) {
-             SemanticException("Invalid type $type does not exist")
+             semanticError("Invalid type $type does not exist")
          }
         return true
     }

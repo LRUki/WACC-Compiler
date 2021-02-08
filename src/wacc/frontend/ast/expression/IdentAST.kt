@@ -3,7 +3,6 @@ package wacc.frontend.ast.expression
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.ArrayTypeAST
-import wacc.frontend.ast.BaseType.ARRAY
 import wacc.frontend.ast.DeclareStatAST
 import wacc.frontend.ast.PairTypeAST
 import wacc.frontend.ast.TypeAST

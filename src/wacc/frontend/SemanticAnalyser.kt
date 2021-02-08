@@ -3,10 +3,9 @@ package wacc.frontend
 import wacc.frontend.ast.*
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
-import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.*
-import kotlin.system.exitProcess
+import wacc.frontend.exception.SemanticException
 
 class SemanticAnalyser {
     companion object {
@@ -18,8 +17,10 @@ class SemanticAnalyser {
         val defArrayTypeAST = ArrayTypeAST(defAnyTypeAST, 1)
 
         fun semanticError(message: String) {
-            System.err.println("#semantic error# $message")
-            exitProcess(200)
+            throw SemanticException("semantic error: " +
+//                    "line: " + ctx.start.line.toString() + ":" + ctx.start.charPositionInLine
+//                    .toString() + " " +
+                    message)
         }
     }
 

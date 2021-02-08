@@ -1,5 +1,6 @@
 package wacc.frontend.ast.assign
 
+import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.PairTypeAST
@@ -8,7 +9,6 @@ import wacc.frontend.ast.Typed
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
-import wacc.frontend.exception.SemanticException
 
 interface RhsAST : AST, Typed
 
@@ -31,19 +31,19 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST {
         val funcAst = table.lookup(ident.name).get()
 
         if (funcAst !is FuncAST) {
-            SemanticException("$ident is not a function")
+            semanticError("$ident is not a function")
         }
         funcAst as FuncAST
         argList.forEach { it.check((table)) }
         if (funcAst.paramList.size != argList.size) {
-            SemanticException("Incorrect number of arguments, Expected ${funcAst.paramList.size} " +
+            semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size} " +
                     "arguments but got ${argList.size}")
         }
         for (i in 0 until argList.size) {
             val argType = argList[i].getRealType(table)
             val paramType = funcAst.paramList[i].ident.getRealType(table)
             if (!argType.equals(paramType)) {
-                SemanticException("Type mismatch, expected type $paramType, actual type $argType")
+                semanticError("Type mismatch, expected type $paramType, actual type $argType")
             }
         }
         return true
