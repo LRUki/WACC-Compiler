@@ -15,8 +15,9 @@ import java.io.File
 
 fun main() {
     var wrong = 0
+    var total = 0
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/pairs/")
+    val folder = File("wacc_examples/invalid/semanticErr")
     val list = actionOnFiles(folder) { file ->
         val input = CharStreams.fromStream(file.inputStream())
         val lexer = WaccLexer(input)
@@ -44,6 +45,7 @@ fun main() {
             wrong++
 //            exit(200)
         }
+        total++
         println(file.path)
 
 
@@ -52,6 +54,7 @@ fun main() {
     }
 
     println("Wrong $wrong")
+    println("Total $total")
 }
 
 fun createTopLevelST(): SymbolTable {
