@@ -5,6 +5,8 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.frontend.BuildAstVisitor
 import wacc.frontend.CheckSyntaxVisitor
+import wacc.frontend.SymbolTable
+import wacc.frontend.createTopLevelST
 import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.SyntaxErrorListener
@@ -30,6 +32,8 @@ class CompilerEmulator(private val fileName: String){
             val tree = parser.program()
             val checkSyntaxVisitor = CheckSyntaxVisitor()
             checkSyntaxVisitor.visit(tree)
+            val topST = createTopLevelST()
+            SymbolTable.currentST = topST
             visitor.visit(tree)
         } catch(e: SyntaxException) {
             System.err.println("Syntax Error in file: $fileName")
