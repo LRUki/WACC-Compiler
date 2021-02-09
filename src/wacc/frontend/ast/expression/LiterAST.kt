@@ -1,6 +1,7 @@
 package wacc.frontend.ast.expression
 
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.ArrayTypeAST
 import wacc.frontend.ast.BaseType
 import wacc.frontend.ast.BaseTypeAST
 import wacc.frontend.ast.TypeAST
@@ -38,9 +39,15 @@ class NullPairLiterAST: LiterAST {
     }
 }
 
-//TODO cover case empty array
 class ArrayLiterAST(val values: List<ExprAST>): RhsAST {
     override fun getRealType(table: SymbolTable): TypeAST {
-        return values[0].getRealType(table)
+        if (values.size  == 0) {
+            return ArrayTypeAST(BaseTypeAST(BaseType.ANY), 0)
+        }
+        val exprType = values[0].getRealType(table)
+        if (exprType is ArrayTypeAST) {
+            return exprType
+        }
+        return ArrayTypeAST(exprType, 0)
     }
 }

@@ -33,6 +33,6 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
-        return ident.getRealType(table)
+        return (ident.getRealType(table) as ArrayTypeAST).type
     }
 }

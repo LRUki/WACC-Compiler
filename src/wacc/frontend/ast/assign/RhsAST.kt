@@ -35,7 +35,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST {
 
     override fun check(table: SymbolTable): Boolean {
         ident.check(table)
-        val funcAst = table.lookup(ident.name).get()
+        val funcAst = table.lookupAll(ident.name).get()
 
         if (funcAst !is FuncAST) {
             semanticError("$ident is not a function")
@@ -43,12 +43,12 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST {
         funcAst as FuncAST
         argList.forEach { it.check((table)) }
         if (funcAst.paramList.size != argList.size) {
-            semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size} " +
+            semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size}" +
                     "arguments but got ${argList.size}")
         }
         for (i in 0 until argList.size) {
             val argType = argList[i].getRealType(table)
-            val paramType = funcAst.paramList[i].ident.getRealType(table)
+            val paramType = funcAst.paramList[i].type
             if (!argType.equals(paramType)) {
                 semanticError("Type mismatch, expected type $paramType, actual type $argType")
             }

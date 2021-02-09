@@ -19,4 +19,5 @@ class ParamAST(val type: TypeAST, val ident: IdentAST): AST, Identifiable {
         //Check that the type is valid
         return true
     }
+
 }

@@ -29,13 +29,12 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         rhs.check(table)
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
-        if (identName.isPresent) {
+        if (identName.isPresent && identName.get() !is FuncAST) {
             semanticError("Variable with that name already exists")
         }
         if (!type.isValidType(table)) {
             semanticError("Type $type is not defined")
         }
-        //TODO(Check that type is declarable)
         if (!type.equals(rhsType)) {
             semanticError("Type mismatch - Expected type $type but actual type $rhsType")
 //            semanticError("Expected type $type but actual type $rhsType")
@@ -46,17 +45,33 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 }
 
 class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
+
     lateinit var ctx: ParserRuleContext
 
     override fun getContext(): ParserRuleContext {
         return ctx;
+
+    private fun lhsIsAFunction(table: SymbolTable) :Boolean {
+        if (lhs is IdentAST) {
+            val fName = table.lookupAll(lhs.name)
+            if (fName.isPresent && fName.get() is FuncAST) {
+                return true
+            }
+        }
+        return false
     }
 
     override fun check(table: SymbolTable): Boolean {
         lhs.check(table)
         rhs.check(table)
-        val leftType = lhs.getRealType(table)
+        var leftType = lhs.getRealType(table)
         val rightType = rhs.getRealType(table)
+        if (leftType is ArrayTypeAST) {
+            leftType = leftType.type
+        }
+        if (lhsIsAFunction(table)) {
+            semanticError("Cannot assign a value to a function")
+        }
         if (!leftType.isValidType(table)) {
             semanticError("Left hand side type is not valid")
         }
@@ -123,10 +138,10 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
                 semanticError("Expected type INT actual type $exprType")
             }
             Action.PRINT -> {
-                return true
+                return expr.check(table)
             }
             Action.PRINTLN -> {
-                return true
+                return expr.check(table)
             }
         }
         return false

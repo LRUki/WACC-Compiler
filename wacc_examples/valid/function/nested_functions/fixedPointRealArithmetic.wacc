@@ -13,9 +13,7 @@
 begin
 	# Returns the number of bits behind the decimal points.
 	int q() is
-		int f = call power(2,3) ;
-		print true ;
-		return f
+		return 14
 	end
 	
 	# Because we do not have bitwise shit in the language, we have to calculate it manually.

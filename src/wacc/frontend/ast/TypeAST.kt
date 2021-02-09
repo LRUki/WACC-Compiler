@@ -21,9 +21,14 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
 
     override fun equals(other: Any?): Boolean {
         if (other is BaseTypeAST) {
+            if (type == BaseType.ANY || other.type == BaseType.ANY) {
+                return true
+            }
             return type == other.type
         } else if (other is ArrayTypeAST) {
             return this.equals(other.type)
+        } else if (other is PairTypeAST) {
+            return type == BaseType.NULL
         }
         return false
     }
@@ -47,8 +52,8 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
 class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST,Identifiable {
 
     override fun equals(other: Any?): Boolean {
-        if (other is TypeAST) {
-            return other.equals(type)
+        if (other is ArrayTypeAST) {
+            return other.type.equals(type)
         }
         return false
     }

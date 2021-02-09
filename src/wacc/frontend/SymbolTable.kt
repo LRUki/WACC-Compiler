@@ -4,7 +4,7 @@ import wacc.frontend.ast.Identifiable
 import wacc.frontend.ast.function.FuncAST
 import java.util.*
 
-class SymbolTable(private val encSymbolTable: SymbolTable?) {
+open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
     companion object {
         lateinit var currentST: SymbolTable
@@ -40,14 +40,12 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return value
     }
 
-    fun lookupFirstFunc(): Optional<Identifiable> {
+    fun lookupFirstFunc(): Optional<FuncAST> {
+        if (this is FuncSymbolTable) {
+            return Optional.of(this.funcAST)
+        }
         if (encSymbolTable == null) {
             return Optional.empty()
-        }
-        currSymbolTable.values.forEach {
-            if (it is FuncAST) {
-                return Optional.of(it)
-            }
         }
         return encSymbolTable.lookupFirstFunc()
     }
@@ -57,3 +55,5 @@ class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
 }
+
+class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST : FuncAST): SymbolTable(encSymbolTable)
