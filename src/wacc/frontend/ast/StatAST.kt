@@ -22,7 +22,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         rhs.check(table)
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
-        if (identName.isPresent) {
+        if (identName.isPresent && identName.get() !is FuncAST) {
             semanticError("Variable with that name already exists")
         }
         if (!type.isValidType(table)) {

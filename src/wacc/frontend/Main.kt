@@ -17,7 +17,9 @@ fun main() {
     var wrong = 0
     var total = 0
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/function/nested_functions/fibonacciFullRec.wacc")
+
+    val folder = File("wacc_examples/valid/function/")
+//    val folder = File("wacc_examples/valid/function/")
     val list = actionOnFiles(folder) { file ->
         val input = CharStreams.fromStream(file.inputStream())
         val lexer = WaccLexer(input)

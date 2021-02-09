@@ -41,7 +41,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST {
         }
         for (i in 0 until argList.size) {
             val argType = argList[i].getRealType(table)
-            val paramType = funcAst.paramList[i].ident.getRealType(table)
+            val paramType = funcAst.paramList[i].type
             if (!argType.equals(paramType)) {
                 semanticError("Type mismatch, expected type $paramType, actual type $argType")
             }
