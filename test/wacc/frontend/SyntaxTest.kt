@@ -4,10 +4,10 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import org.junit.Assert.*
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.SyntaxErrorListener
+import wacc.frontend.exception.SyntaxException
 import java.io.File
 
 

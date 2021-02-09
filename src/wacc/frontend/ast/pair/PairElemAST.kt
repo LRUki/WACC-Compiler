@@ -5,11 +5,10 @@ import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.PairTypeAST
 import wacc.frontend.ast.TypeAST
-import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.NullPairLiterAST
-import wacc.frontend.exception.SemanticException
 
 class PairElemAST(val choice: PairChoice, val expr: ExprAST): LhsAST, RhsAST {
     lateinit var ctx: ParserRuleContext

@@ -1,8 +1,6 @@
 package wacc.frontend.ast.expression
 
 import org.antlr.v4.runtime.ParserRuleContext
-import wacc.frontend.SemanticAnalyser
-import wacc.frontend.SemanticAnalyser.Companion.defArrayTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST

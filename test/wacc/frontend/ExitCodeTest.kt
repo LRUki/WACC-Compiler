@@ -1,7 +1,7 @@
 package wacc.frontend
 
 import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert.*
+import org.junit.Assert.assertThat
 import org.junit.Test
 import java.io.File
 

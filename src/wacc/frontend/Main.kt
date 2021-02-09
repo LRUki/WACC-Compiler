@@ -6,27 +6,27 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.frontend.ast.AST
 import wacc.frontend.exception.SemanticException
-import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.SyntaxErrorListener
+import wacc.frontend.exception.SyntaxException
 import java.io.File
 import java.io.InputStream
-import java.lang.System.exit
+import kotlin.system.exitProcess
 
 
 fun main(args: Array<String>) {
-//    if (args.size == 0) {
-//        println("Missing argument!")
-//        exit(1)
-//    }
-    val file = File("wacc_examples/invalid/syntaxErr/function/functionConditionalNoReturn.wacc")
+    if (args.isEmpty()) {
+        println("Missing argument!")
+        exitProcess(1)
+    }
+    val file = File(args[0])
         try {
             val ast = frontend(file.inputStream())
         } catch (e: SyntaxException) {
             System.err.println(e.message)
-            exit(100)
+            exitProcess(100)
         } catch (e: SemanticException) {
             System.err.println(e.message)
-            exit(200)
+            exitProcess(200)
         }
 }
 

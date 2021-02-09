@@ -1,11 +1,11 @@
 package wacc.frontend.ast
 
 import org.antlr.v4.runtime.ParserRuleContext
-import wacc.frontend.*
 import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
+import wacc.frontend.SymbolTable
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST

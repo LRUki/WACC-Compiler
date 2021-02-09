@@ -5,8 +5,6 @@ import org.antlr.v4.runtime.CharStreams
 import org.hamcrest.CoreMatchers
 import org.junit.Assert
 import org.junit.Test
-import java.lang.AssertionError
-import kotlin.test.fail
 
 class LexerTest {
 
