@@ -1,6 +1,7 @@
 package wacc.frontend.ast.expression
 
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.ArrayTypeAST
 import wacc.frontend.ast.BaseType
 import wacc.frontend.ast.BaseTypeAST
 import wacc.frontend.ast.TypeAST
@@ -42,8 +43,12 @@ class NullPairLiterAST: LiterAST {
 class ArrayLiterAST(val values: List<ExprAST>): RhsAST {
     override fun getRealType(table: SymbolTable): TypeAST {
         if (values.size  == 0) {
-            return BaseTypeAST(BaseType.ANY)
+            return ArrayTypeAST(BaseTypeAST(BaseType.ANY), 0)
         }
-        return values[0].getRealType(table)
+        val exprType = values[0].getRealType(table)
+        if (exprType is ArrayTypeAST) {
+            return exprType
+        }
+        return ArrayTypeAST(exprType, 0)
     }
 }

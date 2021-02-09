@@ -41,8 +41,11 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
     override fun check(table: SymbolTable): Boolean {
         lhs.check(table)
         rhs.check(table)
-        val leftType = lhs.getRealType(table)
+        var leftType = lhs.getRealType(table)
         val rightType = rhs.getRealType(table)
+        if (leftType is ArrayTypeAST) {
+            leftType = leftType.type
+        }
         if (!leftType.isValidType(table)) {
             semanticError("Left hand side type is not valid")
         }
@@ -97,10 +100,10 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
                 semanticError("Expected type INT actual type $exprType")
             }
             Action.PRINT -> {
-                return true
+                return expr.check(table)
             }
             Action.PRINTLN -> {
-                return true
+                return expr.check(table)
             }
         }
         return false
