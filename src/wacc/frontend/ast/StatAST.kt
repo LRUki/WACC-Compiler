@@ -50,6 +50,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
 
     override fun getContext(): ParserRuleContext {
         return ctx;
+    }
 
     private fun lhsIsAFunction(table: SymbolTable) :Boolean {
         if (lhs is IdentAST) {
