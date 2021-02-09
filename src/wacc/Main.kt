@@ -1,9 +1,12 @@
-package wacc.frontend
+package wacc
 
 import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
+import wacc.frontend.BuildAstVisitor
+import wacc.frontend.CheckSyntaxVisitor
+import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxErrorListener

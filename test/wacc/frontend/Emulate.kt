@@ -1,5 +1,6 @@
 package wacc.frontend
 
+import wacc.frontend
 import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxException
 import java.io.File
