@@ -3,9 +3,6 @@
 # You are free to change the language used for this script,
 # but do *not* change its name.
 
-FILE=/etc/resolv.conf
-if [ ! -f "./build/libs/wacc_23-all-1.0-SNAPSHOT.jar" ]; then
-    ./gradlew fatJar
-fi
+java -jar wacc_23-all-1.0-SNAPSHOT.jar $1
 
-java -jar ./build/libs/wacc_23-all-1.0-SNAPSHOT.jar $1
+exit $?
