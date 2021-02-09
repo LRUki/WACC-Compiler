@@ -39,7 +39,6 @@ class NullPairLiterAST: LiterAST {
     }
 }
 
-//TODO cover case empty array
 class ArrayLiterAST(val values: List<ExprAST>): RhsAST {
     override fun getRealType(table: SymbolTable): TypeAST {
         if (values.size  == 0) {
