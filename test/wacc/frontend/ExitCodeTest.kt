@@ -9,16 +9,16 @@ import java.io.File
 class ExitCodeTest {
 
 
-    @Test
-    fun validFilesReturnExitCode0(){
-    File("wacc_examples/valid").walkTopDown().forEach {
-        if (it.path.endsWith("wacc")) {
-            val result = CompilerEmulator(it.path).emulate()
-            val exitCode = result?.exitCode
-            assertTrue(exitCode == 0)
-            }
-        }
-    }
+//    @Test
+//    fun validFilesReturnExitCode0(){
+//    File("wacc_examples/valid").walkTopDown().forEach {
+//        if (it.path.endsWith("wacc")) {
+//            val result = CompilerEmulator(it.path).emulate()
+//            val exitCode = result?.exitCode
+//            assertTrue(exitCode == 0)
+//            }
+//        }
+//    }
 
     @Test
     fun filesWithSyntaxErrorReturnExitCode100() {
