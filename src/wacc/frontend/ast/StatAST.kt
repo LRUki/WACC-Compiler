@@ -1,5 +1,6 @@
 package wacc.frontend.ast
 
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.*
 import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
@@ -18,6 +19,12 @@ class SkipStatAST : StatAST
 
 // int x = 5 + 6;
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable {
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
+
     override fun check(table: SymbolTable): Boolean {
         rhs.check(table)
         val identName = table.lookup(ident.name)
@@ -38,6 +45,13 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 }
 
 class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
+
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
+
     private fun lhsIsAFunction(table: SymbolTable) :Boolean {
         if (lhs is IdentAST) {
             val fName = table.lookupAll(lhs.name)
@@ -73,6 +87,12 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
 }
 
 class ReadStatAST(val expr: LhsAST) : StatAST {
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext? {
+        return ctx;
+    }
+
     override fun check(table: SymbolTable): Boolean {
         expr.check(table)
         val exprType = expr.getRealType(table)
@@ -85,6 +105,12 @@ class ReadStatAST(val expr: LhsAST) : StatAST {
 
 //int[] a = [0]
 class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
+
     override fun check(table: SymbolTable): Boolean {
         expr.check(table)
         val exprType = expr.getRealType(table)
@@ -128,6 +154,13 @@ enum class Action {
 }
 
 class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: List<StatAST>) : StatAST {
+
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
+
     override fun check(table: SymbolTable): Boolean {
         //cond is bool
         cond.check(table)
@@ -147,6 +180,12 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
 }
 
 class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST {
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
+
     override fun check(table: SymbolTable): Boolean {
         cond.check(table)
         val condType = cond.getRealType(table)

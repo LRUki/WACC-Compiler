@@ -1,5 +1,6 @@
 package wacc.frontend.ast.expression
 
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.SemanticAnalyser
 import wacc.frontend.SemanticAnalyser.Companion.defArrayTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
@@ -20,6 +21,11 @@ interface ExprAST : RhsAST
 // + (+ 3 4) 6
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST {
 //    lateinit var type : Type
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
 
     override fun check(table: SymbolTable): Boolean {
         expr1.check(table)
@@ -79,6 +85,12 @@ enum class BinOp {
 }
 
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST {
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
+
     override fun check(table: SymbolTable): Boolean {
         expr.check(table)
         val exprType = expr.getRealType(table)

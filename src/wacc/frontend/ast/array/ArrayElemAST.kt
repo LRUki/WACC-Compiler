@@ -1,5 +1,6 @@
 package wacc.frontend.ast.array
 
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.ArrayTypeAST
@@ -9,6 +10,12 @@ import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.assign.LhsAST
 
 class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, LhsAST {
+
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
 
     override fun check(table: SymbolTable): Boolean {
         ident.check(table)
