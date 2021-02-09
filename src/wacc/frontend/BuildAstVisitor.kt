@@ -46,9 +46,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitParam(ctx: WaccParser.ParamContext): AST {
-        val paramAST = ParamAST(visit(ctx.type()) as TypeAST, visit(ctx.ident()) as IdentAST)
-        paramAST.ctx = ctx
-        return paramAST
+        return ParamAST(visit(ctx.type()) as TypeAST, visit(ctx.ident()) as IdentAST)
     }
 
     override fun visitReadStat(ctx: WaccParser.ReadStatContext): AST {

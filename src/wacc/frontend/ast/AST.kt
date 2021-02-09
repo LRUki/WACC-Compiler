@@ -7,9 +7,9 @@ interface AST {
      fun check(table: SymbolTable): Boolean {
           return true
      }
-
-     fun getContext(): ParserRuleContext?{
-          return null
-     }
-
 }
+
+abstract class AbstractAST : AST {
+    lateinit var ctx: ParserRuleContext
+}
+
