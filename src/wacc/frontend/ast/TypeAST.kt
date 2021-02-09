@@ -27,6 +27,8 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
             return type == other.type
         } else if (other is ArrayTypeAST) {
             return this.equals(other.type)
+        } else if (other is PairTypeAST) {
+            return type == BaseType.NULL
         }
         return false
     }

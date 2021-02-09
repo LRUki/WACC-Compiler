@@ -18,8 +18,8 @@ fun main() {
     var total = 0
 //    val input = CharStreams.fromStream(System.`in`)
 
-    val folder = File("wacc_examples/valid/function/")
-//    val folder = File("wacc_examples/valid/function/")
+    val folder = File("wacc_examples/valid/")
+//    val folder = File("wacc_examples/valid")
     val list = actionOnFiles(folder) { file ->
         val input = CharStreams.fromStream(file.inputStream())
         val lexer = WaccLexer(input)
