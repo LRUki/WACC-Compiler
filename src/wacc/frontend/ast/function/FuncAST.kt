@@ -1,5 +1,6 @@
 package wacc.frontend.ast.function
 
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
@@ -10,6 +11,12 @@ import wacc.frontend.ast.expression.IdentAST
 
 class FuncAST(val type: TypeAST, val ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AST, Identifiable {
+
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
 
     override fun check(table: SymbolTable): Boolean {
         //create a symbol table for the function and add all parameters to it
@@ -31,4 +38,5 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
     override fun toString(): String {
         return ident.toString()
     }
+
 }

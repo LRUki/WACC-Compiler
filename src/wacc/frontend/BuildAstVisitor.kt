@@ -24,37 +24,46 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
         var stat = visit(ctx.stat()) as StatAST
 
-        val astNode = ProgramAST(funcList, statToList(stat))
-        astNode.check(SymbolTable.currentST)
-        return astNode
+        val programAST = ProgramAST(funcList, statToList(stat))
+        programAST.ctx = ctx
+        programAST.check(SymbolTable.currentST)
+        return programAST
     }
 
     override fun visitFunc(ctx: WaccParser.FuncContext): AST {
-        var paramList = emptyList<ParamAST>()
+        val paramList = emptyList<ParamAST>().toMutableList()
         if (ctx.paramList() != null) {
             for (param in ctx.paramList().param()) {
                 paramList += visit(param) as ParamAST
             }
         }
-        return FuncAST(visit(ctx.type()) as TypeAST,
+        val funcAST = FuncAST(visit(ctx.type()) as TypeAST,
                 visit(ctx.ident()) as IdentAST,
                 paramList,
                 statToList(visit(ctx.stat()) as StatAST)
         )
+        funcAST.ctx = ctx
+        return funcAST
     }
 
     override fun visitParam(ctx: WaccParser.ParamContext): AST {
-        return ParamAST(visit(ctx.type()) as TypeAST, visit(ctx.ident()) as IdentAST)
+        val paramAST = ParamAST(visit(ctx.type()) as TypeAST, visit(ctx.ident()) as IdentAST)
+        paramAST.ctx = ctx
+        return paramAST
     }
 
     override fun visitReadStat(ctx: WaccParser.ReadStatContext): AST {
-        return ReadStatAST(visit(ctx.assignLhs()) as LhsAST)
+        val readStatAST = ReadStatAST(visit(ctx.assignLhs()) as LhsAST)
+        readStatAST.ctx = ctx
+        return readStatAST
     }
 
     override fun visitIfStat(ctx: WaccParser.IfStatContext): AST {
-        return IfStatAST(visit(ctx.expr()) as ExprAST,
+        val ifStatAST = IfStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat(0)) as StatAST),
                 statToList(visit(ctx.stat(1)) as StatAST))
+        ifStatAST.ctx = ctx
+        return ifStatAST
     }
 
     override fun visitBlockStat(ctx: WaccParser.BlockStatContext): AST {
@@ -85,25 +94,32 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             ctx.PRINTLN() != null -> Action.PRINTLN
             else -> throw RuntimeException()
         }
-        return ActionStatAST(action, visit(ctx.expr()) as ExprAST)
+        val actionStatAST =  ActionStatAST(action, visit(ctx.expr()) as ExprAST)
+        actionStatAST.ctx = ctx
+        return actionStatAST
     }
 
     override fun visitAssignStat(ctx: WaccParser.AssignStatContext): AST {
-        return AssignStatAST(visit(ctx.assignLhs()) as LhsAST,
+        val assignStatAST = AssignStatAST(visit(ctx.assignLhs()) as LhsAST,
                 visit(ctx.assignRhs()) as RhsAST)
+        assignStatAST.ctx = ctx
+        return assignStatAST
     }
 
     override fun visitDeclareStat(ctx: WaccParser.DeclareStatContext): AST {
-        val result = DeclareStatAST(visit(ctx.type()) as TypeAST,
+        val declareStatAST = DeclareStatAST(visit(ctx.type()) as TypeAST,
                 visit(ctx.ident()) as IdentAST,
                 visit(ctx.assignRhs()) as RhsAST)
-//        result.check()
-        return result;
+
+        declareStatAST.ctx = ctx
+        return declareStatAST;
     }
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
-        return WhileStatAST(visit(ctx.expr()) as ExprAST,
+        val visitWhileStatAST = WhileStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat()) as StatAST))
+        visitWhileStatAST.ctx = ctx
+        return visitWhileStatAST
     }
 
     private fun statToList(stat: StatAST): List<StatAST> {
