@@ -38,6 +38,16 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 }
 
 class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
+    private fun lhsIsAFunction(table: SymbolTable) :Boolean {
+        if (lhs is IdentAST) {
+            val fName = table.lookupAll(lhs.name)
+            if (fName.isPresent && fName.get() is FuncAST) {
+                return true
+            }
+        }
+        return false
+    }
+
     override fun check(table: SymbolTable): Boolean {
         lhs.check(table)
         rhs.check(table)
@@ -45,6 +55,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
         val rightType = rhs.getRealType(table)
         if (leftType is ArrayTypeAST) {
             leftType = leftType.type
+        }
+        if (lhsIsAFunction(table)) {
+            semanticError("Cannot assign a value to a function")
         }
         if (!leftType.isValidType(table)) {
             semanticError("Left hand side type is not valid")
