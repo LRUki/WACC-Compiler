@@ -1,5 +1,6 @@
 package wacc.frontend.ast.pair
 
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.PairTypeAST
@@ -11,6 +12,12 @@ import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.exception.SemanticException
 
 class PairElemAST(val choice: PairChoice, val expr: ExprAST): LhsAST, RhsAST {
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
+
     override fun check(table: SymbolTable): Boolean {
         if (expr is NullPairLiterAST) {
             semanticError("Attempt to access element of a null pair")

@@ -1,5 +1,6 @@
 package wacc.frontend.ast.assign
 
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
@@ -26,6 +27,12 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 }
 
 class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST {
+    lateinit var ctx: ParserRuleContext
+
+    override fun getContext(): ParserRuleContext {
+        return ctx;
+    }
+
     override fun check(table: SymbolTable): Boolean {
         ident.check(table)
         val funcAst = table.lookup(ident.name).get()
