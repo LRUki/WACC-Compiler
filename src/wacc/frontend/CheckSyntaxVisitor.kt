@@ -33,9 +33,8 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     }
 
     private fun syntaxError(ctx: ParserRuleContext, message:String){
-        throw SyntaxException("syntax error: " +
-            "line: " + ctx.start.line.toString() + ":" + ctx.start.charPositionInLine
-                .toString() + " " + message)
+        throw SyntaxException("Syntax Error at line ${ctx.start.line}:" +
+                "${ctx.start.charPositionInLine} $message", ctx.start.line)
     }
 
 
