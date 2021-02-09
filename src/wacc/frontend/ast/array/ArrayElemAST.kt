@@ -15,12 +15,14 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
         ident.check(table)
         val arrayType = ident.getRealType(table)
         if (arrayType !is ArrayTypeAST) {
-            semanticError("Expected type Array actual type $arrayType", ctx)
+            semanticError("Expected type ${arrayType} ARRAY, Actual type $arrayType", ctx)
         }
         arrayType as ArrayTypeAST
         if (indices.size != arrayType.dimension) {
-            semanticError("Invalid indexing of array, expected dimension " +
+//            int[] a = [[1]]
+            semanticError("Invalid assignment of array, expected dimension " +
                     "${arrayType.dimension} actual type ${indices.size}", ctx)
+//            type[5]with [1,2,3,4,5,6,7]
         }
         indices.forEach { it.check(table) }
         return true
