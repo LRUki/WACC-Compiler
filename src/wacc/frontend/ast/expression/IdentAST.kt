@@ -12,7 +12,7 @@ import wacc.frontend.ast.function.ParamAST
 
 class IdentAST(val name: String) : ExprAST, LhsAST {
     override fun check(table: SymbolTable): Boolean {
-        val stEntry = table.lookup(name)
+        val stEntry = table.lookupAll(name)
         if (stEntry.isEmpty) {
             semanticError("Variable has not been declared")
         }

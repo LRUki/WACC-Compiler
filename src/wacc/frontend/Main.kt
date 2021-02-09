@@ -16,9 +16,8 @@ import java.io.File
 fun main() {
     var wrong = 0
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/valid/expressions")
+    val folder = File("wacc_examples/valid/pairs/")
     val list = actionOnFiles(folder) { file ->
-        println(file.path)
         val input = CharStreams.fromStream(file.inputStream())
         val lexer = WaccLexer(input)
         lexer.removeErrorListeners()
@@ -45,6 +44,7 @@ fun main() {
             wrong++
 //            exit(200)
         }
+        println(file.path)
 
 
 
@@ -61,6 +61,7 @@ fun createTopLevelST(): SymbolTable {
     topSymbolTable.add("char", DeclareStatAST(BaseTypeAST(BaseType.CHAR), IdentAST("char"), emptyRHS))
     topSymbolTable.add("bool", DeclareStatAST(BaseTypeAST(BaseType.BOOL), IdentAST("bool"), emptyRHS))
     topSymbolTable.add("string", DeclareStatAST(BaseTypeAST(BaseType.STRING), IdentAST("string"), emptyRHS))
+    topSymbolTable.add("null", DeclareStatAST(BaseTypeAST(BaseType.NULL), IdentAST("string"), emptyRHS))
     topSymbolTable.add("pair", DeclareStatAST(PairTypeAST(BaseTypeAST(BaseType.ANY), BaseTypeAST(BaseType.ANY)), IdentAST("pair"), emptyRHS))
     topSymbolTable.add("array", DeclareStatAST(ArrayTypeAST(BaseTypeAST(BaseType.ANY), 0), IdentAST("array"), emptyRHS))
     return topSymbolTable

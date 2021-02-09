@@ -34,7 +34,7 @@ class CharLiterAST(val value: Char): LiterAST {
 
 class NullPairLiterAST: LiterAST {
     override fun getRealType(table: SymbolTable): TypeAST {
-        return BaseTypeAST(BaseType.ANY)
+        return BaseTypeAST(BaseType.NULL)
     }
 }
 

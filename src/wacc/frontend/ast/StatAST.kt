@@ -17,11 +17,6 @@ interface StatAST : AST
 class SkipStatAST : StatAST
 
 // int x = 5 + 6;
-//::= hexpri
-//j harray-liter i
-//j `newpair' `(' hexpri `,' hexpri `)'
-//j hpair-elemi
-//j `call' hidenti `(' harg-listi? `)'
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable {
     override fun check(table: SymbolTable): Boolean {
         rhs.check(table)

@@ -13,21 +13,23 @@ interface TypeAST : AST {
     }
 }
 
-enum class BaseType(val innerType: BaseType? = null) {
-    INT, BOOL, CHAR, STRING, ANY, ARRAY()
+enum class BaseType {
+    INT, BOOL, CHAR, STRING, ANY, NULL
 }
 
 class BaseTypeAST(val type: BaseType) : TypeAST {
 
     override fun equals(other: Any?): Boolean {
-        if (other is TypeAST) {
-            return type == (other as BaseTypeAST).type
+        if (other is BaseTypeAST) {
+            return type == other.type
+        } else if (other is ArrayTypeAST) {
+            return this.equals(other.type)
         }
         return false
     }
 
     override fun isValidType(table: SymbolTable): Boolean {
-        return table.lookup(type.name.toLowerCase()).isPresent
+        return table.lookupAll(type.name.toLowerCase()).isPresent
     }
 
     override fun hashCode(): Int {
@@ -35,7 +37,7 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
     }
 
     override fun check(table: SymbolTable): Boolean {
-         if (table.lookup(type.name.toLowerCase()).isEmpty) {
+         if (table.lookupAll(type.name.toLowerCase()).isEmpty) {
              semanticError("Invalid type $type does not exist")
          }
         return true
@@ -74,6 +76,12 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST,Identifiable
             return true
         } else if (other is PairTypeAST) {
             return type1.equals(other.type1) && type2.equals(other.type2)
+        } else if (other is ArrayTypeAST) {
+            return this.equals(other.type)
+        } else if (other is BaseTypeAST) {
+            if (other.type.equals(BaseType.NULL)) {
+                return true
+            }
         }
         return false
     }
@@ -102,11 +110,17 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST,Identifiable
 class InnerPairTypeAST : TypeAST {
     // For pairElemType: baseType PAIR ;
     override fun equals(other: Any?): Boolean {
-        if (other is PairTypeAST || other is InnerPairTypeAST) {
+        if (other is PairTypeAST || other is InnerPairTypeAST ||
+                other is BaseTypeAST && other.type == BaseType.NULL) {
             return true
         }
         return false
     }
+
+    override fun isValidType(table: SymbolTable): Boolean {
+        return table.lookupAll("pair").isPresent
+    }
+
 
     override fun hashCode(): Int {
         return javaClass.hashCode()
