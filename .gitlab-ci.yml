@@ -1,0 +1,57 @@
+image: maven:3.6.3-jdk-11
+
+stages:
+  - test-antlr
+  - test-frontend
+  - test-backend
+  - test-extension
+
+test-antlr:
+  stage: test-antlr
+  script:
+    - echo "Building"
+    - make clean all
+    - ./testgrun
+
+#test-frontend:
+#  stage: test-frontend
+#  script:
+#    - echo "Testing the front end"
+#    - make clean all
+#    - echo "Testing syntax"
+#    - ./gradlew test --tests wacc.frontend.LexerTest #test lexing
+#    - ./gradlew test --tests wacc.frontend.SyntaxTest #test syntax
+#    - ./gradlew test --tests wacc.frontend.ExitCodeTest #test exit code
+
+test-lexer:
+  stage: test-frontend
+  script:
+    - make clean all
+    - echo "Testing lexer"
+    - ./gradlew test --tests wacc.frontend.LexerTest #test lexing
+
+test-syntax:
+  stage: test-frontend
+  script:
+    - make clean all
+    - echo "Testing syntax"
+    - ./gradlew test --tests wacc.frontend.SyntaxTest #test lexing
+
+test-exitcode:
+  stage: test-frontend
+  script:
+    - make clean all
+    - echo "Testing exitcodes"
+    - ./gradlew test --tests wacc.frontend.ExitCodeTest #test lexing
+
+
+test-backend:
+  stage: test-backend
+  script:
+    - echo "Testing the back end"
+    # test code generation
+
+test-extension:
+  stage: test-extension
+  script:
+    - echo "Testing the extension"

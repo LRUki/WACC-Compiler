@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo 'Testing grun...'
+
+make
+rm -f error.out
+touch error.out
+
+for FILE in `find ./wacc_examples/valid -type f -name '*.wacc'` 
+do
+    ERROR=$(./grun antlr.Wacc program $FILE 2>&1 >/dev/null)
+    if [ -z $ERROR ]
+    then 
+        echo "Success $FILE"
+    else
+        echo "Failed $FILE"
+        echo $FILE >> error.out
+        echo $ERROR "\n" >> error.out
+    fi
+done
+
+[ -s error.out ] && exit 1 || echo "All test cases pass!" && rm error.out
