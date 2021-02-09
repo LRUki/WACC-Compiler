@@ -11,8 +11,6 @@ import wacc.frontend.ast.assign.RhsAST
 
 interface ExprAST : RhsAST
 
-// Result == "no"
-// + (+ 3 4) 6
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
@@ -22,7 +20,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         val type2 = expr2.getRealType(table)
 
         if (!type1.equals(type2)) {
-            semanticError("Expected type $type1 actual type $type2", ctx)
+            semanticError("Expected type $type1, Actual type $type2", ctx)
         }
         when (binOp) {
             BinOp.MULT, BinOp.DIV, BinOp.MOD,
@@ -30,7 +28,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 if (type1.equals(defIntTypeAST)) {
                     return true
                 }
-                semanticError("Expected type Int actual type $type1", ctx)
+                semanticError("Expected type INT, Actual type $type1", ctx)
             }
             BinOp.LTE, BinOp.LT, BinOp.GTE, BinOp.GT -> {
                 if (type1.equals(defIntTypeAST) ||
@@ -38,13 +36,13 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                             type1.equals(defStringTypeAST)) {
                     return true
                 }
-                semanticError("Expected type Int or Char actual type $type1", ctx)
+                semanticError("Expected type INT, CHAR or STRING, Actual type $type1", ctx)
             }
             BinOp.AND, BinOp.OR -> {
                 if (type1.equals(defBoolTypeAST)) {
                     return true
                 }
-                semanticError("Expected type Bool actual type $type1", ctx)
+                semanticError("Expected type BOOL, Actual type $type1", ctx)
             }
             else -> return true
         }
@@ -83,25 +81,25 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 if (exprType.equals(defBoolTypeAST)) {
                     return true
                 }
-                semanticError("Expected type Bool, actual type $exprType", ctx)
+                semanticError("Expected type BOOL, Actual type $exprType", ctx)
             }
             UnOp.MINUS, UnOp.CHR -> {
                 if (exprType.equals(defIntTypeAST)) {
                     return true
                 }
-                semanticError("Expected type Int, actual type $exprType", ctx)
+                semanticError("Expected type INT, Actual type $exprType", ctx)
             }
             UnOp.LEN -> {
                 if (exprType is ArrayTypeAST) {
                     return true
                 }
-                semanticError("Expected type Array Actual type $exprType", ctx)
+                semanticError("Expected type ARRAY, Actual type $exprType", ctx)
             }
             UnOp.ORD -> {
                 if (exprType.equals(defCharTypeAST)) {
                     return true
                 }
-                semanticError("Expected type Char, actual type $exprType", ctx)
+                semanticError("Expected type CHAR, Actual type $exprType", ctx)
             }
         }
         return false

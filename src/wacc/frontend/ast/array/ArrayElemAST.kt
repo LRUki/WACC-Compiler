@@ -19,10 +19,8 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
         }
         arrayType as ArrayTypeAST
         if (indices.size != arrayType.dimension) {
-//            int[] a = [[1]]
-            semanticError("Invalid assignment of array, expected dimension " +
-                    "${arrayType.dimension} actual type ${indices.size}", ctx)
-//            type[5]with [1,2,3,4,5,6,7]
+            semanticError("Invalid assignment of $arrayType ARRAY," +
+                    "Expected dimension ${arrayType.dimension}, Actual dimension ${indices.size}", ctx)
         }
         indices.forEach { it.check(table) }
         return true

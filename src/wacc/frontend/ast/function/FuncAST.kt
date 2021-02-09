@@ -20,7 +20,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
     fun checkNameAndAddToST(table : SymbolTable) {
         val fName = table.lookup(ident.name)
         if (fName.isPresent) {
-            semanticError("Invalid function name ${fName.get()}", ctx)
+            semanticError("Function ${fName.get()} is already defined", ctx)
         }
         paramList.forEach { it.check(table) }
         table.add(ident.name, this)

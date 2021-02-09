@@ -13,6 +13,8 @@ import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
 import java.io.File
 import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 
@@ -29,6 +31,8 @@ fun main(args: Array<String>) {
             exitProcess(100)
         } catch (e: SemanticException) {
             System.err.println(e.message)
+            System.err.println(file.readLines()[e.line-1])
+            //System.err.println(line of code)
             exitProcess(200)
         }
 }

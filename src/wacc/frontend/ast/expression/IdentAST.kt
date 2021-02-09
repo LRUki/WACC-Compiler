@@ -12,7 +12,7 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
         val stEntry = table.lookupAll(name)
         if (stEntry.isEmpty) {
-            semanticError("Variable has not been declared", ctx)
+            semanticError("Variable $name has not been declared", ctx)
         }
         return true
     }
@@ -24,7 +24,7 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
     override fun getRealType(table: SymbolTable): TypeAST {
         val typeOpt = table.lookupAll(name)
         if (typeOpt.isEmpty) { //should never happen because check is called before getRealType
-            semanticError("Variable has not been declared", ctx)
+            semanticError("Variable $name has not been declared", ctx)
         }
         return when (val type = typeOpt.get()) {
             is FuncAST -> type.type

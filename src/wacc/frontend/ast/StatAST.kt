@@ -24,11 +24,11 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
         if (identName.isPresent && identName.get() !is FuncAST) {
-            semanticError("Variable with that name already exists", ctx)
+            semanticError("Variable $ident already exists", ctx)
         }
 
         if (!type.equals(rhsType)) {
-            semanticError("Type mismatch - Expected type $type but actual type $rhsType", ctx)
+            semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
 //            semanticError("Expected type $type but actual type $rhsType")
         }
         table.add(ident.name, this)
@@ -61,7 +61,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         }
 
         if (!leftType.equals(rightType)) {
-            semanticError("Types $leftType and $rightType are not equal.", ctx)
+            semanticError("Type mismatch, $rightType cannot be assigned to $leftType", ctx)
         }
         return true;
     }
@@ -73,13 +73,12 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         expr.check(table)
         val exprType = expr.getRealType(table)
         if (!exprType.equals(defCharTypeAST) && !exprType.equals(defIntTypeAST)) {
-            semanticError("Invalid type, must be Int or Char", ctx)
+            semanticError("Expected type INT or CHAR, Actual type $exprType", ctx)
         }
         return true
     }
 }
 
-//int[] a = [0]
 class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
@@ -90,7 +89,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 if (exprType is ArrayTypeAST || exprType is PairTypeAST) {
                     return true;
                 }
-                semanticError("Actual type ${exprType}: Expected Array or Pair type", ctx)
+                semanticError("Expected type ARRAY or PAIR, Actual type $exprType", ctx)
             }
             Action.RETURN -> {
                 val closestFunc = table.lookupFirstFunc()
@@ -99,7 +98,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 }
                 val returnType = (closestFunc.get() as FuncAST).type
                 if (!returnType.equals(exprType)) {
-                    semanticError("Expected $returnType but actual type $exprType", ctx)
+                    semanticError("Expected type $returnType, Actual type $exprType", ctx)
                 }
                 return true
             }
@@ -107,12 +106,9 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 if (exprType.equals(defIntTypeAST)) {
                     return true
                 }
-                semanticError("Expected type INT actual type $exprType", ctx)
+                semanticError("Expected type INT, Actual type $exprType", ctx)
             }
-            Action.PRINT -> {
-                return expr.check(table)
-            }
-            Action.PRINTLN -> {
+            Action.PRINT, Action.PRINTLN -> {
                 return expr.check(table)
             }
         }
@@ -131,7 +127,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         cond.check(table)
         val condType = cond.getRealType(table)
         if (!condType.equals(defBoolTypeAST)) {
-            semanticError("If condition must be a Boolean but was $condType", ctx)
+            semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
         }
 
         val thenST = SymbolTable(table)
@@ -150,7 +146,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         cond.check(table)
         val condType = cond.getRealType(table)
         if (!condType.equals(defBoolTypeAST)) {
-            semanticError("If condition must be a Boolean but was $condType", ctx)
+            semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
         }
         val blockST = SymbolTable(table)
         body.forEach { it.check(blockST) }

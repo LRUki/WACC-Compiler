@@ -23,7 +23,7 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST): LhsAST, RhsAST, Ab
     override fun getRealType(table: SymbolTable): TypeAST {
         val pairType = expr.getRealType(table)
         if (pairType !is PairTypeAST) {
-            semanticError("Expected type Pair actual type $pairType", ctx)
+            semanticError("Expected type PAIR, Actual type $pairType", ctx)
         }
         pairType as PairTypeAST
         return when(choice) {

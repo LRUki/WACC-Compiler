@@ -18,7 +18,8 @@ class SemanticAnalyser {
         val defArrayTypeAST = ArrayTypeAST(defAnyTypeAST, 1)
 
         fun semanticError(message: String, ctx: ParserRuleContext) {
-            throw SemanticException("Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $message")
+            throw SemanticException("Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $message"
+                    , ctx.start.line)
         }
     }
 }

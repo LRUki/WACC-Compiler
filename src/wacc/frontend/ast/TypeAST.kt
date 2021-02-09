@@ -37,13 +37,6 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
     override fun hashCode(): Int {
         return type.hashCode()
     }
-
-    override fun check(table: SymbolTable): Boolean {
-         if (table.lookupAll(type.name.toLowerCase()).isEmpty) {
-             semanticError("Invalid type $type does not exist", ctx)
-         }
-        return true
-    }
 }
 
 class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiable {
@@ -104,8 +97,6 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST,Identifiable
         return result
     }
 
-    // innerpair types
-    // pair (pair (1, 2)) 3
     override fun check(table: SymbolTable): Boolean {
         type1.check(table)
         type2.check(table)

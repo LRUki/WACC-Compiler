@@ -29,19 +29,19 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         val funcAst = table.lookupAll(ident.name).get()
 
         if (funcAst !is FuncAST) {
-            semanticError("$ident is not a function", ctx)
+            semanticError("No function called $ident", ctx)
         }
         funcAst as FuncAST
         argList.forEach { it.check((table)) }
         if (funcAst.paramList.size != argList.size) {
             semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size}" +
-                    "arguments but got ${argList.size}", ctx)
+                    "arguments, Actually got ${argList.size}", ctx)
         }
         for (i in 0 until argList.size) {
             val argType = argList[i].getRealType(table)
             val paramType = funcAst.paramList[i].type
             if (!argType.equals(paramType)) {
-                semanticError("Type mismatch, expected type $paramType, actual type $argType", ctx)
+                semanticError("Type mismatch, Expected type $paramType, Actual type $argType", ctx)
             }
         }
         return true
