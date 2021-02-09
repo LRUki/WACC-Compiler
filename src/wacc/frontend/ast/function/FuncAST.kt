@@ -1,5 +1,6 @@
 package wacc.frontend.ast.function
 
+import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
@@ -13,7 +14,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
 
     override fun check(table: SymbolTable): Boolean {
         //create a symbol table for the function and add all parameters to it
-        val funScopeST = SymbolTable(table)
+        val funScopeST = FuncSymbolTable(table, this)
         paramList.forEach { funScopeST.add(it.ident.name, it) }
         body.forEach { it.check(funScopeST) }
         return true
