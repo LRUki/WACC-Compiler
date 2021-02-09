@@ -17,7 +17,7 @@ fun main() {
     var wrong = 0
     var total = 0
 //    val input = CharStreams.fromStream(System.`in`)
-    val folder = File("wacc_examples/invalid/semanticErr")
+    val folder = File("wacc_examples/valid/function")
     val list = actionOnFiles(folder) { file ->
         val input = CharStreams.fromStream(file.inputStream())
         val lexer = WaccLexer(input)
@@ -27,8 +27,8 @@ fun main() {
         val parser = WaccParser(tokens)
         parser.removeErrorListeners()
         parser.addErrorListener(SyntaxErrorListener())
-
-        try{
+        var wasWrong = false
+        try {
             val tree = parser.program()
             val checkSyntaxVisitor = CheckSyntaxVisitor()
             checkSyntaxVisitor.visit(tree)
@@ -37,18 +37,19 @@ fun main() {
             SymbolTable.currentST = topST
             val ast = visitor.visit(tree)
             ast
-        }catch (e: SyntaxException){
+        } catch (e: SyntaxException) {
             System.err.println(e.message)
 //            exit(100)
-        }catch (e: SemanticException){
+        } catch (e: SemanticException) {
             System.err.println(e.message)
             wrong++
+            wasWrong = true
 //            exit(200)
         }
         total++
-        println(file.path)
-
-
+        if (wasWrong) {
+            println("Wrong ${file.path}")
+        }
 
 
     }

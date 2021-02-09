@@ -1,6 +1,11 @@
 package wacc.frontend.ast.expression
 
 import wacc.frontend.SemanticAnalyser
+import wacc.frontend.SemanticAnalyser.Companion.defArrayTypeAST
+import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
+import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
+import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
+import wacc.frontend.SemanticAnalyser.Companion.defStringTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.BaseType
@@ -27,20 +32,21 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         when (binOp) {
             BinOp.MULT, BinOp.DIV, BinOp.MOD,
             BinOp.PLUS, BinOp.MINUS -> {
-                if (type1.equals(SemanticAnalyser.defIntTypeAST)) {
+                if (type1.equals(defIntTypeAST)) {
                     return true
                 }
                 semanticError("Expected type Int actual type $type1")
             }
             BinOp.LTE, BinOp.LT, BinOp.GTE, BinOp.GT -> {
-                if (type1.equals(SemanticAnalyser.defIntTypeAST) ||
-                        type1.equals(SemanticAnalyser.defCharTypeAST)) {
+                if (type1.equals(defIntTypeAST) ||
+                        type1.equals(defCharTypeAST) ||
+                            type1.equals(defStringTypeAST)) {
                     return true
                 }
                 semanticError("Expected type Int or Char actual type $type1")
             }
             BinOp.AND, BinOp.OR -> {
-                if (type1.equals(SemanticAnalyser.defBoolTypeAST)) {
+                if (type1.equals(defBoolTypeAST)) {
                     return true
                 }
                 semanticError("Expected type Bool actual type $type1")
@@ -78,25 +84,25 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST {
 
         when (unOp) {
             UnOp.NOT -> {
-                if (exprType.equals(SemanticAnalyser.defBoolTypeAST)) {
+                if (exprType.equals(defBoolTypeAST)) {
                     return true
                 }
                 semanticError("Expected type Bool, actual type $exprType")
             }
             UnOp.MINUS, UnOp.CHR -> {
-                if (exprType.equals(SemanticAnalyser.defIntTypeAST)) {
+                if (exprType.equals(defIntTypeAST)) {
                     return true
                 }
                 semanticError("Expected type Int, actual type $exprType")
             }
             UnOp.LEN -> {
-                if (exprType.equals(SemanticAnalyser.defArrayTypeAST)) {
+                if (exprType.equals(defArrayTypeAST)) {
                     return true
                 }
                 semanticError("Expected type Array Actual type $exprType")
             }
             UnOp.ORD -> {
-                if (exprType.equals(SemanticAnalyser.defCharTypeAST)) {
+                if (exprType.equals(defCharTypeAST)) {
                     return true
                 }
                 semanticError("Expected type Char, actual type $exprType")

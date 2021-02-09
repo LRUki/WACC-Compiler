@@ -28,7 +28,6 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         if (!type.isValidType(table)) {
             semanticError("Type $type is not defined")
         }
-        //TODO(Check that type is declarable)
         if (!type.equals(rhsType)) {
             semanticError("Type mismatch - Expected type $type but actual type $rhsType")
 //            semanticError("Expected type $type but actual type $rhsType")
