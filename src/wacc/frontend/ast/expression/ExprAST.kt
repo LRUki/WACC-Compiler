@@ -8,6 +8,7 @@ import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defStringTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.ArrayTypeAST
 import wacc.frontend.ast.BaseType
 import wacc.frontend.ast.BaseTypeAST
 import wacc.frontend.ast.TypeAST
@@ -96,7 +97,7 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST {
                 semanticError("Expected type Int, actual type $exprType")
             }
             UnOp.LEN -> {
-                if (exprType.equals(defArrayTypeAST)) {
+                if (exprType is ArrayTypeAST) {
                     return true
                 }
                 semanticError("Expected type Array Actual type $exprType")

@@ -1,6 +1,7 @@
 package wacc.frontend.ast.expression
 
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.ArrayTypeAST
 import wacc.frontend.ast.BaseType
 import wacc.frontend.ast.BaseTypeAST
 import wacc.frontend.ast.TypeAST
@@ -44,6 +45,6 @@ class ArrayLiterAST(val values: List<ExprAST>): RhsAST {
         if (values.size  == 0) {
             return BaseTypeAST(BaseType.ANY)
         }
-        return values[0].getRealType(table)
+        return ArrayTypeAST(values[0].getRealType(table),1)
     }
 }
