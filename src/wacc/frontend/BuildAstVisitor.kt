@@ -24,35 +24,45 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
         var stat = visit(ctx.stat()) as StatAST
 
-        return ProgramAST(funcList, statToList(stat))
+        val programAST = ProgramAST(funcList, statToList(stat))
+        programAST.ctx = ctx
+        return programAST
     }
 
     override fun visitFunc(ctx: WaccParser.FuncContext): AST {
-        var paramList = emptyList<ParamAST>()
+        val paramList = emptyList<ParamAST>().toMutableList()
         if (ctx.paramList() != null) {
             for (param in ctx.paramList().param()) {
                 paramList += visit(param) as ParamAST
             }
         }
-        return FuncAST(visit(ctx.type()) as TypeAST,
+        val funcAST = FuncAST(visit(ctx.type()) as TypeAST,
                 visit(ctx.ident()) as IdentAST,
                 paramList,
                 statToList(visit(ctx.stat()) as StatAST)
         )
+        funcAST.ctx = ctx
+        return funcAST
     }
 
     override fun visitParam(ctx: WaccParser.ParamContext): AST {
-        return ParamAST(visit(ctx.type()) as TypeAST, visit(ctx.ident()) as IdentAST)
+        val paramAST = ParamAST(visit(ctx.type()) as TypeAST, visit(ctx.ident()) as IdentAST)
+        paramAST.ctx = ctx
+        return paramAST
     }
 
     override fun visitReadStat(ctx: WaccParser.ReadStatContext): AST {
-        return ReadStatAST(visit(ctx.assignLhs()) as LhsAST)
+        val readStatAST = ReadStatAST(visit(ctx.assignLhs()) as LhsAST)
+        readStatAST.ctx = ctx
+        return readStatAST
     }
 
     override fun visitIfStat(ctx: WaccParser.IfStatContext): AST {
-        return IfStatAST(visit(ctx.expr()) as ExprAST,
+        val ifStatAST = IfStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat(0)) as StatAST),
                 statToList(visit(ctx.stat(1)) as StatAST))
+        ifStatAST.ctx = ctx
+        return ifStatAST
     }
 
     override fun visitBlockStat(ctx: WaccParser.BlockStatContext): AST {
@@ -83,23 +93,32 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             ctx.PRINTLN() != null -> Action.PRINTLN
             else -> throw RuntimeException()
         }
-        return ActionStatAST(action, visit(ctx.expr()) as ExprAST)
+        val actionStatAST =  ActionStatAST(action, visit(ctx.expr()) as ExprAST)
+        actionStatAST.ctx = ctx
+        return actionStatAST
     }
 
     override fun visitAssignStat(ctx: WaccParser.AssignStatContext): AST {
-        return AssignStatAST(visit(ctx.assignLhs()) as LhsAST,
+        val assignStatAST = AssignStatAST(visit(ctx.assignLhs()) as LhsAST,
                 visit(ctx.assignRhs()) as RhsAST)
+        assignStatAST.ctx = ctx
+        return assignStatAST
     }
 
     override fun visitDeclareStat(ctx: WaccParser.DeclareStatContext): AST {
-        return DeclareStatAST(visit(ctx.type()) as TypeAST,
+        val declareStatAST = DeclareStatAST(visit(ctx.type()) as TypeAST,
                 visit(ctx.ident()) as IdentAST,
                 visit(ctx.assignRhs()) as RhsAST)
+
+        declareStatAST.ctx = ctx
+        return declareStatAST;
     }
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
-        return WhileStatAST(visit(ctx.expr()) as ExprAST,
+        val visitWhileStatAST = WhileStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat()) as StatAST))
+        visitWhileStatAST.ctx = ctx
+        return visitWhileStatAST
     }
 
     private fun statToList(stat: StatAST): List<StatAST> {
@@ -127,7 +146,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                         argList += visit(expr) as ExprAST
                     }
                 }
-                CallRhsAST(visit(ctx.ident()) as IdentAST, argList)
+                val callRhsAST
+                  = CallRhsAST(visit(ctx.ident()) as IdentAST, argList)
+                callRhsAST.ctx = ctx
+                callRhsAST
             }
             else -> visitChildren(ctx)
         }
@@ -139,7 +161,9 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             ctx.SND() != null -> PairChoice.SND
             else -> throw RuntimeException()
         }
-        return PairElemAST(choice, visit(ctx.expr()) as ExprAST)
+        val pariElemAST = PairElemAST(choice, visit(ctx.expr()) as ExprAST)
+        pariElemAST.ctx = ctx
+        return pariElemAST
     }
 
     override fun visitType(ctx: WaccParser.TypeContext?): AST {
@@ -185,7 +209,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             unopContext.CHR() != null -> UnOp.CHR
             else -> throw RuntimeException()
         }
-        return UnOpExprAST(unOp, visit(ctx.expr()) as ExprAST)
+
+        val unOpExprAST = UnOpExprAST(unOp, visit(ctx.expr()) as ExprAST)
+        unOpExprAST.ctx = ctx
+        return unOpExprAST
     }
 
     override fun visitSingletonExpr(ctx: WaccParser.SingletonExprContext?): AST {
@@ -209,9 +236,11 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             "||" -> BinOp.OR
             else -> throw RuntimeException()
         }
-        return BinOpExprAST(binop,
+        val binOpExprAST = BinOpExprAST(binop,
                 visit(ctx.expr(0)) as ExprAST,
                 visit(ctx.expr(1)) as ExprAST)
+        binOpExprAST.ctx = ctx
+        return binOpExprAST
     }
 
     override fun visitParenExpr(ctx: WaccParser.ParenExprContext): AST {
@@ -223,7 +252,9 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         for (expr in ctx.expr()) {
             indices += visit(expr) as ExprAST
         }
-        return ArrayElemAST(visit(ctx.ident()) as IdentAST, indices)
+        val arrayElemAST = ArrayElemAST(visit(ctx.ident()) as IdentAST, indices)
+        arrayElemAST.ctx = ctx
+        return arrayElemAST
     }
 
     override fun visitIntLiter(ctx: WaccParser.IntLiterContext): AST {
@@ -274,8 +305,9 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitIdent(ctx: WaccParser.IdentContext): AST {
-        return IdentAST(ctx.text)
+        val identAST = IdentAST(ctx.text)
+        identAST.ctx = ctx
+        return identAST
     }
-
 
 }

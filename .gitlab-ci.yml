@@ -13,15 +13,37 @@ test-antlr:
     - make clean all
     - ./testgrun
 
-test-frontend:
+#test-frontend:
+#  stage: test-frontend
+#  script:
+#    - echo "Testing the front end"
+#    - make clean all
+#    - echo "Testing syntax"
+#    - ./gradlew test --tests wacc.frontend.LexerTest #test lexing
+#    - ./gradlew test --tests wacc.frontend.SyntaxTest #test syntax
+#    - ./gradlew test --tests wacc.frontend.ExitCodeTest #test exit code
+
+test-lexer:
   stage: test-frontend
   script:
-    - echo "Testing the front end"
+    - make clean all
+    - echo "Testing lexer"
+    - ./gradlew test --tests wacc.frontend.LexerTest #test lexing
+
+test-syntax:
+  stage: test-frontend
+  script:
     - make clean all
     - echo "Testing syntax"
-    - ./gradlew test --tests wacc.frontend.LexerTest #test lexing
-    - ./gradlew test --tests wacc.frontend.SyntaxTest #test syntax
-    - ./gradlew test --tests wacc.frontend.ExitCodeTest #test exit code
+    - ./gradlew test --tests wacc.frontend.SyntaxTest #test lexing
+
+test-exitcode:
+  stage: test-frontend
+  script:
+    - make clean all
+    - echo "Testing exitcodes"
+    - ./gradlew test --tests wacc.frontend.ExitCodeTest #test lexing
+
 
 test-backend:
   stage: test-backend

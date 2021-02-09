@@ -4,56 +4,63 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import wacc.frontend.exception.SemanticErrorException
-import wacc.frontend.exception.SyntaxErrorException
+import wacc.frontend.ast.AST
+import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxErrorListener
+import wacc.frontend.exception.SyntaxException
 import java.io.File
-
-fun main() {
-
-//    val input = CharStreams.fromStream(System.`in`)
-//    val folder = File("wacc_examples/valid/advanced/hashTable.wacc")
-    val folder = File("wacc_examples/valid")
-    actionOnFiles(folder) { file ->
-        println(file.path)
-        val input = CharStreams.fromStream(file.inputStream())
-        val lexer = WaccLexer(input)
-        lexer.removeErrorListeners()
-        lexer.addErrorListener(SyntaxErrorListener())
-        val tokens = CommonTokenStream(lexer)
-        val parser = WaccParser(tokens)
-        parser.removeErrorListeners()
-        parser.addErrorListener(SyntaxErrorListener())
-
-        try{
-            val tree = parser.program()
-            val checkSyntaxVisitor = CheckSyntaxVisitor()
-            checkSyntaxVisitor.visit(tree)
-            val visitor = BuildAstVisitor()
-            val ast = visitor.visit(tree)
-            ast
-        }catch (e: SyntaxErrorException){
-            System.err.println(e.message)
-//            exit(100)
-        }catch (e: SemanticErrorException){
-            System.err.println(e.message)
-//            exit(200)
-        }
+import java.io.InputStream
+import kotlin.system.exitProcess
 
 
+fun main(args: Array<String>) {
+    if (args.isEmpty()) {
+        println("Missing argument!")
+        exitProcess(1)
     }
-
-    println()
+    val file = File(args[0])
+        try {
+            val ast = frontend(file.inputStream())
+        } catch (e: SyntaxException) {
+            System.err.println(e.message)
+            exitProcess(100)
+        } catch (e: SemanticException) {
+            System.err.println(e.message)
+            exitProcess(200)
+        }
 }
 
-fun <T> actionOnFiles(file: File, action: (File) -> T): List<T> {
-    var list = emptyList<T>()
-    if (file.isDirectory) {
-        for (subFile in file.listFiles()) {
-            list += actionOnFiles(subFile, action)
-        }
-    } else {
-        list += action(file)
-    }
-    return list
+fun frontend(inputStream: InputStream): AST {
+    val program = parse(inputStream)
+    checkSyntax(program)
+    val ast = buildAST(program)
+    checkSemantics(ast)
+    return ast
 }
+
+fun parse(inputStream: InputStream): WaccParser.ProgramContext {
+    val input = CharStreams.fromStream(inputStream)
+    val lexer = WaccLexer(input)
+    lexer.removeErrorListeners()
+    lexer.addErrorListener(SyntaxErrorListener())
+    val tokens = CommonTokenStream(lexer)
+    val parser = WaccParser(tokens)
+    parser.removeErrorListeners()
+    parser.addErrorListener(SyntaxErrorListener())
+    return parser.program()
+}
+
+fun checkSyntax(program: WaccParser.ProgramContext) {
+    val checkSyntaxVisitor = CheckSyntaxVisitor()
+    checkSyntaxVisitor.visit(program)
+}
+
+fun buildAST(program: WaccParser.ProgramContext): AST {
+    return BuildAstVisitor().visit(program)
+}
+
+fun checkSemantics(ast: AST) {
+    val topST = SymbolTable(null)
+    ast.check(topST)
+}
+
