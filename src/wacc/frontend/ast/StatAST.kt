@@ -32,9 +32,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         if (identName.isPresent && identName.get() !is FuncAST) {
             semanticError("Variable with that name already exists")
         }
-        if (!type.isValidType(table)) {
-            semanticError("Type $type is not defined")
-        }
+
         if (!type.equals(rhsType)) {
             semanticError("Type mismatch - Expected type $type but actual type $rhsType")
 //            semanticError("Expected type $type but actual type $rhsType")
@@ -73,12 +71,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
         if (lhsIsAFunction(table)) {
             semanticError("Cannot assign a value to a function")
         }
-        if (!leftType.isValidType(table)) {
-            semanticError("Left hand side type is not valid")
-        }
-        if (!rightType.isValidType(table)) {
-            semanticError("Right hand side type is not valid")
-        }
+
         if (!leftType.equals(rightType)) {
             semanticError("Types $leftType and $rightType are not equal.")
         }

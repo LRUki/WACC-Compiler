@@ -7,10 +7,6 @@ interface TypeAST : AST {
     // Compares the underlying type in two TypeASTs
     override fun equals(other: Any?): Boolean
 
-    // Checks that the type exits in the symbol table
-    fun isValidType(table: SymbolTable): Boolean {
-        return true
-    }
 }
 
 enum class BaseType {
@@ -33,10 +29,6 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
         return false
     }
 
-    override fun isValidType(table: SymbolTable): Boolean {
-        return table.lookupAll(type.name.toLowerCase()).isPresent
-    }
-
     override fun hashCode(): Int {
         return type.hashCode()
     }
@@ -56,10 +48,6 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST,Identifiable
             return other.type.equals(type)
         }
         return false
-    }
-
-    override fun isValidType(table: SymbolTable): Boolean {
-        return type.isValidType(table)
     }
 
     override fun hashCode(): Int {
@@ -91,10 +79,6 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST,Identifiable
         return false
     }
 
-    override fun isValidType(table: SymbolTable): Boolean {
-        return type1.isValidType(table) && type2.isValidType(table)
-    }
-
     override fun hashCode(): Int {
         var result = type1.hashCode()
         result = 31 * result + type2.hashCode()
@@ -121,11 +105,6 @@ class InnerPairTypeAST : TypeAST {
         }
         return false
     }
-
-    override fun isValidType(table: SymbolTable): Boolean {
-        return table.lookupAll("pair").isPresent
-    }
-
 
     override fun hashCode(): Int {
         return javaClass.hashCode()

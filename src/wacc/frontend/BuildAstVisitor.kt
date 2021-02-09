@@ -26,7 +26,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
         val programAST = ProgramAST(funcList, statToList(stat))
         programAST.ctx = ctx
-        programAST.check(SymbolTable.currentST)
         return programAST
     }
 

@@ -17,15 +17,13 @@ class AstTest {
     fun `BuildAstVisitor can build AST for valid wacc files`() {
         val folder = File("wacc_examples/valid")
         val list = actionOnFiles(folder) { file ->
-            println(file.path)
             val input = CharStreams.fromStream(file.inputStream())
             val lexer = WaccLexer(input)
             val tokens = CommonTokenStream(lexer)
             val parser = WaccParser(tokens)
             val tree = parser.program()
 
-            val topST = createTopLevelST()
-            SymbolTable.currentST = topST
+            val topST = SymbolTable(null)
             val visitor = BuildAstVisitor()
             visitor.visit(tree)
         }

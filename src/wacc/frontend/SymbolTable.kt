@@ -6,10 +6,6 @@ import java.util.*
 
 open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
-    companion object {
-        lateinit var currentST: SymbolTable
-    }
-
     // A symbol table consists of a HashMap and a list of children.
     val currSymbolTable: HashMap<String, Identifiable> = HashMap()
 
