@@ -25,7 +25,7 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
             }
             return type == other.type
         } else if (other is ArrayTypeAST) {
-            return this.equals(other.type)
+            return this == other.type
         } else if (other is PairTypeAST) {
             return type == BaseType.NULL
         }
@@ -78,11 +78,11 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
         if (other is InnerPairTypeAST) {
             return true
         } else if (other is PairTypeAST) {
-            return type1.equals(other.type1) && type2.equals(other.type2)
+            return type1 == other.type1 && type2.equals(other.type2)
         } else if (other is ArrayTypeAST) {
-            return this.equals(other.type)
+            return this == other.type
         } else if (other is BaseTypeAST) {
-            if (other.type.equals(BaseType.NULL)) {
+            if (other.type == BaseType.NULL) {
                 return true
             }
         }

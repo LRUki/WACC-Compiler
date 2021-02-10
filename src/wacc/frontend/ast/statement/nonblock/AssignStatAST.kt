@@ -34,7 +34,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
             semanticError("Cannot assign a value to a function", ctx)
         }
 
-        if (!leftType.equals(rightType)) {
+        if (leftType != rightType) {
             semanticError("Type mismatch, $rightType cannot be assigned to $leftType", ctx)
         }
         return true

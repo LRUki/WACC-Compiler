@@ -41,10 +41,10 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size}" +
                     "arguments, Actually got ${argList.size}", ctx)
         }
-        for (i in 0 until argList.size) {
+        for (i in argList.indices) {
             val argType = argList[i].getRealType(table)
             val paramType = funcAst.paramList[i].type
-            if (!argType.equals(paramType)) {
+            if (argType != paramType) {
                 semanticError("Type mismatch, Expected type $paramType, Actual type $argType", ctx)
             }
         }

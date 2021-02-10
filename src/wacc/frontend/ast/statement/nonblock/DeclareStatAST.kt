@@ -23,7 +23,6 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 
         if (!type.equals(rhsType)) {
             semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
-//            semanticError("Expected type $type but actual type $rhsType")
         }
         table.add(ident.name, this)
         return true

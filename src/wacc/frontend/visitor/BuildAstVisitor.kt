@@ -122,10 +122,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
-        val visitWhileStatAST = WhileStatAST(visit(ctx.expr()) as ExprAST,
+        val whileStatAst = WhileStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat()) as StatAST))
-        visitWhileStatAST.ctx = ctx
-        return visitWhileStatAST
+        whileStatAst.ctx = ctx
+        return whileStatAst
     }
 
     private fun statToList(stat: StatAST): List<StatAST> {
