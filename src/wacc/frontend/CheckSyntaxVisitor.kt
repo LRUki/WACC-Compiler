@@ -64,9 +64,12 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
 
         //check else branch ends with return/exit
         val elseLastStat = getLastStat(stat.stat(1))
-        if(endsWithExitOrReturn
-            && elseLastStat is WaccParser.IfStatContext){
-            endsWithExitOrReturn = ifStatEndsWithExitOrReturn(elseLastStat)
+        if(endsWithExitOrReturn) {
+            if (elseLastStat is WaccParser.IfStatContext) {
+                endsWithExitOrReturn = ifStatEndsWithExitOrReturn(elseLastStat)
+            } else {
+                endsWithExitOrReturn = isExitOrReturn(elseLastStat)
+            }
         }
 
         return endsWithExitOrReturn
