@@ -17,18 +17,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
-//fun temp() {
-//    val BLACK = "\033[0;30m";   // BLACK
-//    val RED = "\033[0;31m";     // RED
-//    val GREEN = "\033[0;32m";   // GREEN
-//    val String YELLOW = "\033[0;33m";  // YELLOW
-//    val String BLUE = "\033[0;34m";    // BLUE
-//    val String PURPLE = "\033[0;35m";  // PURPLE
-//    val CYAN = "\033[0;36m";    // CYAN
-//    val WHITE = "\033[0;37m";   // WHITE
-//}
-
-
 fun main(args: Array<String>) {
     if (args.isEmpty()) {
         println("Missing argument!")
@@ -40,13 +28,10 @@ fun main(args: Array<String>) {
     } catch (e: SyntaxException) {
         System.err.println(e.message)
         printErrorLineInCode(e, file)
-//            val purple: String = "\u001B[30m"
-//            System.err.println("\u001B[41m" +purple+ file.readLines()[e.line-1])
         exitProcess(100)
     } catch (e: SemanticException) {
         System.err.println(e.message)
         printErrorLineInCode(e, file)
-        //System.err.println(line of code)
         exitProcess(200)
     }
 }
