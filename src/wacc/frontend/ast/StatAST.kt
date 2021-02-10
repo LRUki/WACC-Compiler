@@ -96,7 +96,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 if (closestFunc.isEmpty) {
                     semanticError("A return token is outside of a function scope", ctx)
                 }
-                val returnType = (closestFunc.get() as FuncAST).type
+                val returnType = (closestFunc.get()).type
                 if (!returnType.equals(exprType)) {
                     semanticError("Expected type $returnType, Actual type $exprType", ctx)
                 }
