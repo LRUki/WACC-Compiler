@@ -11,6 +11,8 @@ import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
 /**
+ * AST node to represent a Pair Element
+ *
  * @param Pair elem command, either 'fst' or 'snd'
  * @param Expression evaluating to a pair object
  */
