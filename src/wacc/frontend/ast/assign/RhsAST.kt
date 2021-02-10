@@ -1,11 +1,11 @@
 package wacc.frontend.ast.assign
 
-import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.*
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.exception.semanticError
 
 interface RhsAST : AST, Typed
 

@@ -1,6 +1,6 @@
 package wacc.frontend.ast
 
-import wacc.frontend.SemanticAnalyser.Companion.semanticError
+
 import wacc.frontend.SymbolTable
 
 interface TypeAST : AST {

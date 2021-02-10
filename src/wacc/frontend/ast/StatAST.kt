@@ -3,13 +3,13 @@ package wacc.frontend.ast
 import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
-import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.exception.semanticError
 
 
 interface StatAST : AST

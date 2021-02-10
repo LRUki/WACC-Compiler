@@ -1,10 +1,10 @@
 package wacc.frontend.ast.function
 
 import wacc.frontend.FuncSymbolTable
-import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.*
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.exception.semanticError
 
 class FuncAST(val type: TypeAST, val ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {

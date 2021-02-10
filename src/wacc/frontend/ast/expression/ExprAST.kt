@@ -4,10 +4,10 @@ import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defStringTypeAST
-import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.*
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.exception.semanticError
 
 interface ExprAST : RhsAST
 
