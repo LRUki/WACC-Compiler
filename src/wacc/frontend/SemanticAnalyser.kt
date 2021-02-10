@@ -19,7 +19,7 @@ class SemanticAnalyser {
 
         fun semanticError(message: String, ctx: ParserRuleContext) {
             throw SemanticException("Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $message"
-                    , ctx.start.line)
+                    , ctx.start.line, 200)
         }
     }
 }

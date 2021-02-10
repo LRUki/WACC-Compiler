@@ -28,11 +28,11 @@ fun main(args: Array<String>) {
     } catch (e: SyntaxException) {
         System.err.println(e.message)
         printErrorLineInCode(e, file)
-        exitProcess(100)
+        exitProcess(e.errorCode)
     } catch (e: SemanticException) {
         System.err.println(e.message)
         printErrorLineInCode(e, file)
-        exitProcess(200)
+        exitProcess(e.errorCode)
     }
 }
 
