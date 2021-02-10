@@ -9,9 +9,9 @@ fun syntaxError(msg: String, ctx: ParserRuleContext) {
     )
 }
 
-fun semanticError(message: String, ctx: ParserRuleContext) {
+fun semanticError(msg: String, ctx: ParserRuleContext) {
     throw SemanticException(
-            "Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $message", ctx.start.line
+            "Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $msg", ctx.start.line
     )
 }
 

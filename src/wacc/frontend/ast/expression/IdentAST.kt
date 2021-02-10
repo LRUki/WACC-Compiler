@@ -6,7 +6,7 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
-import wacc.frontend.ast.statement.DeclareStatAST
+import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.TypeAST

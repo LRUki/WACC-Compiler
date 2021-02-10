@@ -106,8 +106,6 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
     }
 }
 
-
-//TODO think about this later
 class InnerPairTypeAST : TypeAST {
     // For pairElemType: baseType PAIR ;
     override fun equals(other: Any?): Boolean {
