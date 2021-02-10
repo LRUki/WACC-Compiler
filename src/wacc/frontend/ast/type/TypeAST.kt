@@ -53,7 +53,7 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
     override fun toString(): String {
         var currentType = type
         var counter = 0
-        while (currentType is ArrayTypeAST){
+        while (currentType is ArrayTypeAST) {
             counter++
             currentType = currentType.type
         }

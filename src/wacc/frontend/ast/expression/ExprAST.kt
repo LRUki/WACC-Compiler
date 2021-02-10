@@ -1,16 +1,16 @@
 package wacc.frontend.ast.expression
 
-import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
-import wacc.frontend.ast.type.TypeInstance.charTypeInstance
-import wacc.frontend.ast.type.TypeInstance.intTypeInstance
-import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.SymbolTable
-import wacc.frontend.ast.*
+import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.BaseType
 import wacc.frontend.ast.type.BaseTypeAST
 import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
+import wacc.frontend.ast.type.TypeInstance.charTypeInstance
+import wacc.frontend.ast.type.TypeInstance.intTypeInstance
+import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.exception.semanticError
 
 interface ExprAST : RhsAST
@@ -37,7 +37,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
             BinOp.LTE, BinOp.LT, BinOp.GTE, BinOp.GT -> {
                 if (type1.equals(intTypeInstance) ||
                         type1.equals(charTypeInstance) ||
-                            type1.equals(stringTypeInstance)) {
+                        type1.equals(stringTypeInstance)) {
                     return true
                 }
                 semanticError("Expected type INT, CHAR or STRING, Actual type $type1", ctx)

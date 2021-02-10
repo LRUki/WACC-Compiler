@@ -2,15 +2,15 @@ package wacc.frontend.ast.pair
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.type.PairTypeAST
-import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.NullPairLiterAST
+import wacc.frontend.ast.type.PairTypeAST
+import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
-class PairElemAST(val choice: PairChoice, val expr: ExprAST): LhsAST, RhsAST, AbstractAST() {
+class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
         if (expr is NullPairLiterAST) {
@@ -26,7 +26,7 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST): LhsAST, RhsAST, Ab
             semanticError("Expected type PAIR, Actual type $pairType", ctx)
         }
         pairType as PairTypeAST
-        return when(choice) {
+        return when (choice) {
             PairChoice.FST -> pairType.type1
             PairChoice.SND -> pairType.type2
         }

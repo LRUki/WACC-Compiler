@@ -1,7 +1,7 @@
 package wacc.frontend
 
-import wacc.frontend.ast.type.Identifiable
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.type.Identifiable
 import java.util.*
 
 open class SymbolTable(private val encSymbolTable: SymbolTable?) {
@@ -52,4 +52,4 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
 }
 
-class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST : FuncAST): SymbolTable(encSymbolTable)
+class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

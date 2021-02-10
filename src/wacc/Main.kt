@@ -4,13 +4,13 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import wacc.frontend.visitor.BuildAstVisitor
-import wacc.frontend.visitor.CheckSyntaxVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
+import wacc.frontend.visitor.BuildAstVisitor
+import wacc.frontend.visitor.CheckSyntaxVisitor
 import java.io.File
 import java.io.InputStream
 import kotlin.system.exitProcess

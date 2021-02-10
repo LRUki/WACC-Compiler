@@ -1,8 +1,5 @@
 package wacc.frontend.ast.statement
 
-import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
-import wacc.frontend.ast.type.TypeInstance.charTypeInstance
-import wacc.frontend.ast.type.TypeInstance.intTypeInstance
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
@@ -15,6 +12,9 @@ import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.Identifiable
 import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
+import wacc.frontend.ast.type.TypeInstance.charTypeInstance
+import wacc.frontend.ast.type.TypeInstance.intTypeInstance
 import wacc.frontend.exception.semanticError
 
 
@@ -34,7 +34,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         }
 
         if (!type.equals(rhsType)) {
-            semanticError("Type mismatch - Expected type $type, Actual type $rhsType",ctx)
+            semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
 //            semanticError("Expected type $type but actual type $rhsType")
         }
         table.add(ident.name, this)
@@ -44,7 +44,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 
 class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 
-    private fun lhsIsAFunction(table: SymbolTable) :Boolean {
+    private fun lhsIsAFunction(table: SymbolTable): Boolean {
         if (lhs is IdentAST) {
             val fName = table.lookupAll(lhs.name)
             if (fName.isPresent && fName.get() is FuncAST) {

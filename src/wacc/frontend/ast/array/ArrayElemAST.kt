@@ -2,11 +2,11 @@ package wacc.frontend.ast.array
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.type.ArrayTypeAST
-import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.type.ArrayTypeAST
+import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
 class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, LhsAST, AbstractAST() {

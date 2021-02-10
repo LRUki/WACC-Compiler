@@ -2,7 +2,7 @@ package wacc.frontend.visitor
 
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
-import wacc.frontend.ast.*
+import wacc.frontend.ast.AST
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.LhsAST
@@ -94,7 +94,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             ctx.PRINTLN() != null -> Action.PRINTLN
             else -> throw RuntimeException()
         }
-        val actionStatAST =  ActionStatAST(action, visit(ctx.expr()) as ExprAST)
+        val actionStatAST = ActionStatAST(action, visit(ctx.expr()) as ExprAST)
         actionStatAST.ctx = ctx
         return actionStatAST
     }
@@ -147,8 +147,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                         argList += visit(expr) as ExprAST
                     }
                 }
-                val callRhsAST
-                  = CallRhsAST(visit(ctx.ident()) as IdentAST, argList)
+                val callRhsAST = CallRhsAST(visit(ctx.ident()) as IdentAST, argList)
                 callRhsAST.ctx = ctx
                 callRhsAST
             }
