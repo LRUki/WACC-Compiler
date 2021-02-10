@@ -10,7 +10,7 @@ test-antlr:
   stage: test-antlr
   script:
     - echo "Building"
-    - make clean all
+    - make clean rules
     - ./testgrun
 
 #test-frontend:
