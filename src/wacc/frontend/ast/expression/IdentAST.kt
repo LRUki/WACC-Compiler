@@ -2,7 +2,7 @@ package wacc.frontend.ast.expression
 
 
 import wacc.frontend.SymbolTable
-import wacc.frontend.ast.*
+import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST

@@ -17,6 +17,6 @@ class SyntaxErrorListener : BaseErrorListener() {
             msg: String,
             e: RecognitionException?
     ) {
-        throw SyntaxException("Syntax Error at line $line:$charPositionInLine $msg",line)
+        throw SyntaxException("Syntax Error at line $line:$charPositionInLine $msg", line)
     }
 }

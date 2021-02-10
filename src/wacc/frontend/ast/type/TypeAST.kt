@@ -44,7 +44,7 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
 class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiable {
 
     override fun equals(other: Any?): Boolean {
-        if (other is ArrayTypeAST) {
+        if (other is ArrayTypeAST && this.dimension == other.dimension) {
             return other.type.equals(type)
         }
         return false
@@ -53,7 +53,7 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
     override fun toString(): String {
         var currentType = type
         var counter = 0
-        while (currentType is ArrayTypeAST){
+        while (currentType is ArrayTypeAST) {
             counter++
             currentType = currentType.type
         }
