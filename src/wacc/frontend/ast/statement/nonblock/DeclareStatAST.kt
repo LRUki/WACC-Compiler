@@ -10,7 +10,14 @@ import wacc.frontend.ast.type.Identifiable
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
-// int x = 5 + 6;
+/**
+ * AST node representing a Declare Statement (TYPE IDENT = RHS)
+ * Create a new variable with a given type and assigns it the given value
+ *
+ * @property type Type of the variable
+ * @property ident Name of the variable
+ * @property rhs Value to be stored in the variable
+ */
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
@@ -23,7 +30,6 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 
         if (!type.equals(rhsType)) {
             semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
-//            semanticError("Expected type $type but actual type $rhsType")
         }
         table.add(ident.name, this)
         return true

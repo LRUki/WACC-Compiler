@@ -12,13 +12,13 @@ import wacc.frontend.ast.type.Typed
 import wacc.frontend.exception.semanticError
 
 /**
- * Implemented by ASTs on the right hand-side of an assignment statement.
- * Implements Typed to get check types during declare and assign statements
+ * Implemented by AST nodes that can be on the right hand-side of an assignment statement.
+ * Implements Typed interface to get underlying types during declare and assign statements
  */
 interface RhsAST : AST, Typed
 
 /**
- * Creates a Pair object holding both expressions
+ * AST node to represent a New Pair
  *
  * @property fst First expression of a pair
  * @property snd Second expression of a pair
@@ -37,13 +37,14 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 }
 
 /**
- *
+ * AST node to represent a Function Call
  *
  * @property ident Identifier representing function name
  * @property argList List of expression as arguments for the function
  */
 class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
+
         ident.check(table)
         val funcAst = table.lookupAll(ident.name).get()
 

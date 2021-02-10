@@ -7,6 +7,11 @@ import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.TypeInstance
 import wacc.frontend.exception.semanticError
 
+/**
+ * AST node representing Read Statement
+ *
+ * @property expr LhsAST node to read data into
+ */
 class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {

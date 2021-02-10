@@ -12,6 +12,7 @@ import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
 /**
+ * AST node to represent an Identifier
  *
  * @property name Name of the identifier
  */

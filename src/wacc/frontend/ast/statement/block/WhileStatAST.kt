@@ -7,6 +7,12 @@ import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.TypeInstance
 import wacc.frontend.exception.semanticError
 
+/**
+ * AST node to represent a WHILE DO DONE statement
+ *
+ * @property cond Boolean expression for the condition
+ * @property body List of statements to be executed when cond == true
+ */
 class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
