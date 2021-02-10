@@ -69,7 +69,7 @@ class SyntaxTest {
                 checkSyntaxVisitor.visit(tree)
                 throw Error("failed to detect invalid file: " + file.path)
             }catch(e:SyntaxException){
-                assertTrue(e.message!!.contains("syntax error"))
+                assertTrue(e.message!!.contains("Syntax Error"))
             }
         }
     }

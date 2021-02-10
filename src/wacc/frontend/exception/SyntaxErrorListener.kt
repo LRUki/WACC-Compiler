@@ -17,6 +17,6 @@ class SyntaxErrorListener : BaseErrorListener() {
             msg: String,
             e: RecognitionException?
     ) {
-        throw SyntaxException("syntax error: line $line:$charPositionInLine at $offendingSymbol: $msg")
+        throw SyntaxException("Syntax Error at line $line:$charPositionInLine $msg",line)
     }
 }

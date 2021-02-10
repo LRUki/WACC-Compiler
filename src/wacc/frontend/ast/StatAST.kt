@@ -1,6 +1,5 @@
 package wacc.frontend.ast
 
-import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
 import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
@@ -18,23 +17,18 @@ interface StatAST : AST
 class SkipStatAST : StatAST
 
 // int x = 5 + 6;
-class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable {
-    lateinit var ctx: ParserRuleContext
-
-    override fun getContext(): ParserRuleContext {
-        return ctx;
-    }
+class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
         rhs.check(table)
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
         if (identName.isPresent && identName.get() !is FuncAST) {
-            semanticError("Variable with that name already exists")
+            semanticError("Variable $ident already exists", ctx)
         }
 
         if (!type.equals(rhsType)) {
-            semanticError("Type mismatch - Expected type $type but actual type $rhsType")
+            semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
 //            semanticError("Expected type $type but actual type $rhsType")
         }
         table.add(ident.name, this)
@@ -42,13 +36,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
     }
 }
 
-class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
-
-    lateinit var ctx: ParserRuleContext
-
-    override fun getContext(): ParserRuleContext {
-        return ctx;
-    }
+class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 
     private fun lhsIsAFunction(table: SymbolTable) :Boolean {
         if (lhs is IdentAST) {
@@ -69,40 +57,29 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST {
             leftType = leftType.type
         }
         if (lhsIsAFunction(table)) {
-            semanticError("Cannot assign a value to a function")
+            semanticError("Cannot assign a value to a function", ctx)
         }
 
         if (!leftType.equals(rightType)) {
-            semanticError("Types $leftType and $rightType are not equal.")
+            semanticError("Type mismatch, $rightType cannot be assigned to $leftType", ctx)
         }
         return true;
     }
 }
 
-class ReadStatAST(val expr: LhsAST) : StatAST {
-    lateinit var ctx: ParserRuleContext
-
-    override fun getContext(): ParserRuleContext? {
-        return ctx;
-    }
+class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
         expr.check(table)
         val exprType = expr.getRealType(table)
         if (!exprType.equals(defCharTypeAST) && !exprType.equals(defIntTypeAST)) {
-            semanticError("Invalid type, must be Int or Char")
+            semanticError("Expected type INT or CHAR, Actual type $exprType", ctx)
         }
         return true
     }
 }
 
-//int[] a = [0]
-class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
-    lateinit var ctx: ParserRuleContext
-
-    override fun getContext(): ParserRuleContext {
-        return ctx;
-    }
+class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
         expr.check(table)
@@ -112,16 +89,16 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
                 if (exprType is ArrayTypeAST || exprType is PairTypeAST) {
                     return true;
                 }
-                semanticError("Actual type ${exprType}: Expected Array or Pair type")
+                semanticError("Expected type ARRAY or PAIR, Actual type $exprType", ctx)
             }
             Action.RETURN -> {
                 val closestFunc = table.lookupFirstFunc()
                 if (closestFunc.isEmpty) {
-                    semanticError("A return token is outside of a function scope")
+                    semanticError("A return token is outside of a function scope", ctx)
                 }
-                val returnType = (closestFunc.get() as FuncAST).type
+                val returnType = (closestFunc.get()).type
                 if (!returnType.equals(exprType)) {
-                    semanticError("Expected $returnType but actual type $exprType")
+                    semanticError("Expected type $returnType, Actual type $exprType", ctx)
                 }
                 return true
             }
@@ -129,12 +106,9 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST {
                 if (exprType.equals(defIntTypeAST)) {
                     return true
                 }
-                semanticError("Expected type INT actual type $exprType")
+                semanticError("Expected type INT, Actual type $exprType", ctx)
             }
-            Action.PRINT -> {
-                return expr.check(table)
-            }
-            Action.PRINTLN -> {
+            Action.PRINT, Action.PRINTLN -> {
                 return expr.check(table)
             }
         }
@@ -146,20 +120,14 @@ enum class Action {
     FREE, RETURN, EXIT, PRINT, PRINTLN
 }
 
-class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: List<StatAST>) : StatAST {
-
-    lateinit var ctx: ParserRuleContext
-
-    override fun getContext(): ParserRuleContext {
-        return ctx;
-    }
+class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: List<StatAST>) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
         //cond is bool
         cond.check(table)
         val condType = cond.getRealType(table)
         if (!condType.equals(defBoolTypeAST)) {
-            semanticError("If condition must be a Boolean but was $condType")
+            semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
         }
 
         val thenST = SymbolTable(table)
@@ -172,18 +140,13 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
     }
 }
 
-class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST {
-    lateinit var ctx: ParserRuleContext
-
-    override fun getContext(): ParserRuleContext {
-        return ctx;
-    }
+class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
         cond.check(table)
         val condType = cond.getRealType(table)
         if (!condType.equals(defBoolTypeAST)) {
-            semanticError("If condition must be a Boolean but was $condType")
+            semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
         }
         val blockST = SymbolTable(table)
         body.forEach { it.check(blockST) }

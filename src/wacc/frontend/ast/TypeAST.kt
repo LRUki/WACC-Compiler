@@ -7,13 +7,14 @@ interface TypeAST : AST {
     // Compares the underlying type in two TypeASTs
     override fun equals(other: Any?): Boolean
 
+    override fun toString(): String
 }
 
 enum class BaseType {
     INT, BOOL, CHAR, STRING, ANY, NULL
 }
 
-class BaseTypeAST(val type: BaseType) : TypeAST {
+class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
 
     override fun equals(other: Any?): Boolean {
         if (other is BaseTypeAST) {
@@ -29,25 +30,32 @@ class BaseTypeAST(val type: BaseType) : TypeAST {
         return false
     }
 
+    override fun toString(): String {
+        return type.name
+    }
+
     override fun hashCode(): Int {
         return type.hashCode()
     }
-
-    override fun check(table: SymbolTable): Boolean {
-         if (table.lookupAll(type.name.toLowerCase()).isEmpty) {
-             semanticError("Invalid type $type does not exist")
-         }
-        return true
-    }
 }
 
-class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST,Identifiable {
+class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiable {
 
     override fun equals(other: Any?): Boolean {
         if (other is ArrayTypeAST) {
             return other.type.equals(type)
         }
         return false
+    }
+
+    override fun toString(): String {
+        var currentType = type
+        var counter = 0
+        while (currentType is ArrayTypeAST){
+            counter++
+            currentType = currentType.type
+        }
+        return "$type" + "[]".repeat(counter)
     }
 
     override fun hashCode(): Int {
@@ -79,14 +87,16 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST,Identifiable
         return false
     }
 
+    override fun toString(): String {
+        return "pair(${type1}, ${type2})"
+    }
+
     override fun hashCode(): Int {
         var result = type1.hashCode()
         result = 31 * result + type2.hashCode()
         return result
     }
 
-    // innerpair types
-    // pair (pair (1, 2)) 3
     override fun check(table: SymbolTable): Boolean {
         type1.check(table)
         type2.check(table)
@@ -104,6 +114,10 @@ class InnerPairTypeAST : TypeAST {
             return true
         }
         return false
+    }
+
+    override fun toString(): String {
+        return "pair"
     }
 
     override fun hashCode(): Int {

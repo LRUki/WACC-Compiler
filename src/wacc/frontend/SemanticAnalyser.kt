@@ -1,5 +1,6 @@
 package wacc.frontend
 
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.ast.*
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
@@ -16,15 +17,11 @@ class SemanticAnalyser {
         val defAnyTypeAST = BaseTypeAST(BaseType.ANY)
         val defArrayTypeAST = ArrayTypeAST(defAnyTypeAST, 1)
 
-        fun semanticError(message: String) {
-            throw SemanticException("semantic error: " +
-//                    "line: " + ctx.start.line.toString() + ":" + ctx.start.charPositionInLine
-//                    .toString() + " " +
-                    message)
+        fun semanticError(message: String, ctx: ParserRuleContext) {
+            throw SemanticException("Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $message"
+                    , ctx.start.line)
         }
     }
-
-
 }
 
 
