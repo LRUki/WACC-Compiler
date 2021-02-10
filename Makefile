@@ -16,9 +16,12 @@ JAVAC	:= javac
 
 JFLAGS	:= -sourcepath $(SOURCE_DIR) -d $(OUTPUT_DIR) -cp lib/antlr-4.9.1-complete.jar 
 
+GRADLE	:= gradlew
+JARDIR	:= build/libs/wacc_23-all-1.0-SNAPSHOT.jar
+
 # the make rules
 
-all: rules
+all: rules gradle
 
 # runs the antlr build script then attempts to compile all .java files within src
 rules:
@@ -28,9 +31,13 @@ rules:
 	$(JAVAC) $(JFLAGS) @$@
 	$(RM) rules
 
+gradle:
+	./$(GRADLE) fatJar
+	cp ./$(JARDIR) ./
+
 clean:
 	$(RM) rules $(OUTPUT_DIR) $(SOURCE_DIR)/antlr
 
-.PHONY: all rules clean
+.PHONY: all rules gradle clean
 
 
