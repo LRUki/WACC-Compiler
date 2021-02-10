@@ -1,8 +1,7 @@
 package wacc.frontend.ast.assign
 
 import wacc.frontend.ast.AST
-import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.Typed
+import wacc.frontend.ast.type.Typed
 
 interface LhsAST : AST, Typed
 

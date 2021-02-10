@@ -1,4 +1,4 @@
-package wacc.frontend
+package wacc.frontend.visitor
 
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
@@ -13,6 +13,9 @@ import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.program.ProgramAST
+import wacc.frontend.ast.statement.*
+import wacc.frontend.ast.type.*
 
 class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
@@ -22,7 +25,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             funcList = funcList + visit(func) as FuncAST
         }
 
-        var stat = visit(ctx.stat()) as StatAST
+        val stat = visit(ctx.stat()) as StatAST
 
         val programAST = ProgramAST(funcList, statToList(stat))
         programAST.ctx = ctx
@@ -109,7 +112,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                 visit(ctx.assignRhs()) as RhsAST)
 
         declareStatAST.ctx = ctx
-        return declareStatAST;
+        return declareStatAST
     }
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
@@ -220,7 +223,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     override fun visitBinopExpr(ctx: WaccParser.BinopExprContext): AST {
         val binop = when (ctx.getChild(1).text) {
             "+" -> BinOp.PLUS
-            "-" -> BinOp.MINUS;
+            "-" -> BinOp.MINUS
             "*" -> BinOp.MULT
             "/" -> BinOp.DIV
             "%" -> BinOp.MOD

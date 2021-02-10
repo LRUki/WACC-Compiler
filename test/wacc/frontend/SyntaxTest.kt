@@ -8,6 +8,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
+import wacc.frontend.visitor.CheckSyntaxVisitor
 import java.io.File
 
 

@@ -1,10 +1,10 @@
 package wacc.frontend.ast.expression
 
 import wacc.frontend.SymbolTable
-import wacc.frontend.ast.ArrayTypeAST
-import wacc.frontend.ast.BaseType
-import wacc.frontend.ast.BaseTypeAST
-import wacc.frontend.ast.TypeAST
+import wacc.frontend.ast.type.ArrayTypeAST
+import wacc.frontend.ast.type.BaseType
+import wacc.frontend.ast.type.BaseTypeAST
+import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.ast.assign.RhsAST
 
 interface LiterAST: ExprAST

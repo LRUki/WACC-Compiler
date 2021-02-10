@@ -1,6 +1,6 @@
 package wacc.frontend
 
-import wacc.frontend.ast.Identifiable
+import wacc.frontend.ast.type.Identifiable
 import wacc.frontend.ast.function.FuncAST
 import java.util.*
 

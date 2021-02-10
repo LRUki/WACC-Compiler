@@ -4,8 +4,8 @@ import antlr.WaccLexer
 import antlr.WaccParser
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import wacc.frontend.BuildAstVisitor
-import wacc.frontend.CheckSyntaxVisitor
+import wacc.frontend.visitor.BuildAstVisitor
+import wacc.frontend.visitor.CheckSyntaxVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.exception.SemanticException
@@ -13,26 +13,25 @@ import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
 import java.io.File
 import java.io.InputStream
-import java.nio.file.Files
-import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
+    val ast: AST
     if (args.isEmpty()) {
         println("Missing argument!")
         exitProcess(1)
     }
     val file = File(args[0])
     try {
-        val ast = frontend(file.inputStream())
+        ast = frontend(file.inputStream())
     } catch (e: SyntaxException) {
         System.err.println(e.message)
         printErrorLineInCode(e, file)
-        exitProcess(100)
+        exitProcess(e.errorCode)
     } catch (e: SemanticException) {
         System.err.println(e.message)
         printErrorLineInCode(e, file)
-        exitProcess(200)
+        exitProcess(e.errorCode)
     }
 }
 

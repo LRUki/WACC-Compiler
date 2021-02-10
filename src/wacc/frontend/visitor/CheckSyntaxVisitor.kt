@@ -1,8 +1,7 @@
-package wacc.frontend
+package wacc.frontend.visitor
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
-import org.antlr.v4.runtime.ParserRuleContext
-import wacc.frontend.exception.SyntaxException
+import wacc.frontend.exception.syntaxError
 
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
@@ -17,7 +16,7 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         }
 
         if(!functionEndsWithExitOrReturn){
-            syntaxError(ctx,"function missing exit or return")
+            syntaxError("function missing exit or return", ctx)
         }
 
         return null
@@ -27,15 +26,12 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         try {
             (ctx.text).toInt()
         } catch (e: NumberFormatException) {
-            syntaxError(ctx, "int out of bound")
+            syntaxError("int out of bound", ctx)
         }
         return null
     }
 
-    private fun syntaxError(ctx: ParserRuleContext, message:String){
-        throw SyntaxException("Syntax Error at line ${ctx.start.line}:" +
-                "${ctx.start.charPositionInLine} $message", ctx.start.line)
-    }
+
 
 
     //recursively search for the last statement

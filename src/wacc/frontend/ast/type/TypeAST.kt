@@ -1,7 +1,9 @@
-package wacc.frontend.ast
+package wacc.frontend.ast.type
 
-import wacc.frontend.SemanticAnalyser.Companion.semanticError
+
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.AST
+import wacc.frontend.ast.AbstractAST
 
 interface TypeAST : AST {
     // Compares the underlying type in two TypeASTs
@@ -71,7 +73,7 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
     }
 }
 
-class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST,Identifiable {
+class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiable {
     override fun equals(other: Any?): Boolean {
         if (other is InnerPairTypeAST) {
             return true

@@ -1,13 +1,17 @@
 package wacc.frontend.ast.expression
 
-import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
-import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
-import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
-import wacc.frontend.SemanticAnalyser.Companion.defStringTypeAST
-import wacc.frontend.SemanticAnalyser.Companion.semanticError
+import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
+import wacc.frontend.ast.type.TypeInstance.charTypeInstance
+import wacc.frontend.ast.type.TypeInstance.intTypeInstance
+import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.*
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.type.ArrayTypeAST
+import wacc.frontend.ast.type.BaseType
+import wacc.frontend.ast.type.BaseTypeAST
+import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.exception.semanticError
 
 interface ExprAST : RhsAST
 
@@ -25,21 +29,21 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         when (binOp) {
             BinOp.MULT, BinOp.DIV, BinOp.MOD,
             BinOp.PLUS, BinOp.MINUS -> {
-                if (type1.equals(defIntTypeAST)) {
+                if (type1.equals(intTypeInstance)) {
                     return true
                 }
                 semanticError("Expected type INT, Actual type $type1", ctx)
             }
             BinOp.LTE, BinOp.LT, BinOp.GTE, BinOp.GT -> {
-                if (type1.equals(defIntTypeAST) ||
-                        type1.equals(defCharTypeAST) ||
-                            type1.equals(defStringTypeAST)) {
+                if (type1.equals(intTypeInstance) ||
+                        type1.equals(charTypeInstance) ||
+                            type1.equals(stringTypeInstance)) {
                     return true
                 }
                 semanticError("Expected type INT, CHAR or STRING, Actual type $type1", ctx)
             }
             BinOp.AND, BinOp.OR -> {
-                if (type1.equals(defBoolTypeAST)) {
+                if (type1.equals(boolTypeInstance)) {
                     return true
                 }
                 semanticError("Expected type BOOL, Actual type $type1", ctx)
@@ -52,10 +56,14 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
     override fun getRealType(table: SymbolTable): TypeAST {
         return when (binOp) {
             BinOp.MULT, BinOp.DIV, BinOp.MOD,
-            BinOp.PLUS, BinOp.MINUS -> {BaseTypeAST(BaseType.INT)}
+            BinOp.PLUS, BinOp.MINUS -> {
+                BaseTypeAST(BaseType.INT)
+            }
 
             BinOp.EQ, BinOp.NEQ, BinOp.LTE, BinOp.LT,
-            BinOp.GTE, BinOp.GT, BinOp.AND, BinOp.OR -> {BaseTypeAST(BaseType.BOOL)}
+            BinOp.GTE, BinOp.GT, BinOp.AND, BinOp.OR -> {
+                BaseTypeAST(BaseType.BOOL)
+            }
         }
     }
 
@@ -78,13 +86,13 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
         when (unOp) {
             UnOp.NOT -> {
-                if (exprType.equals(defBoolTypeAST)) {
+                if (exprType.equals(boolTypeInstance)) {
                     return true
                 }
                 semanticError("Expected type BOOL, Actual type $exprType", ctx)
             }
             UnOp.MINUS, UnOp.CHR -> {
-                if (exprType.equals(defIntTypeAST)) {
+                if (exprType.equals(intTypeInstance)) {
                     return true
                 }
                 semanticError("Expected type INT, Actual type $exprType", ctx)
@@ -96,7 +104,7 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 semanticError("Expected type ARRAY, Actual type $exprType", ctx)
             }
             UnOp.ORD -> {
-                if (exprType.equals(defCharTypeAST)) {
+                if (exprType.equals(charTypeInstance)) {
                     return true
                 }
                 semanticError("Expected type CHAR, Actual type $exprType", ctx)

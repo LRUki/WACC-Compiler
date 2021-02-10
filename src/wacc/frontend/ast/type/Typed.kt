@@ -1,4 +1,4 @@
-package wacc.frontend.ast
+package wacc.frontend.ast.type
 
 import wacc.frontend.SymbolTable
 
