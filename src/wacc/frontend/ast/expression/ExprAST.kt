@@ -15,6 +15,13 @@ import wacc.frontend.exception.semanticError
 
 interface ExprAST : RhsAST
 
+/**
+ * AST node to represent an expression with a Binary Operation
+ *
+ * @property binOp Operator to perform to expressions, will be one defined in the BinOp Enum
+ * @property expr1 First Expression
+ * @property expr2 Second Expression
+ */
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
@@ -78,6 +85,12 @@ enum class BinOp {
     OR
 }
 
+/**
+ * AST node to represent an expression with a Unary Operation
+ *
+ * @property unOp Operation to perform on the expression, chosen from the UnOp Enum
+ * @property expr Expression to operate on
+ */
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {

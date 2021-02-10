@@ -4,9 +4,18 @@ package wacc.frontend.ast.type
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
-
+/**
+ * Implemented by Type AST nodes
+ * Implements the AST interface to be able to override the check method
+ */
 interface TypeAST : AST {
-    // Compares the underlying type in two TypeASTs
+    /**
+     * Equals method used to match the underlying types
+     * Enforces all TypeASTs must override equals
+     *
+     * @param other Other TypeAST
+     * @return Boolean representing result of equality check
+     */
     override fun equals(other: Any?): Boolean
 
     override fun toString(): String
@@ -16,20 +25,30 @@ enum class BaseType {
     INT, BOOL, CHAR, STRING, ANY, NULL
 }
 
+/**
+ * AST node representing a Base Type
+ * INT, CHAR, STRING, BOOL
+ *
+ * @property type Type declared by BaseType enum
+ */
 class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
 
     override fun equals(other: Any?): Boolean {
-        if (other is BaseTypeAST) {
-            if (type == BaseType.ANY || other.type == BaseType.ANY) {
-                return true
+        when (other) {
+            is BaseTypeAST -> {
+                if (type == BaseType.ANY || other.type == BaseType.ANY) {
+                    return true
+                }
+                return type == other.type
             }
-            return type == other.type
-        } else if (other is ArrayTypeAST) {
-            return this.equals(other.type)
-        } else if (other is PairTypeAST) {
-            return type == BaseType.NULL
+            is ArrayTypeAST -> {
+                return this.equals(other.type)
+            }
+            is PairTypeAST -> {
+                return type == BaseType.NULL
+            }
+            else -> return false
         }
-        return false
     }
 
     override fun toString(): String {
@@ -41,6 +60,12 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
     }
 }
 
+/**
+ * AST node to represent an Array Type
+ *
+ * @property type type of the array
+ * @property dimension dimension of the array
+ */
 class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiable {
 
     override fun equals(other: Any?): Boolean {
@@ -73,6 +98,12 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
     }
 }
 
+/**
+ * AST node to represent a Pair Type
+ *
+ * @property type1 Type of first element
+ * @property type2 Type of second element
+ */
 class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiable {
     override fun equals(other: Any?): Boolean {
         if (other is InnerPairTypeAST) {
@@ -106,10 +137,13 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
     }
 }
 
-
-//TODO think about this later
+/**
+ * AST node to represent a Inner Pair Type
+ * Has no fields as type information is discarded
+ *
+ */
 class InnerPairTypeAST : TypeAST {
-    // For pairElemType: baseType PAIR ;
+
     override fun equals(other: Any?): Boolean {
         if (other is PairTypeAST || other is InnerPairTypeAST ||
                 other is BaseTypeAST && other.type == BaseType.NULL) {

@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import wacc.frontend.Utils.PATH_TO_EXAMPLES
 import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
 import wacc.frontend.visitor.CheckSyntaxVisitor
@@ -13,7 +14,6 @@ import java.io.File
 
 
 class SyntaxTest {
-    private val PATH_TO_EXAMPLES = "wacc_examples/"
 
     @Test
     fun antlrParsesValidPrograms() {

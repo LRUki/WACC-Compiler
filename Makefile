@@ -21,7 +21,7 @@ JARDIR	:= build/libs/wacc_23-all-1.0-SNAPSHOT.jar
 
 # the make rules
 
-all: rules gradle
+all: rules
 
 # runs the antlr build script then attempts to compile all .java files within src
 rules:
