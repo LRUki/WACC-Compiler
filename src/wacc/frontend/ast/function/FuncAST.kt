@@ -4,6 +4,9 @@ import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.*
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.statement.StatAST
+import wacc.frontend.ast.type.Identifiable
+import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
 class FuncAST(val type: TypeAST, val ident: IdentAST,

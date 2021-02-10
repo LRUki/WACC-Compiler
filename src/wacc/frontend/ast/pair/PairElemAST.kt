@@ -2,8 +2,8 @@ package wacc.frontend.ast.pair
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.PairTypeAST
-import wacc.frontend.ast.TypeAST
+import wacc.frontend.ast.type.PairTypeAST
+import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST

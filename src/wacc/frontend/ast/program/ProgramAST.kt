@@ -1,7 +1,9 @@
-package wacc.frontend.ast
+package wacc.frontend.ast.program
 
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.statement.StatAST
 
 class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST() {
 

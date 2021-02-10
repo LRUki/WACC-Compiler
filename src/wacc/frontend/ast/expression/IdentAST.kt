@@ -6,6 +6,10 @@ import wacc.frontend.ast.*
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
+import wacc.frontend.ast.statement.DeclareStatAST
+import wacc.frontend.ast.type.ArrayTypeAST
+import wacc.frontend.ast.type.PairTypeAST
+import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
 class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {

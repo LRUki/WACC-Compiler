@@ -1,14 +1,20 @@
-package wacc.frontend.ast
+package wacc.frontend.ast.statement
 
-import wacc.frontend.SemanticAnalyser.Companion.defBoolTypeAST
-import wacc.frontend.SemanticAnalyser.Companion.defCharTypeAST
-import wacc.frontend.SemanticAnalyser.Companion.defIntTypeAST
+import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
+import wacc.frontend.ast.type.TypeInstance.charTypeInstance
+import wacc.frontend.ast.type.TypeInstance.intTypeInstance
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.AST
+import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.type.ArrayTypeAST
+import wacc.frontend.ast.type.Identifiable
+import wacc.frontend.ast.type.PairTypeAST
+import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
 
@@ -63,7 +69,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         if (!leftType.equals(rightType)) {
             semanticError("Type mismatch, $rightType cannot be assigned to $leftType", ctx)
         }
-        return true;
+        return true
     }
 }
 
@@ -72,7 +78,7 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
         expr.check(table)
         val exprType = expr.getRealType(table)
-        if (!exprType.equals(defCharTypeAST) && !exprType.equals(defIntTypeAST)) {
+        if (!exprType.equals(charTypeInstance) && !exprType.equals(intTypeInstance)) {
             semanticError("Expected type INT or CHAR, Actual type $exprType", ctx)
         }
         return true
@@ -87,7 +93,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         when (action) {
             Action.FREE -> {
                 if (exprType is ArrayTypeAST || exprType is PairTypeAST) {
-                    return true;
+                    return true
                 }
                 semanticError("Expected type ARRAY or PAIR, Actual type $exprType", ctx)
             }
@@ -103,7 +109,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 return true
             }
             Action.EXIT -> {
-                if (exprType.equals(defIntTypeAST)) {
+                if (exprType.equals(intTypeInstance)) {
                     return true
                 }
                 semanticError("Expected type INT, Actual type $exprType", ctx)
@@ -126,7 +132,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         //cond is bool
         cond.check(table)
         val condType = cond.getRealType(table)
-        if (!condType.equals(defBoolTypeAST)) {
+        if (!condType.equals(boolTypeInstance)) {
             semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
         }
 
@@ -136,7 +142,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         val elseST = SymbolTable(table)
         elseBody.forEach { it.check(elseST) }
 
-        return true;
+        return true
     }
 }
 
@@ -145,7 +151,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
     override fun check(table: SymbolTable): Boolean {
         cond.check(table)
         val condType = cond.getRealType(table)
-        if (!condType.equals(defBoolTypeAST)) {
+        if (!condType.equals(boolTypeInstance)) {
             semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
         }
         val blockST = SymbolTable(table)

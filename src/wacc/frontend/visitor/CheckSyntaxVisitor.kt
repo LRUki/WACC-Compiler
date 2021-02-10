@@ -1,8 +1,6 @@
-package wacc.frontend
+package wacc.frontend.visitor
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
-import org.antlr.v4.runtime.ParserRuleContext
-import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.syntaxError
 
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
