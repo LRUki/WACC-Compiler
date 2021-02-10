@@ -9,6 +9,12 @@ import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
+/**
+ *
+ *
+ * @property ident Identifier for the array
+ * @property indices Expressions indexing into the array
+ */
 class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, LhsAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {

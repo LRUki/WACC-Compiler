@@ -11,8 +11,18 @@ import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.ast.type.Typed
 import wacc.frontend.exception.semanticError
 
+/**
+ * Implemented by ASTs on the right hand-side of an assignment statement.
+ * Implements Typed to get check types during declare and assign statements
+ */
 interface RhsAST : AST, Typed
 
+/**
+ * Creates a Pair object holding both expressions
+ *
+ * @property fst First expression of a pair
+ * @property snd Second expression of a pair
+ */
 class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
     override fun check(table: SymbolTable): Boolean {
         fst.check(table)
@@ -26,8 +36,13 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 
 }
 
+/**
+ *
+ *
+ * @property ident Identifier representing function name
+ * @property argList List of expression as arguments for the function
+ */
 class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, AbstractAST() {
-
     override fun check(table: SymbolTable): Boolean {
         ident.check(table)
         val funcAst = table.lookupAll(ident.name).get()
@@ -36,11 +51,15 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             semanticError("No function called $ident", ctx)
         }
         funcAst as FuncAST
+
+        /* Check all the arguments and for the correct number of them */
         argList.forEach { it.check((table)) }
         if (funcAst.paramList.size != argList.size) {
-            semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size}" +
+            semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size}"+
                     "arguments, Actually got ${argList.size}", ctx)
         }
+
+        /* Get the type of arguments and check it matches the corresponding type of the parameter */
         for (i in 0 until argList.size) {
             val argType = argList[i].getRealType(table)
             val paramType = funcAst.paramList[i].type
@@ -53,7 +72,6 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
 
     override fun getRealType(table: SymbolTable): TypeAST {
         return ident.getRealType(table)
-        //Look up in the top level symbol table for the function return type
     }
 
 }

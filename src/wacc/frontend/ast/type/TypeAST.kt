@@ -19,17 +19,21 @@ enum class BaseType {
 class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
 
     override fun equals(other: Any?): Boolean {
-        if (other is BaseTypeAST) {
-            if (type == BaseType.ANY || other.type == BaseType.ANY) {
-                return true
+        when (other) {
+            is BaseTypeAST -> {
+                if (type == BaseType.ANY || other.type == BaseType.ANY) {
+                    return true
+                }
+                return type == other.type
             }
-            return type == other.type
-        } else if (other is ArrayTypeAST) {
-            return this.equals(other.type)
-        } else if (other is PairTypeAST) {
-            return type == BaseType.NULL
+            is ArrayTypeAST -> {
+                return this.equals(other.type)
+            }
+            is PairTypeAST -> {
+                return type == BaseType.NULL
+            }
+            else -> return false
         }
-        return false
     }
 
     override fun toString(): String {
