@@ -27,6 +27,11 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
-        return (ident.getRealType(table) as ArrayTypeAST).type
+        val typeAST = ident.getRealType(table) as ArrayTypeAST
+        return if (typeAST.dimension > indices.size) {
+            ArrayTypeAST(typeAST.type, typeAST.dimension - indices.size)
+        } else {
+            typeAST.type
+        }
     }
 }
