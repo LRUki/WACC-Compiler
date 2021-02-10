@@ -44,7 +44,7 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
 class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiable {
 
     override fun equals(other: Any?): Boolean {
-        if (other is ArrayTypeAST) {
+        if (other is ArrayTypeAST && this.dimension == other.dimension) {
             return other.type.equals(type)
         }
         return false

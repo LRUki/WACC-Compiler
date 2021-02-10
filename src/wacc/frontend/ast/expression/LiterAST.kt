@@ -42,12 +42,12 @@ class NullPairLiterAST : LiterAST {
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     override fun getRealType(table: SymbolTable): TypeAST {
         if (values.size == 0) {
-            return ArrayTypeAST(BaseTypeAST(BaseType.ANY), 0)
+            return ArrayTypeAST(BaseTypeAST(BaseType.ANY), 1)
         }
         val exprType = values[0].getRealType(table)
         if (exprType is ArrayTypeAST) {
-            return exprType
+            return ArrayTypeAST(exprType.type, exprType.dimension + 1)
         }
-        return ArrayTypeAST(exprType, 0)
+        return ArrayTypeAST(exprType, 1)
     }
 }
