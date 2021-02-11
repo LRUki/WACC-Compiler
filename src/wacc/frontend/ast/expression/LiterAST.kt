@@ -2,10 +2,7 @@ package wacc.frontend.ast.expression
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.ast.type.ArrayTypeAST
-import wacc.frontend.ast.type.BaseType
-import wacc.frontend.ast.type.BaseTypeAST
-import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.*
 
 interface LiterAST : ExprAST
 
@@ -35,14 +32,14 @@ class CharLiterAST(val value: Char) : LiterAST {
 
 class NullPairLiterAST : LiterAST {
     override fun getRealType(table: SymbolTable): TypeAST {
-        return BaseTypeAST(BaseType.NULL)
+        return AnyPairTypeAST()
     }
 }
 
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     override fun getRealType(table: SymbolTable): TypeAST {
         if (values.isEmpty()) {
-            return ArrayTypeAST(BaseTypeAST(BaseType.ANY), 1)
+            return ArrayTypeAST(AnyTypeAST(), 1)
         }
         val exprType = values[0].getRealType(table)
         if (exprType is ArrayTypeAST) {

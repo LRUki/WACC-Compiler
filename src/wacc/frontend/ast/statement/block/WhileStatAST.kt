@@ -18,7 +18,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
     override fun check(table: SymbolTable): Boolean {
         cond.check(table)
         val condType = cond.getRealType(table)
-        if (!condType.equals(TypeInstance.boolTypeInstance)) {
+        if (condType != TypeInstance.boolTypeInstance) {
             semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
         }
         val blockST = SymbolTable(table)

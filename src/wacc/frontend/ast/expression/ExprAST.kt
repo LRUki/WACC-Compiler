@@ -30,27 +30,27 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         expr2.check(table)
         val type2 = expr2.getRealType(table)
 
-        if (!type1.equals(type2)) {
+        if (type1 != type2) {
             semanticError("Expected type $type1, Actual type $type2", ctx)
         }
         when (binOp) {
             BinOp.MULT, BinOp.DIV, BinOp.MOD,
             BinOp.PLUS, BinOp.MINUS -> {
-                if (type1.equals(intTypeInstance)) {
+                if (type1 == intTypeInstance) {
                     return true
                 }
                 semanticError("Expected type INT, Actual type $type1", ctx)
             }
             BinOp.LTE, BinOp.LT, BinOp.GTE, BinOp.GT -> {
-                if (type1.equals(intTypeInstance) ||
-                        type1.equals(charTypeInstance) ||
-                        type1.equals(stringTypeInstance)) {
+                if (type1 == intTypeInstance ||
+                        type1 == charTypeInstance ||
+                        type1 == stringTypeInstance) {
                     return true
                 }
                 semanticError("Expected type INT, CHAR or STRING, Actual type $type1", ctx)
             }
             BinOp.AND, BinOp.OR -> {
-                if (type1.equals(boolTypeInstance)) {
+                if (type1 == boolTypeInstance) {
                     return true
                 }
                 semanticError("Expected type BOOL, Actual type $type1", ctx)
@@ -99,13 +99,13 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
         when (unOp) {
             UnOp.NOT -> {
-                if (exprType.equals(boolTypeInstance)) {
+                if (exprType == boolTypeInstance) {
                     return true
                 }
                 semanticError("Expected type BOOL, Actual type $exprType", ctx)
             }
             UnOp.MINUS, UnOp.CHR -> {
-                if (exprType.equals(intTypeInstance)) {
+                if (exprType == intTypeInstance) {
                     return true
                 }
                 semanticError("Expected type INT, Actual type $exprType", ctx)
@@ -117,7 +117,7 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 semanticError("Expected type ARRAY, Actual type $exprType", ctx)
             }
             UnOp.ORD -> {
-                if (exprType.equals(charTypeInstance)) {
+                if (exprType == charTypeInstance) {
                     return true
                 }
                 semanticError("Expected type CHAR, Actual type $exprType", ctx)

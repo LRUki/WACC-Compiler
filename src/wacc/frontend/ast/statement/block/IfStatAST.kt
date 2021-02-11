@@ -20,7 +20,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         //cond is bool
         cond.check(table)
         val condType = cond.getRealType(table)
-        if (!condType.equals(TypeInstance.boolTypeInstance)) {
+        if (condType != TypeInstance.boolTypeInstance) {
             semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
         }
 
