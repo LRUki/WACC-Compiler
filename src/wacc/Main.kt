@@ -9,6 +9,7 @@ import wacc.frontend.ast.AST
 import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
+import wacc.frontend.exception.printErrorLineInCode
 import wacc.frontend.visitor.BuildAstVisitor
 import wacc.frontend.visitor.CheckSyntaxVisitor
 import java.io.File
@@ -67,28 +68,4 @@ fun buildAST(program: WaccParser.ProgramContext): AST {
 fun checkSemantics(ast: AST) {
     val topST = SymbolTable(null)
     ast.check(topST)
-}
-
-fun printErrorLineInCode(e: Exception, file: File) {
-    var lineNumber = 0
-    if (e is SemanticException) {
-        lineNumber = e.line
-    } else if (e is SyntaxException) {
-        lineNumber = e.line
-    }
-    val bold = "\u001b[1m"
-    val reset = "\u001b[m"
-    val black = "$bold\u001B[38;2;22;198;12m"
-    val red = "$bold\u001B[38;2;187;0;0m"
-    val bg = "$reset\u001B[48:5:242m"
-    val bgHighlighted = "$reset\u001B[48:5:244m"
-    System.err.println("Location of error in file: ")
-    try {
-        System.err.println("$bg$black${lineNumber - 3}${file.readLines()[lineNumber - 3]}")
-        System.err.println("$bg$black${lineNumber - 2}${file.readLines()[lineNumber - 2]}")
-        System.err.println("$bgHighlighted$red${lineNumber - 1}${file.readLines()[lineNumber - 1]}")
-        System.err.println("$bg$black${lineNumber}${file.readLines()[lineNumber]}")
-        System.err.println("$bg$black${lineNumber + 1}${file.readLines()[lineNumber + 1]}")
-    } catch (e: IndexOutOfBoundsException) {
-    }
 }

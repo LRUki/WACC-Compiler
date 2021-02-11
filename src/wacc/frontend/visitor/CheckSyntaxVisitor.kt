@@ -25,7 +25,7 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
         }
 
         if (!functionEndsWithExitOrReturn) {
-            syntaxError("function missing exit or return", ctx)
+            syntaxError("Function does not end with an exit or return statement", ctx)
         }
 
         return null
