@@ -9,6 +9,14 @@ import wacc.frontend.ast.type.Identifiable
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
+/**
+ * AST node to represent a Function
+ *
+ * @property type Return type of the function
+ * @property ident Name of the function
+ * @property paramList List of Parameter ASTs for the parameters of the function
+ * @property body List of statements making up the function body
+ */
 class FuncAST(val type: TypeAST, val ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {
 

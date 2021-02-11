@@ -10,6 +10,12 @@ import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
+/**
+ * AST node to represent a Pair Element
+ *
+ * @param Pair elem command, either 'fst' or 'snd'
+ * @param Expression evaluating to a pair object
+ */
 class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {

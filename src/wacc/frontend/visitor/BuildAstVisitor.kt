@@ -14,7 +14,13 @@ import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.program.ProgramAST
-import wacc.frontend.ast.statement.*
+import wacc.frontend.ast.statement.MultiStatAST
+import wacc.frontend.ast.statement.SkipStatAST
+import wacc.frontend.ast.statement.StatAST
+import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.block.IfStatAST
+import wacc.frontend.ast.statement.block.WhileStatAST
+import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.*
 
 class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
@@ -116,10 +122,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
-        val visitWhileStatAST = WhileStatAST(visit(ctx.expr()) as ExprAST,
+        val whileStatAst = WhileStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat()) as StatAST))
-        visitWhileStatAST.ctx = ctx
-        return visitWhileStatAST
+        whileStatAst.ctx = ctx
+        return whileStatAst
     }
 
     private fun statToList(stat: StatAST): List<StatAST> {
@@ -193,7 +199,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitPairElemType(ctx: WaccParser.PairElemTypeContext): AST {
         return if (ctx.PAIR() != null) {
-            InnerPairTypeAST()
+            AnyPairTypeAST()
         } else {
             visitChildren(ctx)
         }

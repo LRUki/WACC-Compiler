@@ -2,8 +2,16 @@ package wacc.frontend.visitor
 
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
+import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.syntaxError
 
+/**
+ * Visitor class that handles syntax checking.
+ * checks the syntax of function and integer literal
+ * that antlr fails to check.
+ *
+ * @throws SyntaxException
+ */
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
         //check if function ends with return or exit
