@@ -4,6 +4,7 @@ package wacc.frontend.ast.type
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
+
 /**
  * Implemented by Type AST nodes
  * Implements the AST interface to be able to override the check method
@@ -22,7 +23,7 @@ interface TypeAST : AST {
 }
 
 enum class BaseType {
-    INT, BOOL, CHAR, STRING, ANY, NULL
+    INT, BOOL, CHAR, STRING
 }
 
 /**
@@ -34,20 +35,11 @@ enum class BaseType {
 class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
 
     override fun equals(other: Any?): Boolean {
-        when (other) {
-            is BaseTypeAST -> {
-                if (type == BaseType.ANY || other.type == BaseType.ANY) {
-                    return true
-                }
-                return type == other.type
-            }
-            is ArrayTypeAST -> {
-                return this == other.type
-            }
-            is PairTypeAST -> {
-                return type == BaseType.NULL
-            }
-            else -> return false
+        return when (other) {
+            is AnyTypeAST -> true
+            is BaseTypeAST -> type == other.type
+            is ArrayTypeAST -> this == other.type
+            else -> false
         }
     }
 
@@ -69,10 +61,11 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
 class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiable {
 
     override fun equals(other: Any?): Boolean {
-        if (other is ArrayTypeAST && this.dimension == other.dimension) {
-            return other.type.equals(type)
+        return when (other) {
+            is AnyTypeAST -> true
+            is ArrayTypeAST -> this.dimension == other.dimension
+            else -> false
         }
-        return false
     }
 
     override fun toString(): String {
@@ -99,6 +92,27 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
 }
 
 /**
+ * Technical AST node to represent any type.
+ * It is used to represent the element type of an empty array [].
+ * It will NOT appear in the type signature of any variable or function.
+ * It has no fields since the type information is discarded.
+ */
+class AnyTypeAST : TypeAST {
+
+    override fun equals(other: Any?): Boolean {
+        return other is TypeAST
+    }
+
+    override fun toString(): String {
+        return "any"
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
+}
+
+/**
  * AST node to represent a Pair Type
  *
  * @property type1 Type of first element
@@ -106,18 +120,13 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
  */
 class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiable {
     override fun equals(other: Any?): Boolean {
-        if (other is InnerPairTypeAST) {
-            return true
-        } else if (other is PairTypeAST) {
-            return type1 == other.type1 && type2.equals(other.type2)
-        } else if (other is ArrayTypeAST) {
-            return this == other.type
-        } else if (other is BaseTypeAST) {
-            if (other.type == BaseType.NULL) {
-                return true
-            }
+        return when (other) {
+            is AnyTypeAST -> true
+            is AnyPairTypeAST -> true
+            is PairTypeAST -> type1 == other.type1 && type2 == other.type2
+            is ArrayTypeAST -> this == other.type
+            else -> false
         }
-        return false
     }
 
     override fun toString(): String {
@@ -138,18 +147,16 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
 }
 
 /**
- * AST node to represent a Inner Pair Type
- * Has no fields as type information is discarded
- *
+ * Technical AST node to represent a pair without types for its element.
+ * It is used to represent inner pair types, e.g. Pair(pair, pair),
+ * or the null literal.
+ * It will NOT appear in the type signature of any variable or function.
+ * It has no fields since the type information is discarded.
  */
-class InnerPairTypeAST : TypeAST {
+class AnyPairTypeAST : TypeAST {
 
     override fun equals(other: Any?): Boolean {
-        if (other is PairTypeAST || other is InnerPairTypeAST ||
-                other is BaseTypeAST && other.type == BaseType.NULL) {
-            return true
-        }
-        return false
+        return other is PairTypeAST || other is AnyPairTypeAST
     }
 
     override fun toString(): String {

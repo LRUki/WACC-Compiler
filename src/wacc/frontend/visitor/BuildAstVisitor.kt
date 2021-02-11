@@ -199,7 +199,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitPairElemType(ctx: WaccParser.PairElemTypeContext): AST {
         return if (ctx.PAIR() != null) {
-            InnerPairTypeAST()
+            AnyPairTypeAST()
         } else {
             visitChildren(ctx)
         }
