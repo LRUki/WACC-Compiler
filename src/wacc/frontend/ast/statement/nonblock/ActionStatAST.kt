@@ -9,6 +9,12 @@ import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.TypeInstance
 import wacc.frontend.exception.semanticError
 
+/**
+ * AST node to represent an Action Statement
+ *
+ * @property action An action declared in the ACTION enum
+ * @property expr Expression to perform action on
+ */
 class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {

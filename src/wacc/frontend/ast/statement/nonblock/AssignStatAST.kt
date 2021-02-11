@@ -10,6 +10,12 @@ import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.exception.semanticError
 
+/**
+ * AST node to represent an Assignment Statement (LHS = RHS)
+ *
+ * @property lhs LhsAST is the node to be assigned to
+ * @property rhs RhsAST is the value we are assigning
+ */
 class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 
     private fun lhsIsAFunction(table: SymbolTable): Boolean {

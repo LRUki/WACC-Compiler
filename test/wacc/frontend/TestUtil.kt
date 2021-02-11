@@ -5,6 +5,10 @@ import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxException
 import java.io.File
 
+object Utils {
+    val PATH_TO_EXAMPLES = "wacc_examples/"
+}
+
 
 class CompilerResult(val exitCode: Int, val exception: Exception?)
 

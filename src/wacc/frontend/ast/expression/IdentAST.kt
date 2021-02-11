@@ -1,6 +1,5 @@
 package wacc.frontend.ast.expression
 
-
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -12,6 +11,11 @@ import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
+/**
+ * AST node to represent an Identifier
+ *
+ * @property name Name of the identifier
+ */
 class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
@@ -39,7 +43,5 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
             is PairTypeAST -> type
             else -> throw RuntimeException("Unknown class implementing Identifiable")
         }
-
-
     }
 }
