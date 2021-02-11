@@ -56,7 +56,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         /* Check all the arguments and for the correct number of them */
         argList.forEach { it.check((table)) }
         if (funcAst.paramList.size != argList.size) {
-            semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size}"+
+            semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size}" +
                     "arguments, Actually got ${argList.size}", ctx)
         }
         for (i in argList.indices) {

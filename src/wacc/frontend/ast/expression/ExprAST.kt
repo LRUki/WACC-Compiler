@@ -36,15 +36,15 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         when (binOp) {
             BinOp.MULT, BinOp.DIV, BinOp.MOD,
             BinOp.PLUS, BinOp.MINUS -> {
-                if (type1.equals(intTypeInstance)) {
+                if (type1 == intTypeInstance) {
                     return true
                 }
                 semanticError("Expected type INT, Actual type $type1", ctx)
             }
             BinOp.LTE, BinOp.LT, BinOp.GTE, BinOp.GT -> {
-                if (type1.equals(intTypeInstance) ||
-                        type1.equals(charTypeInstance) ||
-                        type1.equals(stringTypeInstance)) {
+                if (type1 == intTypeInstance ||
+                        type1 == charTypeInstance ||
+                        type1 == stringTypeInstance) {
                     return true
                 }
                 semanticError("Expected type INT, CHAR or STRING, Actual type $type1", ctx)

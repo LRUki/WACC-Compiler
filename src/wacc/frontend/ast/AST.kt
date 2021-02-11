@@ -21,15 +21,17 @@ interface AST {
     fun check(table: SymbolTable): Boolean {
         return true
     }
+
     fun checkAndGetType(table: SymbolTable): TypeAST? {
-       return null
+        return null
     }
 }
+
 /**
  * Implemented by any AST that can throw an exception
  */
 abstract class AbstractAST : AST {
     lateinit var ctx: ParserRuleContext
-    lateinit var confirmedType : BaseType
+    lateinit var confirmedType: BaseType
 }
 
