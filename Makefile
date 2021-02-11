@@ -34,6 +34,7 @@ rules:
 
 gradle:
 	./$(GRADLE) fatJar
+	ls
 
 clean:
 	$(RM) rules $(OUTPUT_DIR) $(SOURCE_DIR)/antlr $(BUILD_DIR) $(JAR_NAME)
