@@ -33,7 +33,7 @@ class ExitCodeTest {
 
     @Test
     fun filesWithSemanticErrorReturnExitCode200() {
-    File("wacc_examples/invalid/semanticErr").walkTopDown().forEach {
+        File("wacc_examples/invalid/semanticErr").walkTopDown().forEach {
             if (it.path.endsWith("wacc")) {
                 val result = emulate(it.path)
                 val exitCode = result?.exitCode

@@ -1,9 +1,15 @@
 package wacc.frontend
 
-import wacc.frontend.ast.Identifiable
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.type.Identifiable
 import java.util.*
 
+/**
+ * Symbol table to map identifiers to a Identifiable AST nodes
+ * Stores different information depending on variable/function
+ *
+ * @property encSymbolTable Parent symbol table
+ */
 open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
     // A symbol table consists of a HashMap and a list of children.
@@ -49,7 +55,6 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun add(name: String, obj: Identifiable) {
         currSymbolTable[name] = obj
     }
-
 }
 
-class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST : FuncAST): SymbolTable(encSymbolTable)
+class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

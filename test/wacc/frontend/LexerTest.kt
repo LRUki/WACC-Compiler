@@ -9,7 +9,7 @@ import org.junit.Test
 class LexerTest {
 
     @Test
-    fun lexerGivesCorrectTokens (){
+    fun lexerGivesCorrectTokens() {
         val input = CharStreams.fromString("begin skip end ")
         val lexer = WaccLexer(input)
         Assert.assertThat(lexer.nextToken().text, CoreMatchers.`is`("begin"))
@@ -29,8 +29,8 @@ class LexerTest {
     @Test
     fun lexerRemovesComments() {
         val input = CharStreams.fromString("begin #this is a comment\n" +
-                                              "skip #this is another comment\n" +
-                                              "end")
+                "skip #this is another comment\n" +
+                "end")
         val lexer = WaccLexer(input)
         Assert.assertThat(lexer.nextToken().text, CoreMatchers.`is`("begin"))
         Assert.assertThat(lexer.nextToken().text, CoreMatchers.`is`("skip"))

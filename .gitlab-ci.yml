@@ -9,47 +9,35 @@ stages:
 test-antlr:
   stage: test-antlr
   script:
-    - echo "Building"
-    - make clean all
+    - echo "Testing build antlr"
+    - make clean rules
     - ./testgrun
-
-#test-frontend:
-#  stage: test-frontend
-#  script:
-#    - echo "Testing the front end"
-#    - make clean all
-#    - echo "Testing syntax"
-#    - ./gradlew test --tests wacc.frontend.LexerTest #test lexing
-#    - ./gradlew test --tests wacc.frontend.SyntaxTest #test syntax
-#    - ./gradlew test --tests wacc.frontend.ExitCodeTest #test exit code
 
 test-lexer:
   stage: test-frontend
   script:
-    - make clean all
     - echo "Testing lexer"
-    - ./gradlew test --tests wacc.frontend.LexerTest #test lexing
+    - make clean rules
+    - ./gradlew test --tests wacc.frontend.LexerTest
 
 test-syntax:
   stage: test-frontend
   script:
-    - make clean all
     - echo "Testing syntax"
-    - ./gradlew test --tests wacc.frontend.SyntaxTest #test lexing
+    - make clean rules
+    - ./gradlew test --tests wacc.frontend.SyntaxTest
 
 test-exitcode:
   stage: test-frontend
   script:
-    - make clean all
     - echo "Testing exitcodes"
-    - ./gradlew test --tests wacc.frontend.ExitCodeTest #test lexing
-
+    - make clean rules
+    - ./gradlew test --tests wacc.frontend.ExitCodeTest
 
 test-backend:
   stage: test-backend
   script:
     - echo "Testing the back end"
-    # test code generation
 
 test-extension:
   stage: test-extension

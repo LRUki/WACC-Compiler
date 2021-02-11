@@ -1,23 +1,24 @@
 package wacc.frontend.ast.function
 
-import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.FuncSymbolTable
-import wacc.frontend.SemanticAnalyser.Companion.semanticError
 import wacc.frontend.SymbolTable
-import wacc.frontend.ast.AST
-import wacc.frontend.ast.Identifiable
-import wacc.frontend.ast.StatAST
-import wacc.frontend.ast.TypeAST
+import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.statement.StatAST
+import wacc.frontend.ast.type.Identifiable
+import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.exception.semanticError
 
+/**
+ * AST node to represent a Function
+ *
+ * @property type Return type of the function
+ * @property ident Name of the function
+ * @property paramList List of Parameter ASTs for the parameters of the function
+ * @property body List of statements making up the function body
+ */
 class FuncAST(val type: TypeAST, val ident: IdentAST,
-              val paramList: List<ParamAST>, val body: List<StatAST>) : AST, Identifiable {
-
-    lateinit var ctx: ParserRuleContext
-
-    override fun getContext(): ParserRuleContext {
-        return ctx;
-    }
+              val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {
 
     override fun check(table: SymbolTable): Boolean {
         //create a symbol table for the function and add all parameters to it
@@ -27,10 +28,10 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         return true
     }
 
-    fun checkNameAndAddToST(table : SymbolTable) {
+    fun checkNameAndAddToST(table: SymbolTable) {
         val fName = table.lookup(ident.name)
         if (fName.isPresent) {
-            semanticError("Invalid function name ${fName.get()}")
+            semanticError("Function ${fName.get()} is already defined", ctx)
         }
         paramList.forEach { it.check(table) }
         table.add(ident.name, this)
