@@ -3,6 +3,6 @@
 # You are free to change the language used for this script,
 # but do *not* change its name.
 
-java -jar wacc_23-all-1.0-SNAPSHOT.jar $1
+java -jar wacc-1.0-SNAPSHOT.jar $1
 
 exit $?

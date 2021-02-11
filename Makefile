@@ -18,7 +18,7 @@ JFLAGS	:= -sourcepath $(SOURCE_DIR) -d $(OUTPUT_DIR) -cp lib/antlr-4.9.1-complet
 
 GRADLE	:= gradlew
 BUILD_DIR	:= build
-JAR_NAME	:= wacc_23-all-1.0-SNAPSHOT.jar
+JAR_NAME	:= wacc-1.0-SNAPSHOT.jar
 
 # the make rules
 
@@ -34,7 +34,6 @@ rules:
 
 gradle:
 	./$(GRADLE) fatJar
-	ls
 
 clean:
 	$(RM) rules $(OUTPUT_DIR) $(SOURCE_DIR)/antlr $(BUILD_DIR) $(JAR_NAME)
