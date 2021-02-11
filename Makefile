@@ -17,6 +17,7 @@ JAVAC	:= javac
 JFLAGS	:= -sourcepath $(SOURCE_DIR) -d $(OUTPUT_DIR) -cp lib/antlr-4.9.1-complete.jar 
 
 GRADLE	:= gradlew
+BUILD_DIR	:= build
 JAR_NAME	:= wacc_23-all-1.0-SNAPSHOT.jar
 
 # the make rules
