@@ -37,11 +37,11 @@ fun printErrorLineInCode(e: Exception, file: File) {
     System.err.println("Location of error in file: ")
     val linesEitherSide = ErrorUtil.LINES_ABOVE_BELOW_ERROR
     for (i in lineNumber-linesEitherSide-1 until lineNumber+linesEitherSide) {
-        if ( i == lineNumber - 1) {
-            System.err.println("$bgHighlighted$red${i} ${fileLines[i]}$reset")
-            continue
-        }
         try {
+            if (i == lineNumber - 1) {
+                System.err.println("$bgHighlighted$red${i} ${fileLines[i]}$reset")
+                continue
+            }
             System.err.println("$bg$green${i} ${fileLines[i]}$reset")
         } catch (e: IndexOutOfBoundsException) {
         }
