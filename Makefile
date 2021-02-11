@@ -35,7 +35,7 @@ rules:
 
 gradle:
 	./$(GRADLE) fatJar
-	cp $(JAR_DIR)/$(JAR_NAME) $(JAR_NAME)
+	cp $(JAR_DIR)/$(JAR_NAME) $(JAR_NAME) || :
 
 clean:
 	$(RM) rules $(OUTPUT_DIR) $(SOURCE_DIR)/antlr $(BUILD_DIR) $(JAR_NAME)
