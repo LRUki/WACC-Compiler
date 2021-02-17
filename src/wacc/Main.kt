@@ -15,16 +15,33 @@ import wacc.frontend.visitor.CheckSyntaxVisitor
 import java.io.File
 import java.io.InputStream
 import kotlin.system.exitProcess
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
 
-fun main(args: Array<String>) {
+object Main {
+    lateinit var syntaxErrorChannel: Channel<SyntaxException>
+}
+
+suspend fun main(args: Array<String>) {
     val ast: AST
     if (args.isEmpty()) {
         println("Missing argument!")
         exitProcess(1)
     }
     val file = File(args[0])
+    val errorChannel = Channel<SyntaxException>()
+    Main.syntaxErrorChannel = errorChannel
+    val job = startErrorListener(errorChannel)
     try {
-        ast = frontend(file.inputStream())
+//        ast = frontend(file.inputStream())
+        val program = parse(file.inputStream())
+        checkSyntax(program)
+        errorChannel.close()
+        job.join()
+
+        val ast = buildAST(program)
+        checkSemantics(ast)
+
     } catch (e: SyntaxException) {
         System.err.println(e.message)
         printErrorLineInCode(e, file)
@@ -34,6 +51,24 @@ fun main(args: Array<String>) {
         printErrorLineInCode(e, file)
         exitProcess(e.errorCode)
     }
+}
+
+fun startErrorListener(errorChannel: Channel<SyntaxException>): Job {
+    val job = GlobalScope.launch {
+//        println("Started error listener")
+        val allErrors = mutableListOf<SyntaxException>()
+        for (error in errorChannel) {
+            allErrors.add(error)
+//            println("Found an error $error")
+        }
+        var count = 0
+        allErrors.forEach { it -> println("${count++} $it") }
+//        println("Error listener ended")
+        if (allErrors.size > 0) {
+            exitProcess(allErrors[0].errorCode)
+        }
+    }
+    return job
 }
 
 fun frontend(inputStream: InputStream): AST {

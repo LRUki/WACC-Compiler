@@ -1,6 +1,9 @@
 package wacc.frontend.exception
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.antlr.v4.runtime.ParserRuleContext
+import wacc.Main
 import java.io.File
 
 object ErrorUtil {
@@ -8,10 +11,10 @@ object ErrorUtil {
 }
 
 fun syntaxError(msg: String, ctx: ParserRuleContext) {
-    throw SyntaxException(
+    GlobalScope.launch {  Main.syntaxErrorChannel.send(SyntaxException(
             "Syntax Error at line" +
                     " ${ctx.start.line}:${ctx.start.charPositionInLine} $msg", ctx.start.line
-    )
+    )) }
 }
 
 fun semanticError(msg: String, ctx: ParserRuleContext) {

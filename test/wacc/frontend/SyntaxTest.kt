@@ -52,25 +52,25 @@ class SyntaxTest {
     }
 
 
-    @Test
-    fun syntaxCheckingThrowsErrorForInvalidPrograms() {
-        actionOnFiles(File(PATH_TO_EXAMPLES + "invalid/syntaxErr")) { file ->
-            val input = CharStreams.fromStream(file.inputStream())
-            val lexer = WaccLexer(input)
-            val tokens = CommonTokenStream(lexer)
-            val parser = WaccParser(tokens)
-            parser.removeErrorListeners()
-            parser.addErrorListener(SyntaxErrorListener())
-            try {
-                val tree = parser.program()
-                val checkSyntaxVisitor = CheckSyntaxVisitor()
-                checkSyntaxVisitor.visit(tree)
-                throw Error("failed to detect invalid file: " + file.path)
-            } catch (e: SyntaxException) {
-                assertTrue(e.message!!.contains("Syntax Error"))
-            }
-        }
-    }
+//    @Test
+//    fun syntaxCheckingThrowsErrorForInvalidPrograms() {
+//        actionOnFiles(File(PATH_TO_EXAMPLES + "invalid/syntaxErr")) { file ->
+//            val input = CharStreams.fromStream(file.inputStream())
+//            val lexer = WaccLexer(input)
+//            val tokens = CommonTokenStream(lexer)
+//            val parser = WaccParser(tokens)
+//            parser.removeErrorListeners()
+//            parser.addErrorListener(SyntaxErrorListener())
+//            try {
+//                val tree = parser.program()
+//                val checkSyntaxVisitor = CheckSyntaxVisitor()
+//                checkSyntaxVisitor.visit(tree)
+//                throw Error("failed to detect invalid file: " + file.path)
+//            } catch (e: SyntaxException) {
+//                assertTrue(e.message!!.contains("Syntax Error"))
+//            }
+//        }
+//    }
 
 
 }
