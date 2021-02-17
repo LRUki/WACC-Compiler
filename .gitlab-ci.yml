@@ -34,10 +34,15 @@ test-exitcode:
     - make clean rules
     - ./gradlew test --tests wacc.frontend.ExitCodeTest
 
-test-backend:
+test-codegen:
   stage: test-backend
   script:
-    - echo "Testing the back end"
+    - echo "Testing code generation"
+
+test-printing:
+  stage: test-backend
+  script:
+    - echo "Testing printing of code"
 
 test-extension:
   stage: test-extension
