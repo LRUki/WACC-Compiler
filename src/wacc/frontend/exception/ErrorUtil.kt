@@ -15,8 +15,7 @@ fun syntaxError(msg: String, ctx: ParserRuleContext) {
 }
 
 fun semanticError(msg: String, ctx: ParserRuleContext) {
-    throw SemanticException(
-            "Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $msg", ctx.start.line
+    throw SemanticException("Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $msg", ctx.start.line
     )
 }
 
@@ -39,10 +38,10 @@ fun printErrorLineInCode(e: Exception, file: File) {
     for (i in lineNumber-linesEitherSide-1 until lineNumber+linesEitherSide) {
         try {
             if (i == lineNumber - 1) {
-                System.err.println("$bgHighlighted$red${i} ${fileLines[i]}$reset")
+                System.err.println("$bgHighlighted$red${i+1} ${fileLines[i]}$reset")
                 continue
             }
-            System.err.println("$bg$green${i} ${fileLines[i]}$reset")
+            System.err.println("$bg$green${i+1} ${fileLines[i]}$reset")
         } catch (e: IndexOutOfBoundsException) {
         }
     }
