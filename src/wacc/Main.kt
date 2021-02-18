@@ -17,31 +17,23 @@ import java.io.InputStream
 import kotlin.system.exitProcess
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
+import wacc.Main.syntaxErrorChannel
 
 object Main {
     lateinit var syntaxErrorChannel: Channel<SyntaxException>
+    lateinit var semanticErrorChannel: Channel<SemanticException>
 }
 
-suspend fun main(args: Array<String>) {
+suspend fun main(args: Array<String>){
     val ast: AST
     if (args.isEmpty()) {
         println("Missing argument!")
         exitProcess(1)
     }
     val file = File(args[0])
-    val errorChannel = Channel<SyntaxException>()
-    Main.syntaxErrorChannel = errorChannel
-    val job = startErrorListener(errorChannel)
+    createErrorChannels()
     try {
-//        ast = frontend(file.inputStream())
-        val program = parse(file.inputStream())
-        checkSyntax(program)
-        errorChannel.close()
-        job.join()
-
-        val ast = buildAST(program)
-        checkSemantics(ast)
-
+        ast = frontend(file.inputStream())
     } catch (e: SyntaxException) {
         System.err.println(e.message)
         printErrorLineInCode(e, file)
@@ -53,17 +45,21 @@ suspend fun main(args: Array<String>) {
     }
 }
 
+fun createErrorChannels() {
+    val synErrorChannel = Channel<SyntaxException>()
+    syntaxErrorChannel = synErrorChannel
+    val semErrorChannel = Channel<SemanticException>()
+    Main.semanticErrorChannel = semErrorChannel
+}
+
 fun startErrorListener(errorChannel: Channel<SyntaxException>): Job {
     val job = GlobalScope.launch {
-//        println("Started error listener")
         val allErrors = mutableListOf<SyntaxException>()
         for (error in errorChannel) {
             allErrors.add(error)
-//            println("Found an error $error")
         }
         var count = 0
-        allErrors.forEach { it -> println("${count++} $it") }
-//        println("Error listener ended")
+        allErrors.forEach { System.err.println("${count++} $it") }
         if (allErrors.size > 0) {
             exitProcess(allErrors[0].errorCode)
         }
@@ -71,9 +67,12 @@ fun startErrorListener(errorChannel: Channel<SyntaxException>): Job {
     return job
 }
 
-fun frontend(inputStream: InputStream): AST {
+suspend fun frontend(inputStream: InputStream): AST {
+    val job = startErrorListener(syntaxErrorChannel)
     val program = parse(inputStream)
     checkSyntax(program)
+    syntaxErrorChannel.close()
+    job.join()
     val ast = buildAST(program)
     checkSemantics(ast)
     return ast
@@ -88,6 +87,7 @@ fun parse(inputStream: InputStream): WaccParser.ProgramContext {
     val parser = WaccParser(tokens)
     parser.removeErrorListeners()
     parser.addErrorListener(SyntaxErrorListener())
+
     return parser.program()
 }
 

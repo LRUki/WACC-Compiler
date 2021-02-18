@@ -12,7 +12,7 @@ object Utils {
 
 class CompilerResult(val exitCode: Int, val exception: Exception?)
 
-fun emulate(fileName: String): CompilerResult? {
+suspend fun emulate(fileName: String): CompilerResult? {
     var exitCode = 0
     var exception: Exception? = null
     val file = File(fileName)
