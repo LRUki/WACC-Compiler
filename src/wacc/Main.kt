@@ -17,6 +17,7 @@ import java.io.InputStream
 import kotlin.system.exitProcess
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
+import wacc.Main.semanticErrorChannel
 import wacc.Main.syntaxErrorChannel
 
 object Main {
@@ -49,32 +50,38 @@ fun createErrorChannels() {
     val synErrorChannel = Channel<SyntaxException>()
     syntaxErrorChannel = synErrorChannel
     val semErrorChannel = Channel<SemanticException>()
-    Main.semanticErrorChannel = semErrorChannel
+    semanticErrorChannel = semErrorChannel
 }
 
-fun startErrorListener(errorChannel: Channel<SyntaxException>): Job {
-    val job = GlobalScope.launch {
-        val allErrors = mutableListOf<SyntaxException>()
+fun <T> startErrorListener(errorChannel: Channel<T>): Job {
+    return GlobalScope.launch {
+        val allErrors = mutableListOf<T>()
         for (error in errorChannel) {
             allErrors.add(error)
         }
         var count = 0
         allErrors.forEach { System.err.println("${count++} $it") }
         if (allErrors.size > 0) {
-            exitProcess(allErrors[0].errorCode)
+            when (val err = allErrors[0]) {
+                is SemanticException -> exitProcess(err.errorCode);
+                is SyntaxException -> exitProcess(err.errorCode)
+            }
         }
     }
-    return job
 }
 
 suspend fun frontend(inputStream: InputStream): AST {
-    val job = startErrorListener(syntaxErrorChannel)
+    var job = startErrorListener(syntaxErrorChannel)
     val program = parse(inputStream)
     checkSyntax(program)
     syntaxErrorChannel.close()
     job.join()
+
     val ast = buildAST(program)
+    job = startErrorListener(semanticErrorChannel)
     checkSemantics(ast)
+    semanticErrorChannel.close()
+    job.join()
     return ast
 }
 
