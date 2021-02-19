@@ -1,7 +1,7 @@
-package wacc.backend
+package wacc.backend.instruction
 
-class CompareInstruction(val condition: Condition?, val register: Register,
-                         val regToCompare: Register?, val immediate: Int?): Instruction {
+class CompareInstr(val condition: Condition?, val register: Register,
+                   val regToCompare: Register?, val immediate: Int?): Instruction {
 
    // Compare Compare CMP{cond} <Rn>, <operand2>
    // Compare negative CMN{cond} <Rn>, <operand2>

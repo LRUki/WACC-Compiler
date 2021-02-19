@@ -1,4 +1,4 @@
-package wacc.backend
+package wacc.backend.instruction
 
 open class LabelInstruction(val str: String): Instruction {
 }
