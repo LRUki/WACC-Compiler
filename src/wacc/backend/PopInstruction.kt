@@ -1,6 +1,6 @@
 package wacc.backend
 
-class PopInstruction( private val registers: List<Register>) :Instruction{
+class PopInstruction(val registers: List<Register>) :Instruction{
 
 
     //    Pop registers from stack POP <reglist>

@@ -1,7 +1,7 @@
 package wacc.backend
 
-class BranchInstruction(private val condition: Condition?, private val label: Label?,
-                        private val register: Register?, private val link : Boolean): Instruction {
+class BranchInstruction(val condition: Condition?, val label: Label?,
+                        val register: Register?, val link : Boolean): Instruction {
 
 
 //    Conditional B{cond} <label>
