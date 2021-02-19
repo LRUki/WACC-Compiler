@@ -2,7 +2,7 @@ package wacc.backend.instruction
 
 interface AddressingMode
 
-class Immediate(val value: Int): AddressingMode
+class Immediate(val offset: Int): AddressingMode
 
 class RegisterAddr(val reg: Register): AddressingMode
 
