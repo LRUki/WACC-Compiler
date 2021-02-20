@@ -1,7 +1,7 @@
 package wacc.backend.instruction
 
 
-interface ArithmeticInstr {}
+interface ArithmeticInstr: Instruction
 
 class AddInstr(val condition: Condition, val reg1: Register, val reg2: Register, val operand: Operand): ArithmeticInstr
 

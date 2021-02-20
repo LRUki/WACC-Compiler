@@ -1,4 +1,4 @@
 package wacc.backend.instruction
 
-interface LogicInstr {
+interface LogicInstr: Instruction {
 }

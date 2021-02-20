@@ -1,7 +1,7 @@
 package wacc.backend.instruction
 
 class LoadInstr (val destRegister : Register, val memType: MemoryType?,
-                 val mode : AddressingMode, val condition : Condition){
+                 val mode : AddressingMode, val condition : Condition): Instruction{
 
 //    Load Word LDR{cond} <Rd>, <a_mode2>
 //    Word with User mode privilege LDR{cond}T <Rd>, <a_mode2P>
