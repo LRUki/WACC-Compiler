@@ -37,7 +37,8 @@ test-exitcode:
 test-codegen:
   stage: test-backend
   script:
-    - echo "Testing code generation"
+    - echo "Testing code gen"
+    - ./testassemble
 
 test-printing:
   stage: test-backend
