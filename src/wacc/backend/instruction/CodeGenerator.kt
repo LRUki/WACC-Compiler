@@ -1,8 +1,5 @@
 package wacc.backend.instruction
 
-import com.sun.org.apache.bcel.internal.generic.PushInstruction
-import wacc.frontend.ast.program.ProgramAST
-
 class CodeGenerator {
 
 //    private fun translateProgram(program: ProgramAST): List<Instruction> {
