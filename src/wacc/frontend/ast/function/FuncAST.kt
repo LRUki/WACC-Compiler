@@ -1,6 +1,9 @@
 package wacc.frontend.ast.function
 
+import wacc.backend.instruction.FunctionLabel
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.PushInstr
+import wacc.backend.instruction.Register
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -40,7 +43,16 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val functionInstructions = mutableListOf<Instruction>()
+        functionInstructions.add(FunctionLabel("f_${ident.name}"))
+        functionInstructions.add(PushInstr(listOf(Register.LR)))
+
+        body.forEach { functionInstructions.addAll(it.translate()) }
+
+
+        functionInstructions.add(PushInstr(listOf(Register.PC, Register.PC)))
+        //add .ltorg direction
+        return functionInstructions
     }
 
     override fun toString(): String {
