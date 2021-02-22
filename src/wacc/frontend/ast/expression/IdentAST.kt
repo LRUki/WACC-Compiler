@@ -1,5 +1,6 @@
 package wacc.frontend.ast.expression
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -43,5 +44,9 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
             is PairTypeAST -> type
             else -> throw RuntimeException("Unknown class implementing Identifiable")
         }
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }

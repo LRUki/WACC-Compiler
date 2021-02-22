@@ -1,8 +1,10 @@
 package wacc.frontend.ast.assign
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
@@ -15,7 +17,7 @@ import wacc.frontend.exception.semanticError
  * Implemented by AST nodes that can be on the right hand-side of an assignment statement.
  * Implements Typed interface to get underlying types during declare and assign statements
  */
-interface RhsAST : AST, Typed
+interface RhsAST : AST, Typed, Translatable
 
 /**
  * AST node to represent a New Pair
@@ -32,6 +34,10 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 
     override fun getRealType(table: SymbolTable): TypeAST {
         return PairTypeAST(fst.getRealType(table), snd.getRealType(table))
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
 }
@@ -71,6 +77,10 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
 
     override fun getRealType(table: SymbolTable): TypeAST {
         return ident.getRealType(table)
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
 }

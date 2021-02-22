@@ -1,8 +1,10 @@
 package wacc.frontend.ast.function
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.Identifiable
@@ -18,7 +20,7 @@ import wacc.frontend.exception.semanticError
  * @property body List of statements making up the function body
  */
 class FuncAST(val type: TypeAST, val ident: IdentAST,
-              val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {
+              val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable, Translatable {
 
     override fun check(table: SymbolTable): Boolean {
         //create a symbol table for the function and add all parameters to it
@@ -35,6 +37,10 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         }
         paramList.forEach { it.check(table) }
         table.add(ident.name, this)
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
     override fun toString(): String {

@@ -1,5 +1,6 @@
 package wacc.frontend.ast.statement.nonblock
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -44,5 +45,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
             semanticError("Type mismatch, $rightType cannot be assigned to $leftType", ctx)
         }
         return true
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }
