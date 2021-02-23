@@ -25,6 +25,7 @@ interface ExprAST : RhsAST
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         if (!expr1.check(table) || !expr2.check(table)) {
             return false
         }

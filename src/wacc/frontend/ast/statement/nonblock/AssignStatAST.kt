@@ -29,6 +29,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
     }
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         if (!lhs.check(table) || !rhs.check(table)) {return false}
         var leftType = lhs.getRealType(table)
         val rightType = rhs.getRealType(table)

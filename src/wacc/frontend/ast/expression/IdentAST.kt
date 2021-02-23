@@ -19,6 +19,7 @@ import wacc.frontend.exception.semanticError
 class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         val stEntry = table.lookupAll(name)
         if (stEntry.isEmpty) {
             semanticError("Variable $name has not been declared", ctx)

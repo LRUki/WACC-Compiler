@@ -18,6 +18,7 @@ import wacc.frontend.exception.semanticError
 class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         if (!expr.check(table)) {return false}
         val exprType = expr.getRealType(table)
         when (action) {

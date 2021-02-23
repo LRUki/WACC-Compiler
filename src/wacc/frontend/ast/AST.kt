@@ -29,11 +29,5 @@ interface AST {
 abstract class AbstractAST : AST {
     lateinit var ctx: ParserRuleContext
     lateinit var symTable: SymbolTable
-
-    override fun check(table: SymbolTable): Boolean {
-        this.symTable = table
-        return true
-    }
-
 }
 
