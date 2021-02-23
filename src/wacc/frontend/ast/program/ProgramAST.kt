@@ -1,5 +1,6 @@
 package wacc.frontend.ast.program
 
+import wacc.backend.CodeGenerator.getStringLabels
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -31,7 +32,6 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
 //      Translate function definitions
         val functionInstructions = mutableListOf<Instruction>()
         funcList.forEach { functionInstructions.addAll(it.translate()) }
-
         val mainInstructions = mutableListOf<Instruction>()
         //add some stuff here. directives, .globalMain, .data,.text
 //
@@ -53,8 +53,9 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         // AI: POP {pc}
         mainInstructions.add(PopInstr(listOf(Register.PC)))
         mainInstructions.add(DirectiveInstr("ltorg"))
-        functionInstructions.addAll(mainInstructions)
-        return functionInstructions
+//        functionInstructions.addAll(mainInstructions)
+        val stringLabels = getStringLabels()
+        return stringLabels + functionInstructions + mainInstructions
     }
 
 }
