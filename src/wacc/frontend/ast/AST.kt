@@ -22,10 +22,6 @@ interface AST {
     fun check(table: SymbolTable): Boolean {
         return true
     }
-
-    fun checkAndGetType(table: SymbolTable): TypeAST? {
-        return null
-    }
 }
 
 interface Translatable {
@@ -37,6 +33,6 @@ interface Translatable {
  */
 abstract class AbstractAST : AST {
     lateinit var ctx: ParserRuleContext
-    lateinit var confirmedType: BaseType
+    lateinit var symTable: SymbolTable
 }
 

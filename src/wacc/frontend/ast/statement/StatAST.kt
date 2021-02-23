@@ -27,7 +27,7 @@ class SkipStatAST : StatAST {
 class MultiStatAST(val stats: List<StatAST>) : StatAST {
     override fun check(table: SymbolTable): Boolean {
         val blockST = SymbolTable(table)
-        stats.forEach { it.check(blockST) }
+        stats.forEach { if (!it.check(blockST)) {return false} }
         return true
     }
 

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+echo 'Testing assemble...'
+
+make
+rm -rf out_test
+
+ALL_SUCCESSFUL=0
+
+for WACC_FILENAME in `find wacc_examples/valid/runtimeErr/divideByZero/ -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
+do
+  FILENAME=${WACC_FILENAME#*/}
+  mkdir -p out_test/"${FILENAME%/*}"
+  java -jar wacc-1.0-SNAPSHOT.jar wacc_examples/"$FILENAME".wacc out_test/"$FILENAME".s
+
+  if arm-linux-gnueabi-gcc -o out_test/"$FILENAME" -mcpu=arm1176jzf-s -mtune=arm1176jzf-s "out_test/${FILENAME}.s"
+  then
+    ASSEMBLE_SUCCESSFUL=0
+
+    timeout 10 qemu-arm -L /usr/arm-linux-gnueabi out_test/"$FILENAME" </dev/null | diff out_examples/"$FILENAME".out -
+    PIPE_RESULT="${PIPESTATUS[0]} ${PIPESTATUS[1]}"
+    EXITCODE=$(echo "$PIPE_RESULT" | cut -d' ' -f 1)
+    OUTPUT_MATCHES=$(echo "$PIPE_RESULT" | cut -d' ' -f 2)
+
+    echo "$EXITCODE" | diff - out_examples/"$FILENAME".exitcode
+    EXITCODE_MATCHES=$?
+  else
+    ASSEMBLE_SUCCESSFUL=1
+  fi
+
+  if [ "$ASSEMBLE_SUCCESSFUL" == 0 ] && [ "$OUTPUT_MATCHES" == 0 ] && [ "$EXITCODE_MATCHES" == 0 ]
+  then
+    echo "Success ${FILENAME}"
+  else
+    echo "Failed ${FILENAME}"
+    ALL_SUCCESSFUL=1
+  fi
+done
+
+if [ $ALL_SUCCESSFUL == 0 ]
+then
+    echo "All Successful!"
+fi
+exit $ALL_SUCCESSFUL
