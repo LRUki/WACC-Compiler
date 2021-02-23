@@ -1,10 +1,8 @@
 package wacc.backend.instruction
 
-open class LabelInstruction(val str: String): Instruction {
-}
-class Directive(directive:String): LabelInstruction(".$directive")
+open class LabelInst(val str: String): Instruction
 
-class Label(label: String): LabelInstruction("$label")
+data class Label(val label: String): LabelInst(label)
 
-class FunctionLabel(functionName: String): LabelInstruction("f_$functionName")
+data class FunctionLabel(val functionName: String): LabelInst("f_$functionName")
 

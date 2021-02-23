@@ -1,5 +1,6 @@
 package wacc.backend
 
+import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.Label
 import wacc.frontend.ast.program.ProgramAST
 
@@ -11,7 +12,10 @@ object CodeGenerator {
     }
 }
 
-fun generateCode(ast: ProgramAST): AssemblyCode {
+fun generateCode(ast: ProgramAST): List<Instruction> {
     // TODO: implement real code gen
-    return AssemblyCode(emptyList())
+    val result = ast.translate()
+    return result
+//    return AssemblyCode(emptyList())
 }
+    

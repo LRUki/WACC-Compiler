@@ -115,5 +115,6 @@ fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
 }
 
 fun backend(ast : AST): String {
-    return generateCode(ast as ProgramAST).printCode()
+    val test = generateCode(ast as ProgramAST)// .printCode()
+    return ""
 }

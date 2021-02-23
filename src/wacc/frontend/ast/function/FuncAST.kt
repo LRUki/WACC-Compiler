@@ -48,7 +48,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         body.forEach { functionInstructions.addAll(it.translate()) }
 
         functionInstructions.add(PushInstr(listOf(Register.PC, Register.PC)))
-        functionInstructions.add(Directive("ltorg"))
+        functionInstructions.add(DirectiveInstr("ltorg"))
         return functionInstructions
     }
 

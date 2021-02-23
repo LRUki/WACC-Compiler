@@ -30,8 +30,12 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
 
         val mainInstructions = mutableListOf<Instruction>()
         //add some stuff here. directives, .globalMain, .data,.text
-
-        mainInstructions.add(FunctionLabel("main"))
+//
+//        addMsg()
+//        // add msg here
+        mainInstructions.add(DirectiveInstr("text"))
+        mainInstructions.add(DirectiveInstr("global main"))
+        mainInstructions.add(Label("main"))
         // AI: PUSH {lr}
         mainInstructions.add(PushInstr(listOf(Register.LR)))
 
@@ -42,7 +46,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(LoadInstr(Register.R0, null, Immediate(0), Condition.AL))
         // AI: POP {pc}
         mainInstructions.add(PopInstr(listOf(Register.PC)))
-//        mainInstructions.add(Directive(.ltorg))
+        mainInstructions.add(DirectiveInstr("ltorg"))
         functionInstructions.addAll(mainInstructions)
         return functionInstructions
     }

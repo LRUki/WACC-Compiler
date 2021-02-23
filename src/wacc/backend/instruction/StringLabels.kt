@@ -21,11 +21,11 @@ class StringLabels (val strings: MutableList<String>) {
         val instructions = mutableListOf<Instruction>()
         for ((index, string) in strings.withIndex()) {
             instructions.add(Label("msg_$index:"))
-            instructions.add(Directive("word ${string.length}"))
+            instructions.add(DirectiveInstr("word ${string.length}"))
 
             // display escaped characters in full
             val newString = escape(string)
-            instructions.add(Directive("ascii \"$newString\""))
+            instructions.add(DirectiveInstr("ascii \"$newString\""))
         }
         return instructions
     }
