@@ -23,7 +23,7 @@ suspend fun emulate(fileName: String): CompilerResult? {
     var exception: Exception? = null
     val file = File(fileName)
     try {
-        val ast = frontend(file.inputStream())
+        val ast = frontend(file)
     } catch (e: SyntaxException) {
         System.err.println("Syntax Error in file: $fileName")
         exception = e
