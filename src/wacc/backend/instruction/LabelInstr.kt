@@ -2,7 +2,7 @@ package wacc.backend.instruction
 
 open class LabelInstruction(val label : String): Instruction {
     override fun toAssembly(): String {
-        TODO("Not yet implemented")
+        return "$label: "
     }
 }
 
