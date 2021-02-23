@@ -1,6 +1,6 @@
 package wacc.backend.instruction
 
-import sun.jvm.hotspot.oops.OopUtilities.escapeString
+import kotlin.text.Regex.Companion.escape
 
 
 class StringLiterals (val strings: MutableList<String>) {
@@ -25,7 +25,7 @@ class StringLiterals (val strings: MutableList<String>) {
             instructions.add(LabelInstruction("\t .word ${string.length}"))
 
             // display escaped characters in full
-            val newString = escapeString(string)
+            val newString = escape(string)
             instructions.add(LabelInstruction("\t .ascii \"$newString\""))
         }
         return instructions
