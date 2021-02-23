@@ -13,7 +13,7 @@ interface StatAST : AST, Translatable
 
 class SkipStatAST : StatAST {
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 }
 
@@ -32,6 +32,8 @@ class MultiStatAST(val stats: List<StatAST>) : StatAST {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val instructions = mutableListOf<Instruction>()
+        stats.forEach { instructions.addAll(it.translate()) }
+        return instructions
     }
 }

@@ -17,6 +17,8 @@ class BlockStatAST(val body: List<StatAST>) : StatAST {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val instructions = mutableListOf<Instruction>()
+        body.forEach { instructions.addAll(it.translate()) }
+        return instructions
     }
 }
