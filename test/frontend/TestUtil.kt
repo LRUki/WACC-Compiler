@@ -1,11 +1,11 @@
-package wacc.frontend
+package frontend
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import wacc.frontend
-import wacc.frontend.Utils.exitCode
+import frontend.Utils.exitCode
 import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxException
 import java.io.File

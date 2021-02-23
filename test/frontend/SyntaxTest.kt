@@ -1,30 +1,19 @@
-package wacc.frontend
+package frontend
 
 import antlr.WaccLexer
 import antlr.WaccParser
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import org.junit.AfterClass
-import org.junit.Assert.assertTrue
-import org.junit.BeforeClass
 import org.junit.Test
 import wacc.Main
 import wacc.createErrorChannels
-import wacc.frontend.Utils.PATH_TO_EXAMPLES
-import wacc.frontend.Utils.exitCode
-import wacc.frontend.exception.SemanticException
+import frontend.Utils.PATH_TO_EXAMPLES
+import frontend.Utils.exitCode
 import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
 import wacc.frontend.visitor.CheckSyntaxVisitor
-import wacc.startErrorListener
 import java.io.File
-import java.security.Permission
-import kotlin.system.exitProcess
 
 class SyntaxTest {
 

@@ -1,4 +1,4 @@
-package wacc.frontend
+package frontend
 
 import antlr.WaccLexer
 import antlr.WaccParser

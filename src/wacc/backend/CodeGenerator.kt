@@ -8,7 +8,7 @@ object CodeGenerator {
     var labelNumber: Int = 0
 
     fun getNextLabel(): Label {
-        return Label("L${labelNumber++}:")
+        return Label("L${labelNumber++}")
     }
 }
 

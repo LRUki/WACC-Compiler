@@ -1,3 +1,3 @@
 package wacc.backend.instruction
 
-class DirectiveInstr(val str: String): Instruction
+data class DirectiveInstr(var str: String): Instruction

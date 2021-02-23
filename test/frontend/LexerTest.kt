@@ -1,4 +1,4 @@
-package wacc.frontend
+package frontend
 
 import antlr.WaccLexer
 import org.antlr.v4.runtime.CharStreams
