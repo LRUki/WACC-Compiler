@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo 'Testing assemble...'
-#make
+make
 
 ALL_SUCCESSFUL=0
 
@@ -20,6 +20,7 @@ do
   PIPE_RESULT="${PIPESTATUS[0]} ${PIPESTATUS[1]}"
   EXITCODE=$(echo "$PIPE_RESULT" | cut -d' ' -f 1)
   OUTPUT_MATCHES=$(echo "$PIPE_RESULT" | cut -d' ' -f 2)
+  
   echo "$EXITCODE" | diff - out_examples/"$FILENAME".exitcode
   EXITCODE_MATCHES=$?
 
