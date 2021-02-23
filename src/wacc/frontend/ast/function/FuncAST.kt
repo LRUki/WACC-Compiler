@@ -1,6 +1,10 @@
 package wacc.frontend.ast.function
 
 import wacc.backend.instruction.*
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.DirectiveInstr
+import wacc.backend.instruction.instrs.FunctionLabel
+import wacc.backend.instruction.instrs.PushInstr
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST

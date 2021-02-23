@@ -1,4 +1,7 @@
-package wacc.backend.instruction
+package wacc.backend.instruction.instrs
+
+import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Register
 
 class PopInstr(val registers: List<Register>) : Instruction {
 

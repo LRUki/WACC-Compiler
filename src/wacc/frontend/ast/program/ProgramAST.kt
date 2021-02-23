@@ -1,6 +1,10 @@
 package wacc.frontend.ast.program
 
 import wacc.backend.instruction.*
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.Immediate
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.Translatable

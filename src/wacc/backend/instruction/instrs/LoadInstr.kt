@@ -1,7 +1,13 @@
-package wacc.backend.instruction
+package wacc.backend.instruction.instrs
+
+import wacc.backend.instruction.*
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.MemoryType
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.utils.AddressingMode
 
 class LoadInstr (val destRegister : Register, val memType: MemoryType?,
-                 val mode : AddressingMode, val condition : Condition): Instruction{
+                 val mode : AddressingMode, val condition : Condition): Instruction {
 
 //    Load Word LDR{cond} <Rd>, <a_mode2>
 //    Word with User mode privilege LDR{cond}T <Rd>, <a_mode2P>

@@ -1,4 +1,4 @@
-package wacc.backend.instruction
+package wacc.backend.instruction.enums
 
 enum class Shift {
 

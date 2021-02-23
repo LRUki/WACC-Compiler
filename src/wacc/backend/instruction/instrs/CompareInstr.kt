@@ -1,4 +1,8 @@
-package wacc.backend.instruction
+package wacc.backend.instruction.instrs
+
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Register
 
 class CompareInstr(val condition: Condition?, val register: Register,
                    val regToCompare: Register?, val immediate: Int?): Instruction {

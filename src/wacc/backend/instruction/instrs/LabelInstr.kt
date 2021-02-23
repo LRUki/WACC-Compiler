@@ -1,4 +1,6 @@
-package wacc.backend.instruction
+package wacc.backend.instruction.instrs
+
+import wacc.backend.instruction.Instruction
 
 open class LabelInst(val str: String): Instruction
 

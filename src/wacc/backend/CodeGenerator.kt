@@ -1,7 +1,7 @@
 package wacc.backend
 
 import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.Label
+import wacc.backend.instruction.instrs.Label
 import wacc.frontend.ast.program.ProgramAST
 
 object CodeGenerator {

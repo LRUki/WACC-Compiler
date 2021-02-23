@@ -1,4 +1,7 @@
-package wacc.backend.instruction
+package wacc.backend.instruction.utils
+
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.enums.Shift
 
 interface AddressingMode
 

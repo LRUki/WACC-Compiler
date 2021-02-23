@@ -1,5 +1,7 @@
 package wacc.backend.instruction
 
+import wacc.backend.instruction.instrs.DirectiveInstr
+import wacc.backend.instruction.instrs.Label
 import kotlin.text.Regex.Companion.escape
 
 class StringLabels (val strings: MutableList<String>) {
