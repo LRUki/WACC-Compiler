@@ -39,7 +39,6 @@ suspend fun main(args: Array<String>){
 
     val outputString = backend(ast)
     var outputFileName = inputFile.nameWithoutExtension + ".s"
-    println(outputFileName)
     if (args.size > 1) {
         outputFileName = args[1]
     }
