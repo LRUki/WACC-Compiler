@@ -50,7 +50,7 @@ test-backend-integration:
   stage: test-backend
   script:
     - echo "Testing printing of code"
-    - ./testassemble
+#    - ./testassemble
 
 test-extension:
   stage: test-extension
