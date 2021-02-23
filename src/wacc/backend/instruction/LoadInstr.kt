@@ -2,6 +2,9 @@ package wacc.backend.instruction
 
 class LoadInstr (val destRegister : Register, val memType: MemoryType?,
                  val mode : AddressingMode, val condition : Condition): Instruction{
+    override fun toAssembly(): String {
+        TODO("Not yet implemented")
+    }
 
 //    Load Word LDR{cond} <Rd>, <a_mode2>
 //    Word with User mode privilege LDR{cond}T <Rd>, <a_mode2P>

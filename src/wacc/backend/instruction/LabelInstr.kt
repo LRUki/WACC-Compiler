@@ -1,6 +1,9 @@
 package wacc.backend.instruction
 
 open class LabelInstruction(val str: String): Instruction {
+    override fun toAssembly(): String {
+        TODO("Not yet implemented")
+    }
 }
 class Directive(directive:String): LabelInstruction(".$directive")
 

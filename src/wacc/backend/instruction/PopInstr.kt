@@ -1,6 +1,9 @@
 package wacc.backend.instruction
 
 class PopInstr(val registers: List<Register>) : Instruction {
+    override fun toAssembly(): String {
+        TODO("Not yet implemented")
+    }
 
 
     //    Pop registers from stack POP <reglist>
