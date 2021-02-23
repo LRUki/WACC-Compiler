@@ -55,7 +55,8 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(DirectiveInstr("ltorg"))
 //        functionInstructions.addAll(mainInstructions)
         val stringLabels = getStringLabels()
-        return stringLabels + functionInstructions + mainInstructions
+        val data = listOf(DirectiveInstr("data")) + (stringLabels)
+        return data + functionInstructions + mainInstructions
     }
 
 }
