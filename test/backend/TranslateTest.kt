@@ -15,8 +15,8 @@ import kotlin.test.assertTrue
 class TranslateTest {
 
     @Test
-    fun `TranslateOfSkipFileContainsDirectives`() {
-        val folder = File("wacc_examples/valid/basic/skip/skip.wacc")
+    fun TranslateOfSkipFileContainsDirectives() {
+        val folder = File("wacc_examples/valid/basic/skip/")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
