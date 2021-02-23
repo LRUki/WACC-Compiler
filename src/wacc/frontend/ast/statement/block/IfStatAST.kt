@@ -1,7 +1,6 @@
 package wacc.frontend.ast.statement.block
 
 import wacc.backend.CodeGenerator.getNextLabel
-import wacc.backend.CodeGenerator.labelNumber
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
