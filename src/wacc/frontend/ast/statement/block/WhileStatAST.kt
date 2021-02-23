@@ -16,13 +16,14 @@ import wacc.frontend.exception.semanticError
 class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
-        cond.check(table)
+        if (!cond.check(table)) {return false}
         val condType = cond.getRealType(table)
         if (condType != TypeInstance.boolTypeInstance) {
-            semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
+            semanticError("While condition must evaluate to a BOOL, but was actually $condType", ctx)
+            return false
         }
         val blockST = SymbolTable(table)
-        body.forEach { it.check(blockST) }
+        body.forEach { if (!it.check(blockST)) {return false} }
         return true
     }
 }

@@ -18,18 +18,22 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
 
     override fun check(table: SymbolTable): Boolean {
         //cond is bool
-        cond.check(table)
+        if (!cond.check(table)) {
+            return false
+        }
         val condType = cond.getRealType(table)
         if (condType != TypeInstance.boolTypeInstance) {
             semanticError("If condition must evaluate to a BOOL, but was actually $condType", ctx)
+            return false
         }
-
         val thenST = SymbolTable(table)
-        thenBody.forEach { it.check(thenST) }
-
+        for (stat in thenBody) {
+            if (!stat.check(thenST)) {break}
+        }
         val elseST = SymbolTable(table)
-        elseBody.forEach { it.check(elseST) }
-
+        for (stat in elseBody) {
+            if (!stat.check(elseST)) {break}
+        }
         return true
     }
 }

@@ -34,6 +34,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
 
         if (type1 != type2) {
             semanticError("Expected type $type1, Actual type $type2", ctx)
+            return false
         }
         when (binOp) {
             BinOp.MULT, BinOp.DIV, BinOp.MOD,

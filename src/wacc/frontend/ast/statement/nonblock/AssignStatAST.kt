@@ -29,8 +29,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
     }
 
     override fun check(table: SymbolTable): Boolean {
-        lhs.check(table)
-        rhs.check(table)
+        if (!lhs.check(table) && !rhs.check(table)) {return false}
         var leftType = lhs.getRealType(table)
         val rightType = rhs.getRealType(table)
         if (leftType is ArrayTypeAST) {
@@ -38,10 +37,12 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         }
         if (lhsIsAFunction(table)) {
             semanticError("Cannot assign a value to a function", ctx)
+            return false
         }
 
         if (leftType != rightType) {
             semanticError("Type mismatch, $rightType cannot be assigned to $leftType", ctx)
+            return false
         }
         return true
     }

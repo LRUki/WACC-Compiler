@@ -21,9 +21,7 @@ import wacc.frontend.exception.semanticError
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
-        if (!rhs.check(table)) {
-            return false
-        }
+        if (!rhs.check(table)) {return false}
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
         if (identName.isPresent && identName.get() !is FuncAST) {

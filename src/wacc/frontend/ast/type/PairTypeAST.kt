@@ -30,9 +30,7 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
     }
 
     override fun check(table: SymbolTable): Boolean {
-        type1.check(table)
-        type2.check(table)
-        return true
+        return type1.check(table) && type2.check(table)
     }
 }
 

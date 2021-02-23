@@ -21,9 +21,9 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
     override fun check(table: SymbolTable): Boolean {
         if (expr is NullPairLiterAST) {
             semanticError("Attempt to access element of a null pair", ctx)
+            return false
         }
-        expr.check(table)
-        return true
+        return expr.check(table)
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
