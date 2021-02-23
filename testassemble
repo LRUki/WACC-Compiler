@@ -7,7 +7,7 @@ rm -rf out_test
 
 ALL_SUCCESSFUL=0
 
-for WACC_FILENAME in `find wacc_examples/valid/runtimeErr/divideByZero/ -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
+for WACC_FILENAME in `find wacc_examples/valid/IO/IOLoop.wacc -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
 do
   FILENAME=${WACC_FILENAME#*/}
   mkdir -p out_test/"${FILENAME%/*}"
@@ -17,7 +17,19 @@ do
   then
     ASSEMBLE_SUCCESSFUL=0
 
-    timeout 10 qemu-arm -L /usr/arm-linux-gnueabi out_test/"$FILENAME" </dev/null | diff out_examples/"$FILENAME".out -
+    INPUT="/dev/null"
+    if [ -f out_examples/"$FILENAME".in ]
+    then
+      INPUT=out_examples/"$FILENAME".in
+    fi
+
+    if [ ! -f out_examples/"$FILENAME".out ]
+    then
+      echo "Test"
+      continue
+    fi
+
+    timeout 5 qemu-arm -L /usr/arm-linux-gnueabi out_test/"$FILENAME" <"$INPUT" | diff out_examples/"$FILENAME".out - | head -n50
     PIPE_RESULT="${PIPESTATUS[0]} ${PIPESTATUS[1]}"
     EXITCODE=$(echo "$PIPE_RESULT" | cut -d' ' -f 1)
     OUTPUT_MATCHES=$(echo "$PIPE_RESULT" | cut -d' ' -f 2)
