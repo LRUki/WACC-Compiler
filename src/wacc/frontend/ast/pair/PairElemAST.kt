@@ -1,5 +1,6 @@
 package wacc.frontend.ast.pair
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -37,6 +38,10 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
             PairChoice.FST -> pairType.type1
             PairChoice.SND -> pairType.type2
         }
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }
 

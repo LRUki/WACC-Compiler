@@ -1,5 +1,6 @@
 package wacc.frontend.ast.expression
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.RhsAST
@@ -78,6 +79,10 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         }
     }
 
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
+    }
+
 }
 
 enum class BinOp {
@@ -138,6 +143,10 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
             UnOp.CHR -> BaseTypeAST(BaseType.CHAR)
             UnOp.MINUS, UnOp.LEN, UnOp.ORD -> BaseTypeAST(BaseType.INT)
         }
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }
 

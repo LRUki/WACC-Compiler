@@ -1,5 +1,6 @@
 package wacc.frontend.ast.statement.nonblock
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -52,6 +53,10 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
             }
         }
         return false
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }
 

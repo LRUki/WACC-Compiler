@@ -1,8 +1,10 @@
 package wacc.frontend.ast.function
 
+import wacc.backend.instruction.*
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.Identifiable
@@ -18,7 +20,7 @@ import wacc.frontend.exception.semanticError
  * @property body List of statements making up the function body
  */
 class FuncAST(val type: TypeAST, val ident: IdentAST,
-              val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {
+              val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable, Translatable {
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -36,6 +38,18 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         }
         paramList.forEach { it.check(table) }
         table.add(ident.name, this)
+    }
+
+    override fun translate(): List<Instruction> {
+        val functionInstructions = mutableListOf<Instruction>()
+        functionInstructions.add(FunctionLabel(ident.name))
+        functionInstructions.add(PushInstr(listOf(Register.LR)))
+
+        body.forEach { functionInstructions.addAll(it.translate()) }
+
+        functionInstructions.add(PushInstr(listOf(Register.PC, Register.PC)))
+        functionInstructions.add(Directive("ltorg"))
+        return functionInstructions
     }
 
     override fun toString(): String {

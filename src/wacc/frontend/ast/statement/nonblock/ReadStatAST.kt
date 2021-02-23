@@ -1,5 +1,6 @@
 package wacc.frontend.ast.statement.nonblock
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -23,5 +24,9 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
             return false
         }
         return true
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }

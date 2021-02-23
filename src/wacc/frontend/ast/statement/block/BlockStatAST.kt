@@ -1,5 +1,6 @@
 package wacc.frontend.ast.statement.block
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.statement.StatAST
 
@@ -13,5 +14,11 @@ class BlockStatAST(val body: List<StatAST>) : StatAST {
         val blockST = SymbolTable(table)
         body.forEach { if (!it.check(blockST)) {return false} }
         return true
+    }
+
+    override fun translate(): List<Instruction> {
+        val instructions = mutableListOf<Instruction>()
+        body.forEach { instructions.addAll(it.translate()) }
+        return instructions
     }
 }

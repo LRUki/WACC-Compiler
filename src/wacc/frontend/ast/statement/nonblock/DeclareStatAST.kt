@@ -1,5 +1,6 @@
 package wacc.frontend.ast.statement.nonblock
 
+import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.RhsAST
@@ -36,5 +37,9 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         }
         table.add(ident.name, this)
         return true
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 }

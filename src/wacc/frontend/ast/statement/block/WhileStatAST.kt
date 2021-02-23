@@ -1,5 +1,7 @@
 package wacc.frontend.ast.statement.block
 
+import wacc.backend.CodeGenerator
+import wacc.backend.instruction.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -26,5 +28,20 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         val blockST = SymbolTable(table)
         body.forEach { if (!it.check(blockST)) {return false} }
         return true
+    }
+
+    override fun translate(): List<Instruction> {
+        val instructions = mutableListOf<Instruction>()
+        val condLabel = CodeGenerator.getNextLabel()
+        val bodyLabel = CodeGenerator.getNextLabel()
+        instructions.add(BranchInstr(Condition.AL, condLabel, null, false))
+
+        instructions.add(bodyLabel)
+        body.forEach { instructions.addAll(it.translate()) }
+
+        instructions.addAll(cond.translate())
+        instructions.add(CompareInstr(Condition.AL, Register.R4, null, 1))
+        instructions.add(BranchInstr(Condition.EQ, bodyLabel, null, false))
+        return instructions
     }
 }
