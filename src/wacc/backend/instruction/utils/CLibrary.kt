@@ -1,30 +1,34 @@
 package wacc.backend.instruction.utils
 
+import wacc.backend.CodeGenerator
 import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.instrs.FunctionLabel
-import wacc.backend.instruction.instrs.Label
+//import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.*
+import wacc.backend.instruction.instrs.*
 
 enum class LibraryFunctions {
-    scanf,
-    printf,
-    fflush,
-    malloc,
-    free;
-
+    SCANF,
+    PRINTF,
+    FFLUSH,
+    MALLOC,
+    FREE;
+    override fun toString(): String {
+        return super.toString().toLowerCase()
+    }
 }
 enum class Call {
-    read_int,
-    read_char,
-    print_int,
-    print_bool,
-    print_string,
-    print_reference,
-    print_ln,
-    free_array,
-    free_pair;
+    READ_INT,
+    READ_CHAR,
+    PRINT_INT,
+    PRINT_BOOL,
+    PRINT_STRING,
+    PRINT_REFERENCE,
+    PRINT_LN,
+    FREE_ARRAY,
+    FREE_PAIR;
 
     override fun toString(): String {
-        return "p_${super.toString()}"
+        return "p_${super.toString().toLowerCase()}"
     }
 }
 
@@ -38,14 +42,14 @@ fun addCode(call: Call) {
     val instructions = mutableListOf<Instruction>()
     val callLabel = Label(call.toString())
     val body = when (call) {
-        Call.read_int, Call.read_char -> generateReadCall(call)
-        Call.print_int -> generatePrintIntCall()
-        Call.print_bool -> generatePrintBoolCall()
-        Call.print_string -> generatePrintStringCall()
-        Call.print_reference -> generatePrintReferenceCall()
-        Call.print_ln -> generatePrintLnCall()
-        Call.free_pair -> generateFreePairCall()
-        Call.free_array -> generateFreeArrayCall()
+        Call.READ_INT, Call.READ_CHAR -> generateReadCall(call)
+        Call.PRINT_INT -> generatePrintIntCall()
+        Call.PRINT_BOOL -> generatePrintBoolCall()
+        Call.PRINT_STRING -> generatePrintStringCall()
+        Call.PRINT_REFERENCE -> generatePrintReferenceCall()
+        Call.PRINT_LN -> generatePrintLnCall()
+        Call.FREE_PAIR -> generateFreePairCall()
+        Call.FREE_ARRAY -> generateFreeArrayCall()
         else -> throw NotImplementedError()
     }
     instructions.add(callLabel)
@@ -53,9 +57,28 @@ fun addCode(call: Call) {
     LibraryCalls[call] = instructions
 }
 
-fun generateReadCall(call: Call): Collection<Instruction> {
-//TODO
-    return emptyList()
+fun generateReadCall(call: Call): List<Instruction> {
+    val stringFormat: String = when (call) {
+        Call.READ_INT -> "%d" + 0.toChar()
+        Call.READ_CHAR -> " %c" + 0.toChar()
+        else -> throw Exception("Unable to generate code for non-read types")
+    }
+    val stringFormatLabel = CodeGenerator.stringLabels.add(stringFormat)
+
+    val instructions = listOf(
+            MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
+            LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
+            AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), null, true)
+    )
+    return listOf(PushInstr(listOf(Register.LR))) + instructions + listOf(PopInstr(listOf(Register.PC)))
+//    PUSH {lr}
+//    MOV r1, r0
+//    LDR r0, =stringFormatLabel
+//    ADD r0, r0, #4
+//    BL scanf
+//    POP {pc}
+
 }
 
 fun generatePrintIntCall(): Collection<Instruction> {

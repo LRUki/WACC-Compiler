@@ -7,6 +7,7 @@ interface AddressingMode
 
 class ImmediateInt(val offset: Int): AddressingMode
 class ImmediateChar(val char: Char): AddressingMode
+class ImmediateLabel(val label:String): AddressingMode
 
 class RegisterAddr(val reg: Register): AddressingMode
 

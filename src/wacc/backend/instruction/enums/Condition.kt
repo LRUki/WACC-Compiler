@@ -16,6 +16,6 @@ enum class Condition {
     LT,   // Signed <
     GT,   // Signed >
     LE,   // Signed <=
-    AL    // Always
+    AL;    // Always
 }
 
