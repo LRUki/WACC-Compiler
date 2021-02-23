@@ -1,6 +1,12 @@
 package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.LoadInstr
+import wacc.backend.instruction.instrs.MoveInstr
+import wacc.backend.instruction.utils.ImmediateInt
+import wacc.backend.instruction.utils.ImmediateOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -9,6 +15,9 @@ import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.ArrayTypeAST
+import wacc.frontend.ast.type.BaseType
+import wacc.frontend.ast.type.BaseTypeAST
+import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.exception.semanticError
 
 /**
@@ -50,6 +59,30 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val instr = mutableListOf<Instruction>()
+        when (val type = lhs.getRealType(symTable)) {
+            is BaseTypeAST -> {
+                when (type.type) { //TODO()
+                    BaseType.INT -> {
+                        instr.add(LoadInstr(Register.R4, null, ImmediateInt(0), Condition.AL))
+                    }
+                    BaseType.BOOL -> {
+                        instr.add(MoveInstr(Condition.AL, Register.R4, ImmediateOperand(0)))
+                    }
+                    BaseType.CHAR -> {
+                        // should be ='CHAR'
+                        instr.add((MoveInstr(Condition.AL, Register.R4, ImmediateOperand(0))))
+                    }
+                    BaseType.STRING -> {
+                        // this should have the msg directive as operand
+                        instr.add(LoadInstr(Register.R4, null, ImmediateInt(0), Condition.AL))
+                    }
+                }
+            }
+            is ArrayTypeAST -> TODO()
+            is PairTypeAST ->  TODO()
+
+        }
+        return instr
     }
 }

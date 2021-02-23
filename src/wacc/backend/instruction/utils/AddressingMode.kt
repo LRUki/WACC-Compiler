@@ -5,7 +5,8 @@ import wacc.backend.instruction.enums.Shift
 
 interface AddressingMode
 
-class Immediate(val offset: Int): AddressingMode
+class ImmediateInt(val offset: Int): AddressingMode
+class ImmediateChar(val char: Char): AddressingMode
 
 class RegisterAddr(val reg: Register): AddressingMode
 

@@ -45,20 +45,20 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
     }
 
     override fun translate(): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
+        val instr = mutableListOf<Instruction>()
         val elseLabel = getNextLabel()
         val afterElseLabel = getNextLabel()
 
-        instructions.addAll(cond.translate())
-        instructions.add(CompareInstr(Condition.AL, Register.R4, null, 0))
-        instructions.add(BranchInstr(Condition.EQ, elseLabel, null, false))
+        instr.addAll(cond.translate())
+        instr.add(CompareInstr(Condition.AL, Register.R4, null, 0))
+        instr.add(BranchInstr(Condition.EQ, elseLabel, null, false))
 
-        thenBody.forEach { instructions.addAll(it.translate()) }
-        instructions.add(BranchInstr(Condition.AL, afterElseLabel, null, false))
+        thenBody.forEach { instr.addAll(it.translate()) }
+        instr.add(BranchInstr(Condition.AL, afterElseLabel, null, false))
 
-        instructions.add(elseLabel)
-        elseBody.forEach { instructions.addAll(it.translate()) }
+        instr.add(elseLabel)
+        elseBody.forEach { instr.addAll(it.translate()) }
 
-        return instructions
+        return instr
     }
 }

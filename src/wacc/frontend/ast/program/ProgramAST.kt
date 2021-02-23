@@ -4,7 +4,7 @@ import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.Immediate
+import wacc.backend.instruction.utils.ImmediateInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.Translatable
@@ -43,11 +43,13 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         // AI: PUSH {lr}
         mainInstructions.add(PushInstr(listOf(Register.LR)))
 
+        // SUB sp sp (TODO(Determine how much room to make on the stack by analysing symbol table))
+
         // Visit main program and add to instruction list
         stats.forEach { mainInstructions.addAll(it.translate()) }
 
         // AI: LDR r0, =0
-        mainInstructions.add(LoadInstr(Register.R0, null, Immediate(0), Condition.AL))
+        mainInstructions.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))
         // AI: POP {pc}
         mainInstructions.add(PopInstr(listOf(Register.PC)))
         mainInstructions.add(DirectiveInstr("ltorg"))
