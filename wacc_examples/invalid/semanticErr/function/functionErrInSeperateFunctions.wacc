@@ -1,0 +1,22 @@
+# function returns incorrect type
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  int f() is
+    int a = 'c';
+    int f = 5 + a;
+    return 'a'
+  end
+  int g() is
+    return true
+  end
+  int x = call f() ;
+  int y = call g()
+end

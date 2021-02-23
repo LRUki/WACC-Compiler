@@ -25,9 +25,7 @@ interface RhsAST : AST, Typed
  */
 class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
     override fun check(table: SymbolTable): Boolean {
-        fst.check(table)
-        snd.check(table)
-        return true
+        return (fst.check(table) && snd.check(table))
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
@@ -44,26 +42,28 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
  */
 class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
-
-        ident.check(table)
+        symTable = table
+        if (!ident.check(table)) {return false}
         val funcAst = table.lookupAll(ident.name).get()
 
         if (funcAst !is FuncAST) {
             semanticError("No function called $ident", ctx)
+            return false
         }
-        funcAst as FuncAST
-
+        //funcAst has implicitly been cast to a FuncAST
         /* Check all the arguments and for the correct number of them */
-        argList.forEach { it.check((table)) }
+        argList.forEach { if (!it.check((table))) {return false} }
         if (funcAst.paramList.size != argList.size) {
             semanticError("Incorrect number of arguments, Expected ${funcAst.paramList.size}" +
                     "arguments, Actually got ${argList.size}", ctx)
+            return false
         }
         for (i in argList.indices) {
             val argType = argList[i].getRealType(table)
             val paramType = funcAst.paramList[i].type
             if (argType != paramType) {
                 semanticError("Type mismatch, Expected type $paramType, Actual type $argType", ctx)
+                return false
             }
         }
         return true
