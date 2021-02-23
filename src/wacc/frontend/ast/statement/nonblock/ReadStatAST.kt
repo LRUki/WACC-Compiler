@@ -15,6 +15,7 @@ import wacc.frontend.exception.semanticError
 class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         if (!expr.check(table)) {return false}
         val exprType = expr.getRealType(table)
         if (exprType != TypeInstance.charTypeInstance && !exprType.equals(TypeInstance.intTypeInstance)) {

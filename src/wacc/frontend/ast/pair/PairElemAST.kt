@@ -19,6 +19,7 @@ import wacc.frontend.exception.semanticError
 class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         if (expr is NullPairLiterAST) {
             semanticError("Attempt to access element of a null pair", ctx)
             return false

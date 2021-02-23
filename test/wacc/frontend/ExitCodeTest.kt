@@ -24,16 +24,18 @@ class ExitCodeTest {
         }
     }
 
-//    @Test
-//    fun filesWithSyntaxErrorReturnExitCode100() {
-//        File("wacc_examples/invalid/syntaxErr").walkTopDown().forEach {
-//            if (it.path.endsWith("wacc")) {
-//                val result = emulate(it.path)
-//                val exitCode = result?.exitCode
-//                assertThat(exitCode, `is`(100))
-//            }
-//        }
-//    }
+    @Test
+    fun filesWithSyntaxErrorReturnExitCode100() {
+        GlobalScope.launch {
+            File("wacc_examples/invalid/syntaxErr").walkTopDown().forEach {
+                if (it.path.endsWith("wacc")) {
+                    val result = emulate(it.path)
+                    val exitCode = result?.exitCode
+                    assertThat(exitCode, `is`(100))
+                }
+            }
+        }
+    }
 
     @Test
     fun filesWithSemanticErrorReturnExitCode200() {

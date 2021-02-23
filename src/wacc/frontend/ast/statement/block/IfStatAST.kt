@@ -17,6 +17,7 @@ import wacc.frontend.exception.semanticError
 class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: List<StatAST>) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         //cond is bool
         if (!cond.check(table)) {
             return false

@@ -42,7 +42,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
  */
 class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
-
+        symTable = table
         if (!ident.check(table)) {return false}
         val funcAst = table.lookupAll(ident.name).get()
 

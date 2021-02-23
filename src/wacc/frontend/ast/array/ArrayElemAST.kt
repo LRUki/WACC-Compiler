@@ -18,6 +18,7 @@ import wacc.frontend.exception.semanticError
 class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, LhsAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         if (!ident.check(table)) {
             return false
         }
