@@ -11,6 +11,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import wacc.*
 import wacc.frontend.Utils.PATH_TO_EXAMPLES
+import wacc.frontend.Utils.exitCode
 import wacc.frontend.exception.SemanticException
 import java.io.File
 
@@ -32,27 +33,28 @@ class SemanticTest {
         }
     }
 
-//    @Test
-//     fun semanticCheckingThrowsErrorForInvalidPrograms() {
-//        runBlocking {
-//            actionOnFiles(File(PATH_TO_EXAMPLES + "invalid/semanticErr")) { file ->
-//                val input = CharStreams.fromStream(file.inputStream())
-//                val lexer = WaccLexer(input)
-//                val tokens = CommonTokenStream(lexer)
-//                val parser = WaccParser(tokens)
-//                val program = parser.program()
-//                try {
-//                    createErrorChannels()
-//                    val job = startErrorListener(Main.semanticErrorChannel)
-//                    checkSemantics(buildAST(program))
-//                    Main.semanticErrorChannel.close()
-//                    throw Error("failed to detect invalid file: " + file.path)
-//                } catch (e: SemanticException) {
-//                    assertTrue(e.message!!.contains("Semantic Error"))
-//                }
-//            }
-//        }
-//    }
+    @Test
+    fun semanticCheckingThrowsErrorForInvalidPrograms() {
+        runBlocking {
+            actionOnFiles(File(PATH_TO_EXAMPLES + "invalid/semanticErr")) { file ->
+                runBlocking {
+                    val input = CharStreams.fromStream(file.inputStream())
+                    val lexer = WaccLexer(input)
+                    val tokens = CommonTokenStream(lexer)
+                    val parser = WaccParser(tokens)
+                    val program = parser.program()
+                    createErrorChannels()
+                    val job = startErrorListenerWithoutExit(Main.semanticErrorChannel)
+                    checkSemantics(buildAST(program))
+                    Main.semanticErrorChannel.close()
+                    job.join()
+                    if (exitCode != 200) {
+                        throw Error("failed to detect invalid file: " + file.path)
+                    }
+                }
+            }
+        }
+    }
 }
 
 

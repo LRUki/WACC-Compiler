@@ -18,7 +18,7 @@ class SyntaxErrorListener : BaseErrorListener() {
             e: RecognitionException?
     ) {
 
-        GlobalScope.launch {Main.syntaxErrorChannel.send(SyntaxException("Syntax Error at line $line:$charPositionInLine $msg", line))}
+        runBlocking {Main.syntaxErrorChannel.send(SyntaxException("Syntax Error at line $line:$charPositionInLine $msg", line))}
     }
 }
 

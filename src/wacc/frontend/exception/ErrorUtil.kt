@@ -12,7 +12,7 @@ object ErrorUtil {
 }
 
 fun syntaxError(msg: String, ctx: ParserRuleContext) = runBlocking{
-    launch {
+    runBlocking {
         Main.syntaxErrorChannel.send(SyntaxException(
                 "Syntax Error at line" +
                         " ${ctx.start.line}:${ctx.start.charPositionInLine} $msg", ctx.start.line
@@ -21,7 +21,7 @@ fun syntaxError(msg: String, ctx: ParserRuleContext) = runBlocking{
 }
 
 fun semanticError(msg: String, ctx: ParserRuleContext) = runBlocking {
-    launch {  Main.semanticErrorChannel.send(SemanticException(
+    runBlocking {  Main.semanticErrorChannel.send(SemanticException(
                 "Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $msg",
                 ctx.start.line))
     }
