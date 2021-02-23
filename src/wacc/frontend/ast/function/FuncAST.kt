@@ -24,7 +24,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         //create a symbol table for the function and add all parameters to it
         val funScopeST = FuncSymbolTable(table, this)
         paramList.forEach { funScopeST.add(it.ident.name, it) }
-        body.forEach { it.check(funScopeST) }
+        body.forEach { if (!it.check(funScopeST)) {return false} }
         return true
     }
 

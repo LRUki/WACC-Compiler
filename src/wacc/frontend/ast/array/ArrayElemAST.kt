@@ -18,17 +18,21 @@ import wacc.frontend.exception.semanticError
 class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, LhsAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
-        ident.check(table)
+        if (!ident.check(table)) {
+            return false
+        }
         val arrayType = ident.getRealType(table)
         if (arrayType !is ArrayTypeAST) {
-            semanticError("Expected type ${arrayType} ARRAY, Actual type $arrayType", ctx)
+            semanticError("Expected type $arrayType ARRAY, Actual type $arrayType", ctx)
+            return false
         }
-        arrayType as ArrayTypeAST
+        // arrayType is implicitly cast to ArrayTypeAST
         if (indices.size != arrayType.dimension) {
             semanticError("Invalid assignment of $arrayType ARRAY," +
                     "Expected dimension ${arrayType.dimension}, Actual dimension ${indices.size}", ctx)
+            return false
         }
-        indices.forEach { it.check(table) }
+        indices.forEach { if (!it.check(table)) {return false} }
         return true
     }
 

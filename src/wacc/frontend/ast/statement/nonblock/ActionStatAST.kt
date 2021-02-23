@@ -18,7 +18,7 @@ import wacc.frontend.exception.semanticError
 class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
-        expr.check(table)
+        if (!expr.check(table)) {return false}
         val exprType = expr.getRealType(table)
         when (action) {
             Action.FREE -> {
@@ -31,10 +31,12 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 val closestFunc = table.lookupFirstFunc()
                 if (closestFunc.isEmpty) {
                     semanticError("A return token is outside of a function scope", ctx)
+                    return false
                 }
                 val returnType = (closestFunc.get()).type
                 if (returnType != exprType) {
                     semanticError("Expected type $returnType, Actual type $exprType", ctx)
+                    return false
                 }
                 return true
             }
