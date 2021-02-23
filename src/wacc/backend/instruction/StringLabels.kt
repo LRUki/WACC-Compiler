@@ -2,8 +2,7 @@ package wacc.backend.instruction
 
 import kotlin.text.Regex.Companion.escape
 
-
-class StringLiterals (val strings: MutableList<String>) {
+class StringLabels (val strings: MutableList<String>) {
 
     /**
      * Add a string and returns its label of the format "msg_<int>".
@@ -21,12 +20,12 @@ class StringLiterals (val strings: MutableList<String>) {
     fun translateAll(): List<Instruction> {
         val instructions = mutableListOf<Instruction>()
         for ((index, string) in strings.withIndex()) {
-            instructions.add(LabelInstruction("msg_$index:"))
-            instructions.add(LabelInstruction("\t .word ${string.length}"))
+            instructions.add(Label("msg_$index:"))
+            instructions.add(Directive("word ${string.length}"))
 
             // display escaped characters in full
             val newString = escape(string)
-            instructions.add(LabelInstruction("\t .ascii \"$newString\""))
+            instructions.add(Directive("ascii \"$newString\""))
         }
         return instructions
     }
