@@ -21,15 +21,19 @@ import wacc.frontend.exception.semanticError
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
-        rhs.check(table)
+        if (!rhs.check(table)) {
+            return false
+        }
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
         if (identName.isPresent && identName.get() !is FuncAST) {
             semanticError("Variable $ident already exists", ctx)
+            return false
         }
 
         if (!type.equals(rhsType)) {
             semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
+            return false
         }
         table.add(ident.name, this)
         return true

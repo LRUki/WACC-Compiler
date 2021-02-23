@@ -25,9 +25,11 @@ interface ExprAST : RhsAST
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
-        expr1.check(table)
+        if (!expr1.check(table) || !expr2.check(table)) {
+            return false
+        }
+
         val type1 = expr1.getRealType(table)
-        expr2.check(table)
         val type2 = expr2.getRealType(table)
 
         if (type1 != type2) {
@@ -94,7 +96,9 @@ enum class BinOp {
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
-        expr.check(table)
+        if (!expr.check(table)) {
+            return false
+        }
         val exprType = expr.getRealType(table)
 
         when (unOp) {
