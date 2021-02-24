@@ -18,26 +18,28 @@ test-lexer:
   script:
     - echo "Testing lexer"
     - make clean rules
-    - ./gradlew test --tests wacc.frontend.LexerTest
+    - ./gradlew test --tests frontend.LexerTest
 
 test-syntax:
   stage: test-frontend
   script:
     - echo "Testing syntax"
     - make clean rules
-    - ./gradlew test --tests wacc.frontend.SyntaxTest
+    - ./gradlew test --tests frontend.SyntaxTest
 
 test-exitcode:
   stage: test-frontend
   script:
     - echo "Testing exitcodes"
     - make clean rules
-    - ./gradlew test --tests wacc.frontend.ExitCodeTest
+    - ./gradlew test --tests frontend.ExitCodeTest
 
 test-code-gen:
   stage: test-backend
   script:
     - echo "Testing code gen"
+    - - make clean rules
+      - ./gradlew test --tests backend.TranslateTest
 
 test-code-print:
   stage: test-backend
@@ -48,7 +50,7 @@ test-backend-integration:
   stage: test-backend
   script:
     - echo "Testing printing of code"
-    - ./testassemble
+#    - ./testassemble
 
 test-extension:
   stage: test-extension

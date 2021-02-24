@@ -1,4 +1,4 @@
-package wacc.frontend
+package frontend
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

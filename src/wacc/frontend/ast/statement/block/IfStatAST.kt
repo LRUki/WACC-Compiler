@@ -1,8 +1,11 @@
 package wacc.frontend.ast.statement.block
 
 import wacc.backend.CodeGenerator.getNextLabel
-import wacc.backend.CodeGenerator.labelNumber
 import wacc.backend.instruction.*
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.BranchInstr
+import wacc.backend.instruction.instrs.CompareInstr
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -42,20 +45,20 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
     }
 
     override fun translate(): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
+        val instr = mutableListOf<Instruction>()
         val elseLabel = getNextLabel()
         val afterElseLabel = getNextLabel()
 
-        instructions.addAll(cond.translate())
-        instructions.add(CompareInstr(Condition.AL, Register.R4, null, 0))
-        instructions.add(BranchInstr(Condition.EQ, elseLabel, null, false))
+        instr.addAll(cond.translate())
+        instr.add(CompareInstr(Condition.AL, Register.R4, null, 0))
+        instr.add(BranchInstr(Condition.EQ, elseLabel, null, false))
 
-        thenBody.forEach { instructions.addAll(it.translate()) }
-        instructions.add(BranchInstr(Condition.AL, afterElseLabel, null, false))
+        thenBody.forEach { instr.addAll(it.translate()) }
+        instr.add(BranchInstr(Condition.AL, afterElseLabel, null, false))
 
-        instructions.add(elseLabel)
-        elseBody.forEach { instructions.addAll(it.translate()) }
+        instr.add(elseLabel)
+        elseBody.forEach { instr.addAll(it.translate()) }
 
-        return instructions
+        return instr
     }
 }

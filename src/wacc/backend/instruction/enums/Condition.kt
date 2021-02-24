@@ -1,4 +1,4 @@
-package wacc.backend.instruction
+package wacc.backend.instruction.enums
 
 enum class Condition {
 
@@ -16,6 +16,6 @@ enum class Condition {
     LT,   // Signed <
     GT,   // Signed >
     LE,   // Signed <=
-    AL    // Always
+    AL;    // Always
 }
 

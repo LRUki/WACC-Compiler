@@ -107,7 +107,7 @@ fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
         }
         if (allErrors.size > 0) {
             when (val err = allErrors[0]) {
-                is SemanticException -> exitProcess(err.errorCode);
+                is SemanticException -> exitProcess(err.errorCode)
                 is SyntaxException -> exitProcess(err.errorCode)
             }
         }
@@ -115,5 +115,6 @@ fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
 }
 
 fun backend(ast : AST): String {
-    return generateCode(ast as ProgramAST).printCode()
+    val test = generateCode(ast as ProgramAST)// .printCode()
+    return ""
 }

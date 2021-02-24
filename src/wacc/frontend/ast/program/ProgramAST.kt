@@ -1,6 +1,11 @@
 package wacc.frontend.ast.program
 
+import wacc.backend.CodeGenerator.getStringLabels
 import wacc.backend.instruction.*
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.ImmediateInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.Translatable
@@ -27,24 +32,31 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
 //      Translate function definitions
         val functionInstructions = mutableListOf<Instruction>()
         funcList.forEach { functionInstructions.addAll(it.translate()) }
-
         val mainInstructions = mutableListOf<Instruction>()
         //add some stuff here. directives, .globalMain, .data,.text
-
-        mainInstructions.add(FunctionLabel("main"))
+//
+//        addMsg()
+//        // add msg here
+        mainInstructions.add(DirectiveInstr("text"))
+        mainInstructions.add(DirectiveInstr("global main"))
+        mainInstructions.add(Label("main"))
         // AI: PUSH {lr}
-        mainInstructions.add(PushInstr(listOf(Register.LR)))
+        mainInstructions.add(PushInstr(Register.LR))
+
+        // SUB sp sp (TODO(Determine how much room to make on the stack by analysing symbol table))
 
         // Visit main program and add to instruction list
         stats.forEach { mainInstructions.addAll(it.translate()) }
 
         // AI: LDR r0, =0
-        mainInstructions.add(LoadInstr(Register.R0, null, Immediate(0), Condition.AL))
+        mainInstructions.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))
         // AI: POP {pc}
-        mainInstructions.add(PopInstr(listOf(Register.PC)))
-//        mainInstructions.add(Directive(.ltorg))
-        functionInstructions.addAll(mainInstructions)
-        return functionInstructions
+        mainInstructions.add(PopInstr(Register.PC))
+        mainInstructions.add(DirectiveInstr("ltorg"))
+//        functionInstructions.addAll(mainInstructions)
+        val stringLabels = getStringLabels()
+        val data = listOf(DirectiveInstr("data")) + (stringLabels)
+        return data + functionInstructions + mainInstructions
     }
 
 }

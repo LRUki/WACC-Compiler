@@ -1,8 +1,13 @@
-package wacc.backend.instruction
+package wacc.backend.instruction.utils
+
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.enums.Shift
 
 interface AddressingMode
 
-class Immediate(val offset: Int): AddressingMode
+class ImmediateInt(val offset: Int): AddressingMode
+class ImmediateChar(val char: Char): AddressingMode
+class ImmediateLabel(val label:String): AddressingMode
 
 class RegisterAddr(val reg: Register): AddressingMode
 

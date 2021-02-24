@@ -1,17 +1,14 @@
-package wacc.frontend
+package frontend
 
 import antlr.WaccLexer
 import antlr.WaccParser
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import wacc.*
-import wacc.frontend.Utils.PATH_TO_EXAMPLES
-import wacc.frontend.Utils.exitCode
+import frontend.Utils.PATH_TO_EXAMPLES
+import frontend.Utils.exitCode
 import wacc.frontend.exception.SemanticException
 import java.io.File
 
