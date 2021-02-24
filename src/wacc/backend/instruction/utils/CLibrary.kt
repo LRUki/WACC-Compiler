@@ -12,7 +12,9 @@ enum class LibraryFunctions {
     FFLUSH,
     MALLOC,
     FREE,
-    PUTS;
+    PUTS,
+    PUTCHAR;
+
     override fun toString(): String {
         return super.toString().toLowerCase()
     }
@@ -107,9 +109,33 @@ fun generatePrintIntCall(): Collection<Instruction> {
 }
 
 fun generatePrintBoolCall(): Collection<Instruction> {
-//TODO
-    return emptyList()
+    val trueString = "true" + 0.toChar()
+    val falseString = "false" + 0.toChar()
+    val trueLabel = CodeGenerator.dataDirective.addStringLabel(trueString)
+    val falseLabel = CodeGenerator.dataDirective.addStringLabel(falseString)
+
+    val instructions = listOf(
+            CompareInstr(Register.R0, null,0),
+            LoadInstr(Register.R0, null, ImmediateLabel(trueLabel), Condition.NE),
+            LoadInstr(Register.R0, null, ImmediateLabel(falseLabel), Condition.EQ),
+            AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()),  true),
+            MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
+    )
+    return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
+    // PUSH {lr}
+    // CMP r0, #0
+    // LDRNE r0, =msg_0
+    // LDREQ r0, =msg_1
+    // ADD r0, r0, #4
+    // BL printf
+    // MOV r0, #0
+    // BL fflush
+    // POP {pc}
+
 }
+
 
 fun generatePrintStringCall(): Collection<Instruction> {
 //TODO

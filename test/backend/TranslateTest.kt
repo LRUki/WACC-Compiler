@@ -42,6 +42,7 @@ class TranslateTest {
             val ast = buildAST(program)
             checkSemantics(ast)
             val instr = generateCode(ast as ProgramAST)
+            assertFalse(instr.contains(DirectiveInstr("data")))
             assertFalse(instr.contains(DirectiveInstr("word")))
             assertFalse(instr.contains(DirectiveInstr("ascii")))
             assertFalse(instr.contains(Label("msg_")))
