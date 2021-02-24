@@ -82,8 +82,27 @@ fun generateReadCall(call: Call): List<Instruction> {
 }
 
 fun generatePrintIntCall(): Collection<Instruction> {
-//TODO
-    return emptyList()
+    val stringFormat: String = "%d" + 0.toChar()
+    val stringFormatLabel = CodeGenerator.stringLabels.add(stringFormat)
+
+    val instructions = listOf(
+            MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
+            LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
+            AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), null, true),
+            MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), null, true)
+    )
+    return listOf(PushInstr(listOf(Register.LR))) + instructions + listOf(PopInstr(listOf(Register.PC)))
+
+    // PUSH {lr}
+    // MOV r1, r0
+    // LDR r0, =stringFormatLabel
+    // ADD r0, r0, #4
+    // BL printf
+    // MOV r0, #0
+    // BL fflush
+    // POP {pc}
 }
 
 fun generatePrintBoolCall(): Collection<Instruction> {
