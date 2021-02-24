@@ -1,6 +1,6 @@
 package wacc.backend.instruction
 
-class PushInstr(val registers: List<Register>): Instruction {
+class PushInstr(val register: Register): Instruction {
     override fun toAssembly(): String {
         TODO("Not yet implemented")
     }
