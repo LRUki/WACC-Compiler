@@ -25,7 +25,7 @@ class TranslateTest {
             val ast = buildAST(program)
             checkSemantics(ast)
             val instr = generateCode(ast as ProgramAST)
-            assertTrue(instr.contains(DirectiveInstr("data")))
+//            assertTrue(instr.contains(DirectiveInstr("data")))
             assertTrue(instr.contains(DirectiveInstr("text")))
             assertTrue(instr.contains(DirectiveInstr("global main")))
 //            assertTrue(instr.contains(Label("main")))

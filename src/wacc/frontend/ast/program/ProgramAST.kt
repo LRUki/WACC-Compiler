@@ -1,6 +1,6 @@
 package wacc.frontend.ast.program
 
-import wacc.backend.CodeGenerator.getStringLabels
+import wacc.backend.CodeGenerator.dataDirective
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -54,8 +54,8 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(PopInstr(listOf(Register.PC)))
         mainInstructions.add(DirectiveInstr("ltorg"))
 //        functionInstructions.addAll(mainInstructions)
-        val stringLabels = getStringLabels()
-        val data = listOf(DirectiveInstr("data")) + (stringLabels)
+        val data = dataDirective.translate()
+//        val data = listOf(DirectiveInstr("data")) + (stringLabels)
         return data + functionInstructions + mainInstructions
     }
 

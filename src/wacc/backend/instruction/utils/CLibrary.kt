@@ -64,7 +64,7 @@ fun generateReadCall(call: Call): List<Instruction> {
         Call.READ_CHAR -> " %c" + 0.toChar()
         else -> throw Exception("Unable to generate code for non-read types")
     }
-    val stringFormatLabel = CodeGenerator.stringLabels.add(stringFormat)
+    val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
     val instructions = listOf(
             MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
@@ -84,7 +84,7 @@ fun generateReadCall(call: Call): List<Instruction> {
 
 fun generatePrintIntCall(): Collection<Instruction> {
     val stringFormat: String = "%d" + 0.toChar()
-    val stringFormatLabel = CodeGenerator.stringLabels.add(stringFormat)
+    val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
     val instructions = listOf(
             MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
@@ -123,7 +123,7 @@ fun generatePrintReferenceCall(): Collection<Instruction> {
 
 fun generatePrintLnCall(): Collection<Instruction> {
     val stringFormat: String = "" + 0.toChar()
-    val stringFormatLabel = CodeGenerator.stringLabels.add(stringFormat)
+    val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
     val instructions = listOf(
             LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
