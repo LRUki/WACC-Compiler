@@ -200,14 +200,33 @@ fun generatePrintLnCall(): List<Instruction> {
             BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
     )
     return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
+    // PUSH {lr}
     // LDR r0, =msg_1
     // ADD r0, r0, #4
     // BL puts
     // MOV r0, #0
     // BL fflush
+    // POP {pc}
 }
 
 fun generateFreePairCall(): List<Instruction> {
+//    val errorLabel = codeGenerator.getDataSegment().addString(RuntimeErrors.RuntimeErrorType.NULL_REFERENCE.toString())
+//    codeGenerator.getRuntimeErrors().addThrowRuntimeError()
+
+    val instructions = listOf(
+            CompareInstr(Register.R0, null, 0),
+//            LoadInstr(Register.R0, null, ImmediateLabel(errorLabel), Condition.EQ),
+            //BranchInstruction(Condition.EQ,  RuntimeErrors.throwRuntimeErrorLabel, false),
+            PushInstr(Register.R0),
+            LoadInstr(Register.R0, null, RegisterAddr(Register.R0), Condition.AL),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
+            LoadInstr(Register.R0, null,  RegisterAddr(Register.SP), Condition.AL),
+            LoadInstr(Register.R0, null, RegisterAddrWithOffset(Register.R0,4, true), Condition.AL),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
+            PopInstr(Register.R0),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
+    )
+    return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
     // PUSH {lr}
     // CMP r0, #0
     // LDREQ r0, =msg_0
@@ -225,7 +244,6 @@ fun generateFreePairCall(): List<Instruction> {
 }
 
 
-
 fun generateFreeArrayCall(): List<Instruction> {
 //    val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
     val errorLabel = "TODO"
@@ -236,7 +254,7 @@ fun generateFreeArrayCall(): List<Instruction> {
             CompareInstr(Register.R0, null, 0),
             LoadInstr(Register.R0, null, ImmediateLabel(errorLabel), Condition.EQ),
             //BranchInstruction(Condition.EQ,  RuntimeErrors.throwRuntimeErrorLabel, false),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true)
     )
     return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
     // PUSH {lr}
