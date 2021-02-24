@@ -5,6 +5,7 @@ import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.DirectiveInstr
 import wacc.backend.instruction.instrs.FunctionLabel
 import wacc.backend.instruction.instrs.PushInstr
+import wacc.backend.instruction.instrs.regsToPushInstrs
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -47,11 +48,11 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
     override fun translate(): List<Instruction> {
         val functionInstructions = mutableListOf<Instruction>()
         functionInstructions.add(FunctionLabel(ident.name))
-        functionInstructions.add(PushInstr(listOf(Register.LR)))
+        functionInstructions.add(PushInstr(Register.LR))
 
         body.forEach { functionInstructions.addAll(it.translate()) }
 
-        functionInstructions.add(PushInstr(listOf(Register.PC, Register.PC)))
+        functionInstructions.addAll(regsToPushInstrs(listOf(Register.PC, Register.PC)))
         functionInstructions.add(DirectiveInstr("ltorg"))
         return functionInstructions
     }

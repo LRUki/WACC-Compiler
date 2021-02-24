@@ -17,5 +17,9 @@ enum class Condition {
     GT,   // Signed >
     LE,   // Signed <=
     AL;    // Always
+
+    fun toAssembly(): String  {
+        return this.name
+    }
 }
 

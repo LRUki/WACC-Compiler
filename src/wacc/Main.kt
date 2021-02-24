@@ -107,7 +107,7 @@ fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
         }
         if (allErrors.size > 0) {
             when (val err = allErrors[0]) {
-                is SemanticException -> exitProcess(err.errorCode);
+                is SemanticException -> exitProcess(err.errorCode)
                 is SyntaxException -> exitProcess(err.errorCode)
             }
         }

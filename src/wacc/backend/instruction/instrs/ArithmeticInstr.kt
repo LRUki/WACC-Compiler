@@ -5,11 +5,26 @@ import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.utils.Operand
 import wacc.backend.instruction.enums.Register
 
+interface ArithmeticInstr : Instruction
 
-interface ArithmeticInstr: Instruction
+enum class ArithmeticInstrType {
+    ADD,
+    SUB,
+    MUL
+}
 
-class AddInstr(val condition: Condition, val reg1: Register, val reg2: Register, val operand: Operand): ArithmeticInstr
+abstract class AbstractArithmeticInstr(val type: ArithmeticInstrType, val condition: Condition,
+                                       val reg1: Register, val reg2: Register, val operand: Operand) : ArithmeticInstr {
+    override fun toAssembly(): String {
+        return "${type.name} ${reg1.toAssembly()}, ${reg2.toAssembly()}, ${operand.toAssembly()}"
+    }
+}
 
-class SubInstr(val condition: Condition, val reg1: Register, val reg2: Register, val operand: Operand): ArithmeticInstr
+class AddInstr(condition: Condition, reg1: Register, reg2: Register,
+               operand: Operand) : AbstractArithmeticInstr(ArithmeticInstrType.ADD, condition, reg1, reg2, operand)
 
-class MultInstr(val condition: Condition, val destReg: Register, val reg1: Register, val reg2: Register): ArithmeticInstr
+class SubInstr(condition: Condition, reg1: Register, reg2: Register,
+               operand: Operand) : AbstractArithmeticInstr(ArithmeticInstrType.SUB, condition, reg1, reg2, operand)
+
+class MultInstr(condition: Condition, reg1: Register, reg2: Register,
+                operand: Operand) : AbstractArithmeticInstr(ArithmeticInstrType.MUL, condition, reg1, reg2, operand)
