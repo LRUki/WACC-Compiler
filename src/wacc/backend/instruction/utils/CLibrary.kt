@@ -19,6 +19,7 @@ enum class LibraryFunctions {
         return super.toString().toLowerCase()
     }
 }
+
 enum class Call {
     READ_INT,
     READ_CHAR,
@@ -92,7 +93,7 @@ fun generatePrintIntCall(): List<Instruction> {
             MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
             LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
             AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()),  true),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
             MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
             BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
     )
@@ -115,11 +116,11 @@ fun generatePrintBoolCall(): List<Instruction> {
     val falseLabel = CodeGenerator.dataDirective.addStringLabel(falseString)
 
     val instructions = listOf(
-            CompareInstr(Register.R0, null,0),
+            CompareInstr(Register.R0, null, 0),
             LoadInstr(Register.R0, null, ImmediateLabel(trueLabel), Condition.NE),
             LoadInstr(Register.R0, null, ImmediateLabel(falseLabel), Condition.EQ),
             AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()),  true),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
             MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
             BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
     )
@@ -146,7 +147,7 @@ fun generatePrintStringCall(): List<Instruction> {
             AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateOperand(4)),
             LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
             AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()),  true),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
             MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
             BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
     )
@@ -163,7 +164,7 @@ fun generatePrintStringCall(): List<Instruction> {
 }
 
 
-fun generatePrintReferenceCall(): Collection<Instruction> {
+fun generatePrintReferenceCall(): List<Instruction> {
     val stringFormat: String = "%d" + 0.toChar()
     val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
@@ -171,7 +172,7 @@ fun generatePrintReferenceCall(): Collection<Instruction> {
             MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
             LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
             AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()),  true),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
             MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
             BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
     )
@@ -187,16 +188,16 @@ fun generatePrintReferenceCall(): Collection<Instruction> {
     // POP {pc}
 }
 
-fun generatePrintLnCall(): Collection<Instruction> {
+fun generatePrintLnCall(): List<Instruction> {
     val stringFormat: String = "" + 0.toChar()
     val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
     val instructions = listOf(
             LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
             AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.PUTS.toString()),  true),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PUTS.toString()), true),
             MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()),  true)
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
     )
     return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
     // LDR r0, =msg_1
@@ -206,12 +207,42 @@ fun generatePrintLnCall(): Collection<Instruction> {
     // BL fflush
 }
 
-fun generateFreePairCall(): Collection<Instruction> {
-//TODO
+fun generateFreePairCall(): List<Instruction> {
+    // PUSH {lr}
+    // CMP r0, #0
+    // LDREQ r0, =msg_0
+    // BEQ p_throw_runtime_error
+    // PUSH {r0}
+    // LDR r0, [r0]
+    // BL free
+    // LDR r0, [sp]
+    // LDR r0, [r0, #4]
+    // BL free
+    // POP {r0}
+    // BL free
+    // POP {pc}
     return emptyList()
 }
 
-fun generateFreeArrayCall(): Collection<Instruction> {
-//TODO
-    return emptyList()
+
+
+fun generateFreeArrayCall(): List<Instruction> {
+//    val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
+    val errorLabel = "TODO"
+    //codeGenerator.getDataSegment().addString(errorMsg)
+//    codeGenerator.runtimeErrors.addThrowRuntimeError()
+
+    val instructions = listOf(
+            CompareInstr(Register.R0, null, 0),
+            LoadInstr(Register.R0, null, ImmediateLabel(errorLabel), Condition.EQ),
+            //BranchInstruction(Condition.EQ,  RuntimeErrors.throwRuntimeErrorLabel, false),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
+    )
+    return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
+    // PUSH {lr}
+    // CMP r0, #0
+    // LDREQ r0, =msg_0
+    // BEQ p_throw_runtime_error
+    // BL free
+    // POP {pc}
 }

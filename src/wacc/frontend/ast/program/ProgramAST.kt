@@ -53,9 +53,9 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         // AI: POP {pc}
         mainInstructions.add(PopInstr(Register.PC))
         mainInstructions.add(DirectiveInstr("ltorg"))
-//        functionInstructions.addAll(mainInstructions)
+
         val data = dataDirective.translate()
-//        val data = listOf(DirectiveInstr("data")) + (stringLabels)
+        // data + function + main + runtime err + clib calls
         return data + functionInstructions + mainInstructions
     }
 
