@@ -2,9 +2,9 @@ package wacc.backend.instruction.instrs
 
 import wacc.backend.instruction.Instruction
 
-abstract class LabelInstr(val str: String): Instruction {
+abstract class LabelInstr(val name: String): Instruction {
     override fun toAssembly(): String {
-        return "$str:"
+        return "$name:"
     }
 }
 
