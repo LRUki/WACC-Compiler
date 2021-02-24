@@ -70,7 +70,7 @@ fun generateReadCall(call: Call): List<Instruction> {
             MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
             LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
             AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), null, true)
+            BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), true)
     )
     return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
 //    PUSH {lr}
@@ -90,9 +90,9 @@ fun generatePrintIntCall(): Collection<Instruction> {
             MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
             LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
             AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), null, true),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()),  true),
             MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), null, true)
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
     )
     return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
 
@@ -128,9 +128,9 @@ fun generatePrintLnCall(): Collection<Instruction> {
     val instructions = listOf(
             LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
             AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.PUTS.toString()), null, true),
+            BranchInstr(Condition.AL, Label(LibraryFunctions.PUTS.toString()),  true),
             MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
-            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), null, true)
+            BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()),  true)
     )
     return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
     // LDR r0, =msg_1
