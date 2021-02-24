@@ -4,14 +4,10 @@ import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Register
 
-class CompareInstr(val condition: Condition?, val register: Register,
+class CompareInstr(val register: Register,
                    val regToCompare: Register?, val immediate: Int?): Instruction {
     override fun toAssembly(): String {
-        var compareInstr = "CMP"
-        if (condition!=null){
-            compareInstr += condition.toAssembly()
-        }
-        compareInstr += " ${register.toAssembly()} "
+        var compareInstr = "CMP ${register.toAssembly()} "
         compareInstr += regToCompare?.toAssembly() ?: "#$immediate"
         return compareInstr
     }
@@ -26,5 +22,3 @@ class CompareInstr(val condition: Condition?, val register: Register,
    // Compare negative CMN <Rn>, <Rm>
 
 }
-
-

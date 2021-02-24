@@ -50,7 +50,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         val afterElseLabel = getNextLabel()
 
         instr.addAll(cond.translate())
-        instr.add(CompareInstr(Condition.AL, Register.R4, null, 0))
+        instr.add(CompareInstr(Register.R4, null, 0))
         instr.add(BranchInstr(Condition.EQ, elseLabel,  false))
 
         thenBody.forEach { instr.addAll(it.translate()) }

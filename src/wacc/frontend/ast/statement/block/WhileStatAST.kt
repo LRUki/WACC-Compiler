@@ -44,7 +44,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         body.forEach { instructions.addAll(it.translate()) }
 
         instructions.addAll(cond.translate())
-        instructions.add(CompareInstr(Condition.AL, Register.R4, null, 1))
+        instructions.add(CompareInstr(Register.R4, null, 1))
         instructions.add(BranchInstr(Condition.EQ, bodyLabel, false))
         return instructions
     }
