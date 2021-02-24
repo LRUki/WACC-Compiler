@@ -41,7 +41,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(DirectiveInstr("global main"))
         mainInstructions.add(Label("main"))
         // AI: PUSH {lr}
-        mainInstructions.add(PushInstr(listOf(Register.LR)))
+        mainInstructions.add(PushInstr(Register.LR))
 
         // SUB sp sp (TODO(Determine how much room to make on the stack by analysing symbol table))
 
@@ -51,7 +51,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         // AI: LDR r0, =0
         mainInstructions.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))
         // AI: POP {pc}
-        mainInstructions.add(PopInstr(listOf(Register.PC)))
+        mainInstructions.add(PopInstr(Register.PC))
         mainInstructions.add(DirectiveInstr("ltorg"))
 //        functionInstructions.addAll(mainInstructions)
         val data = dataDirective.translate()

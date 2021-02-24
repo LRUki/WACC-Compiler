@@ -2,9 +2,13 @@ package wacc.backend.instruction.instrs
 
 import wacc.backend.instruction.Instruction
 
-open class LabelInst(val str: String): Instruction
+abstract class LabelInstr(val name: String): Instruction {
+    override fun toAssembly(): String {
+        return "$name:"
+    }
+}
 
-data class Label(val label: String): LabelInst(label)
+class Label(label: String): LabelInstr(label)
 
-data class FunctionLabel(val functionName: String): LabelInst("f_$functionName")
+class FunctionLabel(functionName: String): LabelInstr("f_$functionName")
 
