@@ -12,4 +12,8 @@ enum class Register {
     LR,   // R14 or Link register
     PC,   // R15 Program counter
     CPSR; // Current Program Status Register contains condition code flags, status bits, current mode bit
+
+    fun toAssembly(): String  {
+        return this.name.toLowerCase()
+    }
 }
