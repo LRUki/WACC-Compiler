@@ -4,9 +4,7 @@ import wacc.backend.CodeGenerator
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.BranchInstr
-import wacc.backend.instruction.instrs.Label
-import wacc.backend.instruction.instrs.MoveInstr
+import wacc.backend.instruction.instrs.*
 
 class RuntimeError {
 
@@ -54,4 +52,27 @@ class RuntimeError {
             //   BL exit
         }
     }
+
+    fun addNullReferenceCheck() {
+        if (nullReferenceError == null) {
+            val errorMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NULL_REFERENCE.toString())
+            nullReferenceError = listOf(
+                    nullReferenceLabel,
+                    PushInstr(Register.LR),
+                    CompareInstr(Register.R0, null,0),
+                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsgLabel), Condition.EQ,),
+                    BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
+                    PopInstr(Register.PC)
+            )
+        }
+        addThrowRuntimeError()
+//        p_check_null_pointer:
+//        PUSH {lr}
+//        CMP r0, #0
+//        LDREQ r0, =msg_7
+//        BLEQ p_throw_runtime_error
+//        POP {pc}
+    }
+
+
 }
