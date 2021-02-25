@@ -1,5 +1,6 @@
 package wacc.backend.instruction
 
+import wacc.backend.instruction.instrs.DirectiveInstr
 import wacc.backend.instruction.instrs.Label
 
 class DataDirective(val stringLabels: StringLabels) {
@@ -17,7 +18,7 @@ class DataDirective(val stringLabels: StringLabels) {
     fun translate(): List<Instruction> {
         if (stringLabels.strings.size == 0) return emptyList()
         val instructions = mutableListOf<Instruction>()
-        instructions.add(Label("data"))
+        instructions.add(DirectiveInstr("data"))
         val strings = stringLabels.translateAll()
         instructions.addAll(strings)
         return instructions

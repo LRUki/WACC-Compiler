@@ -1,6 +1,7 @@
 package wacc.frontend.ast.program
 
 import wacc.backend.CodeGenerator.dataDirective
+import wacc.backend.CodeGenerator.runtimeErrors
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -55,6 +56,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(DirectiveInstr("ltorg"))
 
         val data = dataDirective.translate()
+//        val runtime = runtimeErrors.translate()
         // data + function + main + runtime err + clib calls
         return data + functionInstructions + mainInstructions
     }
