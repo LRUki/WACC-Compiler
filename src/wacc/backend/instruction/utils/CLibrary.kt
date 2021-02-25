@@ -61,13 +61,21 @@ class CLibrary {
         LibraryCalls[call] = instructions
     }
 
-    fun generateReadCall(call: Call): List<Instruction> {
-        val stringFormat: String = when (call) {
-            Call.READ_INT -> "%d" + 0.toChar()
-            Call.READ_CHAR -> " %c" + 0.toChar()
-            else -> throw Exception("Unable to generate code for non-read types")
-        }
-        val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
+fun translate(): List<Instruction> {
+    val instructions = mutableListOf<Instruction>()
+    for ((_, value) in LibraryCalls) {
+        instructions.addAll(value)
+    }
+    return instructions
+}
+
+fun generateReadCall(call: Call): List<Instruction> {
+    val stringFormat: String = when (call) {
+        Call.READ_INT -> "%d" + 0.toChar()
+        Call.READ_CHAR -> " %c" + 0.toChar()
+        else -> throw Exception("Unable to generate code for non-read types")
+    }
+    val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
