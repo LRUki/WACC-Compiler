@@ -20,6 +20,7 @@ import kotlinx.coroutines.channels.*
 import wacc.Main.semanticErrorChannel
 import wacc.Main.syntaxErrorChannel
 import wacc.backend.generateCode
+import wacc.backend.printCode
 import wacc.frontend.ast.program.ProgramAST
 
 object Main {
@@ -115,6 +116,6 @@ fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
 }
 
 fun backend(ast : AST): String {
-    val test = generateCode(ast as ProgramAST)// .printCode()
-    return ""
+    val instrs = generateCode(ast as ProgramAST)
+    return printCode(instrs)
 }
