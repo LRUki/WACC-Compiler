@@ -13,6 +13,21 @@ import java.util.*
  */
 open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
+    companion object {
+        fun getBytesOfType(type: TypeAST): Int {
+            return when (type) {
+                is BaseTypeAST -> {
+                    when (type.type) {
+                        BaseType.INT, BaseType.STRING -> 4
+                        BaseType.CHAR, BaseType.BOOL -> 1
+                    }
+                }
+                is ArrayTypeAST, is PairTypeAST -> 4
+                else -> 0
+            }
+        }
+    }
+
     // A symbol table consists of a HashMap and a list of children.
     val currSymbolTable: HashMap<String, Identifiable> = HashMap()
     var offsetSize: Int = 0
@@ -58,18 +73,17 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         currSymbolTable[name] = obj
     }
 
+
     fun getStackOffset(): Int {
         var offset = 0
         currSymbolTable.forEach { (name, type) ->
             if (type is DeclareStatAST) {
-                offset += type.getBytesOfType()
+                offset += getBytesOfType(type.type)
             }
         }
         offsetSize = offset
         return offset
     }
+}
 
-
-    }
-
-    class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)
+class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

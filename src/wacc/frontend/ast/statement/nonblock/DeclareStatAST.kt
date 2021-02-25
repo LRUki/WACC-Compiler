@@ -49,18 +49,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         return true
     }
 
-    fun getBytesOfType(): Int {
-        return when (type) {
-            is BaseTypeAST -> {
-                when (type.type) {
-                    BaseType.INT, BaseType.STRING -> 4
-                    BaseType.CHAR, BaseType.BOOL -> 1
-                }
-            }
-            is ArrayTypeAST, is PairTypeAST -> 4
-            else -> 0
-        }
-    }
+
 
     override fun translate(): List<Instruction> {
         val instruction = mutableListOf<Instruction>()
@@ -68,7 +57,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
              stringLabel = CodeGenerator.dataDirective.addStringLabel(rhs.value)
         }
         instruction.addAll(rhs.translate())
-        val size = getBytesOfType()
+        val size = SymbolTable.getBytesOfType(type)
         symTable.offsetSize -= size
         instruction.add(StoreInstr(Register.R4, null, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
         return instruction

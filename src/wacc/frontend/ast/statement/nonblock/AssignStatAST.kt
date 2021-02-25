@@ -15,6 +15,7 @@ import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
@@ -73,9 +74,10 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 instruction.add(MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)))
                 instruction.add(StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL))
             }
-
         }
-//        instruction.add(StoreInstr(Register.R4, null, RegisterAddrWithOffset(Register.SP, getBytesOfType(), true), Condition.AL))
+        val size = SymbolTable.getBytesOfType(rhs.getRealType(symTable))
+        symTable.offsetSize -= size
+        instruction.add(StoreInstr(Register.R4, null, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
         return instruction
     }
 }
