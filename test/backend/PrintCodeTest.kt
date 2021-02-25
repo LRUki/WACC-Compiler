@@ -43,7 +43,19 @@ class PrintCodeTest {
         	.ltorg
         
         """.trimIndent()))
-        println(output)
+
     }
 
+//    @Test
+//    fun `can print code for exit files`() {
+//        val folder = File("wacc_examples/valid/basic/exit/")
+//        actionOnFiles(folder) { file ->
+//            val program = parse(file.inputStream())
+//            checkSyntax(program)
+//            val ast = buildAST(program)
+//            checkSemantics(ast)
+//            val instrs = generateCode(ast as ProgramAST)
+//            println(printCode(instrs))
+//        }
+//    }
 }

@@ -7,7 +7,7 @@ rm -rf out_test
 
 ALL_SUCCESSFUL=0
 
-for WACC_FILENAME in `find wacc_examples/valid/basic/skip/skip.wacc -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
+for WACC_FILENAME in `find wacc_examples/valid/basic/skip/ -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
 do
   FILENAME=${WACC_FILENAME#*/}
   mkdir -p out_test/"${FILENAME%/*}"
