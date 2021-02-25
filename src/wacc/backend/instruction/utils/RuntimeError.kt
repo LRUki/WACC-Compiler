@@ -37,6 +37,17 @@ class RuntimeError {
         }
     }
 
+    fun translate(): List<Instruction> {
+        val instructions = mutableListOf<Instruction>()
+        runtimeError?.let { instructions.addAll(it) }
+        nullReferenceError?.let {instructions.addAll(it)}
+        divideZeroError?.let { instructions.addAll(it) }
+        checkArrayBounds?.let { instructions.addAll(it) }
+        overflowError?.let { instructions.addAll(it) }
+        return instructions
+    }
+
+
     fun addThrowRuntimeError() {
         if (runtimeError == null) {
             runtimeError = listOf(
@@ -128,7 +139,21 @@ class RuntimeError {
 
 
     }
-    //addthrowOverflowErrorLabel = Label("p_throw_overflow_error")
+
+    fun addOverflowError() {
+        if (overflowError == null) {
+            val errorMsg = CodeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())
+            overflowError = listOf(
+                    throwOverflowErrorLabel,
+                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsg), Condition.LT),
+                    BranchInstr(Condition.AL, throwRuntimeErrorLabel, true),
+            )
+        }
+        addThrowRuntimeError()
+        // p_throw_overflow_error:
+        //   LDR r0, =msg_0
+        //   BL p_throw_runtime_error
+    }
 
 
 }
