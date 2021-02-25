@@ -1,7 +1,8 @@
 package wacc.frontend
 
 import wacc.frontend.ast.function.FuncAST
-import wacc.frontend.ast.type.Identifiable
+import wacc.frontend.ast.statement.nonblock.DeclareStatAST
+import wacc.frontend.ast.type.*
 import java.util.*
 
 /**
@@ -55,6 +56,26 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun add(name: String, obj: Identifiable) {
         currSymbolTable[name] = obj
     }
+
+    fun getStackOffset(): Int {
+        var offset = 0
+        currSymbolTable.forEach { (name, type) ->
+            if (type is DeclareStatAST)
+                when (type.type) {
+                    is BaseTypeAST -> {
+                        when (type.type.type) {
+                            BaseType.INT, BaseType.STRING -> offset += 4
+                            BaseType.CHAR, BaseType.BOOL -> offset++
+                        }
+                    }
+                    is ArrayTypeAST, is PairTypeAST -> {
+                        offset += 4
+                    }
+                }
+        }
+        return offset
+    }
+
 }
 
 class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

@@ -1,10 +1,12 @@
 package wacc.frontend.ast.statement.nonblock
 
+import wacc.backend.CodeGenerator
 import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.Identifiable
@@ -40,6 +42,13 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
     }
 
     override fun translate(): List<Instruction> {
+        val instruction = mutableListOf<Instruction>()
+        var offset = 0
+        if (rhs is StrLiterAST) {
+            CodeGenerator.dataDirective.addStringLabel(rhs.value)
+        }
+        
+
         TODO("Not yet implemented")
     }
 }

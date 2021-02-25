@@ -9,7 +9,7 @@ import wacc.frontend.ast.Translatable
  * Implemented by Statement AST nodes
  * Implements the AST interface to be able to override the check method
  */
-interface StatAST : AST, Translatable
+interface   StatAST : AST, Translatable
 
 class SkipStatAST : StatAST {
     override fun translate(): List<Instruction> {
