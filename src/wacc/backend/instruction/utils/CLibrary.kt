@@ -61,6 +61,14 @@ fun addCode(call: Call) {
     LibraryCalls[call] = instructions
 }
 
+fun translate(): List<Instruction> {
+    val instructions = mutableListOf<Instruction>()
+    for ((_, value) in LibraryCalls) {
+        instructions.addAll(value)
+    }
+    return instructions
+}
+
 fun generateReadCall(call: Call): List<Instruction> {
     val stringFormat: String = when (call) {
         Call.READ_INT -> "%d" + 0.toChar()
