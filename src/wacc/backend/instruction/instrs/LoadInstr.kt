@@ -4,12 +4,12 @@ import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.utils.AddressingMode
+import wacc.backend.instruction.utils.*
 
 class LoadInstr(val destRegister : Register, val memType: MemoryType?,
                  val mode : AddressingMode, val condition : Condition): Instruction {
     override fun toAssembly(): String {
-        TODO("Not yet implemented")
+        return "LDR${memType?.name} ${destRegister.toAssembly()}, ${mode.toAssembly()}"
     }
 
 //    Load Word LDR{cond} <Rd>, <a_mode2>

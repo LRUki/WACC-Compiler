@@ -19,7 +19,7 @@ enum class Condition {
     AL;    // Always
 
     fun toAssembly(): String  {
-        return this.name
+        return if (this == Condition.AL) "" else this.name
     }
 }
 
