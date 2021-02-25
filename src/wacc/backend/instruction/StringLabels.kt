@@ -1,5 +1,6 @@
 package wacc.backend.instruction
 
+
 import wacc.backend.instruction.instrs.DirectiveInstr
 import wacc.backend.instruction.instrs.Label
 import kotlin.text.Regex.Companion.escape
@@ -10,6 +11,9 @@ class StringLabels (val strings: MutableList<String>) {
      * Add a string and returns its label of the format "msg_<int>".
      */
     fun add(string: String): String {
+        if(strings.contains(string)){
+            return "msg_${strings.indexOf(string)}"
+        }
         strings.add(string)
         return "msg_${strings.size - 1}"
     }

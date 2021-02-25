@@ -60,22 +60,14 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun getStackOffset(): Int {
         var offset = 0
         currSymbolTable.forEach { (name, type) ->
-            if (type is DeclareStatAST)
-                when (type.type) {
-                    is BaseTypeAST -> {
-                        when (type.type.type) {
-                            BaseType.INT, BaseType.STRING -> offset += 4
-                            BaseType.CHAR, BaseType.BOOL -> offset++
-                        }
-                    }
-                    is ArrayTypeAST, is PairTypeAST -> {
-                        offset += 4
-                    }
-                }
+            if (type is DeclareStatAST) {
+                offset += type.getBytesOfType()
+            }
         }
         return offset
     }
 
-}
 
-class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)
+    }
+
+    class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

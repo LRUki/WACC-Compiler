@@ -6,7 +6,9 @@ import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.ImmediateChar
 import wacc.backend.instruction.utils.ImmediateInt
+import wacc.backend.instruction.utils.ImmediateOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.Translatable
@@ -43,6 +45,10 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(Label("main"))
         // AI: PUSH {lr}
         mainInstructions.add(PushInstr(Register.LR))
+        val stackOffset = symTable.getStackOffset()
+        if (stackOffset > 0) {
+          mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+        }
 
         // SUB sp sp (TODO(Determine how much room to make on the stack by analysing symbol table))
 

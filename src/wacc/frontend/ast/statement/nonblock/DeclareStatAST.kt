@@ -2,15 +2,22 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.StoreInstr
+import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.assign.CallRhsAST
+import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.expression.ArrayLiterAST
+import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
-import wacc.frontend.ast.type.Identifiable
-import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.*
 import wacc.frontend.exception.semanticError
 
 /**
@@ -22,6 +29,7 @@ import wacc.frontend.exception.semanticError
  * @property rhs Value to be stored in the variable
  */
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
+    lateinit var stringLabel: String ;
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -41,14 +49,26 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         return true
     }
 
+    fun getBytesOfType(): Int {
+        return when (type) {
+            is BaseTypeAST -> {
+                when (type.type) {
+                    BaseType.INT, BaseType.STRING -> 4
+                    BaseType.CHAR, BaseType.BOOL -> 1
+                }
+            }
+            is ArrayTypeAST, is PairTypeAST -> 4
+            else -> 0
+        }
+    }
+
     override fun translate(): List<Instruction> {
         val instruction = mutableListOf<Instruction>()
-        var offset = 0
         if (rhs is StrLiterAST) {
-            CodeGenerator.dataDirective.addStringLabel(rhs.value)
+             stringLabel = CodeGenerator.dataDirective.addStringLabel(rhs.value)
         }
-        
-
-        TODO("Not yet implemented")
+        instruction.addAll(rhs.translate())
+        instruction.add(StoreInstr(Register.R4, null, RegisterAddrWithOffset(Register.SP, getBytesOfType(), true), Condition.AL))
+        return instruction
     }
 }

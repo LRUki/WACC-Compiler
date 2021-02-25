@@ -60,29 +60,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        when (val type = lhs.getRealType(symTable)) {
-            is BaseTypeAST -> {
-                when (type.type) { //TODO()
-                    BaseType.INT -> {
-                        instr.add(LoadInstr(Register.R4, null, ImmediateInt(0), Condition.AL))
-                    }
-                    BaseType.BOOL -> {
-                        instr.add(MoveInstr(Condition.AL, Register.R4, ImmediateOperand(0)))
-                    }
-                    BaseType.CHAR -> {
-                        // should be ='CHAR'
-                        instr.add((MoveInstr(Condition.AL, Register.R4, ImmediateOperand(0))))
-                    }
-                    BaseType.STRING -> {
-                        // this should have the msg directive as operand
-                        instr.add(LoadInstr(Register.R4, null, ImmediateInt(0), Condition.AL))
-                    }
-                }
-            }
-            is ArrayTypeAST -> TODO()
-            is PairTypeAST ->  TODO()
 
-        }
         return instr
     }
 }
