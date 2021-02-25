@@ -14,17 +14,17 @@ enum class ArithmeticInstrType {
 }
 
 abstract class AbstractArithmeticInstr(val type: ArithmeticInstrType, val condition: Condition,
-                                       val reg1: Register, val reg2: Register, val operand: Operand) : ArithmeticInstr {
+                                       val reg1: Register, val reg2: Register, val operand: Operand, val updateFlag: Boolean) : ArithmeticInstr {
     override fun toAssembly(): String {
-        return "${type.name} ${reg1.toAssembly()}, ${reg2.toAssembly()}, ${operand.toAssembly()}"
+        return "${type.name}${if (updateFlag) "S" else ""}${condition.toAssembly()} ${reg1.toAssembly()}, ${reg2.toAssembly()}, ${operand.toAssembly()}"
     }
 }
 
 class AddInstr(condition: Condition, reg1: Register, reg2: Register,
-               operand: Operand) : AbstractArithmeticInstr(ArithmeticInstrType.ADD, condition, reg1, reg2, operand)
+               operand: Operand, updateFlag: Boolean = false) : AbstractArithmeticInstr(ArithmeticInstrType.ADD, condition, reg1, reg2, operand, updateFlag)
 
 class SubInstr(condition: Condition, reg1: Register, reg2: Register,
-               operand: Operand) : AbstractArithmeticInstr(ArithmeticInstrType.SUB, condition, reg1, reg2, operand)
+               operand: Operand, updateFlag: Boolean = false) : AbstractArithmeticInstr(ArithmeticInstrType.SUB, condition, reg1, reg2, operand, updateFlag)
 
 class MultInstr(condition: Condition, reg1: Register, reg2: Register,
-                operand: Operand) : AbstractArithmeticInstr(ArithmeticInstrType.MUL, condition, reg1, reg2, operand)
+                operand: Operand, updateFlag: Boolean = false) : AbstractArithmeticInstr(ArithmeticInstrType.MUL, condition, reg1, reg2, operand, updateFlag)

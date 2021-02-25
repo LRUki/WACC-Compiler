@@ -41,11 +41,11 @@ class TranslateTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            val instr = generateCode(ast as ProgramAST)
-            assertFalse(instr.contains(DirectiveInstr("data")))
-            assertFalse(instr.contains(DirectiveInstr("word")))
-            assertFalse(instr.contains(DirectiveInstr("ascii")))
-            assertFalse(instr.contains(Label("msg_")))
+            val instrs = generateCode(ast as ProgramAST)
+            assertFalse(instrs.contains(DirectiveInstr("data")))
+            assertFalse(instrs.contains(DirectiveInstr("word")))
+            assertFalse(instrs.contains(DirectiveInstr("ascii")))
+            assertFalse(instrs.contains(Label("msg_")))
         }
     }
 
