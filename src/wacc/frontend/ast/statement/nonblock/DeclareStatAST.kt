@@ -68,7 +68,9 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
              stringLabel = CodeGenerator.dataDirective.addStringLabel(rhs.value)
         }
         instruction.addAll(rhs.translate())
-        instruction.add(StoreInstr(Register.R4, null, RegisterAddrWithOffset(Register.SP, getBytesOfType(), true), Condition.AL))
+        val size = getBytesOfType()
+        symTable.offsetSize -= size
+        instruction.add(StoreInstr(Register.R4, null, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
         return instruction
     }
 }

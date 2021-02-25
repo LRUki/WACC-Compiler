@@ -15,6 +15,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
     // A symbol table consists of a HashMap and a list of children.
     val currSymbolTable: HashMap<String, Identifiable> = HashMap()
+    var offsetSize: Int = 0
 
     // Gets the top most symbol table
     fun getTopSymbolTable(): SymbolTable {
@@ -64,6 +65,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                 offset += type.getBytesOfType()
             }
         }
+        offsetSize = offset
         return offset
     }
 

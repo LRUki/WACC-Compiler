@@ -28,6 +28,6 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
     }
 }
 
-enum class BaseType {
-    INT, BOOL, CHAR, STRING
+enum class BaseType(val bytes:Int ) {
+    INT(4), BOOL(1), CHAR(1), STRING(4)
 }
