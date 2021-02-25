@@ -60,7 +60,7 @@ class RuntimeError {
                     nullReferenceLabel,
                     PushInstr(Register.LR),
                     CompareInstr(Register.R0, null,0),
-                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsgLabel), Condition.EQ,),
+                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsgLabel), Condition.EQ),
                     BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
             )
@@ -72,6 +72,27 @@ class RuntimeError {
 //        LDREQ r0, =msg_7
 //        BLEQ p_throw_runtime_error
 //        POP {pc}
+    }
+
+    fun addDivideByZeroCheck() {
+        if (divideZeroError == null) {
+            val errorMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.DIVIDE_BY_ZERO.toString())
+            divideZeroError = listOf(
+                    divideZeroCheckLabel,
+                    PushInstr(Register.LR),
+                    CompareInstr(Register.R1, null, 0),
+                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsgLabel), Condition.EQ),
+                    BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
+                    PopInstr(Register.PC)
+            )
+        }
+        addThrowRuntimeError()
+        // p_check_divide_by_zero:
+        //   PUSH {lr}
+        //   CMP r1, #0
+        //   LDREQ r0, =msg_0
+        //   BLEQ p_throw_runtime_error
+        //   POP {pc}
     }
 
 
