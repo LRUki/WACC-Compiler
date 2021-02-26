@@ -1,5 +1,9 @@
 package wacc.frontend.ast.expression
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.freeCalleeSavedRegs
+import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -80,7 +84,37 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val instr = mutableListOf<Instruction>()
+        val reg1 = seeNextFreeCalleeReg()
+        instr.addAll(expr1.translate())
+        val reg2 = seeNextFreeCalleeReg()
+        instr.addAll(expr2.translate())
+        freeCalleeReg(reg2)
+        when (binOp) {
+            BinOp.PLUS -> {}
+            BinOp.MINUS -> {}
+            BinOp.MULT -> {}
+            BinOp.DIV -> {}
+            BinOp.MOD -> {}
+            BinOp.EQ -> {}
+
+            BinOp.NEQ -> {}
+            BinOp.LTE -> {}
+            BinOp.LT -> {}
+            BinOp.GTE -> {}
+            BinOp.GT -> {}
+
+            BinOp.AND -> {}
+            BinOp.OR -> {}
+
+
+
+        }
+//        while (exp1 !is LiterAST) {
+//            exp1 = exp1.
+//        }
+        expr1.translate()
+        return instr
     }
 
 }
