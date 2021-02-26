@@ -67,6 +67,8 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
             }
         }
         instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
+        CodeGenerator.freeCalleeReg()
+
         return instruction
     }
 }

@@ -8,6 +8,7 @@ import wacc.backend.instruction.instrs.Label
 import wacc.backend.instruction.utils.CLibrary
 import wacc.backend.instruction.utils.RuntimeError
 import wacc.frontend.ast.program.ProgramAST
+import java.util.Stack
 
 object CodeGenerator {
 
@@ -18,11 +19,23 @@ object CodeGenerator {
 
     val resultRegisters = mutableListOf(Register.R0, Register.R1)
     val argumentRegisters = mutableListOf(Register.R2, Register.R3)
-    val calleeSavedRegisters = mutableListOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10, Register.R11)
+    val freeCalleeSavedRegs: Stack<Register> = makeStack(listOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10, Register.R11))
+    val calleSavedRegsInUse: Stack<Register> = makeStack(emptyList())
 
     var freeResultRegs = resultRegisters
     var freeArgumentRegs = argumentRegisters
-    var freeCalleeSavedRegs = calleeSavedRegisters
+//    var freeCalleeSavedRegs = calleeSavedRegisters
+    private fun <T> makeStack(list: List<T>): Stack<T> {
+        val stack = Stack<T>()
+//        for (i in list.size-1..0) {
+//            stack.push(list[i])
+//        }
+
+        list.reversed().forEach {
+            stack.push(it)
+        }
+        return stack
+    }
 
     fun getNextLabel(): Label {
         return Label("L${labelNumber++}")
@@ -30,18 +43,31 @@ object CodeGenerator {
 
     fun seeNextFreeCalleeReg(): Register {
         //TODO(Handle the case when registers are all used up)
-        return calleeSavedRegisters[0]
+        if (freeCalleeSavedRegs.isEmpty()) {
+            return Register.CPSR
+        }
+        return freeCalleeSavedRegs.peek()
     }
 
     fun getNextFreeCalleeReg(): Register {
         //TODO(Handle the case when registers are all used up)
-        return calleeSavedRegisters.removeAt(0)
+        if (freeCalleeSavedRegs.isEmpty()){
+            return Register.CPSR//TODO() CHANGE LATER
+        }
+        val reg = freeCalleeSavedRegs.pop()
+        calleSavedRegsInUse.push(reg)
+        return reg
     }
 
-    fun freeCalleeReg(reg: Register) {
-        calleeSavedRegisters.add(reg)
-        calleeSavedRegisters.sort()
+    fun freeCalleeReg() {
+        //TODO empty case for callee saved regs
+        if (calleSavedRegsInUse.isEmpty()){
+            return
+        }
+        val reg = calleSavedRegsInUse.pop()
+        freeCalleeSavedRegs.push(reg)
     }
+
 
 
 

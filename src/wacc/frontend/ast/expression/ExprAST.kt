@@ -2,7 +2,7 @@ package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.freeCalleeSavedRegs
+import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
@@ -90,9 +90,9 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        val reg1 = seeNextFreeCalleeReg()
+        val reg1 = getNextFreeCalleeReg()
         instr.addAll(expr1.translate())
-        val reg2 = seeNextFreeCalleeReg()
+        val reg2 = getNextFreeCalleeReg()
         instr.addAll(expr2.translate())
         when (binOp) {
             BinOp.PLUS -> {
@@ -166,7 +166,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 instr.add(OrInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
             }
         }
-        freeCalleeReg(reg2)
+        freeCalleeReg()
         return instr
     }
 
@@ -234,23 +234,23 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        val reg1 = seeNextFreeCalleeReg()
+        val reg1 = getNextFreeCalleeReg()
         instr.addAll(expr.translate())
         when (unOp) {
             UnOp.NOT -> {
                 instr.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateOperandInt(1)))
             }
             UnOp.MINUS -> {
-                instr.add(LoadInstr(reg1, null, ImmediateInt(- (expr as IntLiterAST).value), Condition.AL))
+                instr.add(LoadInstr(reg1, null, ImmediateInt(-(expr as IntLiterAST).value), Condition.AL))
             }
             UnOp.LEN -> {
                 instr.add(LoadInstr(reg1, null, ImmediateInt((expr as ArrayElemAST).indices.size), Condition.AL))
             }
             UnOp.ORD -> {
-                instr.add(MoveInstr(Condition.AL, reg1,  ImmediateOperandChar((expr as CharLiterAST).value)))
+//                instr.add(MoveInstr(Condition.AL, reg1,  ImmediateOperandChar((expr as CharLiterAST).value)))
             }
             UnOp.CHR -> {
-                instr.add(LoadInstr(reg1, null, ImmediateInt((expr as IntLiterAST).value), Condition.AL))
+//                instr.add(LoadInstr(reg1, null, ImmediateInt((expr as IntLiterAST).value), Condition.AL))
             }
         }
         return instr
