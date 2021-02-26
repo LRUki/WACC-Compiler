@@ -8,11 +8,10 @@ import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.ImmediateOperandBool
-import wacc.backend.instruction.utils.RegisterOperand
-import wacc.backend.instruction.utils.RuntimeError
+import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.BaseType
@@ -234,7 +233,27 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val instr = mutableListOf<Instruction>()
+        val reg1 = seeNextFreeCalleeReg()
+        instr.addAll(expr.translate())
+        when (unOp) {
+            UnOp.NOT -> {
+                instr.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateOperandInt(1)))
+            }
+            UnOp.MINUS -> {
+                instr.add(LoadInstr(reg1, null, ImmediateInt(- (expr as IntLiterAST).value), Condition.AL))
+            }
+            UnOp.LEN -> {
+                instr.add(LoadInstr(reg1, null, ImmediateInt((expr as ArrayElemAST).indices.size), Condition.AL))
+            }
+            UnOp.ORD -> {
+                instr.add(MoveInstr(Condition.AL, reg1,  ImmediateOperandChar((expr as CharLiterAST).value)))
+            }
+            UnOp.CHR -> {
+                instr.add(LoadInstr(reg1, null, ImmediateInt((expr as IntLiterAST).value), Condition.AL))
+            }
+        }
+        return instr
     }
 }
 
