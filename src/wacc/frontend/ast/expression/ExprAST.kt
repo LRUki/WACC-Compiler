@@ -8,6 +8,7 @@ import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.ImmediateOperandBool
 import wacc.backend.instruction.utils.RegisterOperand
 import wacc.backend.instruction.utils.RuntimeError
 import wacc.frontend.SymbolTable
@@ -128,22 +129,42 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 instr.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
             }
             BinOp.EQ -> {
+                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(MoveInstr(Condition.EQ, reg1, ImmediateOperandBool(true)))
+                instr.add(MoveInstr(Condition.NE, reg1, ImmediateOperandBool(false)))
             }
 
             BinOp.NEQ -> {
+                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(MoveInstr(Condition.NE, reg1, ImmediateOperandBool(true)))
+                instr.add(MoveInstr(Condition.EQ, reg1, ImmediateOperandBool(false)))
             }
             BinOp.LTE -> {
+                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(MoveInstr(Condition.LE, reg1, ImmediateOperandBool(true)))
+                instr.add(MoveInstr(Condition.GT, reg1, ImmediateOperandBool(false)))
             }
             BinOp.LT -> {
+                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(MoveInstr(Condition.LT, reg1, ImmediateOperandBool(true)))
+                instr.add(MoveInstr(Condition.GE, reg1, ImmediateOperandBool(false)))
             }
             BinOp.GTE -> {
+                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(MoveInstr(Condition.GE, reg1, ImmediateOperandBool(true)))
+                instr.add(MoveInstr(Condition.LT, reg1, ImmediateOperandBool(false)))
             }
             BinOp.GT -> {
+                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(MoveInstr(Condition.GT, reg1, ImmediateOperandBool(true)))
+                instr.add(MoveInstr(Condition.LE, reg1, ImmediateOperandBool(false)))
             }
 
             BinOp.AND -> {
+                instr.add(AndInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
             }
             BinOp.OR -> {
+                instr.add(OrInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
             }
         }
         freeCalleeReg(reg2)

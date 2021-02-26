@@ -21,7 +21,7 @@ class ImmediateOperandChar(val char: Char): Operand {
 
 class ImmediateOperandBool(val bool: Boolean): Operand {
     override fun toAssembly(): String {
-        return "#'${if (bool) 1 else 0}'"
+        return "#${if (bool) 1 else 0}"
     }
 }
 
