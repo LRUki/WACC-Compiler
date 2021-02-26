@@ -120,6 +120,12 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 instr.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R0)))
             }
             BinOp.MOD -> {
+                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
+                instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
+                instr.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
+                CodeGenerator.runtimeErrors.addDivideByZeroCheck()
+                instr.add(BranchInstr(Condition.AL, Label("__aeabi_idivmod"), true))
+                instr.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
             }
             BinOp.EQ -> {
             }
