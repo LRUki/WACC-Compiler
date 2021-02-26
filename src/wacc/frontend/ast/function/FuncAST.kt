@@ -1,11 +1,10 @@
 package wacc.frontend.ast.function
 
 import wacc.backend.instruction.*
+import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.DirectiveInstr
-import wacc.backend.instruction.instrs.FunctionLabel
-import wacc.backend.instruction.instrs.PushInstr
-import wacc.backend.instruction.instrs.regsToPushInstrs
+import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.ImmediateOperand
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -46,15 +45,20 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
     }
 
     override fun translate(): List<Instruction> {
-        val functionInstructions = mutableListOf<Instruction>()
-        functionInstructions.add(FunctionLabel(ident.name))
-        functionInstructions.add(PushInstr(Register.LR))
-
-        body.forEach { functionInstructions.addAll(it.translate()) }
-
-        functionInstructions.addAll(regsToPushInstrs(listOf(Register.PC, Register.PC)))
-        functionInstructions.add(DirectiveInstr("ltorg"))
-        return functionInstructions
+        val instr = mutableListOf<Instruction>()
+        instr.add(FunctionLabel(ident.name))
+        instr.add(PushInstr(Register.LR))
+        val stackOffset = symTable.getStackOffset()
+        if (stackOffset > 0) {
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+        }
+        body.forEach { instr.addAll(it.translate()) }
+        if (stackOffset > 0) {
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+        }
+        instr.addAll(regsToPushInstrs(listOf(Register.PC)))
+        instr.add(DirectiveInstr("ltorg"))
+        return instr
     }
 
     override fun toString(): String {

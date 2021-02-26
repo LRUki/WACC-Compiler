@@ -55,6 +55,9 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         // Visit main program and add to instruction list
         stats.forEach { mainInstructions.addAll(it.translate()) }
 
+        if (stackOffset > 0) {
+            mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+        }
         // AI: LDR r0, =0
         mainInstructions.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))
         // AI: POP {pc}
