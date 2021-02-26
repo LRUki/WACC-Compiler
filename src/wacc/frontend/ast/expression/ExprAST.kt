@@ -2,6 +2,7 @@ package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.getLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
@@ -90,10 +91,10 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        val reg1 = getNextFreeCalleeReg()
         instr.addAll(expr1.translate())
-        val reg2 = getNextFreeCalleeReg()
+        val reg1 = getLastUsedCalleeReg()
         instr.addAll(expr2.translate())
+        val reg2 = getLastUsedCalleeReg()
         when (binOp) {
             BinOp.PLUS -> {
                 instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
@@ -234,7 +235,7 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        val reg1 = getNextFreeCalleeReg()
+        val reg1 = getLastUsedCalleeReg()
         instr.addAll(expr.translate())
         when (unOp) {
             UnOp.NOT -> {

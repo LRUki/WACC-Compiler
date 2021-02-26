@@ -24,13 +24,9 @@ object CodeGenerator {
 
     var freeResultRegs = resultRegisters
     var freeArgumentRegs = argumentRegisters
-//    var freeCalleeSavedRegs = calleeSavedRegisters
+
     private fun <T> makeStack(list: List<T>): Stack<T> {
         val stack = Stack<T>()
-//        for (i in list.size-1..0) {
-//            stack.push(list[i])
-//        }
-
         list.reversed().forEach {
             stack.push(it)
         }
@@ -42,15 +38,13 @@ object CodeGenerator {
     }
 
     fun seeNextFreeCalleeReg(): Register {
-        //TODO(Handle the case when registers are all used up)
         if (freeCalleeSavedRegs.isEmpty()) {
-            return Register.CPSR
+            return Register.CPSR// TODO() Change later
         }
         return freeCalleeSavedRegs.peek()
     }
 
     fun getNextFreeCalleeReg(): Register {
-        //TODO(Handle the case when registers are all used up)
         if (freeCalleeSavedRegs.isEmpty()){
             return Register.CPSR//TODO() CHANGE LATER
         }
@@ -59,13 +53,18 @@ object CodeGenerator {
         return reg
     }
 
+    fun getLastUsedCalleeReg(): Register {
+        if (calleSavedRegsInUse.isEmpty()) {
+            return Register.CPSR//TODO() CHANGE LATER
+        }
+        return calleSavedRegsInUse.peek()
+    }
+
     fun freeCalleeReg() {
-        //TODO empty case for callee saved regs
         if (calleSavedRegsInUse.isEmpty()){
             return
         }
         val reg = calleSavedRegsInUse.pop()
-        freeCalleeSavedRegs.push(reg)
     }
 
 
