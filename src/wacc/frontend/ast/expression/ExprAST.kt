@@ -5,6 +5,13 @@ import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeSavedRegs
 import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.instrs.AddInstr
+import wacc.backend.instruction.instrs.BranchInstr
+import wacc.backend.instruction.instrs.CompareInstr
+import wacc.backend.instruction.instrs.MultInstr
+import wacc.backend.instruction.utils.RegisterOperand
+import wacc.backend.instruction.utils.RuntimeError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.RhsAST
@@ -89,31 +96,48 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         instr.addAll(expr1.translate())
         val reg2 = seeNextFreeCalleeReg()
         instr.addAll(expr2.translate())
-        freeCalleeReg(reg2)
         when (binOp) {
-            BinOp.PLUS -> {}
-            BinOp.MINUS -> {}
-            BinOp.MULT -> {}
-            BinOp.DIV -> {}
-            BinOp.MOD -> {}
-            BinOp.EQ -> {}
+            BinOp.PLUS -> {
+                instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, false))
+                CodeGenerator.runtimeErrors.addOverflowError()
+            }
+            BinOp.MINUS -> {
+                instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, false))
+                CodeGenerator.runtimeErrors.addOverflowError()
+            }
+            BinOp.MULT -> {
+                instr.add(MultInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                instr.add(CompareInstr(reg2, reg1, 31)) //TODO( MIGHT NEED TO ADD ASR)
+                instr.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, false))
+                CodeGenerator.runtimeErrors.addOverflowError()
 
-            BinOp.NEQ -> {}
-            BinOp.LTE -> {}
-            BinOp.LT -> {}
-            BinOp.GTE -> {}
-            BinOp.GT -> {}
+            }
+            BinOp.DIV -> {
+            }
+            BinOp.MOD -> {
+            }
+            BinOp.EQ -> {
+            }
 
-            BinOp.AND -> {}
-            BinOp.OR -> {}
+            BinOp.NEQ -> {
+            }
+            BinOp.LTE -> {
+            }
+            BinOp.LT -> {
+            }
+            BinOp.GTE -> {
+            }
+            BinOp.GT -> {
+            }
 
-
-
+            BinOp.AND -> {
+            }
+            BinOp.OR -> {
+            }
         }
-//        while (exp1 !is LiterAST) {
-//            exp1 = exp1.
-//        }
-        expr1.translate()
+        freeCalleeReg(reg2)
         return instr
     }
 

@@ -1,6 +1,11 @@
 package wacc.frontend.ast.expression
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.instrs.LoadInstr
+import wacc.backend.instruction.utils.ImmediateInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
@@ -13,7 +18,7 @@ class IntLiterAST(val value: Int) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        return listOf(LoadInstr(getNextFreeCalleeReg(), null, ImmediateInt(value), Condition.AL))
     }
 }
 

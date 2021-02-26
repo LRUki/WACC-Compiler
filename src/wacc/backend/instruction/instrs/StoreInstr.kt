@@ -9,6 +9,6 @@ import wacc.backend.instruction.utils.*
 class StoreInstr(val srcRegister : Register, val memType: MemoryType?,
                  val mode : AddressingMode, val condition : Condition): Instruction {
     override fun toAssembly(): String {
-        return "STR${memType?.name} ${srcRegister.toAssembly()}, ${mode.toAssembly()}"
+        return "STR${memType?.let {memType.name}}  ${srcRegister.toAssembly()}, ${mode.toAssembly()}"
     }
 }
