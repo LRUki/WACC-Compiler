@@ -147,7 +147,7 @@ fun generateReadCall(call: Call): List<Instruction> {
 
 
     fun generatePrintStringCall(): List<Instruction> {
-        val stringFormat: String = "%.*s" + 0.toChar()
+        val stringFormat: String = "%.*s\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(

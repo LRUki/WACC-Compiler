@@ -34,13 +34,13 @@ class StringLabels (val strings: MutableList<String>) {
     fun translateAll(): List<Instruction> {
         val instructions = mutableListOf<Instruction>()
         for ((index, string) in strings.withIndex()) {
-            instructions.add(Label("msg_$index:"))
+            instructions.add(Label("msg_$index"))
             instructions.add(DirectiveInstr("word ${string.length}"))
 
             // display escaped characters in full
 //            val newString = escape(string) //TODO check this was producing the wrong characters in msg
 //            instructions.add(DirectiveInstr("ascii \"$newString\""))
-            instructions.add(DirectiveInstr("ascii \"$string\""))
+            instructions.add(DirectiveInstr("ascii \"${string}\""))
 
         }
         return instructions

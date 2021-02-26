@@ -26,11 +26,11 @@ class RuntimeError {
     }
 
     enum class ErrorType(val msg: String) {
-        NULL_REFERENCE("NullReferenceError: attempt to dereference a null reference\n" + 0.toChar()),
-        DIVIDE_BY_ZERO("DivideByZeroError: divide or modulo by zero\n" + 0.toChar()),
-        LARGE_ARRAY_INDEX_OUT_OF_BOUNDS("ArrayIndexOutOfBoundsError: index too large\n" + 0.toChar()),
-        NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS("ArrayIndexOutOfBoundsError: negative index\n" + 0.toChar()),
-        OVERFLOW_ERROR("OverflowError: the result is too small/large to store in a 4-byte signed-integer.\n");
+        NULL_REFERENCE("NullReferenceError: attempt to dereference a null reference\\n\\0"),
+        DIVIDE_BY_ZERO("DivideByZeroError: divide or modulo by zero\\n"),
+        LARGE_ARRAY_INDEX_OUT_OF_BOUNDS("ArrayIndexOutOfBoundsError: index too large\\n\\0"),
+        NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS("ArrayIndexOutOfBoundsError: negative index\\n\\0"),
+        OVERFLOW_ERROR("OverflowError: the result is too small/large to store in a 4-byte signed-integer.\\n");
 
         override fun toString(): String {
             return msg
