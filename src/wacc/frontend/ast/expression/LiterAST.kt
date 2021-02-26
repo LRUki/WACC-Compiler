@@ -42,7 +42,7 @@ class StrLiterAST(val value: String) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        val strLabel = CodeGenerator.dataDirective.getStringLabel(value)
+        val strLabel = CodeGenerator.dataDirective.addStringLabel(value)
         return listOf(LoadInstr(getNextFreeCalleeReg(), null, ImmediateLabel(strLabel), Condition.AL))
     }
 }

@@ -71,10 +71,10 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 
     override fun translate(): List<Instruction> {
         val instruction = mutableListOf<Instruction>()
-        if (rhs is StrLiterAST) {
-            stringLabel = CodeGenerator.dataDirective.addStringLabel(rhs.value)
-        }
         instruction.addAll(rhs.translate())
+        if (rhs is StrLiterAST) {
+            stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
+        }
         when (rhs) {
             // only other RHS which requires "setting up"
             is CallRhsAST -> {

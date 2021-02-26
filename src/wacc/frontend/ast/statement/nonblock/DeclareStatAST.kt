@@ -54,10 +54,10 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 
     override fun translate(): List<Instruction> {
         val instruction = mutableListOf<Instruction>()
-        if (rhs is StrLiterAST) {
-             stringLabel = CodeGenerator.dataDirective.addStringLabel(rhs.value)
-        }
         instruction.addAll(rhs.translate())
+        if (rhs is StrLiterAST) {
+             stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
+        }
         val size = SymbolTable.getBytesOfType(type)
         symTable.offsetSize -= size
         var memtype: MemoryType? = null
