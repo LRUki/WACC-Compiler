@@ -64,7 +64,7 @@ object CodeGenerator {
         if (calleSavedRegsInUse.isEmpty()){
             return
         }
-        val reg = calleSavedRegsInUse.pop()
+        calleSavedRegsInUse.pop()
     }
 
 

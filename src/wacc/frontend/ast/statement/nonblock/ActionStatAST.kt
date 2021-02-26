@@ -1,6 +1,17 @@
 package wacc.frontend.ast.statement.nonblock
 
+import org.antlr.v4.codegen.CodeGenerator
+import wacc.backend.CodeGenerator.getLastUsedCalleeReg
+import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.BranchInstr
+import wacc.backend.instruction.instrs.Label
+import wacc.backend.instruction.instrs.LoadInstr
+import wacc.backend.instruction.instrs.MoveInstr
+import wacc.backend.instruction.utils.RegisterAddr
+import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -56,7 +67,16 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val instr = mutableListOf<Instruction>()
+        instr.addAll(expr.translate())
+        val reg = getLastUsedCalleeReg()
+        when (action) {
+            Action.EXIT -> {
+                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                instr.add(BranchInstr(Condition.AL, Label("exit"), true))
+            }
+        }
+        return instr
     }
 }
 
