@@ -15,7 +15,7 @@ class ImmediateOperandInt(val offset: Int): Operand {
 
 class ImmediateOperandChar(val char: Char): Operand {
     override fun toAssembly(): String {
-        return "='${this.char}'"
+        return "#'${this.char}'"
     }
 }
 

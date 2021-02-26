@@ -3,6 +3,7 @@ package wacc.frontend.ast.statement.nonblock
 import wacc.backend.CodeGenerator
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.StoreInstr
 import wacc.backend.instruction.utils.RegisterAddrWithOffset
@@ -59,7 +60,13 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         instruction.addAll(rhs.translate())
         val size = SymbolTable.getBytesOfType(type)
         symTable.offsetSize -= size
-        instruction.add(StoreInstr(Register.R4, null, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
+        var memtype: MemoryType? = null
+        if (type is BaseTypeAST) {
+            if (type.type == BaseType.BOOL || type.type == BaseType.CHAR) {
+                memtype = MemoryType.B
+            }
+        }
+        instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
         return instruction
     }
 }

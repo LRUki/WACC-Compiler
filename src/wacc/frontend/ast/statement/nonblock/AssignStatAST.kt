@@ -3,6 +3,7 @@ package wacc.frontend.ast.statement.nonblock
 import wacc.backend.CodeGenerator
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.instrs.StoreInstr
@@ -22,6 +23,8 @@ import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.ArrayTypeAST
+import wacc.frontend.ast.type.BaseType
+import wacc.frontend.ast.type.BaseTypeAST
 import wacc.frontend.exception.semanticError
 
 /**
@@ -45,7 +48,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
-        if (!lhs.check(table) || !rhs.check(table)) {return false}
+        if (!lhs.check(table) || !rhs.check(table)) {
+            return false
+        }
         var leftType = lhs.getRealType(table)
         val rightType = rhs.getRealType(table)
         if (leftType is ArrayTypeAST) {
@@ -78,7 +83,14 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         }
         val size = SymbolTable.getBytesOfType(rhs.getRealType(symTable))
         symTable.offsetSize -= size
-        instruction.add(StoreInstr(Register.R4, null, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
+        val type = rhs.getRealType(symTable)
+        var memtype: MemoryType? = null
+        if (type is BaseTypeAST) {
+            if (type.type == BaseType.BOOL || type.type == BaseType.CHAR) {
+                memtype = MemoryType.B
+            }
+        }
+        instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
         return instruction
     }
 }
