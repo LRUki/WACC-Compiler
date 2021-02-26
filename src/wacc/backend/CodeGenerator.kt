@@ -44,6 +44,8 @@ object CodeGenerator {
     }
 
 
+
+
     //    private fun translateStatement(stat: StatAST): List<Instruction> {
 //            SkipStatAST -> mutableListOf()
 //            DeclareStatAST -> translateDeclare()

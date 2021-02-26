@@ -13,13 +13,6 @@ class ImmediateInt(val offset: Int): AddressingMode {
     }
 }
 
-class ImmediateChar(val char: Char): AddressingMode {
-    override fun toAssembly(): String {
-        TODO("Not yet implemented")
-    }
-
-}
-
 class ImmediateLabel(val label:String): AddressingMode {
     override fun toAssembly(): String {
         return  "=${this.label}"

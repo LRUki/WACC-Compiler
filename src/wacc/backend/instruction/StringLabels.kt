@@ -18,6 +18,14 @@ class StringLabels (val strings: MutableList<String>) {
         return "msg_${strings.size - 1}"
     }
 
+    fun getLabel(string: String): String {
+        val index = strings.indexOf(string)
+        if (index == -1) {
+            throw RuntimeException("Label hasnt been created")
+        }
+        return "msg_${strings.indexOf(string)}"
+    }
+
     /**
      * <string label>:
      *     .word <length of string>

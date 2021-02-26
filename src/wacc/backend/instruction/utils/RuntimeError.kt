@@ -53,7 +53,7 @@ class RuntimeError {
             runtimeError = listOf(
                     throwRuntimeErrorLabel,
                     BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true),
-                    MoveInstr(Condition.AL, Register.R0, ImmediateOperand(EXIT_CODE)),
+                    MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(EXIT_CODE)),
                     BranchInstr(Condition.AL, exitLabel, true)
             )
             CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_STRING)

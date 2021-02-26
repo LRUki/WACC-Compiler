@@ -8,7 +8,7 @@ import wacc.backend.instruction.instrs.AddInstr
 import wacc.backend.instruction.instrs.BranchInstr
 import wacc.backend.instruction.instrs.CompareInstr
 import wacc.backend.instruction.instrs.SubInstr
-import wacc.backend.instruction.utils.ImmediateOperand
+import wacc.backend.instruction.utils.ImmediateOperandInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -47,7 +47,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         instr.add(bodyLabel)
         val stackOffset = blockST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         body.forEach { instr.addAll(it.translate()) }
 
@@ -55,7 +55,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         instr.add(CompareInstr(Register.R4, null, 1))
         instr.add(BranchInstr(Condition.EQ, bodyLabel, false))
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         return instr
     }

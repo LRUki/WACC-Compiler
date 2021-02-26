@@ -1,14 +1,12 @@
 package wacc.frontend.ast.program
 
 import wacc.backend.CodeGenerator.dataDirective
-import wacc.backend.CodeGenerator.runtimeErrors
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.ImmediateChar
 import wacc.backend.instruction.utils.ImmediateInt
-import wacc.backend.instruction.utils.ImmediateOperand
+import wacc.backend.instruction.utils.ImmediateOperandInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.Translatable
@@ -47,16 +45,15 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(PushInstr(Register.LR))
         val stackOffset = symTable.getStackOffset()
         if (stackOffset > 0) {
-          mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+          mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
 
-        // SUB sp sp (TODO(Determine how much room to make on the stack by analysing symbol table))
 
         // Visit main program and add to instruction list
         stats.forEach { mainInstructions.addAll(it.translate()) }
 
         if (stackOffset > 0) {
-            mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+            mainInstructions.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         // AI: LDR r0, =0
         mainInstructions.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))

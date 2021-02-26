@@ -1,7 +1,6 @@
 package wacc.backend.instruction
 
 import wacc.backend.instruction.instrs.DirectiveInstr
-import wacc.backend.instruction.instrs.Label
 
 class DataDirective(val stringLabels: StringLabels) {
 
@@ -11,6 +10,11 @@ class DataDirective(val stringLabels: StringLabels) {
     fun addStringLabel(string: String): String {
         return stringLabels.add(string)
     }
+
+    fun getStringLabel(string: String): String {
+        return stringLabels.getLabel(string)
+    }
+
 
     /**
      * Translate the data section into assembly code.

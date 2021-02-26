@@ -8,7 +8,7 @@ import wacc.backend.instruction.instrs.AddInstr
 import wacc.backend.instruction.instrs.BranchInstr
 import wacc.backend.instruction.instrs.CompareInstr
 import wacc.backend.instruction.instrs.SubInstr
-import wacc.backend.instruction.utils.ImmediateOperand
+import wacc.backend.instruction.utils.ImmediateOperandInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -61,11 +61,11 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
 
         var stackOffset = thenST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         thenBody.forEach { instr.addAll(it.translate()) }
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
 
         instr.add(BranchInstr(Condition.AL, afterElseLabel, false))
@@ -73,11 +73,11 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
 
         stackOffset = elseST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         elseBody.forEach { instr.addAll(it.translate()) }
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperand(stackOffset)))
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         instr.add(afterElseLabel)
         return instr

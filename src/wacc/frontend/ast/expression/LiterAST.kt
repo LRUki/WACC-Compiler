@@ -5,7 +5,11 @@ import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.instrs.LoadInstr
+import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.utils.ImmediateInt
+import wacc.backend.instruction.utils.ImmediateLabel
+import wacc.backend.instruction.utils.ImmediateOperandBool
+import wacc.backend.instruction.utils.ImmediateOperandChar
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
@@ -28,7 +32,7 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        return listOf(MoveInstr(Condition.AL, getNextFreeCalleeReg(), ImmediateOperandBool(value)))
     }
 }
 
@@ -38,7 +42,8 @@ class StrLiterAST(val value: String) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val strLabel = CodeGenerator.dataDirective.getStringLabel(value)
+        return listOf(LoadInstr(getNextFreeCalleeReg(), null, ImmediateLabel(strLabel), Condition.AL))
     }
 }
 
@@ -48,8 +53,9 @@ class CharLiterAST(val value: Char) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        return listOf(MoveInstr(Condition.AL, getNextFreeCalleeReg(), ImmediateOperandChar(value)))
     }
+
 }
 
 class NullPairLiterAST : LiterAST {

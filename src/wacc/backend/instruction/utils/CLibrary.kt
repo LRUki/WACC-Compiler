@@ -80,7 +80,7 @@ fun generateReadCall(call: Call): List<Instruction> {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
@@ -100,9 +100,9 @@ fun generateReadCall(call: Call): List<Instruction> {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
-                MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
+                MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
@@ -127,9 +127,9 @@ fun generateReadCall(call: Call): List<Instruction> {
                 CompareInstr(Register.R0, null, 0),
                 LoadInstr(Register.R0, null, ImmediateLabel(trueLabel), Condition.NE),
                 LoadInstr(Register.R0, null, ImmediateLabel(falseLabel), Condition.EQ),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
-                MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
+                MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
@@ -152,11 +152,11 @@ fun generateReadCall(call: Call): List<Instruction> {
 
         val instructions = listOf(
                 LoadInstr(Register.R0, null, RegisterAddr(Register.R1), Condition.AL),
-                AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateOperand(4)),
+                AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateOperandInt(4)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
-                MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
+                MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
@@ -179,9 +179,9 @@ fun generateReadCall(call: Call): List<Instruction> {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
-                MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
+                MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
@@ -202,9 +202,9 @@ fun generateReadCall(call: Call): List<Instruction> {
 
         val instructions = listOf(
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PUTS.toString()), true),
-                MoveInstr(Condition.AL, Register.R0, ImmediateOperand(0)),
+                MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))

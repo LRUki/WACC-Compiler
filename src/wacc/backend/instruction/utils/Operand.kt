@@ -7,11 +7,24 @@ interface Operand {
     fun toAssembly(): String
 }
 
-class ImmediateOperand(val offset: Int): Operand {
+class ImmediateOperandInt(val offset: Int): Operand {
     override fun toAssembly(): String {
         return "#$offset"
     }
 }
+
+class ImmediateOperandChar(val char: Char): Operand {
+    override fun toAssembly(): String {
+        return "='${this.char}'"
+    }
+}
+
+class ImmediateOperandBool(val bool: Boolean): Operand {
+    override fun toAssembly(): String {
+        return "#'${if (bool) 1 else 0}'"
+    }
+}
+
 
 class RegisterOperand(val reg: Register): Operand {
     override fun toAssembly(): String {
