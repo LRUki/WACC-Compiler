@@ -6,10 +6,8 @@ import wacc.backend.CodeGenerator.freeCalleeSavedRegs
 import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.instrs.AddInstr
-import wacc.backend.instruction.instrs.BranchInstr
-import wacc.backend.instruction.instrs.CompareInstr
-import wacc.backend.instruction.instrs.MultInstr
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.RegisterOperand
 import wacc.backend.instruction.utils.RuntimeError
 import wacc.frontend.SymbolTable
@@ -99,22 +97,27 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         when (binOp) {
             BinOp.PLUS -> {
                 instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
-                instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, false))
+                instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MINUS -> {
                 instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
-                instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, false))
+                instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MULT -> {
                 instr.add(MultInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
                 instr.add(CompareInstr(reg2, reg1, 31)) //TODO( MIGHT NEED TO ADD ASR)
-                instr.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, false))
+                instr.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
-
             }
             BinOp.DIV -> {
+                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
+                instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
+                instr.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
+                CodeGenerator.runtimeErrors.addDivideByZeroCheck()
+                instr.add(BranchInstr(Condition.AL, Label("__aeabi_idiv"), true))
+                instr.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R0)))
             }
             BinOp.MOD -> {
             }

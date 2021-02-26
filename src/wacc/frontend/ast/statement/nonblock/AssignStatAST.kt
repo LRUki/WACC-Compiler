@@ -70,6 +70,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         }
         instruction.addAll(rhs.translate())
         when (rhs) {
+            // only other RHS which requires "setting up"
             is CallRhsAST -> {
                 instruction.add(MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)))
                 instruction.add(StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL))

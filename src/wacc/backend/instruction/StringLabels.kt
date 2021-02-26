@@ -21,7 +21,7 @@ class StringLabels (val strings: MutableList<String>) {
     fun getLabel(string: String): String {
         val index = strings.indexOf(string)
         if (index == -1) {
-            throw RuntimeException("Label hasnt been created")
+            throw RuntimeException("Label has not been created")
         }
         return "msg_${strings.indexOf(string)}"
     }
@@ -38,8 +38,10 @@ class StringLabels (val strings: MutableList<String>) {
             instructions.add(DirectiveInstr("word ${string.length}"))
 
             // display escaped characters in full
-            val newString = escape(string)
-            instructions.add(DirectiveInstr("ascii \"$newString\""))
+//            val newString = escape(string) //TODO check this was producing the wrong characters in msg
+//            instructions.add(DirectiveInstr("ascii \"$newString\""))
+            instructions.add(DirectiveInstr("ascii \"$string\""))
+
         }
         return instructions
     }
