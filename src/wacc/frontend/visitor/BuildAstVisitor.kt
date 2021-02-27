@@ -276,16 +276,19 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitStrLiter(ctx: WaccParser.StrLiterContext): AST {
-        return StrLiterAST(replaceEscapeChars(ctx.text))
+        return StrLiterAST(trimQuote(ctx.text))
     }
 
     override fun visitCharLiter(ctx: WaccParser.CharLiterContext): AST {
-        return CharLiterAST(replaceEscapeChars(ctx.text)[0])
+        return CharLiterAST(replaceEscapeChars(trimQuote(ctx.text))[0])
+    }
+
+    private fun trimQuote(str: String): String {
+        return str.substring(1, str.length - 1)
     }
 
     private fun replaceEscapeChars(str: String): String {
-        val trimmedText = str.substring(1, str.length - 1)
-        val output = trimmedText
+        return str
                 .replace("\\0", 0.toChar().toString())
                 .replace("\\b", "\b")
                 .replace("\\t", "\t")
@@ -295,7 +298,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                 .replace("\\\"", "\"")
                 .replace("\\\'", "\'")
                 .replace("\\\\", "\\")
-        return output
     }
 
     override fun visitArrayLiter(ctx: WaccParser.ArrayLiterContext): AST {
