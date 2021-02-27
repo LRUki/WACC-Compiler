@@ -71,6 +71,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
                         RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL),
                 LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
         )
+        CodeGenerator.freeCalleeReg()
 
 // BL malloc
 // STR r5, [r0]
