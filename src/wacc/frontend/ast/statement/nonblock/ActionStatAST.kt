@@ -1,6 +1,8 @@
 package wacc.frontend.ast.statement.nonblock
 
+import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.CLib
+import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
@@ -103,6 +105,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                     CLib.addCode(CLibrary.Call.PRINT_LN)
                     instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_LN.toString()), true))
                 }
+                freeCalleeReg()
             }
         }
         return instr

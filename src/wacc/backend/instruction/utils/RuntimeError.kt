@@ -145,7 +145,7 @@ class RuntimeError {
             val errorMsg = CodeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())
             overflowError = listOf(
                     throwOverflowErrorLabel,
-                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsg), Condition.LT),
+                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsg), Condition.AL),
                     BranchInstr(Condition.AL, throwRuntimeErrorLabel, true),
             )
         }

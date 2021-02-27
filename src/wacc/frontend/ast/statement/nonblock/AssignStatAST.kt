@@ -2,6 +2,7 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
@@ -95,7 +96,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         }
         when (lhs) {
             is IdentAST -> {
-                instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.findOffsetInStack(lhs.name), false), Condition.AL))
+                instruction.add(StoreInstr(seeLastUsedCalleeReg(), memtype, RegisterAddrWithOffset(Register.SP, symTable.findOffsetInStack(lhs.name), false), Condition.AL))
             }
             is ArrayElemAST -> {
                 TODO("Not yet implemented")
