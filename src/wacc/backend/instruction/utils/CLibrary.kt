@@ -71,8 +71,8 @@ fun translate(): List<Instruction> {
 
 fun generateReadCall(call: Call): List<Instruction> {
     val stringFormat: String = when (call) {
-        Call.READ_INT -> "%d" + 0.toChar()
-        Call.READ_CHAR -> " %c" + 0.toChar()
+        Call.READ_INT -> "%d\\0"
+        Call.READ_CHAR -> " %c\\0"
         else -> throw Exception("Unable to generate code for non-read types")
     }
     val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
@@ -94,7 +94,7 @@ fun generateReadCall(call: Call): List<Instruction> {
     }
 
     fun generatePrintIntCall(): List<Instruction> {
-        val stringFormat: String = "%d" + 0.toChar()
+        val stringFormat: String = "%d\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
@@ -118,8 +118,8 @@ fun generateReadCall(call: Call): List<Instruction> {
     }
 
     fun generatePrintBoolCall(): List<Instruction> {
-        val trueString = "true" + 0.toChar()
-        val falseString = "false" + 0.toChar()
+        val trueString = "true\\0"
+        val falseString = "false\\0"
         val trueLabel = CodeGenerator.dataDirective.addStringLabel(trueString)
         val falseLabel = CodeGenerator.dataDirective.addStringLabel(falseString)
 
@@ -173,7 +173,7 @@ fun generateReadCall(call: Call): List<Instruction> {
 
 
     fun generatePrintReferenceCall(): List<Instruction> {
-        val stringFormat: String = "%d" + 0.toChar()
+        val stringFormat: String = "%d\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
@@ -197,7 +197,7 @@ fun generateReadCall(call: Call): List<Instruction> {
     }
 
     fun generatePrintLnCall(): List<Instruction> {
-        val stringFormat: String = "" + 0.toChar()
+        val stringFormat: String = "\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(

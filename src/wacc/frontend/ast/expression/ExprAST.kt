@@ -235,8 +235,8 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        val reg1 = getLastUsedCalleeReg()
         instr.addAll(expr.translate())
+        val reg1 = getLastUsedCalleeReg()
         when (unOp) {
             UnOp.NOT -> {
                 instr.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateOperandInt(1)))
