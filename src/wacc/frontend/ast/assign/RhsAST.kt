@@ -5,10 +5,7 @@ import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.AddressingMode
-import wacc.backend.instruction.utils.CLibrary
-import wacc.backend.instruction.utils.ImmediateInt
-import wacc.backend.instruction.utils.RegisterOperand
+import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
@@ -43,7 +40,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
 
 //        PUSH {lr}
 //        5		SUB sp, sp, #4
@@ -51,41 +48,45 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         //assignment
 
 
+// BL malloc
+// MOV r4, r0
+// r0 is a pointer
+// r4 contains result of malloc
+// LDR r5, =69
+// load first thing  into next reg
+// LDR r0, =4
+
         BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true)
         MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0))
 
-//        LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null, val mode : AddressingMode, Condition.AL)
+        fst.translate()
 
-        LoadInstr(Register.R5, null, ImmediateInt(4), Condition.AL)
-//        7		BL malloc
-//        8		MOV r4, r0
+        LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null,
+                RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL)
+        LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
 
-    // r0 is a pointer
-    //r4 contains result of malloc
+// BL malloc
+// STR r5, [r0]
+// STR r0, [r4]
+// LDR r5, =420
+// LDR r0, =4
 
-//        9		LDR r5, =69
-        // load first thing  into next reg
-
-//        10		LDR r0, =4
-
-
-        //another malloc
         BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true)
+        StoreInstr(CodeGenerator.getNextFreeCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL)
+        StoreInstr(Register.R0, null, RegisterAddr(Register.R4), Condition.AL)
+        //load second into next reg
+        snd.translate()
+        LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null,
+                RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL)
+        LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
 
-//        11		BL malloc
-//        12		STR r5, [r0]
-//        13		STR r0, [r4]
-//        14		LDR r5, =420
-//        15		LDR r0, =4
-
-//        16		BL malloc
-//        17		STR r5, [r0]
-//        18		STR r0, [r4, #4]
-//        19		STR r4, [sp]
-//        20		ADD sp, sp, #4
-//        21		LDR r0, =0
-//        22		POP {pc}
-//        23		.ltorg
+// BL malloc
+// STR r5, [r0]
+// STR r0, [r4, #4]
+// STR r4, [sp]
+// ADD sp, sp, #4
+// LDR r0, =0
+        return emptyList()
     }
 
 }
