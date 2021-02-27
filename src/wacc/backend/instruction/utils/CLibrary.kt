@@ -124,7 +124,7 @@ fun generateReadCall(call: Call): List<Instruction> {
         val falseLabel = CodeGenerator.dataDirective.addStringLabel(falseString)
 
         val instructions = listOf(
-                CompareInstr(Register.R0, null, 0),
+                CompareInstr(Register.R0, ImmediateOperandInt(0)),
                 LoadInstr(Register.R0, null, ImmediateLabel(trueLabel), Condition.NE),
                 LoadInstr(Register.R0, null, ImmediateLabel(falseLabel), Condition.EQ),
                 AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
@@ -151,7 +151,7 @@ fun generateReadCall(call: Call): List<Instruction> {
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
-                LoadInstr(Register.R0, null, RegisterAddr(Register.R1), Condition.AL),
+                LoadInstr(Register.R1, null, RegisterAddr(Register.R0), Condition.AL),
                 AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateOperandInt(4)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
                 AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
@@ -222,7 +222,7 @@ fun generateReadCall(call: Call): List<Instruction> {
 //    codeGenerator.getRuntimeErrors().addThrowRuntimeError()
 
         val instructions = listOf(
-                CompareInstr(Register.R0, null, 0),
+                CompareInstr(Register.R0, ImmediateOperandInt(0)),
 //            LoadInstr(Register.R0, null, ImmediateLabel(errorLabel), Condition.EQ),
                 //BranchInstruction(Condition.EQ,  RuntimeErrors.throwRuntimeErrorLabel, false),
                 PushInstr(Register.R0),
@@ -258,7 +258,7 @@ fun generateReadCall(call: Call): List<Instruction> {
 //    codeGenerator.runtimeErrors.addThrowRuntimeError()
 
         val instructions = listOf(
-                CompareInstr(Register.R0, null, 0),
+                CompareInstr(Register.R0, ImmediateOperandInt(0)),
                 LoadInstr(Register.R0, null, ImmediateLabel(errorLabel), Condition.EQ),
                 //BranchInstruction(Condition.EQ,  RuntimeErrors.throwRuntimeErrorLabel, false),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true)

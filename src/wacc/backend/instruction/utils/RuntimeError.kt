@@ -70,7 +70,7 @@ class RuntimeError {
             nullReferenceError = listOf(
                     nullReferenceLabel,
                     PushInstr(Register.LR),
-                    CompareInstr(Register.R0, null,0),
+                    CompareInstr(Register.R0, ImmediateOperandInt(0)),
                     LoadInstr(Register.R0, null,  ImmediateLabel(errorMsgLabel), Condition.EQ),
                     BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
@@ -91,7 +91,7 @@ class RuntimeError {
             divideZeroError = listOf(
                     divideZeroCheckLabel,
                     PushInstr(Register.LR),
-                    CompareInstr(Register.R1, null, 0),
+                    CompareInstr(Register.R1, ImmediateOperandInt(0)),
                     LoadInstr(Register.R0, null,  ImmediateLabel(errorMsgLabel), Condition.EQ),
                     BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
@@ -114,11 +114,11 @@ class RuntimeError {
             checkArrayBounds = listOf(
                     checkArrayBoundsLabel,
                     PushInstr(Register.LR),
-                    CompareInstr(Register.R0, null, 0),
+                    CompareInstr(Register.R0, ImmediateOperandInt(0)),
                     LoadInstr(Register.R0, null,  ImmediateLabel(negativeMsgLabel), Condition.LT),
                     BranchInstr(Condition.LT, throwRuntimeErrorLabel, true),
                     LoadInstr(Register.R1, null, RegisterAddr(Register.R1), Condition.AL),
-                    CompareInstr(Register.R0, Register.R1, null),
+                    CompareInstr(Register.R0, RegisterOperand(Register.R1)),
                     LoadInstr(Register.R0, null,  ImmediateLabel(tooLargeMsgLabel), Condition.CS),
                     BranchInstr(Condition.CS, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)

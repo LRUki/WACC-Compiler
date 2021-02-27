@@ -8,6 +8,7 @@ import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.enums.Shift
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
@@ -102,13 +103,13 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MINUS -> {
-                instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                instr.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MULT -> {
-                instr.add(MultInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
-                instr.add(CompareInstr(reg2, reg1, 31)) //TODO( MIGHT NEED TO ADD ASR)
+                instr.add(MultInstr(Condition.AL, reg1, reg2, reg1, reg2))
+                instr.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, Shift.ASR, 31))) //TODO( MIGHT NEED TO ADD ASR)
                 instr.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
@@ -129,33 +130,33 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 instr.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
             }
             BinOp.EQ -> {
-                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 instr.add(MoveInstr(Condition.EQ, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.NE, reg1, ImmediateOperandBool(false)))
             }
 
             BinOp.NEQ -> {
-                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 instr.add(MoveInstr(Condition.NE, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.EQ, reg1, ImmediateOperandBool(false)))
             }
             BinOp.LTE -> {
-                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 instr.add(MoveInstr(Condition.LE, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.GT, reg1, ImmediateOperandBool(false)))
             }
             BinOp.LT -> {
-                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 instr.add(MoveInstr(Condition.LT, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.GE, reg1, ImmediateOperandBool(false)))
             }
             BinOp.GTE -> {
-                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 instr.add(MoveInstr(Condition.GE, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.LT, reg1, ImmediateOperandBool(false)))
             }
             BinOp.GT -> {
-                instr.add(CompareInstr(reg1, reg2, null))
+                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 instr.add(MoveInstr(Condition.GT, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.LE, reg1, ImmediateOperandBool(false)))
             }

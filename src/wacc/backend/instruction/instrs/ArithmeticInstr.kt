@@ -10,7 +10,7 @@ interface ArithmeticInstr : Instruction
 enum class ArithmeticInstrType {
     ADD,
     SUB,
-    MUL
+    SMULL
 }
 
 abstract class AbstractArithmeticInstr(val type: ArithmeticInstrType, val condition: Condition,
@@ -26,5 +26,9 @@ class AddInstr(condition: Condition, reg1: Register, reg2: Register,
 class SubInstr(condition: Condition, reg1: Register, reg2: Register,
                operand: Operand, updateFlag: Boolean = false) : AbstractArithmeticInstr(ArithmeticInstrType.SUB, condition, reg1, reg2, operand, updateFlag)
 
-class MultInstr(condition: Condition, reg1: Register, reg2: Register,
-                operand: Operand, updateFlag: Boolean = false) : AbstractArithmeticInstr(ArithmeticInstrType.MUL, condition, reg1, reg2, operand, updateFlag)
+class MultInstr(val condition: Condition, val rdLo: Register, val rdHi: Register,
+                val rn: Register, val rm: Register, val updateFlag: Boolean = false) : ArithmeticInstr {
+    override fun toAssembly(): String {
+        return "SMULL${if (updateFlag) "S" else ""}${condition.toAssembly()} ${rdLo.toAssembly()}, ${rdHi.toAssembly()}, ${rn.toAssembly()}, ${rm.toAssembly()}"
+    }
+}
