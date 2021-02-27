@@ -58,6 +58,6 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
 
     override fun translate(): List<Instruction> {
         val offset = symTable.findOffsetInStack(name)
-        return listOf(LoadInstr(getNextFreeCalleeReg(), null, RegisterAddrWithOffset(Register.SP, offset, true), Condition.AL))
+        return listOf(LoadInstr(getNextFreeCalleeReg(), null, RegisterAddrWithOffset(Register.SP, offset, false), Condition.AL))
     }
 }

@@ -13,6 +13,7 @@ import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
@@ -21,6 +22,7 @@ import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.ArrayTypeAST
@@ -91,7 +93,17 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 memtype = MemoryType.B
             }
         }
-        instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Condition.AL))
+        when (lhs) {
+            is IdentAST -> {
+                instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.findOffsetInStack(lhs.name), false), Condition.AL))
+            }
+            is ArrayElemAST -> {
+                TODO("Not yet implemented")
+            }
+            is PairElemAST -> {
+                TODO("Not yet implemented")
+            }
+        }
         freeCalleeReg()
 
         return instruction

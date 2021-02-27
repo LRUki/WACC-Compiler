@@ -109,10 +109,13 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun findOffsetInStack(ident: String): Int {
         var offset = 0
         for ((k, v) in currSymbolTable) {
+            offset += v.second
+        }
+        for ((k, v) in currSymbolTable) {
+            offset -= v.second
             if (k == ident) {
                 break
             }
-            offset += v.second
         }
         return offset
     }

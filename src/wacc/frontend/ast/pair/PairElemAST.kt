@@ -48,8 +48,7 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         TODO("Not yet implemented")
 //        val instructions = mutableListOf<Instruction>()
 //        instructions.addAll(expr.translate())
-
-    //        mov(Reg(0), pairAddr)
+    //        movinstr(Register.R0))
 //        runtimeErrors.addNullReferenceCheck()
 //        BranchInstr(Condition.AL, , true)
 
