@@ -111,11 +111,15 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         for ((k, v) in currSymbolTable) {
             offset += v.second
         }
+        var found = false
         for ((k, v) in currSymbolTable) {
             offset -= v.second
             if (k == ident) {
-                break
+                return offset
             }
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.findOffsetInStack(ident)
         }
         return offset
     }
