@@ -50,6 +50,7 @@ object CodeGenerator {
         }
         val reg = freeCalleeSavedRegs.pop()
         calleSavedRegsInUse.push(reg)
+//        println("Adding ${reg}")
         return reg
     }
 
@@ -64,7 +65,8 @@ object CodeGenerator {
         if (calleSavedRegsInUse.isEmpty()){
             return
         }
-        calleSavedRegsInUse.pop()
+        freeCalleeSavedRegs.push(calleSavedRegsInUse.pop())
+//        println("removing ${freeCalleeSavedRegs.push(calleSavedRegsInUse.pop())}")
     }
 
 

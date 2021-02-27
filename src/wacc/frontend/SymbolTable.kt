@@ -1,9 +1,11 @@
 package wacc.frontend
 
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.*
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 /**
  * Symbol table to map identifiers to a Identifiable AST nodes
@@ -29,7 +31,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     // A symbol table consists of a HashMap and a list of children.
-    val currSymbolTable: HashMap<String, Identifiable> = HashMap()
+    val currSymbolTable: LinkedHashMap<String, Pair<Identifiable, Int>> = LinkedHashMap()
     var offsetSize: Int = 0
 
     // Gets the top most symbol table
@@ -44,7 +46,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun lookup(name: String): Optional<Identifiable> {
         val value = currSymbolTable[name]
         if (value != null) {
-            return Optional.of(value)
+            return Optional.of(value.first)
         }
         return Optional.empty()
     }
@@ -70,18 +72,48 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     fun add(name: String, obj: Identifiable) {
-        currSymbolTable[name] = obj
+        val size: Int = when (obj) {
+            is FuncAST -> {
+                getBytesOfType(obj.type)
+            }
+            is DeclareStatAST -> {
+                getBytesOfType(obj.type)
+            }
+            is ArrayTypeAST -> {
+                getBytesOfType(obj.type)
+            }
+            is ParamAST -> { //TODO() Check if this is needed
+                getBytesOfType(obj.type)
+            }
+            is PairTypeAST -> {
+                TODO()
+            }
+            else -> 0
+        }
+        currSymbolTable[name] = Pair(obj, size)
+
     }
 
 
     fun getStackOffset(): Int {
         var offset = 0
         currSymbolTable.forEach { (name, type) ->
-            if (type is DeclareStatAST) {
-                offset += getBytesOfType(type.type)
+            if (type.first is DeclareStatAST) {
+                offset += type.second
             }
         }
         offsetSize = offset
+        return offset
+    }
+
+    fun findOffsetInStack(ident: String): Int {
+        var offset = 0
+        for ((k, v) in currSymbolTable) {
+            if (k == ident) {
+                break
+            }
+            offset += v.second
+        }
         return offset
     }
 }

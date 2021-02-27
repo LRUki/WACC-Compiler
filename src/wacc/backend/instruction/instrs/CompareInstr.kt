@@ -7,7 +7,7 @@ import wacc.backend.instruction.enums.Register
 class CompareInstr(val register: Register,
                    val regToCompare: Register?, val immediate: Int?): Instruction {
     override fun toAssembly(): String {
-        var compareInstr = "CMP ${register.toAssembly()} "
+        var compareInstr = "CMP ${register.toAssembly()}, "
         compareInstr += regToCompare?.toAssembly() ?: "#$immediate"
         return compareInstr
     }

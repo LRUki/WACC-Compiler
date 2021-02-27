@@ -1,6 +1,12 @@
 package wacc.frontend.ast.expression
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.LoadInstr
+import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -51,6 +57,7 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val offset = symTable.findOffsetInStack(name)
+        return listOf(LoadInstr(getNextFreeCalleeReg(), null, RegisterAddrWithOffset(Register.SP, offset, true), Condition.AL))
     }
 }
