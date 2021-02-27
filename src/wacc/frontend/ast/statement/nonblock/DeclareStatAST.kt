@@ -58,8 +58,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         if (rhs is StrLiterAST) {
              stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
         }
-        val size = SymbolTable.getBytesOfType(type)
-        symTable.offsetSize -= size
+        symTable.decreaseOffset(ident, rhs.getRealType(symTable))
         var memtype: MemoryType? = null
         if (type is BaseTypeAST) {
             if (type.type == BaseType.BOOL || type.type == BaseType.CHAR) {
