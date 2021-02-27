@@ -241,10 +241,13 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 instr.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateOperandInt(1)))
             }
             UnOp.MINUS -> {
-                instr.add(LoadInstr(reg1, null, ImmediateInt(-(expr as IntLiterAST).value), Condition.AL))
+                instr.add(ReverseSubInstr(Condition.AL, reg1, reg1, ImmediateOperandInt(0), true))
+                instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
+                CodeGenerator.runtimeErrors.addOverflowError()
             }
             UnOp.LEN -> {
                 instr.add(LoadInstr(reg1, null, ImmediateInt((expr as ArrayElemAST).indices.size), Condition.AL))
+                // TODO: consider the case when expr is a variable
             }
             UnOp.ORD -> {
 //                instr.add(MoveInstr(Condition.AL, reg1,  ImmediateOperandChar((expr as CharLiterAST).value)))

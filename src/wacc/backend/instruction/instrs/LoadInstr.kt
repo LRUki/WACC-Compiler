@@ -9,7 +9,7 @@ import wacc.backend.instruction.utils.*
 class LoadInstr(val destRegister : Register, val memType: MemoryType?,
                  val mode : AddressingMode, val condition : Condition): Instruction {
     override fun toAssembly(): String {
-        return "LDR${memType?.name ?: ""} ${destRegister.toAssembly()}, ${mode.toAssembly()}"
+        return "LDR${memType?.name ?: ""}${condition.toAssembly()} ${destRegister.toAssembly()}, ${mode.toAssembly()}"
     }
 
 //    Load Word LDR{cond} <Rd>, <a_mode2>
