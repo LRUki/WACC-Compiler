@@ -6,8 +6,10 @@ make
 rm -rf out_test
 
 ALL_SUCCESSFUL=0
+SUCESS_COUNT=0
+FAIL_COUNT=0
 
-for WACC_FILENAME in `find wacc_examples/valid/expressions/divExpr.wacc -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
+for WACC_FILENAME in `find wacc_examples/valid/expressions/ -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
 do
   FILENAME=${WACC_FILENAME#*/}
   mkdir -p out_test/"${FILENAME%/*}"
@@ -43,8 +45,10 @@ do
   if [ "$ASSEMBLE_SUCCESSFUL" == 0 ] && [ "$OUTPUT_MATCHES" == 0 ] && [ "$EXITCODE_MATCHES" == 0 ]
   then
     echo "Success ${FILENAME}"
+    SUCESS_COUNT=$((SUCESS_COUNT+1))
   else
     echo "Failed ${FILENAME}"
+    FAIL_COUNT=$((FAIL_COUNT+1))
     ALL_SUCCESSFUL=1
   fi
 done
@@ -53,4 +57,7 @@ if [ $ALL_SUCCESSFUL == 0 ]
 then
     echo "All Successful!"
 fi
+echo "Passed $SUCESS_COUNT"
+echo "Failed $FAIL_COUNT"
+
 exit $ALL_SUCCESSFUL
