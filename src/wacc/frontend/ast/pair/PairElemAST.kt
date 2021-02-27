@@ -1,6 +1,10 @@
 package wacc.frontend.ast.pair
 
+
+import wacc.backend.CodeGenerator.runtimeErrors
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.instrs.BranchInstr
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -42,6 +46,13 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
 
     override fun translate(): List<Instruction> {
         TODO("Not yet implemented")
+//        val instructions = mutableListOf<Instruction>()
+//        instructions.addAll(expr.translate())
+
+    //        mov(Reg(0), pairAddr)
+//        runtimeErrors.addNullReferenceCheck()
+//        BranchInstr(Condition.AL, , true)
+
     }
 }
 
