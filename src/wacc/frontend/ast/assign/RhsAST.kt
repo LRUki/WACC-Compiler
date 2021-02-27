@@ -84,12 +84,13 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
                 BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true),
                 StoreInstr(CodeGenerator.getNextFreeCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL),
                 StoreInstr(Register.R0, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL),
-                StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL),
-                AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(4), false),
-                LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL)
+//                StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL),
+//                AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(4), false),
+//                LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL)
         )
 
-        return fstTranslation + sndTranslation + mallocAndStoreFst + mallocAndStoreSnd + mallocAndStorePair
+        return mallocAndStoreFst + mallocAndStoreSnd + mallocAndStorePair
+        //fstTranslation + sndTranslation +
     }
 
 }
