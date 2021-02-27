@@ -1,6 +1,9 @@
 package wacc.frontend.ast.assign
 
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.instrs.BranchInstr
+import wacc.backend.instruction.instrs.FunctionLabel
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
@@ -80,7 +83,8 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val funcLabel = FunctionLabel(ident.name)
+        return listOf(BranchInstr(Condition.AL, funcLabel, true))
     }
 
 }
