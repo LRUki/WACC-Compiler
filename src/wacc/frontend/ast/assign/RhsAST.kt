@@ -1,9 +1,14 @@
 package wacc.frontend.ast.assign
 
+import wacc.backend.CodeGenerator
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.instrs.BranchInstr
-import wacc.backend.instruction.instrs.FunctionLabel
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.AddressingMode
+import wacc.backend.instruction.utils.CLibrary
+import wacc.backend.instruction.utils.ImmediateInt
+import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
@@ -39,6 +44,48 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 
     override fun translate(): List<Instruction> {
         TODO("Not yet implemented")
+
+//        PUSH {lr}
+//        5		SUB sp, sp, #4
+//        6		LDR r0, =8
+        //assignment
+
+
+        BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true)
+        MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0))
+
+//        LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null, val mode : AddressingMode, Condition.AL)
+
+        LoadInstr(Register.R5, null, ImmediateInt(4), Condition.AL)
+//        7		BL malloc
+//        8		MOV r4, r0
+
+    // r0 is a pointer
+    //r4 contains result of malloc
+
+//        9		LDR r5, =69
+        // load first thing  into next reg
+
+//        10		LDR r0, =4
+
+
+        //another malloc
+        BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true)
+
+//        11		BL malloc
+//        12		STR r5, [r0]
+//        13		STR r0, [r4]
+//        14		LDR r5, =420
+//        15		LDR r0, =4
+
+//        16		BL malloc
+//        17		STR r5, [r0]
+//        18		STR r0, [r4, #4]
+//        19		STR r4, [sp]
+//        20		ADD sp, sp, #4
+//        21		LDR r0, =0
+//        22		POP {pc}
+//        23		.ltorg
     }
 
 }
