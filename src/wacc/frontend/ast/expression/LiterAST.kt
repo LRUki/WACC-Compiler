@@ -94,7 +94,7 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
                 ImmediateInt( elemSize * values.size
                         + getBytesOfType(BaseTypeAST(BaseType.INT))), Condition.AL))
 
-        instr.add(BranchInstr(null, FunctionLabel("malloc"), true))
+        instr.add(BranchInstr(Condition.AL, FunctionLabel("malloc"), true))
 
         instr.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
 
