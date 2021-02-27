@@ -4,17 +4,14 @@ import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Register
 
-class BranchInstr(val condition: Condition?,
+class BranchInstr(val condition: Condition,
                   val label: LabelInstr, val link : Boolean): Instruction {
     override fun toAssembly(): String {
         var instr = "B"
         if(link){
             instr += "L"
         }
-        if (condition != null){
-            instr += condition.toAssembly()
-        }
-
+        instr += condition.toAssembly()
         return instr + " " + label.name
     }
 
