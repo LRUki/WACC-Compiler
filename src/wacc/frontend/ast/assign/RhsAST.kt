@@ -88,7 +88,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
                 LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL)
         )
 
-        return emptyList()
+        return fstTranslation + sndTranslation + mallocAndStoreFst + mallocAndStoreSnd + mallocAndStorePair
     }
 
 }
