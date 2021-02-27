@@ -17,15 +17,12 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.LhsAST
-import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
-import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.BaseType
 import wacc.frontend.ast.type.BaseTypeAST
@@ -85,18 +82,18 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 instruction.add(StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL))
             }
         }
-        val size = SymbolTable.getBytesOfType(rhs.getRealType(symTable))
-        symTable.offsetSize -= size
-        val type = rhs.getRealType(symTable)
+        val rhsType = rhs.getRealType(symTable)
+        symTable.decreaseOffset(lhs, rhsType)
         var memtype: MemoryType? = null
-        if (type is BaseTypeAST) {
-            if (type.type == BaseType.BOOL || type.type == BaseType.CHAR) {
+        if (rhsType is BaseTypeAST) {
+            if (rhsType.type == BaseType.BOOL || rhsType.type == BaseType.CHAR) {
                 memtype = MemoryType.B
             }
         }
         when (lhs) {
             is IdentAST -> {
-                instruction.add(StoreInstr(seeLastUsedCalleeReg(), memtype, RegisterAddrWithOffset(Register.SP, symTable.findOffsetInStack(lhs.name), false), Condition.AL))
+                val (correctSTScope, offset) = symTable.getSTWithIdentifier(lhs.name, rhsType)
+                instruction.add(StoreInstr(seeLastUsedCalleeReg(), memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset , false), Condition.AL))
             }
             is ArrayElemAST -> {
                 TODO("Not yet implemented")

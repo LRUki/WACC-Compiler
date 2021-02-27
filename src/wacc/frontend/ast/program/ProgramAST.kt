@@ -29,6 +29,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
             val stackOffset = table.getStackOffset()
             if (stackOffset > 0) {
                 var stackOffsetLeft = stackOffset
+                table.startingOffset = stackOffset
                 while (stackOffsetLeft > MAX_STACK_OFFSET) {
                     instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
                     stackOffsetLeft -= MAX_STACK_OFFSET

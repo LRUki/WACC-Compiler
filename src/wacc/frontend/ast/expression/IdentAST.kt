@@ -1,6 +1,5 @@
 package wacc.frontend.ast.expression
 
-import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
