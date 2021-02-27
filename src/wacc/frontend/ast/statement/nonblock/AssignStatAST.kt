@@ -91,7 +91,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 memtype = MemoryType.B
             }
         }
-        instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
+        instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Condition.AL))
         freeCalleeReg()
 
         return instruction

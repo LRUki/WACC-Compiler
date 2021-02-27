@@ -22,6 +22,7 @@ import wacc.frontend.ast.statement.StatAST
  * @property stats List of all the statements in the program
  */
 class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST(), Translatable {
+    val MAX_STACK_OFFSET = 1024
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -47,7 +48,12 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(PushInstr(Register.LR))
         val stackOffset = symTable.getStackOffset()
         if (stackOffset > 0) {
-          mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            var stackOffsetLeft = stackOffset
+            while (stackOffsetLeft > MAX_STACK_OFFSET) {
+                mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
+                stackOffsetLeft -= MAX_STACK_OFFSET
+            }
+            mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft)))
         }
 
 
@@ -55,7 +61,12 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         stats.forEach { mainInstructions.addAll(it.translate()) }
 
         if (stackOffset > 0) {
-            mainInstructions.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            var stackOffsetLeft = stackOffset
+            while (stackOffsetLeft > MAX_STACK_OFFSET) {
+                mainInstructions.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
+                stackOffsetLeft -= MAX_STACK_OFFSET
+            }
+            mainInstructions.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft)))
         }
         // AI: LDR r0, =0
         mainInstructions.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))

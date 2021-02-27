@@ -66,7 +66,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                 memtype = MemoryType.B
             }
         }
-        instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, true), Condition.AL))
+        instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Condition.AL))
         CodeGenerator.freeCalleeReg()
 
         return instruction
