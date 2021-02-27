@@ -48,11 +48,19 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 // LDR r0, =4
 
         val fstTranslation = fst.translate()
+        val fstLoad  = fstTranslation[fstTranslation.size-1] as LoadInstr
+        val fstMode = fstLoad.mode
+
+        val sndTranslation = snd.translate()
+        val sndLoad  = sndTranslation[sndTranslation.size-1] as LoadInstr
+        val sndMode = sndLoad.mode
+
         val mallocAndStoreFst = listOf(
+                LoadInstr(Register.R0, null, ImmediateInt(8), Condition.AL),
                 BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true),
                 MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)),
-                LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null,
-                        RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL),
+                LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null, fstMode, Condition.AL),
+//                        RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL),
                 LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
         )
 
@@ -62,13 +70,11 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 // LDR r5, =420
 // LDR r0, =4
 
-        val sndTranslation = snd.translate()
         val mallocAndStoreSnd = listOf(
                 BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true),
                 StoreInstr(CodeGenerator.getNextFreeCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL),
                 StoreInstr(Register.R0, null, RegisterAddr(Register.R4), Condition.AL),
-                LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null,
-                        RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL),
+                LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null, sndMode, Condition.AL),
                 LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
         )
         CodeGenerator.freeCalleeReg()
