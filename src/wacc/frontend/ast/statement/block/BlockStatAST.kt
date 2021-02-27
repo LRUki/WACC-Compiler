@@ -18,9 +18,8 @@ import wacc.frontend.ast.statement.StatAST
 class BlockStatAST(val body: List<StatAST>) : StatAST {
     lateinit var symTable: SymbolTable
     override fun check(table: SymbolTable): Boolean {
-        symTable = table
-        val blockST = SymbolTable(table)
-        body.forEach { if (!it.check(blockST)) {return false} }
+        symTable = SymbolTable(table)
+        body.forEach { if (!it.check(symTable)) {return false} }
         return true
     }
 
