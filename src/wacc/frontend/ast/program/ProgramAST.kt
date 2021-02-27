@@ -22,7 +22,33 @@ import wacc.frontend.ast.statement.StatAST
  * @property stats List of all the statements in the program
  */
 class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST(), Translatable {
-    val MAX_STACK_OFFSET = 1024
+
+    companion object {
+        fun translateScoped(table: SymbolTable, instr: MutableList<Instruction>, stats: List<StatAST>) {
+            val MAX_STACK_OFFSET = 1024
+            val stackOffset = table.getStackOffset()
+            if (stackOffset > 0) {
+                var stackOffsetLeft = stackOffset
+                while (stackOffsetLeft > MAX_STACK_OFFSET) {
+                    instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
+                    stackOffsetLeft -= MAX_STACK_OFFSET
+                }
+                instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft)))
+            }
+
+            // Visit the statements and add to instruction list
+            stats.forEach { instr.addAll(it.translate()) }
+
+            if (stackOffset > 0) {
+                var stackOffsetLeft = stackOffset
+                while (stackOffsetLeft > MAX_STACK_OFFSET) {
+                    instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
+                    stackOffsetLeft -= MAX_STACK_OFFSET
+                }
+                instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft)))
+            }
+        }
+    }
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -46,28 +72,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         mainInstructions.add(Label("main"))
         // AI: PUSH {lr}
         mainInstructions.add(PushInstr(Register.LR))
-        val stackOffset = symTable.getStackOffset()
-        if (stackOffset > 0) {
-            var stackOffsetLeft = stackOffset
-            while (stackOffsetLeft > MAX_STACK_OFFSET) {
-                mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
-                stackOffsetLeft -= MAX_STACK_OFFSET
-            }
-            mainInstructions.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft)))
-        }
-
-
-        // Visit main program and add to instruction list
-        stats.forEach { mainInstructions.addAll(it.translate()) }
-
-        if (stackOffset > 0) {
-            var stackOffsetLeft = stackOffset
-            while (stackOffsetLeft > MAX_STACK_OFFSET) {
-                mainInstructions.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
-                stackOffsetLeft -= MAX_STACK_OFFSET
-            }
-            mainInstructions.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft)))
-        }
+        translateScoped(symTable, mainInstructions, stats)
         // AI: LDR r0, =0
         mainInstructions.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))
         // AI: POP {pc}
