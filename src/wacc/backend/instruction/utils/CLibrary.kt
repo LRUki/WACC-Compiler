@@ -78,7 +78,7 @@ fun generateReadCall(call: Call): List<Instruction> {
     val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
-                MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
+                MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
                 AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), true)
@@ -98,7 +98,7 @@ fun generateReadCall(call: Call): List<Instruction> {
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
-                MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
+                MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
                 AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
@@ -177,7 +177,7 @@ fun generateReadCall(call: Call): List<Instruction> {
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
-                MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R1)),
+                MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
                 AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
