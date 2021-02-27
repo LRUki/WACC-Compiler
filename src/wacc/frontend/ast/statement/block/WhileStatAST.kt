@@ -4,10 +4,7 @@ import wacc.backend.CodeGenerator
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.AddInstr
-import wacc.backend.instruction.instrs.BranchInstr
-import wacc.backend.instruction.instrs.CompareInstr
-import wacc.backend.instruction.instrs.SubInstr
+import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.ImmediateOperandInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -50,7 +47,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
             instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         body.forEach { instr.addAll(it.translate()) }
-
+        instr.add(condLabel)
         instr.addAll(cond.translate())
         instr.add(CompareInstr(Register.R4, ImmediateOperandInt(1)))
         instr.add(BranchInstr(Condition.EQ, bodyLabel, false))
