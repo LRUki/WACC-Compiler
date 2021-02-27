@@ -4,6 +4,8 @@ import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.BranchInstr
 import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.utils.ImmediateInt
@@ -11,6 +13,8 @@ import wacc.backend.instruction.utils.ImmediateLabel
 import wacc.backend.instruction.utils.ImmediateOperandBool
 import wacc.backend.instruction.utils.ImmediateOperandChar
 import wacc.frontend.SymbolTable
+import wacc.frontend.SymbolTable.Companion.getBytesOfType
+import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
 
@@ -69,18 +73,22 @@ class NullPairLiterAST : LiterAST {
 }
 
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
+    lateinit var arrayType: TypeAST
     override fun getRealType(table: SymbolTable): TypeAST {
         if (values.isEmpty()) {
-            return ArrayTypeAST(AnyTypeAST(), 1)
+            arrayType = ArrayTypeAST(AnyTypeAST(), 1)
+            return arrayType
         }
         val exprType = values[0].getRealType(table)
         if (exprType is ArrayTypeAST) {
-            return ArrayTypeAST(exprType.type, exprType.dimension + 1)
+            arrayType = ArrayTypeAST(exprType.type, exprType.dimension + 1)
+            return arrayType
         }
-        return ArrayTypeAST(exprType, 1)
+        arrayType = ArrayTypeAST(exprType, 1)
+        return arrayType
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        TODO()
     }
 }
