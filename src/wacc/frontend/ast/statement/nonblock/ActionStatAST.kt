@@ -1,18 +1,14 @@
 package wacc.frontend.ast.statement.nonblock
 
-import org.antlr.v4.codegen.CodeGenerator
 import wacc.backend.CodeGenerator.CLib
-import wacc.backend.CodeGenerator.getLastUsedCalleeReg
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.BranchInstr
 import wacc.backend.instruction.instrs.Label
-import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.utils.CLibrary
-import wacc.backend.instruction.utils.RegisterAddr
 import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -69,7 +65,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
         instr.addAll(expr.translate())
-        val reg = getLastUsedCalleeReg()
+        val reg = seeLastUsedCalleeReg()
         val exprType = expr.getRealType(symTable)
         when (action) {
             Action.EXIT -> {
