@@ -54,7 +54,7 @@ object CodeGenerator {
         return reg
     }
 
-    fun getLastUsedCalleeReg(): Register {
+    fun seeLastUsedCalleeReg(): Register {
         if (calleSavedRegsInUse.isEmpty()) {
             return Register.CPSR//TODO() CHANGE LATER
         }

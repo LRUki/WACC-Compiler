@@ -1,9 +1,9 @@
 package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.getLastUsedCalleeReg
+import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
@@ -12,7 +12,6 @@ import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
-import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
 
@@ -88,33 +87,37 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        val elemSize = getBytesOfType(arrayType)
+        val elemSize = getBytesOfType((arrayType as ArrayTypeAST).type)
+        println("This is the bytes of ${arrayType} ${elemSize}")
         //loading the length of array * elemSize + size of INT
+        val sizeOfInt = getBytesOfType(BaseTypeAST(BaseType.INT))
         instr.add(LoadInstr(Register.R0, null,
-                ImmediateInt( elemSize * values.size
-                        + getBytesOfType(BaseTypeAST(BaseType.INT))), Condition.AL))
+                ImmediateInt(elemSize * values.size + sizeOfInt), Condition.AL))
 
-        instr.add(BranchInstr(Condition.AL, FunctionLabel("malloc"), true))
-
-        instr.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
+        instr.add(BranchInstr(Condition.AL, Label("malloc"), true))
+        val stackReg = getNextFreeCalleeReg()
+        instr.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
         //add element to stack
-        var memType:MemoryType? = null;
-        for ((i,expr) in values.withIndex()){
-            //TODO not sure as getNextFreeCalleeReg is used in basic type Liter...
+        var memType: MemoryType? = null;
+        for ((i, expr) in values.withIndex()) {
             instr.addAll(expr.translate())
 
-            memType = if (expr is CharLiterAST) MemoryType.B else null
-            instr.add(StoreInstr(seeNextFreeCalleeReg(), memType,
-                    RegisterAddrWithOffset(getLastUsedCalleeReg(),
-                            (i + 1) * elemSize, false), Condition.AL))
-            //TODO remove condtion from store?
+            if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
+                memType = MemoryType.B
+            }
+            instr.add(StoreInstr(seeLastUsedCalleeReg(), memType,
+                    RegisterAddrWithOffset(stackReg,
+                            sizeOfInt + (i * elemSize),
+                            false), Condition.AL))
+            freeCalleeReg()
         }
 
         //add the length of the array to stack
-        instr.add(LoadInstr(getLastUsedCalleeReg(), memType, ImmediateInt(values.size), Condition.AL))
-        instr.add(StoreInstr(seeNextFreeCalleeReg(), memType,
-                RegisterAddr(getLastUsedCalleeReg()), Condition.AL))
+        instr.add(LoadInstr(getNextFreeCalleeReg(), null, ImmediateInt(values.size), Condition.AL))
+        instr.add(StoreInstr(seeLastUsedCalleeReg(), null,
+                RegisterAddr(stackReg), Condition.AL))
+        freeCalleeReg()
         return instr
     }
 }
