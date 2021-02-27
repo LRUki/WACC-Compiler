@@ -42,28 +42,19 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
     override fun translate(): List<Instruction> {
 //        TODO("Not yet implemented")
 
-//        PUSH {lr}
-//        5		SUB sp, sp, #4
-//        6		LDR r0, =8
-        //assignment
-
-
 // BL malloc
 // MOV r4, r0
-// r0 is a pointer
-// r4 contains result of malloc
 // LDR r5, =69
-// load first thing  into next reg
 // LDR r0, =4
 
-        BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true)
-        MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0))
-
-        fst.translate()
-
-        LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null,
-                RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL)
-        LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
+        val fstTranslation = fst.translate()
+        val mallocAndStoreFst = listOf(
+                BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true),
+                MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)),
+                LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null,
+                        RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL),
+                LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
+        )
 
 // BL malloc
 // STR r5, [r0]
@@ -71,14 +62,15 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 // LDR r5, =420
 // LDR r0, =4
 
-        BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true)
-        StoreInstr(CodeGenerator.getNextFreeCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL)
-        StoreInstr(Register.R0, null, RegisterAddr(Register.R4), Condition.AL)
-        //load second into next reg
-        snd.translate()
-        LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null,
-                RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL)
-        LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
+        val sndTranslation = snd.translate()
+        val mallocAndStoreSnd = listOf(
+                BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true),
+                StoreInstr(CodeGenerator.getNextFreeCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL),
+                StoreInstr(Register.R0, null, RegisterAddr(Register.R4), Condition.AL),
+                LoadInstr(CodeGenerator.getNextFreeCalleeReg(), null,
+                        RegisterAddr(CodeGenerator.getLastUsedCalleeReg()), Condition.AL),
+                LoadInstr(Register.R0, null, ImmediateInt(4), Condition.AL)
+        )
 
 // BL malloc
 // STR r5, [r0]
@@ -86,6 +78,16 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 // STR r4, [sp]
 // ADD sp, sp, #4
 // LDR r0, =0
+
+        val mallocAndStorePair = listOf(
+                BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true),
+                StoreInstr(CodeGenerator.getNextFreeCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL),
+                StoreInstr(Register.R0, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL),
+                StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL),
+                AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(4), false),
+                LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL)
+        )
+
         return emptyList()
     }
 
