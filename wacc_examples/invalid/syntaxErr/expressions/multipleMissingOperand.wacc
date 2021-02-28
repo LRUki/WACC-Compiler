@@ -1,0 +1,15 @@
+# operator missing second operand
+
+# Output:
+# #syntax_error#
+
+# Exit:
+# 100
+
+# Program:
+
+begin
+  char x =;
+  call
+  int b = 2 -
+end

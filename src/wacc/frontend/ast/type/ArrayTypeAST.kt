@@ -36,8 +36,7 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
 
     //compare dimension here
     override fun check(table: SymbolTable): Boolean {
-        type.check(table)
-        return true
+        return type.check(table)
     }
 }
 

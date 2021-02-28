@@ -2,6 +2,7 @@ buildscript {
     ext.kotlin_version = '1.4.10'
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -30,6 +31,7 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+
 sourceSets {
     main {
         java {
@@ -45,7 +47,8 @@ sourceSets {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'lib')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
     testImplementation 'junit:junit:4.12'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
