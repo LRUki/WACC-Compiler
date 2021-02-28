@@ -122,6 +122,9 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
                 CLib.addCode(CLibrary.Call.FREE_PAIR)
             }
+            Action.RETURN -> {
+                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+            }
         }
         return instr
     }
