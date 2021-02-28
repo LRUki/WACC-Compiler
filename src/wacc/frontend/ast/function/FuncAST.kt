@@ -59,7 +59,6 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         if (stackOffset > 0) {
             instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
-        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
         instr.addAll(regsToPopInstrs(listOf(Register.PC)))
         instr.add(DirectiveInstr("ltorg"))
         return instr

@@ -52,6 +52,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         instr.addAll(cond.translate())
         instr.add(CompareInstr(Register.R4, ImmediateOperandInt(1)))
         instr.add(BranchInstr(Condition.EQ, bodyLabel, false))
+        freeCalleeReg()
         if (stackOffset > 0) {
             instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
