@@ -7,6 +7,7 @@ import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.instrs.StoreInstr
 import wacc.backend.instruction.utils.RegisterAddr
@@ -99,7 +100,10 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 TODO("Not yet implemented")
             }
             is PairElemAST -> {
-                TODO("Not yet implemented")
+                instruction.addAll(lhs.expr.translate())
+                instruction.add(LoadInstr(seeLastUsedCalleeReg(),null, RegisterAddr(Register.R0), Condition.AL))
+//                LDR r4, =42
+//                TODO("Not yet implemented")
             }
         }
         freeCalleeReg()
