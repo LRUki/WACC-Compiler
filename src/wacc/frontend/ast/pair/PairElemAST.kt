@@ -1,7 +1,6 @@
 package wacc.frontend.ast.pair
 
 
-import wacc.backend.CodeGenerator.runtimeErrors
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -19,7 +18,6 @@ import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
-import java.awt.Choice
 
 /**
  * AST node to represent a Pair Element
@@ -59,7 +57,8 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
                 } else {
                     LoadInstr(Register.R4, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL)
                 }
-        val instructions = listOf<Instruction>(
+
+        return listOf(
                 LoadInstr(Register.R4, null,
                         RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
                 MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)),
@@ -67,25 +66,7 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
                 loadInstrOfChoice,
                 LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL),
                 StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL)
-//        34		STR r4, [sp]
-//        store
         )
-//        LDR r4, [sp, #4]
-//        30		MOV r0, r4
-//        31		BL p_check_null_pointer
-
-//        32		LDR r4, [r4]
-//        33		LDR r4, [r4]
-//        34		STR r4, [sp]
-
-//        LDR r4, [sp, #4]
-//        30		MOV r0, r4
-//        31		BL p_check_null_pointer
-
-//        32		LDR r4, [r4, #4]
-//        33		LDR r4, [r4]
-//        34		STR r4, [sp]
-        return instructions
     }
 }
 
