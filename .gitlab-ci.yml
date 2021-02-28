@@ -1,8 +1,8 @@
 image: maven:3.6.3-jdk-11
 
 stages:
-  # - test-antlr
-  # - test-frontend
+  - test-antlr
+  - test-frontend
   - test-backend
   - test-extension
 
