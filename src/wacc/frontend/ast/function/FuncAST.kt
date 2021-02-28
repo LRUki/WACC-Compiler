@@ -1,10 +1,13 @@
 package wacc.frontend.ast.function
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.ImmediateOperandInt
+import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -48,15 +51,16 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         val instr = mutableListOf<Instruction>()
         instr.add(FunctionLabel(ident.name))
         instr.add(PushInstr(Register.LR))
-        val stackOffset = symTable.getStackOffset()
-        if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
-        }
+//        val stackOffset = symTable.getStackOffset()
+//        if (stackOffset > 0) {
+//            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+//        }
         body.forEach { instr.addAll(it.translate()) }
-        if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
-        }
-        instr.addAll(regsToPushInstrs(listOf(Register.PC)))
+//        if (stackOffset > 0) {
+//            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+//        }
+        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
+        instr.addAll(regsToPopInstrs(listOf(Register.PC)))
         instr.add(DirectiveInstr("ltorg"))
         return instr
     }

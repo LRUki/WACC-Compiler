@@ -122,7 +122,8 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
 
     override fun translate(): List<Instruction> {
         val funcLabel = FunctionLabel(ident.name)
-        return listOf(BranchInstr(Condition.AL, funcLabel, true))
+        return listOf(BranchInstr(Condition.AL, funcLabel, true),
+                      MoveInstr(Condition.AL, seeLastUsedCalleeReg(), RegisterOperand(Register.R0)))
     }
 
 }
