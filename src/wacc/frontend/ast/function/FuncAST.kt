@@ -30,11 +30,10 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable, Translatable {
 
     override fun check(table: SymbolTable): Boolean {
-        symTable = table
         //create a symbol table for the function and add all parameters to it
-        val funScopeST = FuncSymbolTable(table, this)
-        paramList.forEach { funScopeST.add(it.ident.name, it) }
-        body.forEach { if (!it.check(funScopeST)) {return false} }
+        symTable = FuncSymbolTable(table, this)
+        paramList.forEach { symTable.add(it.ident.name, it) }
+        body.forEach { if (!it.check(symTable)) {return false} }
         return true
     }
 
@@ -51,10 +50,11 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         val instr = mutableListOf<Instruction>()
         instr.add(FunctionLabel(ident.name))
         instr.add(PushInstr(Register.LR))
-//        val stackOffset = symTable.getStackOffset()
-//        if (stackOffset > 0) {
-//            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
-//        }
+        val stackOffset = symTable.getStackOffset()
+        symTable.startingOffset = stackOffset
+        if (stackOffset > 0) {
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+        }
         body.forEach { instr.addAll(it.translate()) }
 //        if (stackOffset > 0) {
 //            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
