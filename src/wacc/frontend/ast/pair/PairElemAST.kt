@@ -1,6 +1,7 @@
 package wacc.frontend.ast.pair
 
 
+import wacc.backend.CodeGenerator
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -57,7 +58,7 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
                 } else {
                     LoadInstr(Register.R4, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL)
                 }
-
+        CodeGenerator.runtimeErrors.addNullReferenceCheck()
         return listOf(
                 LoadInstr(Register.R4, null,
                         RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
