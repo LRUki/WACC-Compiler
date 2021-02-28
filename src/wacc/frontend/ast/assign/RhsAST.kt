@@ -1,7 +1,7 @@
 package wacc.frontend.ast.assign
 
 import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.getLastUsedCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
@@ -58,7 +58,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instr.addAll(fst.translate())
         instr.add(LoadInstr(Register.R0, null, ImmediateInt(getBytesOfType(firstType)), Condition.AL))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        instr.add(StoreInstr(getLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
+        instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
         CodeGenerator.freeCalleeReg()
         instr.add(StoreInstr(Register.R0, null, RegisterAddr(stackReg), Condition.AL))
 
@@ -66,7 +66,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instr.addAll(snd.translate())
         instr.add(LoadInstr(Register.R0, null, ImmediateInt(getBytesOfType(secondType)), Condition.AL))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        instr.add(StoreInstr(getLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
+        instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
         CodeGenerator.freeCalleeReg()
         instr.add(StoreInstr(Register.R0, null, RegisterAddrWithOffset(stackReg, 4, false), Condition.AL))
 
