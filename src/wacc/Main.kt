@@ -19,6 +19,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import wacc.Main.semanticErrorChannel
 import wacc.Main.syntaxErrorChannel
+import wacc.backend.generateCode
+import wacc.backend.printCode
+import wacc.frontend.ast.program.ProgramAST
+import java.nio.file.Files
 
 object Main {
     lateinit var syntaxErrorChannel: Channel<SyntaxException>
@@ -31,35 +35,23 @@ suspend fun main(args: Array<String>){
         println("Missing argument!")
         exitProcess(1)
     }
-    val file = File(args[0])
+    val inputFile = File(args[0])
     createErrorChannels()
-    ast = frontend(file)
-}
+    ast = frontend(inputFile)
 
-fun createErrorChannels() {
-    val synErrorChannel = Channel<SyntaxException>()
-    syntaxErrorChannel = synErrorChannel
-    val semErrorChannel = Channel<SemanticException>()
-    semanticErrorChannel = semErrorChannel
-}
-
-fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
-    return GlobalScope.launch {
-        val allErrors = mutableListOf<T>()
-        for (error in errorChannel) {
-            allErrors.add(error)
-        }
-        var count = 0
-        allErrors.forEach { System.err.println("${count++} $it");printErrorLineInCode(it as Exception, file)
-        }
-        if (allErrors.size > 0) {
-            when (val err = allErrors[0]) {
-                is SemanticException -> exitProcess(err.errorCode);
-                is SyntaxException -> exitProcess(err.errorCode)
-            }
-        }
+    val outputString = backend(ast)
+    var outputFileName = inputFile.nameWithoutExtension + ".s"
+    if (args.size > 1) {
+        outputFileName = args[1]
     }
+    val outputFile = File(outputFileName)
+
+    if (args.size > 1) {
+        Files.createDirectories(outputFile.toPath().parent)
+    }
+    outputFile.writeText(outputString)
 }
+
 
 suspend fun frontend(file: File): AST {
     var job = startErrorListener(syntaxErrorChannel, file)
@@ -101,4 +93,34 @@ fun buildAST(program: WaccParser.ProgramContext): AST {
 fun checkSemantics(ast: AST) {
     val topST = SymbolTable(null)
     ast.check(topST)
+}
+
+fun createErrorChannels() {
+    val synErrorChannel = Channel<SyntaxException>()
+    syntaxErrorChannel = synErrorChannel
+    val semErrorChannel = Channel<SemanticException>()
+    semanticErrorChannel = semErrorChannel
+}
+
+fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
+    return GlobalScope.launch {
+        val allErrors = mutableListOf<T>()
+        for (error in errorChannel) {
+            allErrors.add(error)
+        }
+        var count = 0
+        allErrors.forEach { System.err.println("${count++} $it");printErrorLineInCode(it as Exception, file)
+        }
+        if (allErrors.size > 0) {
+            when (val err = allErrors[0]) {
+                is SemanticException -> exitProcess(err.errorCode)
+                is SyntaxException -> exitProcess(err.errorCode)
+            }
+        }
+    }
+}
+
+fun backend(ast : AST): String {
+    val instrs = generateCode(ast as ProgramAST)
+    return printCode(instrs)
 }

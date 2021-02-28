@@ -16,3 +16,4 @@ error.out
 .gradle
 
 wacc-1.0-SNAPSHOT.jar
+out_test
