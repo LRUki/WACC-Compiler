@@ -5,6 +5,7 @@ import wacc.backend.CodeGenerator.runtimeErrors
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.instrs.BranchInstr
+import wacc.backend.instruction.instrs.LoadInstr
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -45,13 +46,29 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
-//        val instructions = mutableListOf<Instruction>()
-//        instructions.addAll(expr.translate())
-    //        movinstr(Register.R0))
+//        TODO("Not yet implemented")
+        val instructions = listOf<Instruction>(
+//                LoadInstr
+        //move
+        //branch null
+//        load
+//        load
+//        store
+        )
+
+
+
+    //movinstr(Register.R0))
 //        runtimeErrors.addNullReferenceCheck()
 //        BranchInstr(Condition.AL, , true)
 
+//        LDR r4, [sp, #4]
+//        30		MOV r0, r4
+//        31		BL p_check_null_pointer
+//        32		LDR r4, [r4]
+//        33		LDR r4, [r4]
+//        34		STR r4, [sp]
+        return emptyList()
     }
 }
 
