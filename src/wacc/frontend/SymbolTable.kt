@@ -116,6 +116,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             offset += v.second
         }
         for ((k, v) in currSymbolTable) {
+            if (k == ident && v.first is ParamAST) {
+                return offset
+            }
             offset -= v.second
             if (k == ident) {
                 return offset

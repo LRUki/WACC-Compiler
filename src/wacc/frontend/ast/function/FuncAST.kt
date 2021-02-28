@@ -1,10 +1,13 @@
 package wacc.frontend.ast.function
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.ImmediateOperandInt
+import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -27,11 +30,10 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable, Translatable {
 
     override fun check(table: SymbolTable): Boolean {
-        symTable = table
         //create a symbol table for the function and add all parameters to it
-        val funScopeST = FuncSymbolTable(table, this)
-        paramList.forEach { funScopeST.add(it.ident.name, it) }
-        body.forEach { if (!it.check(funScopeST)) {return false} }
+        symTable = FuncSymbolTable(table, this)
+        paramList.forEach { symTable.add(it.ident.name, it) }
+        body.forEach { if (!it.check(symTable)) {return false} }
         return true
     }
 
@@ -49,6 +51,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         instr.add(FunctionLabel(ident.name))
         instr.add(PushInstr(Register.LR))
         val stackOffset = symTable.getStackOffset()
+        symTable.startingOffset = stackOffset
         if (stackOffset > 0) {
             instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
@@ -56,7 +59,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         if (stackOffset > 0) {
             instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
-        instr.addAll(regsToPushInstrs(listOf(Register.PC)))
+        instr.addAll(regsToPopInstrs(listOf(Register.PC)))
         instr.add(DirectiveInstr("ltorg"))
         return instr
     }
