@@ -233,7 +233,7 @@ class CLibrary {
                 LoadInstr(Register.R0, null, RegisterAddr(Register.R0), Condition.AL),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
                 LoadInstr(Register.R0, null, RegisterAddr(Register.SP), Condition.AL),
-                LoadInstr(Register.R0, null, RegisterAddrWithOffset(Register.R0, 4, true), Condition.AL),
+                LoadInstr(Register.R0, null, RegisterAddrWithOffset(Register.R0, 4, false), Condition.AL),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
                 PopInstr(Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),

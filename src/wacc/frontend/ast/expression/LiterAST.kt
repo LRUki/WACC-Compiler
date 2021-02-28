@@ -65,7 +65,7 @@ class NullPairLiterAST : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        return listOf(LoadInstr(getNextFreeCalleeReg(), null, ImmediateInt(0), Condition.AL))
     }
 }
 

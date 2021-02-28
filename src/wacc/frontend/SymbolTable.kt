@@ -27,8 +27,8 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                         BaseType.CHAR, BaseType.BOOL -> 1
                     }
                 }
-                is ArrayTypeAST, is PairTypeAST -> 4
-                else -> 0 // includes AnyTypeAST
+                is ArrayTypeAST, is PairTypeAST, is AnyPairTypeAST -> 4
+                else -> 0 //
             }
         }
     }
