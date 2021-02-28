@@ -106,7 +106,8 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                         TODO()
                     }
                     is PairTypeAST -> {
-                        TODO()
+                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                        instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
                     }
                 }
                 if (action == Action.PRINTLN) {
