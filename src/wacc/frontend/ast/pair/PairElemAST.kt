@@ -8,6 +8,7 @@ import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.BranchInstr
 import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.instrs.MoveInstr
+import wacc.backend.instruction.instrs.StoreInstr
 import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -53,19 +54,20 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
 //        TODO("Not yet implemented")
 
         val loadInstrOfChoice =
-                if (choice == PairChoice.FST){
-            LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL)
-        }else{
-            LoadInstr(Register.R4, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL)
-        }
+                if (choice == PairChoice.FST) {
+                    LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL)
+                } else {
+                    LoadInstr(Register.R4, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL)
+                }
         val instructions = listOf<Instruction>(
                 LoadInstr(Register.R4, null,
                         RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
                 MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)),
                 BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true),
-                loadInstrOfChoice
-//        load (+4 for snd)
-//        load
+                loadInstrOfChoice,
+                LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL),
+                StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL)
+//        34		STR r4, [sp]
 //        store
         )
 //        LDR r4, [sp, #4]
@@ -84,9 +86,10 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
 //        33		LDR r4, [r4]
 //        34		STR r4, [sp]
         return instructions
+    }
 }
 
 enum class PairChoice {
-    FST,
-    SND
+        FST,
+        SND
 }
