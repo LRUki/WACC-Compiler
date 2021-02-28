@@ -1,19 +1,22 @@
 #!/bin/bash
 
 echo 'Testing assemble...'
-make
-rm -rf out_test
+# make
+# rm -rf out_test
+
 
 for FOLDER in `find ./wacc_examples/valid -type d -mindepth 1 -maxdepth 1`
 do
   echo "Testing $FOLDER "
   echo "--------------------------------------------------------------------"
-  ALL_SUCCESSFUL=0
+  SUCCESSFUL=0
   SUCESS_COUNT=0
   FAIL_COUNT=0
   for WACC_FILENAME in `find $FOLDER -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
   do
-  FILENAME=${WACC_FILENAME#*/}
+  echo $WACC_FILENAME
+  FILENAME=${WACC_FILENAME#*/*/}
+  echo $FILENAME
   mkdir -p out_test/"${FILENAME%/*}"
   java -jar wacc-1.0-SNAPSHOT.jar wacc_examples/"$FILENAME".wacc out_test/"$FILENAME".s
 
@@ -51,10 +54,10 @@ do
   else
     echo "Failed ${FILENAME}"
     FAIL_COUNT=$((FAIL_COUNT+1))
-    ALL_SUCCESSFUL=1
+    SUCCESSFUL=1
   fi
   done
-  if [ $ALL_SUCCESSFUL == 0 ]
+  if [ $SUCCESSFUL == 0 ]
   then
     echo "All Successful!"
   fi
