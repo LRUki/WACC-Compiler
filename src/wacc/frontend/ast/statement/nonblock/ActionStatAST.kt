@@ -13,6 +13,7 @@ import wacc.backend.instruction.instrs.Label
 import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.utils.CLibrary
+import wacc.backend.instruction.utils.RegisterAddr
 import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.SymbolTable
@@ -81,9 +82,9 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 instr.add(BranchInstr(Condition.AL, Label("exit"), true))
             }
             Action.PRINT, Action.PRINTLN -> {
-                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                 when (exprType) {
                     is BaseTypeAST -> {
+                        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         when (exprType.type) {
                             BaseType.INT -> {
                                 CLib.addCode(CLibrary.Call.PRINT_INT)
@@ -103,6 +104,8 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                         }
                     }
                     is ArrayTypeAST -> {
+                        instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
+                        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                     }
                     is PairTypeAST -> {
                         TODO()

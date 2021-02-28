@@ -4,6 +4,7 @@ import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
+import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
@@ -96,16 +97,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset , false), calleeReg))
             }
             is ArrayElemAST -> {
-                val stackReg = getNextFreeCalleeReg()
-                instr.add(AddInstr(Condition.AL, stackReg , Register.SP, ImmediateOperandInt(0), false))
-                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(stackReg), stackReg))
-                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-                instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
-                instr.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
-                CodeGenerator.runtimeErrors.addArrayBoundsCheck()
-                instr.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateOperandInt(rhsBytes)))
-                instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()))) // ADD LSL #2
-                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(stackReg), calleeReg))
+                instr.addAll(lhs.translate())
+                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+                freeCalleeReg()
             }
             is PairElemAST -> {
                 TODO("Not yet implemented")
