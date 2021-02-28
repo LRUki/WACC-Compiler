@@ -4,8 +4,11 @@ package wacc.frontend.ast.pair
 import wacc.backend.CodeGenerator.runtimeErrors
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.BranchInstr
 import wacc.backend.instruction.instrs.LoadInstr
+import wacc.backend.instruction.instrs.MoveInstr
+import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -15,6 +18,7 @@ import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
+import java.awt.Choice
 
 /**
  * AST node to represent a Pair Element
@@ -47,29 +51,39 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
 
     override fun translate(): List<Instruction> {
 //        TODO("Not yet implemented")
+
+        val loadInstrOfChoice =
+                if (choice == PairChoice.FST){
+            LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL)
+        }else{
+            LoadInstr(Register.R4, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL)
+        }
         val instructions = listOf<Instruction>(
-//                LoadInstr
-        //move
-        //branch null
-//        load
+                LoadInstr(Register.R4, null,
+                        RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
+                MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)),
+                BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true),
+                loadInstrOfChoice
+//        load (+4 for snd)
 //        load
 //        store
         )
+//        LDR r4, [sp, #4]
+//        30		MOV r0, r4
+//        31		BL p_check_null_pointer
 
-
-
-    //movinstr(Register.R0))
-//        runtimeErrors.addNullReferenceCheck()
-//        BranchInstr(Condition.AL, , true)
+//        32		LDR r4, [r4]
+//        33		LDR r4, [r4]
+//        34		STR r4, [sp]
 
 //        LDR r4, [sp, #4]
 //        30		MOV r0, r4
 //        31		BL p_check_null_pointer
-//        32		LDR r4, [r4]
+
+//        32		LDR r4, [r4, #4]
 //        33		LDR r4, [r4]
 //        34		STR r4, [sp]
-        return emptyList()
-    }
+        return instructions
 }
 
 enum class PairChoice {
