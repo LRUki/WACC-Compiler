@@ -22,6 +22,7 @@ import wacc.Main.syntaxErrorChannel
 import wacc.backend.generateCode
 import wacc.backend.printCode
 import wacc.frontend.ast.program.ProgramAST
+import java.nio.file.Files
 
 object Main {
     lateinit var syntaxErrorChannel: Channel<SyntaxException>
@@ -44,6 +45,10 @@ suspend fun main(args: Array<String>){
         outputFileName = args[1]
     }
     val outputFile = File(outputFileName)
+
+    if (args.size > 1) {
+        Files.createDirectories(outputFile.toPath().parent)
+    }
     outputFile.writeText(outputString)
 }
 
