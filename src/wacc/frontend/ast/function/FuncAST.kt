@@ -56,9 +56,9 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
             instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         body.forEach { instr.addAll(it.translate()) }
-//        if (stackOffset > 0) {
-//            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
-//        }
+        if (stackOffset > 0) {
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+        }
         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
         instr.addAll(regsToPopInstrs(listOf(Register.PC)))
         instr.add(DirectiveInstr("ltorg"))

@@ -1,6 +1,7 @@
 package wacc.frontend.ast.assign
 
 import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
@@ -82,6 +83,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
  * @property argList List of expression as arguments for the function
  */
 class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, AbstractAST() {
+    lateinit var argTypes: MutableList<TypeAST>
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         if (!ident.check(table)) {
@@ -105,8 +107,10 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
                     "arguments, Actually got ${argList.size}", ctx)
             return false
         }
+        argTypes = mutableListOf<TypeAST>()
         for (i in argList.indices) {
             val argType = argList[i].getRealType(table)
+            argTypes.add(argType)
             val paramType = funcAst.paramList[i].type
             if (argType != paramType) {
                 semanticError("Type mismatch, Expected type $paramType, Actual type $argType", ctx)
@@ -121,9 +125,29 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
     }
 
     override fun translate(): List<Instruction> {
+        val instr = mutableListOf<Instruction>()
+        val totalLength = argTypes.size - 1
+        var totalBytes = 0
+        for ((index, arg) in argList.reversed().withIndex()) {
+            instr.addAll(arg.translate())
+            val bytes = getBytesOfType(argTypes.get(totalLength - index))
+            totalBytes += bytes
+            instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), Condition.AL))
+            freeCalleeReg()
+        }
+
+//        argList.reversed().forEach {
+//            instr.addAll(it.translate())
+//            val bytes = getBytesOfType(it.getRealType(symTable))
+//            instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), Condition.AL))
+//            freeCalleeReg()
+//        }
+
         val funcLabel = FunctionLabel(ident.name)
-        return listOf(BranchInstr(Condition.AL, funcLabel, true),
-                      MoveInstr(Condition.AL, seeLastUsedCalleeReg(), RegisterOperand(Register.R0)))
+        instr.add(BranchInstr(Condition.AL, funcLabel, true))
+        instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(totalBytes), false))
+        instr.add(MoveInstr(Condition.AL, seeLastUsedCalleeReg(), RegisterOperand(Register.R0)))
+        return instr
     }
 
 }
