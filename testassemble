@@ -1,8 +1,12 @@
 #!/bin/bash
 
 echo 'Testing assemble...'
-# make
-# rm -rf out_test
+make
+rm -rf out_test
+
+ALL_SUCCESSFUL=0
+ALL_SUCESS_COUNT=0
+ALL_FAIL_COUNT=0
 
 
 for FOLDER in `find ./wacc_examples/valid -type d -mindepth 1 -maxdepth 1`
@@ -55,6 +59,7 @@ do
     echo "Failed ${FILENAME}"
     FAIL_COUNT=$((FAIL_COUNT+1))
     SUCCESSFUL=1
+    ALL_SUCCESSFUL = 1
   fi
   done
   if [ $SUCCESSFUL == 0 ]
@@ -63,7 +68,9 @@ do
   fi
   echo "Passed $SUCESS_COUNT"
   echo "Failed $FAIL_COUNT"
-
+  ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ SUCESS_COUNT))
+  ALL_FAIL_COUNT=$((ALL_FAIL_COUNT + FAIL_COUNT))
   echo -e "--------------------------------------------------------------------\n"
 done 
 
+echo "Passed $ALL_SUCESS_COUNT / $ALL_SUCESS_COUNT + $ALL_FAIL_COUNT"
