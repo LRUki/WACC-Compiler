@@ -1,10 +1,13 @@
 package wacc.backend.instruction.utils
 
 import wacc.backend.CodeGenerator
+ import wacc.backend.instruction.DataDirective
 import wacc.backend.instruction.Instruction
 //import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.*
 import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.RuntimeError.Companion.throwRuntimeErrorLabel
+
 class CLibrary {
     enum class LibraryFunctions {
         SCANF,
@@ -61,21 +64,21 @@ class CLibrary {
         LibraryCalls[call] = instructions
     }
 
-fun translate(): List<Instruction> {
-    val instructions = mutableListOf<Instruction>()
-    for ((_, value) in LibraryCalls) {
-        instructions.addAll(value)
+    fun translate(): List<Instruction> {
+        val instructions = mutableListOf<Instruction>()
+        for ((_, value) in LibraryCalls) {
+            instructions.addAll(value)
+        }
+        return instructions
     }
-    return instructions
-}
 
-fun generateReadCall(call: Call): List<Instruction> {
-    val stringFormat: String = when (call) {
-        Call.READ_INT -> "%d\\0"
-        Call.READ_CHAR -> " %c\\0"
-        else -> throw Exception("Unable to generate code for non-read types")
-    }
-    val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
+    fun generateReadCall(call: Call): List<Instruction> {
+        val stringFormat: String = when (call) {
+            Call.READ_INT -> "%d\\0"
+            Call.READ_CHAR -> " %c\\0"
+            else -> throw Exception("Unable to generate code for non-read types")
+        }
+        val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
@@ -96,7 +99,6 @@ fun generateReadCall(call: Call): List<Instruction> {
     fun generatePrintIntCall(): List<Instruction> {
         val stringFormat: String = "%d\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
-
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
@@ -221,10 +223,12 @@ fun generateReadCall(call: Call): List<Instruction> {
 //    val errorLabel = codeGenerator.getDataSegment().addString(RuntimeErrors.RuntimeErrorType.NULL_REFERENCE.toString())
 //    codeGenerator.getRuntimeErrors().addThrowRuntimeError()
 
+        val label = CodeGenerator.dataDirective.addStringLabel(RuntimeError.ErrorType.NULL_REFERENCE.toString())
+//        CodeGenerator.runtimeErrors.addNullReferenceCheck()
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateOperandInt(0)),
-//            LoadInstr(Register.R0, null, ImmediateLabel(errorLabel), Condition.EQ),
-                //BranchInstruction(Condition.EQ,  RuntimeErrors.throwRuntimeErrorLabel, false),
+                LoadInstr(Register.R0, null, ImmediateLabel(label), Condition.EQ),
+                BranchInstr(Condition.EQ, throwRuntimeErrorLabel, false),
                 PushInstr(Register.R0),
                 LoadInstr(Register.R0, null, RegisterAddr(Register.R0), Condition.AL),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
@@ -234,6 +238,7 @@ fun generateReadCall(call: Call): List<Instruction> {
                 PopInstr(Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
         )
+        CodeGenerator.runtimeErrors.addThrowRuntimeError()
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
         // PUSH {lr}
         // CMP r0, #0
