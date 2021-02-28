@@ -103,7 +103,6 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                         }
                     }
                     is ArrayTypeAST -> {
-                        TODO()
                     }
                     is PairTypeAST -> {
                         TODO()

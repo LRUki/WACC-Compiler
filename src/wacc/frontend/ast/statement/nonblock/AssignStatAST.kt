@@ -2,16 +2,14 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.MoveInstr
-import wacc.backend.instruction.instrs.StoreInstr
-import wacc.backend.instruction.utils.RegisterAddr
-import wacc.backend.instruction.utils.RegisterAddrWithOffset
-import wacc.backend.instruction.utils.RegisterOperand
+import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
@@ -70,19 +68,21 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
     }
 
     override fun translate(): List<Instruction> {
-        val instruction = mutableListOf<Instruction>()
-        instruction.addAll(rhs.translate())
+        val instr = mutableListOf<Instruction>()
+        instr.addAll(rhs.translate())
+        val calleeReg = seeLastUsedCalleeReg()
         if (rhs is StrLiterAST) {
             stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
         }
         when (rhs) {
             // only other RHS which requires "setting up"
             is CallRhsAST -> {
-                instruction.add(MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)))
-                instruction.add(StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL))
+                instr.add(MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)))
+                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.SP), calleeReg))
             }
         }
         val rhsType = rhs.getRealType(symTable)
+        val rhsBytes = SymbolTable.getBytesOfType(rhsType)
         symTable.decreaseOffset(lhs, rhsType)
         var memtype: MemoryType? = null
         if (rhsType is BaseTypeAST) {
@@ -93,10 +93,19 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         when (lhs) {
             is IdentAST -> {
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(lhs.name, rhsType)
-                instruction.add(StoreInstr(seeLastUsedCalleeReg(), memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset , false), Condition.AL))
+                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset , false), calleeReg))
             }
             is ArrayElemAST -> {
-                TODO("Not yet implemented")
+                val stackReg = getNextFreeCalleeReg()
+                instr.add(AddInstr(Condition.AL, stackReg , Register.SP, ImmediateOperandInt(0), false))
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(stackReg), stackReg))
+                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
+                instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
+                instr.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
+                CodeGenerator.runtimeErrors.addArrayBoundsCheck()
+                instr.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateOperandInt(rhsBytes)))
+                instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()))) // ADD LSL #2
+                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(stackReg), calleeReg))
             }
             is PairElemAST -> {
                 TODO("Not yet implemented")
@@ -104,6 +113,6 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         }
         freeCalleeReg()
 
-        return instruction
+        return instr
     }
 }

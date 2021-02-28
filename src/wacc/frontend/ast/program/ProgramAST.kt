@@ -75,7 +75,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         instr.add(PushInstr(Register.LR))
         translateScoped(symTable, instr, stats)
         // AI: LDR r0, =0
-        instr.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(0), Register.R0))
         // AI: POP {pc}
         instr.add(PopInstr(Register.PC))
         instr.add(DirectiveInstr("ltorg"))

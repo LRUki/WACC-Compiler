@@ -49,6 +49,6 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 }
