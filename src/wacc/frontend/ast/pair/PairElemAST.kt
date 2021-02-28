@@ -2,6 +2,8 @@ package wacc.frontend.ast.pair
 
 
 import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.getNextFreeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -60,9 +62,9 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
                 }
         CodeGenerator.runtimeErrors.addNullReferenceCheck()
         return listOf(
-                LoadInstr(Register.R4, null,
-                        RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
-                MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)),
+//                LoadInstr(Register.R4, null,
+//                        RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
+                MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())),
                 BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true),
                 loadInstrOfChoice,
                 LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL),
