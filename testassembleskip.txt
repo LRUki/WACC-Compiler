@@ -1,0 +1,8 @@
+valid/array/array
+valid/array/arrayPrint
+valid/array/printRef
+valid/function/simple_functions/functionManyArguments
+valid/pairs/checkRefPair
+valid/pairs/printPair
+valid/pairs/printPairOfNulls
+valid/scope/printAllTypes
