@@ -15,7 +15,19 @@ class ImmediateOperandInt(val offset: Int): Operand {
 
 class ImmediateOperandChar(val char: Char): Operand {
     override fun toAssembly(): String {
-        return "#'${this.char}'"
+        val charStr: String = when (char) {
+            0.toChar() -> "\\0"
+            '\b' -> "\\b"
+            '\t' -> "\\t"
+            '\n' -> "\\n"
+            12.toChar() -> "\\f"
+            '\r' -> "\\r"
+            '\"' -> "\\\""
+            '\'' -> "\\\'"
+            '\\' -> "\\\\"
+            else -> char.toString()
+        }
+        return "#'${charStr}'"
     }
 }
 
