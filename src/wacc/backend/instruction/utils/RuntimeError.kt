@@ -26,7 +26,7 @@ class RuntimeError {
     }
 
     enum class ErrorType(val msg: String) {
-        NULL_REFERENCE("NullReferenceError: attempt to dereference a null reference\\n\\0"),
+        NULL_REFERENCE("NullReferenceError: dereference a null reference\\n\\0"),
         DIVIDE_BY_ZERO("DivideByZeroError: divide or modulo by zero\\n"),
         LARGE_ARRAY_INDEX_OUT_OF_BOUNDS("ArrayIndexOutOfBoundsError: index too large\\n\\0"),
         NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS("ArrayIndexOutOfBoundsError: negative index\\n\\0"),
