@@ -75,10 +75,19 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         if (rhs is StrLiterAST) {
             stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
         }
+
+        val rhsType = rhs.getRealType(symTable)
+        var memtype: MemoryType? = null
+        if (rhsType is BaseTypeAST) {
+            if (rhsType.type == BaseType.BOOL || rhsType.type == BaseType.CHAR) {
+                memtype = MemoryType.B
+            }
+        }
+
         when (rhs) {
             // only other RHS which requires "setting up"
             is CallRhsAST -> {
-                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.SP), calleeReg))
+                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.SP), calleeReg))
                 freeCalleeReg()
                 return instr
             }
@@ -86,15 +95,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 instr.add(LoadInstr(Condition.AL, null, RegisterAddr(calleeReg), calleeReg))
             }
         }
-        val rhsType = rhs.getRealType(symTable)
         val rhsBytes = SymbolTable.getBytesOfType(rhsType)
         symTable.decreaseOffset(lhs, rhsType)
-        var memtype: MemoryType? = null
-        if (rhsType is BaseTypeAST) {
-            if (rhsType.type == BaseType.BOOL || rhsType.type == BaseType.CHAR) {
-                memtype = MemoryType.B
-            }
-        }
+
         when (lhs) {
             is IdentAST -> {
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(lhs.name, rhsType)

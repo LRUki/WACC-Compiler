@@ -137,11 +137,16 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         val instr = mutableListOf<Instruction>()
         val totalLength = argTypes.size - 1
         var totalBytes = 0
+        var memType: MemoryType? = null
         for ((index, arg) in argList.reversed().withIndex()) {
             instr.addAll(arg.translate())
-            val bytes = getBytesOfType(argTypes.get(totalLength - index))
+            val bytes = getBytesOfType(argTypes[(totalLength - index)])
             totalBytes += bytes
-            instr.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
+            if (argTypes[index].equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
+                    || argTypes[index].equals(BaseTypeAST(BaseType.CHAR))) {
+                memType = MemoryType.B
+            }
+            instr.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
             freeCalleeReg()
         }
 
