@@ -17,13 +17,12 @@ do
   echo "Testing $FOLDER "
   echo "--------------------------------------------------------------------"
   
-  FILENAME=${WACC_FILENAME#*/*/}
-  failCounter[${FILENAME}]=0
-  successCounter[${FILENAME}]=0
+  FOLDERNAME=${FOLDER#*/*/*/}
+  failCounter[$FOLDERNAME]=0
+  successCounter[$FOLDERNAME]=0
   for WACC_FILENAME in `find $FOLDER -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
   do
-
-    # echo $FILENAME
+    FILENAME=${WACC_FILENAME#*/*/}
     mkdir -p out_test/"${FILENAME%/*}"
     java -jar wacc-1.0-SNAPSHOT.jar wacc_examples/"$FILENAME".wacc out_test/"$FILENAME".s
 
@@ -63,14 +62,14 @@ do
     if [ "$ASSEMBLE_SUCCESSFUL" == 0 ] && [ "$OUTPUT_MATCHES" == 0 ] && [ "$EXITCODE_MATCHES" == 0 ]
     then
       echo -e "Success ${FILENAME}\n"
-      successCounter[${FILENAME}]=$((1 + successCounter[${FILENAME}]))
+      successCounter[${FOLDERNAME}]=$((1 + successCounter[${FOLDERNAME}]))
     else
       echo -e "Failed ${FILENAME}\n"
-      failCounter[${FILENAME}]=$((1 + failCounter[${FILENAME}]))
+      failCounter[${FOLDERNAME}]=$((1 + failCounter[${FOLDERNAME}]))
     fi
   done
-  sc=${successCounter[${FILENAME}]}
-  fc=${successCounter[${FILENAME}]}
+  sc=${successCounter[${FOLDERNAME}]}
+  fc=${failCounter[${FOLDERNAME}]}
   echo -e "test summary of $FOLDER:\n passed $sc / $((sc + fc))"
   ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ sc))
   ALL_FAIL_COUNT=$((ALL_FAIL_COUNT + fc))
