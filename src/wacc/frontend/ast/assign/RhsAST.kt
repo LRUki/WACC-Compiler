@@ -149,10 +149,10 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             instr.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
             freeCalleeReg()
             if (index == 0) {
-                symTable.increaseOffsetForCall = true
+                symTable.increaseOffsetForCall = 4
             }
         }
-        symTable.increaseOffsetForCall = false
+        symTable.increaseOffsetForCall = 0
 
 //        argList.reversed().forEach {
 //            instr.addAll(it.translate())

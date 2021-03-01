@@ -56,8 +56,8 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
 
     override fun translate(): List<Instruction> {
         val offset = symTable.findOffsetInStack(name)
-        var memType : MemoryType? = null
-        val type = this.getRealType(symTable)
+        var memType: MemoryType? = null
+        val type = getRealType(symTable)
         if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
             memType = MemoryType.SB
         }
