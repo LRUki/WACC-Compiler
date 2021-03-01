@@ -109,8 +109,13 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                     }
                     is ArrayTypeAST -> {
                         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                        instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                        if (exprType.type == BaseTypeAST(BaseType.CHAR)) {
+                            instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
+                            CLib.addCode(CLibrary.Call.PRINT_STRING)
+                        } else {
+                            instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
+                            CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                        }
                     }
                     is PairTypeAST, is AnyPairTypeAST -> {
                         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
