@@ -246,8 +246,10 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             UnOp.LEN -> {
-                instr.add(LoadInstr(Condition.AL, null, ImmediateInt((expr as ArrayElemAST).indices.size), reg1))
-                // TODO: consider the case when expr is a variable
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(Register.SP), reg1))
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg1), reg1))
+//                instr.add(LoadInstr(Condition.AL, null, ImmediateInt((expr as ArrayElemAST).indices.size), reg1))
+//                  consider the case when expr is a variable
             }
             UnOp.ORD -> {
 //                instr.add(MoveInstr(Condition.AL, reg1,  ImmediateOperandChar((expr as CharLiterAST).value)))
