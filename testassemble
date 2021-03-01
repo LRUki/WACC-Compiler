@@ -37,7 +37,7 @@ do
 
       if [ ! -f out_examples/"$FILENAME".out ]
       then
-        echo "Skipping ${FILENAME}"
+        echo -e "\tSkipping ${FILENAME}"
         continue
       fi
 
@@ -60,15 +60,14 @@ do
 
     if [ "$ASSEMBLE_SUCCESSFUL" == 0 ] && [ "$OUTPUT_MATCHES" == 0 ] && [ "$EXITCODE_MATCHES" == 0 ]
     then
-      echo "Success ${FILENAME}"
+      echo -e "Success ${FILENAME}\n"
       SUCESS_COUNT=$((SUCESS_COUNT+1))
     else
-      echo "Failed ${FILENAME}"
+      echo -e "Failed ${FILENAME}\n"
       FAIL_COUNT=$((FAIL_COUNT+1))
     fi
   done
-  echo "Passed $SUCESS_COUNT"
-  echo "Failed $FAIL_COUNT"
+  echo -e "test summary of $FOLDER:\n passed $SUCESS_COUNT / $((FAIL_COUNT + SUCESS_COUNT))"
   ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ SUCESS_COUNT))
   ALL_FAIL_COUNT=$((ALL_FAIL_COUNT + FAIL_COUNT))
 
