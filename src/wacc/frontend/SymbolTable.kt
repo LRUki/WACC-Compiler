@@ -36,7 +36,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     // A symbol table consists of a HashMap and a list of children.
     val currSymbolTable: LinkedHashMap<String, Pair<Identifiable, Int>> = LinkedHashMap()
     var offsetSize: Int = 0
-    var startingOffset:Int = 0
+    var startingOffset: Int = 0
 
     // Gets the top most symbol table
     fun getTopSymbolTable(): SymbolTable {
@@ -135,7 +135,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (lhs is IdentAST) {
             val ident = lookup(lhs.name)
             if (ident.isEmpty ||
-                    (ident.isPresent && !(ident.get() as DeclareStatAST).type.equals(rhsType))) {
+                    (ident.isPresent && (ident.get() is DeclareStatAST) && !(ident.get() as DeclareStatAST).type.equals(rhsType))) {
                 encSymbolTable?.decreaseOffset(lhs, rhsType)
                 return
             }
@@ -144,9 +144,12 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     private fun findSTWithIdentifier(ident: String, correctType: TypeAST, offset: Int): Pair<SymbolTable, Int> {
-        if (currSymbolTable.containsKey(ident) &&
-                (currSymbolTable[ident]?.first as DeclareStatAST).type.equals(correctType)) {
-            return Pair(this, offset)
+        if (currSymbolTable.containsKey(ident)) {
+            val identAst = currSymbolTable[ident]?.first
+            if ((identAst is ParamAST) ||
+                    ((identAst is DeclareStatAST) && (identAst.type.equals(correctType)))) {
+                return Pair(this, offset)
+            }
         }
         if (encSymbolTable != null) {
             return encSymbolTable.findSTWithIdentifier(ident, correctType, offset + startingOffset)
