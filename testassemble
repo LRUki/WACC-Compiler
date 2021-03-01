@@ -14,7 +14,7 @@ do
   echo "--------------------------------------------------------------------"
   echo "Testing $FOLDER "
   echo "--------------------------------------------------------------------"
-  SUCCESSFUL=0
+ 
   SUCESS_COUNT=0
   FAIL_COUNT=0
   for WACC_FILENAME in `find $FOLDER -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
@@ -65,14 +65,8 @@ do
     else
       echo "Failed ${FILENAME}"
       FAIL_COUNT=$((FAIL_COUNT+1))
-      SUCCESSFUL=1
     fi
   done
-  echo ""
-  if [ $SUCCESSFUL == 0 ]
-  then
-    echo "All Successful!"
-  fi
   echo "Passed $SUCESS_COUNT"
   echo "Failed $FAIL_COUNT"
   ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ SUCESS_COUNT))
