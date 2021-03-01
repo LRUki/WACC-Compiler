@@ -71,7 +71,9 @@ class NullPairLiterAST : LiterAST {
 
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     lateinit var arrayType: TypeAST
+    lateinit var symTable: SymbolTable
     override fun getRealType(table: SymbolTable): TypeAST {
+        symTable = table
         if (values.isEmpty()) {
             arrayType = ArrayTypeAST(AnyTypeAST(), 1)
             return arrayType
@@ -101,6 +103,9 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
         //add element to stack
         var memType: MemoryType? = null;
         for ((i, expr) in values.withIndex()) {
+            if (expr is IdentAST) {
+                expr.symTable = symTable
+            }
             instr.addAll(expr.translate())
 
             if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
