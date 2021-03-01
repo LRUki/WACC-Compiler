@@ -112,7 +112,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 //                TODO("Not yet implemented")
             }
         }
-        //freeCalleeReg()
+//        freeCalleeReg()
 
         return instruction
     }
