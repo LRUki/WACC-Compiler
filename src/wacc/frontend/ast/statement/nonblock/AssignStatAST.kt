@@ -81,6 +81,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 instr.add(MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)))
                 instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.SP), calleeReg))
             }
+            is PairElemAST -> {
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(calleeReg), calleeReg))
+            }
         }
         val rhsType = rhs.getRealType(symTable)
         val rhsBytes = SymbolTable.getBytesOfType(rhsType)
