@@ -2,6 +2,7 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
@@ -101,6 +102,11 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
             }
             is PairElemAST -> {
                 instruction.addAll(lhs.expr.translate())
+//                instruction.add(StoreInstr(getNextFreeCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
+//                freeCalleeReg()
+//                instruction.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+//                freeCalleeReg()
+
 //                instruction.add(LoadInstr(seeLastUsedCalleeReg(),null, RegisterAddr(Register.R0), Condition.AL))
 //                LDR r4, =42
 //                TODO("Not yet implemented")

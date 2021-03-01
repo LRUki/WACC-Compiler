@@ -64,7 +64,7 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         return listOf(
 //                LoadInstr(Register.R4, null,
 //                        RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
-                MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())),
+                MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)),
                 BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true),
                 loadInstrOfChoice,
                 LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL),
