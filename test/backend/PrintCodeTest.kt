@@ -1,23 +1,13 @@
 package backend
 
-import frontend.actionOnFiles
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
-import wacc.backend.generateCode
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.ImmediateInt
 import wacc.backend.printCode
-import wacc.buildAST
-import wacc.checkSemantics
-import wacc.checkSyntax
-import wacc.frontend.ast.program.ProgramAST
-import wacc.parse
-import java.io.File
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class PrintCodeTest {
 
@@ -28,7 +18,7 @@ class PrintCodeTest {
                 DirectiveInstr("global main"),
                 Label("main"),
                 PushInstr(Register.LR),
-                LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL),
+                LoadInstr(Condition.AL, null, ImmediateInt(0), Register.R0),
                 PopInstr(Register.PC),
                 DirectiveInstr("ltorg")
         )

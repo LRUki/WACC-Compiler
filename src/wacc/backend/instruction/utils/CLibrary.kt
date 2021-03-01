@@ -1,7 +1,6 @@
 package wacc.backend.instruction.utils
 
 import wacc.backend.CodeGenerator
- import wacc.backend.instruction.DataDirective
 import wacc.backend.instruction.Instruction
 //import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.*
@@ -82,8 +81,8 @@ class CLibrary {
 
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
-                LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
@@ -101,8 +100,8 @@ class CLibrary {
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
-                LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -127,9 +126,9 @@ class CLibrary {
 
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateOperandInt(0)),
-                LoadInstr(Register.R0, null, ImmediateLabel(trueLabel), Condition.NE),
-                LoadInstr(Register.R0, null, ImmediateLabel(falseLabel), Condition.EQ),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                LoadInstr(Condition.NE, null, ImmediateLabel(trueLabel), Register.R0),
+                LoadInstr(Condition.EQ, null, ImmediateLabel(falseLabel), Register.R0),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -153,10 +152,10 @@ class CLibrary {
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
-                LoadInstr(Register.R1, null, RegisterAddr(Register.R0), Condition.AL),
-                AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateOperandInt(4)),
-                LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                LoadInstr(Condition.AL, null, RegisterAddr(Register.R0), Register.R1),
+                AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateOperandInt(4), shift = null),
+                LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -175,13 +174,13 @@ class CLibrary {
 
 
     fun generatePrintReferenceCall(): List<Instruction> {
-        val stringFormat: String = "%d\\0"
+        val stringFormat: String = "%p\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
-                LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -203,8 +202,8 @@ class CLibrary {
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
-                LoadInstr(Register.R0, null, ImmediateLabel(stringFormatLabel), Condition.AL),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PUTS.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -227,13 +226,13 @@ class CLibrary {
 //        CodeGenerator.runtimeErrors.addNullReferenceCheck()
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateOperandInt(0)),
-                LoadInstr(Register.R0, null, ImmediateLabel(label), Condition.EQ),
+                LoadInstr(Condition.EQ, null, ImmediateLabel(label), Register.R0),
                 BranchInstr(Condition.EQ, throwRuntimeErrorLabel, false),
                 PushInstr(Register.R0),
-                LoadInstr(Register.R0, null, RegisterAddr(Register.R0), Condition.AL),
+                LoadInstr(Condition.AL, null, RegisterAddr(Register.R0), Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
-                LoadInstr(Register.R0, null, RegisterAddr(Register.SP), Condition.AL),
-                LoadInstr(Register.R0, null, RegisterAddrWithOffset(Register.R0, 4, false), Condition.AL),
+                LoadInstr(Condition.AL, null, RegisterAddr(Register.SP), Register.R0),
+                LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.R0, 4, false), Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
                 PopInstr(Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
@@ -257,14 +256,14 @@ class CLibrary {
 
 
     fun generateFreeArrayCall(): List<Instruction> {
-//    val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
-        val errorLabel = "TODO"
+        val errorMessage = RuntimeError.ErrorType.NULL_REFERENCE.toString()
+        val errorLabel = CodeGenerator.dataDirective.addStringLabel(errorMessage)
         //codeGenerator.getDataSegment().addString(errorMsg)
 //    codeGenerator.runtimeErrors.addThrowRuntimeError()
 
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateOperandInt(0)),
-                LoadInstr(Register.R0, null, ImmediateLabel(errorLabel), Condition.EQ),
+                LoadInstr(Condition.EQ, null, ImmediateLabel(errorLabel), Register.R0),
                 //BranchInstruction(Condition.EQ,  RuntimeErrors.throwRuntimeErrorLabel, false),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true)
         )

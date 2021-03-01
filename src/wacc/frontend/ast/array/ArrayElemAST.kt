@@ -1,6 +1,17 @@
 package wacc.frontend.ast.array
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.getNextFreeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
+import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.ImmediateOperandInt
+import wacc.backend.instruction.utils.RegisterAddr
+import wacc.backend.instruction.utils.RegisterOperand
+import wacc.backend.instruction.utils.RuntimeError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -49,6 +60,21 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
     }
 
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        val instr = mutableListOf<Instruction>()
+        val stackReg = getNextFreeCalleeReg()
+        val stackOffset = symTable.findOffsetInStack(ident.name)
+        instr.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateOperandInt(stackOffset), false, null))
+        indices.forEach {
+            instr.addAll(it.translate())
+            instr.add(LoadInstr(Condition.AL, null, RegisterAddr(stackReg), stackReg))
+            instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
+            instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
+            instr.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
+            CodeGenerator.runtimeErrors.addArrayBoundsCheck()
+            instr.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateOperandInt(4), false, null))//TODO() UN hardcode this
+            instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false, ShiftInstr(ShiftType.LSL, 2))) // ADD LSL #2
+            freeCalleeReg()
+        }
+        return instr
     }
 }
