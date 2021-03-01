@@ -1,52 +1,52 @@
 image: maven:3.6.3-jdk-11
 
 stages:
-  # - test-antlr
-  # - test-frontend
+  - test-antlr
+  - test-frontend
   - test-backend
   - test-extension
 
-# test-antlr:
-#   stage: test-antlr
-#   script:
-#     - echo "Testing build antlr"
-#     - make clean rules
-#     - ./testgrun
+test-antlr:
+  stage: test-antlr
+  script:
+    - echo "Testing build antlr"
+    - make clean rules
+    - ./testgrun
 
-# test-lexer:
-#   stage: test-frontend
-#   script:
-#     - echo "Testing lexer"
-#     - make clean rules
-#     - ./gradlew test --tests frontend.LexerTest
+test-lexer:
+  stage: test-frontend
+  script:
+    - echo "Testing lexer"
+    - make clean rules
+    - ./gradlew test --tests frontend.LexerTest
 
-# test-syntax:
-#   stage: test-frontend
-#   script:
-#     - echo "Testing syntax"
-#     - make clean rules
-#     - ./gradlew test --tests frontend.SyntaxTest
+test-syntax:
+  stage: test-frontend
+  script:
+    - echo "Testing syntax"
+    - make clean rules
+    - ./gradlew test --tests frontend.SyntaxTest
 
-# test-exitcode:
-#   stage: test-frontend
-#   script:
-#     - echo "Testing exitcodes"
-#     - make clean rules
-#     - ./gradlew test --tests frontend.ExitCodeTest
+test-exitcode:
+  stage: test-frontend
+  script:
+    - echo "Testing exitcodes"
+    - make clean rules
+    - ./gradlew test --tests frontend.ExitCodeTest
 
-# test-code-gen:
-#   stage: test-backend
-#   script:
-#     - echo "Testing code gen"
-#     - make clean rules
-#     - ./gradlew test --tests backend.TranslateTest
+test-code-gen:
+  stage: test-backend
+  script:
+    - echo "Testing code gen"
+    - make clean rules
+    - ./gradlew test --tests backend.TranslateTest
 
-# test-code-print:
-#   stage: test-backend
-#   script:
-#     - echo "Testing printing of code"
-#     - make clean rules
-#     - ./gradlew test --tests backend.PrintCodeTest
+test-code-print:
+  stage: test-backend
+  script:
+    - echo "Testing printing of code"
+    - make clean rules
+    - ./gradlew test --tests backend.PrintCodeTest
 
 test-backend-integration:
   stage: test-backend
