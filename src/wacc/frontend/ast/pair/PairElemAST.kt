@@ -29,6 +29,7 @@ import wacc.frontend.exception.semanticError
  * @param Expression evaluating to a pair object
  */
 class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, AbstractAST() {
+    lateinit var type: TypeAST
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -45,30 +46,31 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
             semanticError("Expected type PAIR, Actual type $pairType", ctx)
         }
         pairType as PairTypeAST
-        return when (choice) {
+        type = when (choice) {
             PairChoice.FST -> pairType.type1
             PairChoice.SND -> pairType.type2
         }
+        return type
     }
 
     override fun translate(): List<Instruction> {
-//        TODO("Not yet implemented")
-
+        val reg = getNextFreeCalleeReg()
         val loadInstrOfChoice =
                 if (choice == PairChoice.FST) {
-                    LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL)
+                    LoadInstr(reg, null, RegisterAddr(reg), Condition.AL)
                 } else {
-                    LoadInstr(Register.R4, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL)
+                    LoadInstr(reg, null, RegisterAddrWithOffset(reg, 4, false), Condition.AL)
                 }
         CodeGenerator.runtimeErrors.addNullReferenceCheck()
         return listOf(
 //                LoadInstr(Register.R4, null,
 //                        RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
-                MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)),
+                LoadInstr(reg, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), Condition.AL),
+                MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)),
                 BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true),
                 loadInstrOfChoice,
-                LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL),
-                StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL)
+                LoadInstr(reg, null, RegisterAddr(reg), Condition.AL),
+//                StoreInstr(reg, null, RegisterAddr(Register.SP), Condition.AL)
         )
     }
 }

@@ -68,7 +68,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instr.add(LoadInstr(Register.R0, null, ImmediateInt(getBytesOfType(secondType)), Condition.AL))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
         instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
-        CodeGenerator.freeCalleeReg()
+        freeCalleeReg()
         instr.add(StoreInstr(Register.R0, null, RegisterAddrWithOffset(stackReg, 4, false), Condition.AL))
 
         return instr
