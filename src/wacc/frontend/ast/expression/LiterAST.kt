@@ -25,7 +25,7 @@ class IntLiterAST(val value: Int) : LiterAST {
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         var instrs = emptyList<Instruction>()
-        if (reg == Register.CPSR) {
+        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -40,7 +40,14 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        return listOf(MoveInstr(Condition.AL, getNextFreeCalleeReg(), ImmediateOperandBool(value)))
+        var reg = getNextFreeCalleeReg()
+        var instrs = emptyList<Instruction>()
+        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        instrs += MoveInstr(Condition.AL, reg, ImmediateOperandBool(value))
+        return instrs
     }
 }
 
@@ -50,8 +57,15 @@ class StrLiterAST(val value: String) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
+        var reg = getNextFreeCalleeReg()
+        var instrs = emptyList<Instruction>()
+        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
         val strLabel = CodeGenerator.dataDirective.addStringLabel(value)
-        return listOf(LoadInstr(Condition.AL, null, ImmediateLabel(strLabel), getNextFreeCalleeReg()))
+        instrs += LoadInstr(Condition.AL, null, ImmediateLabel(strLabel), reg)
+        return instrs
     }
 }
 
@@ -61,7 +75,14 @@ class CharLiterAST(val value: Char) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        return listOf(MoveInstr(Condition.AL, getNextFreeCalleeReg(), ImmediateOperandChar(value)))
+        var reg = getNextFreeCalleeReg()
+        var instrs = emptyList<Instruction>()
+        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        instrs += MoveInstr(Condition.AL, reg, ImmediateOperandChar(value))
+        return instrs
     }
 
 }
@@ -72,7 +93,14 @@ class NullPairLiterAST : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        return listOf(LoadInstr(Condition.AL, null, ImmediateInt(0), getNextFreeCalleeReg()))
+        var reg = getNextFreeCalleeReg()
+        var instrs = emptyList<Instruction>()
+        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        instrs += LoadInstr(Condition.AL, null, ImmediateInt(0), reg)
+        return instrs
     }
 }
 
