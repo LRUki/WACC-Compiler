@@ -25,7 +25,7 @@ class IntLiterAST(val value: Int) : LiterAST {
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         var instrs = emptyList<Instruction>()
-        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -42,7 +42,7 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         var instrs = emptyList<Instruction>()
-        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -59,7 +59,7 @@ class StrLiterAST(val value: String) : LiterAST {
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         var instrs = emptyList<Instruction>()
-        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -77,7 +77,7 @@ class CharLiterAST(val value: Char) : LiterAST {
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         var instrs = emptyList<Instruction>()
-        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -95,7 +95,7 @@ class NullPairLiterAST : LiterAST {
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         var instrs = emptyList<Instruction>()
-        if (reg == Register.CPSR) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }

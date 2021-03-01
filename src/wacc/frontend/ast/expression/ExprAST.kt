@@ -94,7 +94,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         var reg2 = seeLastUsedCalleeReg()
 
         var useAccumulator = false
-        if (reg1 == Register.CPSR || reg1 == Register.R10) {
+        if (reg1 == Register.NONE || reg1 == Register.R10) {
             useAccumulator = true
             reg1 = Register.R10
             reg2 = Register.R11

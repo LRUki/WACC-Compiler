@@ -41,7 +41,7 @@ object CodeGenerator {
 
     fun seeNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()) {
-            return Register.CPSR// TODO() Change later
+            return Register.NONE// TODO() Change later
         }
         return freeCalleeSavedRegs.peek()
     }
@@ -49,7 +49,7 @@ object CodeGenerator {
     fun getNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()){
             useAccumulator = true
-            return Register.CPSR//TODO() CHANGE LATER
+            return Register.NONE//TODO() CHANGE LATER
         }
         val reg = freeCalleeSavedRegs.pop()
         calleSavedRegsInUse.push(reg)
@@ -61,7 +61,7 @@ object CodeGenerator {
         if (useAccumulator) {
             useAccumulator = false
 
-            return Register.CPSR
+            return Register.NONE
         }
         return calleSavedRegsInUse.peek()
     }
