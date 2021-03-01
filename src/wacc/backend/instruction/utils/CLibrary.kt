@@ -1,6 +1,7 @@
 package wacc.backend.instruction.utils
 
 import wacc.backend.CodeGenerator
+import wacc.backend.instruction.DataDirective
 import wacc.backend.instruction.Instruction
 //import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.*
@@ -174,7 +175,7 @@ class CLibrary {
 
 
     fun generatePrintReferenceCall(): List<Instruction> {
-        val stringFormat: String = "%d\\0"
+        val stringFormat: String = "%p\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
@@ -256,8 +257,8 @@ class CLibrary {
 
 
     fun generateFreeArrayCall(): List<Instruction> {
-//    val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
-        val errorLabel = "TODO"
+        val errorMessage = RuntimeError.ErrorType.NULL_REFERENCE.toString()
+        val errorLabel = CodeGenerator.dataDirective.addStringLabel(errorMessage)
         //codeGenerator.getDataSegment().addString(errorMsg)
 //    codeGenerator.runtimeErrors.addThrowRuntimeError()
 

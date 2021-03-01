@@ -108,8 +108,9 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                         }
                     }
                     is ArrayTypeAST -> {
-                        instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
                         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                        instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
+                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                     }
                     is PairTypeAST -> {
                         TODO()

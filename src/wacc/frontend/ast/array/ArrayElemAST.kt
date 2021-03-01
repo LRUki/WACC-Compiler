@@ -61,9 +61,9 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        val data = seeLastUsedCalleeReg()
         val stackReg = getNextFreeCalleeReg()
-        instr.add(AddInstr(Condition.AL, stackReg , Register.SP, ImmediateOperandInt(0), false))
+        val stackOffset = symTable.findOffsetInStack(ident.name)
+        instr.add(AddInstr(Condition.AL, stackReg , Register.SP, ImmediateOperandInt(stackOffset), false))
         instr.addAll(indices[0].translate())
         instr.add(LoadInstr(Condition.AL, null, RegisterAddr(stackReg), stackReg))
         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
