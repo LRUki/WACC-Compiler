@@ -4,6 +4,8 @@ echo 'Testing assemble...'
 make
 rm -rf out_test
 
+declare -A failCounter
+declare -A successCounter
 
 ALL_SUCESS_COUNT=0
 ALL_FAIL_COUNT=0
@@ -15,8 +17,6 @@ do
   echo "Testing $FOLDER "
   echo "--------------------------------------------------------------------"
  
-  SUCESS_COUNT=0
-  FAIL_COUNT=0
   for WACC_FILENAME in `find $FOLDER -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
   do
     # echo $WACC_FILENAME
@@ -61,15 +61,21 @@ do
     if [ "$ASSEMBLE_SUCCESSFUL" == 0 ] && [ "$OUTPUT_MATCHES" == 0 ] && [ "$EXITCODE_MATCHES" == 0 ]
     then
       echo -e "Success ${FILENAME}\n"
-      SUCESS_COUNT=$((SUCESS_COUNT+1))
+      # SUCESS_COUNT=$((SUCESS_COUNT+1))
+      sc=${successCounter[${FILENAME}]}
+      successCounter[${FILENAME}]=$([[-z $sc]] && echo 1 || echo $((1 + sc))) 
     else
       echo -e "Failed ${FILENAME}\n"
-      FAIL_COUNT=$((FAIL_COUNT+1))
+      # FAIL_COUNT=$((FAIL_COUNT+1))
+      fc=${failCounter[${FILENAME}]}
+      failCounter[${FILENAME}]=$([[-z $fc]] && echo 1 || echo $((1 + fc)))
     fi
   done
-  echo -e "test summary of $FOLDER:\n passed $SUCESS_COUNT / $((FAIL_COUNT + SUCESS_COUNT))"
-  ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ SUCESS_COUNT))
-  ALL_FAIL_COUNT=$((ALL_FAIL_COUNT + FAIL_COUNT))
+  sc=${successCounter[${FILENAME}]}
+  fc=${successCounter[${FILENAME}]}
+  echo -e "test summary of $FOLDER:\n passed $sc / $(($sc + $fc))"
+  ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ $sc))
+  ALL_FAIL_COUNT=$((ALL_FAIL_COUNT + $fc))
 
 done
 
