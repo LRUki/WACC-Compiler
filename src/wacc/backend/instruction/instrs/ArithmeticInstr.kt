@@ -21,13 +21,13 @@ abstract class AbstractArithmeticInstr(val type: ArithmeticInstrType, val condit
 }
 
 class AddInstr(condition: Condition, reg1: Register, reg2: Register,
-               operand: Operand, updateFlag: Boolean = false, shift: ShiftInstr?) : AbstractArithmeticInstr(ArithmeticInstrType.ADD, condition, reg1, reg2, operand, updateFlag, shift)
+               operand: Operand, updateFlag: Boolean = false, shift: ShiftInstr? = null) : AbstractArithmeticInstr(ArithmeticInstrType.ADD, condition, reg1, reg2, operand, updateFlag, shift)
 
 class SubInstr(condition: Condition, reg1: Register, reg2: Register,
-               operand: Operand, updateFlag: Boolean = false, shift: ShiftInstr?) : AbstractArithmeticInstr(ArithmeticInstrType.SUB, condition, reg1, reg2, operand, updateFlag, shift)
+               operand: Operand, updateFlag: Boolean = false, shift: ShiftInstr? = null) : AbstractArithmeticInstr(ArithmeticInstrType.SUB, condition, reg1, reg2, operand, updateFlag, shift)
 
 class ReverseSubInstr(condition: Condition, reg1: Register, reg2: Register,
-                      operand: Operand, updateFlag: Boolean = false, shift: ShiftInstr?) : AbstractArithmeticInstr(ArithmeticInstrType.RSB, condition, reg1, reg2, operand, updateFlag, shift)
+                      operand: Operand, updateFlag: Boolean = false, shift: ShiftInstr? = null) : AbstractArithmeticInstr(ArithmeticInstrType.RSB, condition, reg1, reg2, operand, updateFlag, shift)
 
 class MultInstr(val condition: Condition, val rdLo: Register, val rdHi: Register,
                 val rn: Register, val rm: Register, val updateFlag: Boolean = false) : ArithmeticInstr {

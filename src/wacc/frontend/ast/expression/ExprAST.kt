@@ -89,82 +89,160 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
         instr.addAll(expr1.translate())
-        val reg1 = seeLastUsedCalleeReg()
+        var reg1 = seeLastUsedCalleeReg()
         instr.addAll(expr2.translate())
-        val reg2 = seeLastUsedCalleeReg()
+        var reg2 = seeLastUsedCalleeReg()
+
+        var useAccumulator = false
+        if (reg1 == Register.CPSR || reg1 == Register.R10) {
+            useAccumulator = true
+            reg1 = Register.R10
+            reg2 = Register.R11
+        }
+
         when (binOp) {
             BinOp.PLUS -> {
-                instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true, null))
+                if (!useAccumulator) {
+                    instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true, null))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true, null))
+                }
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MINUS -> {
-                instr.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true, null))
+                if (!useAccumulator) {
+                    instr.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true, null))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true, null))
+                }
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MULT -> {
-                instr.add(MultInstr(Condition.AL, reg1, reg2, reg1, reg2))
+                if (!useAccumulator) {
+                    instr.add(MultInstr(Condition.AL, reg1, reg2, reg1, reg2))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(MultInstr(Condition.AL, reg1, reg2, reg2, reg1))
+                }
                 instr.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, 31))) //TODO( MIGHT NEED TO ADD ASR)
                 instr.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.DIV -> {
-                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
-                instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
+                    instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg2)))
+                    instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg1)))
+                }
                 instr.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
                 CodeGenerator.runtimeErrors.addDivideByZeroCheck()
                 instr.add(BranchInstr(Condition.AL, Label("__aeabi_idiv"), true))
                 instr.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R0)))
             }
             BinOp.MOD -> {
-                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
-                instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
+                    instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg2)))
+                    instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg1)))
+                }
                 instr.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
                 CodeGenerator.runtimeErrors.addDivideByZeroCheck()
                 instr.add(BranchInstr(Condition.AL, Label("__aeabi_idivmod"), true))
                 instr.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
             }
             BinOp.EQ -> {
-                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
                 instr.add(MoveInstr(Condition.EQ, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.NE, reg1, ImmediateOperandBool(false)))
             }
 
             BinOp.NEQ -> {
-                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
                 instr.add(MoveInstr(Condition.NE, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.EQ, reg1, ImmediateOperandBool(false)))
             }
             BinOp.LTE -> {
-                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
                 instr.add(MoveInstr(Condition.LE, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.GT, reg1, ImmediateOperandBool(false)))
             }
             BinOp.LT -> {
-                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
                 instr.add(MoveInstr(Condition.LT, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.GE, reg1, ImmediateOperandBool(false)))
             }
             BinOp.GTE -> {
-                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
                 instr.add(MoveInstr(Condition.GE, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.LT, reg1, ImmediateOperandBool(false)))
             }
             BinOp.GT -> {
-                instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
                 instr.add(MoveInstr(Condition.GT, reg1, ImmediateOperandBool(true)))
                 instr.add(MoveInstr(Condition.LE, reg1, ImmediateOperandBool(false)))
             }
 
             BinOp.AND -> {
-                instr.add(AndInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(AndInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(AndInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
+
+                }
             }
             BinOp.OR -> {
-                instr.add(OrInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
+                if (!useAccumulator) {
+                    instr.add(OrInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(OrInstrType(Condition.AL, reg1, reg2, RegisterOperand(reg1)))
+                }
             }
         }
-        freeCalleeReg()
+        if (!useAccumulator) {
+            freeCalleeReg()
+        }
         return instr
     }
 
