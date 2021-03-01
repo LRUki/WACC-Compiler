@@ -54,6 +54,7 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
     }
 
     override fun translate(): List<Instruction> {
+        val instr = mutableListOf<Instruction>()
         val reg = getNextFreeCalleeReg()
         val loadInstrOfChoice =
                 if (choice == PairChoice.FST) {
@@ -61,21 +62,18 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
                 } else {
                     LoadInstr(reg, null, RegisterAddrWithOffset(reg, 4, false), Condition.AL)
                 }
+        instr.addAll(expr.translate())
+        instr.add(LoadInstr(reg, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), Condition.AL))
+        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+        instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
         CodeGenerator.runtimeErrors.addNullReferenceCheck()
-        return listOf(
-//                LoadInstr(Register.R4, null,
-//                        RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
-                LoadInstr(reg, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), Condition.AL),
-                MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)),
-                BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true),
-                loadInstrOfChoice,
-                LoadInstr(reg, null, RegisterAddr(reg), Condition.AL),
-//                StoreInstr(reg, null, RegisterAddr(Register.SP), Condition.AL)
-        )
+        instr.add(loadInstrOfChoice)
+        instr.add(LoadInstr(reg, null, RegisterAddr(reg), Condition.AL))
+        return instr
     }
 }
 
 enum class PairChoice {
-        FST,
-        SND
+    FST,
+    SND
 }

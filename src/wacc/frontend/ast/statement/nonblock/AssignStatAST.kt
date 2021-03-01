@@ -98,7 +98,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 TODO("Not yet implemented")
             }
             is PairElemAST -> {
-                instruction.addAll(lhs.expr.translate())
+                instruction.addAll(lhs.translate())
                 instruction.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
                 instruction.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
                 instruction.add(LoadInstr(seeLastUsedCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
