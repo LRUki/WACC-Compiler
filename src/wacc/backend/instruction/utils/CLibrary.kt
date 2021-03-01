@@ -1,7 +1,6 @@
 package wacc.backend.instruction.utils
 
 import wacc.backend.CodeGenerator
-import wacc.backend.instruction.DataDirective
 import wacc.backend.instruction.Instruction
 //import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.*
@@ -83,7 +82,7 @@ class CLibrary {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
@@ -102,7 +101,7 @@ class CLibrary {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -129,7 +128,7 @@ class CLibrary {
                 CompareInstr(Register.R0, ImmediateOperandInt(0)),
                 LoadInstr(Condition.NE, null, ImmediateLabel(trueLabel), Register.R0),
                 LoadInstr(Condition.EQ, null, ImmediateLabel(falseLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -154,9 +153,9 @@ class CLibrary {
 
         val instructions = listOf(
                 LoadInstr(Condition.AL, null, RegisterAddr(Register.R0), Register.R1),
-                AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateOperandInt(4)),
+                AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateOperandInt(4), shift = null),
                 LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -181,7 +180,7 @@ class CLibrary {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -204,7 +203,7 @@ class CLibrary {
 
         val instructions = listOf(
                 LoadInstr(Condition.AL, null, ImmediateLabel(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateOperandInt(4), shift = null),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PUTS.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)

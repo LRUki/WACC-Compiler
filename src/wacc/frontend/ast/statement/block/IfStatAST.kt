@@ -1,6 +1,8 @@
 package wacc.frontend.ast.statement.block
 
+import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextLabel
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -56,16 +58,16 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         val afterElseLabel = getNextLabel()
 
         instr.addAll(cond.translate())
-        instr.add(CompareInstr(Register.R4, ImmediateOperandInt(0)))
+        instr.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateOperandInt(0)))
         instr.add(BranchInstr(Condition.EQ, elseLabel,  false))
-
+        freeCalleeReg()
         var stackOffset = thenST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset), shift = null))
         }
         thenBody.forEach { instr.addAll(it.translate()) }
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset), shift = null))
         }
 
         instr.add(BranchInstr(Condition.AL, afterElseLabel, false))
@@ -73,11 +75,11 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
 
         stackOffset = elseST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset), shift = null))
         }
         elseBody.forEach { instr.addAll(it.translate()) }
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset), shift = null))
         }
         instr.add(afterElseLabel)
         return instr

@@ -11,7 +11,6 @@ import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.utils.CLibrary
 import wacc.backend.instruction.utils.ImmediateOperandInt
 import wacc.backend.instruction.utils.RegisterOperand
-import wacc.backend.instruction.utils.RuntimeError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
@@ -53,7 +52,7 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         when (expr) {
             is IdentAST ->{
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(expr.name, (exprType as BaseTypeAST))
-                instr.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateOperandInt(correctSTScope.findOffsetInStack(expr.name) + offset)))
+                instr.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateOperandInt(correctSTScope.findOffsetInStack(expr.name) + offset), shift = null))
             }
             is ArrayElemAST -> {
                 TODO("Implement this")

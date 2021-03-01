@@ -63,15 +63,15 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
         val instr = mutableListOf<Instruction>()
         val stackReg = getNextFreeCalleeReg()
         val stackOffset = symTable.findOffsetInStack(ident.name)
-        instr.add(AddInstr(Condition.AL, stackReg , Register.SP, ImmediateOperandInt(stackOffset), false))
+        instr.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateOperandInt(stackOffset), false, null))
         instr.addAll(indices[0].translate())
         instr.add(LoadInstr(Condition.AL, null, RegisterAddr(stackReg), stackReg))
         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
         instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
         instr.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
         CodeGenerator.runtimeErrors.addArrayBoundsCheck()
-        instr.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateOperandInt(4)))//TODO() UN hardcode this
-        instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()))) // ADD LSL #2
+        instr.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateOperandInt(4),false, null))//TODO() UN hardcode this
+        instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()),false, ShiftInstr(ShiftType.LSL, 2))) // ADD LSL #2
         freeCalleeReg()
         return instr
     }
