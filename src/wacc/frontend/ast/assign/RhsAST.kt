@@ -155,7 +155,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         val funcLabel = FunctionLabel(ident.name)
         instr.add(BranchInstr(Condition.AL, funcLabel, true))
         instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(totalBytes), false))
-        instr.add(MoveInstr(Condition.AL, seeLastUsedCalleeReg(), RegisterOperand(Register.R0)))
+        instr.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
         return instr
     }
 

@@ -78,8 +78,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         when (rhs) {
             // only other RHS which requires "setting up"
             is CallRhsAST -> {
-                instr.add(MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)))
                 instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.SP), calleeReg))
+                freeCalleeReg()
+                return instr
             }
             is PairElemAST -> {
                 instr.add(LoadInstr(Condition.AL, null, RegisterAddr(calleeReg), calleeReg))

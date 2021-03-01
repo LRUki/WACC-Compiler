@@ -67,15 +67,18 @@ object CodeGenerator {
     }
 
     fun freeCalleeReg() {
-        if (calleSavedRegsInUse.isEmpty()){
+        if (calleSavedRegsInUse.isEmpty()) {
             return
         }
         freeCalleeSavedRegs.push(calleSavedRegsInUse.pop())
 //        println("removing ${freeCalleeSavedRegs.push(calleSavedRegsInUse.pop())}")
     }
 
-
-
+    fun freeAllCalleeReg() {
+        while (!calleSavedRegsInUse.isEmpty()) {
+            freeCalleeReg()
+        }
+    }
 
 
     //    private fun translateStatement(stat: StatAST): List<Instruction> {
