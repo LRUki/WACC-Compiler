@@ -4,12 +4,10 @@ echo 'Testing assemble...'
 make
 rm -rf out_test
 
+ALL_FAIL_COUNT=0
+ALL_SUCESS_COUNT=0
 declare -A failCounter
 declare -A successCounter
-
-ALL_SUCESS_COUNT=0
-ALL_FAIL_COUNT=0
-
 
 for FOLDER in `find ./wacc_examples/valid -type d -mindepth 1 -maxdepth 1`
 do
@@ -38,7 +36,7 @@ do
 
       if [ ! -f out_examples/"$FILENAME".out ]
       then
-        echo -e "\tSkipping ${FILENAME}"
+        echo -e "\tSkipping $FILENAME"
         continue
       fi
 
@@ -50,7 +48,7 @@ do
       if [ ! -z $(grep "$FILENAME"'$' "testassembleskip.txt") ]
       then
         OUTPUT_MATCHES=0
-        echo "Assume ${FILENAME} correct."
+        echo "Assume $FILENAME correct."
       fi
 
       echo "$EXITCODE" | diff - out_examples/"$FILENAME".exitcode
@@ -61,33 +59,34 @@ do
 
     if [ "$ASSEMBLE_SUCCESSFUL" == 0 ] && [ "$OUTPUT_MATCHES" == 0 ] && [ "$EXITCODE_MATCHES" == 0 ]
     then
-      echo -e "Success ${FILENAME}\n"
-      successCounter[${FOLDERNAME}]=$((1 + successCounter[${FOLDERNAME}]))
+      echo -e "Success $FILENAME\n"
+      successCounter[$FOLDERNAME]=$((1 + successCounter[$FOLDERNAME]))
     else
-      echo -e "Failed ${FILENAME}\n"
-      failCounter[${FOLDERNAME}]=$((1 + failCounter[${FOLDERNAME}]))
+      echo -e "Failed $FILENAME\n"
+      failCounter[$FOLDERNAME]=$((1 + failCounter[$FOLDERNAME]))
     fi
   done
-  sc=${successCounter[${FOLDERNAME}]}
-  fc=${failCounter[${FOLDERNAME}]}
-  echo -e "test summary of $FOLDER:\n passed $sc / $((sc + fc))"
+  sc=${successCounter[$FOLDERNAME]}
+  fc=${failCounter[$FOLDERNAME]}
+  echo -e "test summary of $FOLDER:\npassed $sc / $((sc + fc))"
   ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ sc))
   ALL_FAIL_COUNT=$((ALL_FAIL_COUNT + fc))
 
 done
 
 echo "--------------------------------------------------------------------"
-echo "Passed $ALL_SUCESS_COUNT / $((ALL_FAIL_COUNT + ALL_SUCESS_COUNT))"
 
-echo "test summary:"
+
+echo -e "\n\nTEST SUMMARY:"
 echo "===================================================================="
 for FOLDERNAME in "${!successCounter[@]}"
 do
-  sc=${successCounter[${FOLDERNAME}]}
-  fc=${failCounter[${FOLDERNAME}]}
+  sc=${successCounter[$FOLDERNAME]}
+  fc=${failCounter[$FOLDERNAME]}
   echo "$FOLDERNAME: passed $sc/$((sc + fc))"
 done 
 echo "===================================================================="
+echo "Passed $ALL_SUCESS_COUNT / $((ALL_FAIL_COUNT + ALL_SUCESS_COUNT))"
 
 if [ "$ALL_FAIL_COUNT" != 0 ]
 then
