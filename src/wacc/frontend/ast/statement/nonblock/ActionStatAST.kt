@@ -113,8 +113,9 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                         CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                     }
                     is PairTypeAST -> {
-                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
+                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                     }
                 }
                 if (action == Action.PRINTLN) {
