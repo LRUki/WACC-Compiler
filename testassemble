@@ -78,6 +78,17 @@ done
 
 echo "--------------------------------------------------------------------"
 echo "Passed $ALL_SUCESS_COUNT / $((ALL_FAIL_COUNT + ALL_SUCESS_COUNT))"
+
+echo "test summary:"
+echo "===================================================================="
+for FOLDERNAME in "${!successCounter[@]}"
+do
+  sc=${successCounter[${FOLDERNAME}]}
+  fc=${failCounter[${FOLDERNAME}]}
+  echo "$FOLDERNAME: passed $sc/$((sc + fc))"
+done 
+echo "===================================================================="
+
 if [ "$ALL_FAIL_COUNT" != 0 ]
 then
   echo "Some tests failed."
