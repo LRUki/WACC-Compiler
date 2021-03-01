@@ -58,17 +58,17 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         val reg = getNextFreeCalleeReg()
         val loadInstrOfChoice =
                 if (choice == PairChoice.FST) {
-                    LoadInstr(reg, null, RegisterAddr(reg), Condition.AL)
+                    LoadInstr(Condition.AL, null, RegisterAddr(reg), reg)
                 } else {
-                    LoadInstr(reg, null, RegisterAddrWithOffset(reg, 4, false), Condition.AL)
+                    LoadInstr(Condition.AL, null, RegisterAddrWithOffset(reg, 4, false), reg)
                 }
         instr.addAll(expr.translate())
-        instr.add(LoadInstr(reg, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), reg))
         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
         instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
         CodeGenerator.runtimeErrors.addNullReferenceCheck()
         instr.add(loadInstrOfChoice)
-        instr.add(LoadInstr(reg, null, RegisterAddr(reg), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
         return instr
     }
 }
