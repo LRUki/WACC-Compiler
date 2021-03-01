@@ -23,7 +23,14 @@ class IntLiterAST(val value: Int) : LiterAST {
     }
 
     override fun translate(): List<Instruction> {
-        return listOf(LoadInstr(getNextFreeCalleeReg(), null, ImmediateInt(value), Condition.AL))
+        var reg = getNextFreeCalleeReg()
+        var instrs = emptyList<Instruction>()
+        if (reg == Register.CPSR) {
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        instrs += LoadInstr(reg, null, ImmediateInt(value), Condition.AL)
+        return instrs
     }
 }
 

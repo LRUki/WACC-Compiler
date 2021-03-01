@@ -91,12 +91,25 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
         instr.addAll(expr1.translate())
-        val reg1 = seeLastUsedCalleeReg()
+        var reg1 = seeLastUsedCalleeReg()
         instr.addAll(expr2.translate())
-        val reg2 = seeLastUsedCalleeReg()
+        var reg2 = seeLastUsedCalleeReg()
+
+        var useAccumulator = false
+        if (reg1 == Register.CPSR || reg1 == Register.R10) {
+            useAccumulator = true
+            reg1 = Register.R10
+            reg2 = Register.R11
+        }
+
         when (binOp) {
             BinOp.PLUS -> {
-                instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                if (!useAccumulator) {
+                    instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                } else {
+                    instr.add(PopInstr(Register.R11))
+                    instr.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                }
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
@@ -166,7 +179,9 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 instr.add(OrInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
             }
         }
-        freeCalleeReg()
+        if (!useAccumulator) {
+            freeCalleeReg()
+        }
         return instr
     }
 
