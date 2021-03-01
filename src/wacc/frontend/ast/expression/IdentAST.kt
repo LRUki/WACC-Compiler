@@ -61,6 +61,6 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
             memType = MemoryType.SB
         }
-        return listOf(LoadInstr(getNextFreeCalleeReg(), memType, RegisterAddrWithOffset(Register.SP, offset, false), Condition.AL))
+        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, offset, false), getNextFreeCalleeReg()))
     }
 }

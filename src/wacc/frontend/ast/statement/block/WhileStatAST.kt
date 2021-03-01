@@ -2,6 +2,7 @@ package wacc.frontend.ast.statement.block
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -45,16 +46,16 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         instr.add(bodyLabel)
         val stackOffset = blockST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset), shift = null))
         }
         body.forEach { instr.addAll(it.translate()) }
         instr.add(condLabel)
         instr.addAll(cond.translate())
-        instr.add(CompareInstr(Register.R4, ImmediateOperandInt(1)))
+        instr.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateOperandInt(1)))
         instr.add(BranchInstr(Condition.EQ, bodyLabel, false))
         freeCalleeReg()
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset), shift = null))
         }
         return instr
     }

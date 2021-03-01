@@ -1,7 +1,7 @@
 package wacc.backend.instruction.utils
 
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.enums.Shift
+import wacc.backend.instruction.instrs.ShiftType
 
 interface Operand {
     fun toAssembly(): String
@@ -44,13 +44,13 @@ class RegisterOperand(val reg: Register): Operand {
     }
 }
 
-class RegShiftRegOperand(val reg1: Register, val shiftOp: Shift, val reg2: Register): Operand {
+class RegShiftRegOperand(val reg1: Register, val shiftOp: ShiftType, val reg2: Register): Operand {
     override fun toAssembly(): String {
         return "${reg1.toAssembly()}, ${shiftOp.name} ${reg2.toAssembly()}"
     }
 }
 
-class RegShiftOffsetOperand(val reg: Register, val shiftOp: Shift, val offset: Int): Operand {
+class RegShiftOffsetOperand(val reg: Register, val shiftOp: ShiftType, val offset: Int): Operand {
     override fun toAssembly(): String {
         return "${reg.toAssembly()}, ${shiftOp.name} #$offset"
     }

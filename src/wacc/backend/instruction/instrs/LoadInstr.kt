@@ -6,8 +6,8 @@ import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.utils.*
 
-class LoadInstr(val destRegister : Register, val memType: MemoryType?,
-                 val mode : AddressingMode, val condition : Condition): Instruction {
+class LoadInstr(val condition: Condition, val memType: MemoryType?,
+                val mode: AddressingMode, val destRegister: Register): Instruction {
     override fun toAssembly(): String {
         return "LDR${memType?.name ?: ""}${condition.toAssembly()} ${destRegister.toAssembly()}, ${mode.toAssembly()}"
     }

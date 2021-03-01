@@ -6,12 +6,10 @@ import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.enums.Shift
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.BaseType
@@ -96,18 +94,18 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         val reg2 = seeLastUsedCalleeReg()
         when (binOp) {
             BinOp.PLUS -> {
-                instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true, null))
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MINUS -> {
-                instr.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                instr.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true, null))
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MULT -> {
                 instr.add(MultInstr(Condition.AL, reg1, reg2, reg1, reg2))
-                instr.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, Shift.ASR, 31))) //TODO( MIGHT NEED TO ADD ASR)
+                instr.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, 31))) //TODO( MIGHT NEED TO ADD ASR)
                 instr.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
@@ -241,13 +239,15 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 instr.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateOperandInt(1)))
             }
             UnOp.MINUS -> {
-                instr.add(ReverseSubInstr(Condition.AL, reg1, reg1, ImmediateOperandInt(0), true))
+                instr.add(ReverseSubInstr(Condition.AL, reg1, reg1, ImmediateOperandInt(0), true, null))
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             UnOp.LEN -> {
-                instr.add(LoadInstr(reg1, null, ImmediateInt((expr as ArrayElemAST).indices.size), Condition.AL))
-                // TODO: consider the case when expr is a variable
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(Register.SP), reg1))
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg1), reg1))
+//                instr.add(LoadInstr(Condition.AL, null, ImmediateInt((expr as ArrayElemAST).indices.size), reg1))
+//                  consider the case when expr is a variable
             }
             UnOp.ORD -> {
 //                instr.add(MoveInstr(Condition.AL, reg1,  ImmediateOperandChar((expr as CharLiterAST).value)))

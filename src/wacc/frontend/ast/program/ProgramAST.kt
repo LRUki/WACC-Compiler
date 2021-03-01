@@ -31,10 +31,10 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
                 var stackOffsetLeft = stackOffset
                 table.startingOffset = stackOffset
                 while (stackOffsetLeft > MAX_STACK_OFFSET) {
-                    instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
+                    instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET), shift = null))
                     stackOffsetLeft -= MAX_STACK_OFFSET
                 }
-                instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft)))
+                instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft), shift = null))
             }
 
             // Visit the statements and add to instruction list
@@ -43,10 +43,10 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
             if (stackOffset > 0) {
                 var stackOffsetLeft = stackOffset
                 while (stackOffsetLeft > MAX_STACK_OFFSET) {
-                    instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET)))
+                    instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(MAX_STACK_OFFSET), shift = null))
                     stackOffsetLeft -= MAX_STACK_OFFSET
                 }
-                instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft)))
+                instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffsetLeft), shift = null))
             }
         }
     }
@@ -75,7 +75,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         instr.add(PushInstr(Register.LR))
         translateScoped(symTable, instr, stats)
         // AI: LDR r0, =0
-        instr.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(0), Register.R0))
         // AI: POP {pc}
         instr.add(PopInstr(Register.PC))
         instr.add(DirectiveInstr("ltorg"))
