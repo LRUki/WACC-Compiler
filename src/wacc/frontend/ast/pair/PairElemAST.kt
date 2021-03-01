@@ -55,20 +55,18 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-        val reg = getNextFreeCalleeReg()
-        val loadInstrOfChoice =
-                if (choice == PairChoice.FST) {
-                    LoadInstr(Condition.AL, null, RegisterAddr(reg), reg)
-                } else {
-                    LoadInstr(Condition.AL, null, RegisterAddrWithOffset(reg, 4, false), reg)
-                }
+
         instr.addAll(expr.translate())
-        instr.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), reg))
+        val reg = seeLastUsedCalleeReg()
+//        instr.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), reg))
         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
         instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
         CodeGenerator.runtimeErrors.addNullReferenceCheck()
-        instr.add(loadInstrOfChoice)
-        instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
+        if (choice == PairChoice.FST) {
+            instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
+        } else {
+            instr.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(reg, 4, false), reg))
+        }
         return instr
     }
 }
