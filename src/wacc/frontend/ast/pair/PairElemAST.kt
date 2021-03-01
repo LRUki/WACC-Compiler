@@ -53,21 +53,21 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
 
     override fun translate(): List<Instruction> {
 //        TODO("Not yet implemented")
-        val regOfChoice = getNextFreeCalleeReg()
+
         val loadInstrOfChoice =
                 if (choice == PairChoice.FST) {
-                    LoadInstr(Register.R4, null, RegisterAddr(regOfChoice), Condition.AL)
+                    LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL)
                 } else {
-                    LoadInstr(Register.R4, null, RegisterAddrWithOffset(regOfChoice, 4, false), Condition.AL)
+                    LoadInstr(Register.R4, null, RegisterAddrWithOffset(Register.R4, 4, false), Condition.AL)
                 }
         CodeGenerator.runtimeErrors.addNullReferenceCheck()
         return listOf(
 //                LoadInstr(Register.R4, null,
 //                        RegisterAddrWithOffset(Register.SP, 4, false), Condition.AL),
-                MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())),
+                MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)),
                 BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true),
                 loadInstrOfChoice,
-                LoadInstr(Register.R4, null, RegisterAddr(regOfChoice), Condition.AL),
+                LoadInstr(Register.R4, null, RegisterAddr(Register.R4), Condition.AL),
                 StoreInstr(Register.R4, null, RegisterAddr(Register.SP), Condition.AL)
         )
     }
