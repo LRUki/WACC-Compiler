@@ -1,11 +1,15 @@
 package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.instrs.StoreInstr
+import wacc.backend.instruction.utils.RegisterAddr
 import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -13,6 +17,7 @@ import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.exception.semanticError
@@ -63,10 +68,15 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                     memtype = MemoryType.B
                 }
             }
-            is ArrayTypeAST -> {}
+            is ArrayTypeAST -> {
+            }
+
+        }
+        if (rhs is PairElemAST) {
+            instruction.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
         }
         instruction.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Register.R4))
-        CodeGenerator.freeCalleeReg()
+        freeCalleeReg()
 
         return instruction
     }

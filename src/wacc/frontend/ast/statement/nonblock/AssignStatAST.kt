@@ -81,6 +81,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 instr.add(MoveInstr(Condition.AL, Register.R4, RegisterOperand(Register.R0)))
                 instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.SP), calleeReg))
             }
+            is PairElemAST -> {
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(calleeReg), calleeReg))
+            }
         }
         val rhsType = rhs.getRealType(symTable)
         val rhsBytes = SymbolTable.getBytesOfType(rhsType)
@@ -102,9 +105,24 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 freeCalleeReg()
             }
             is PairElemAST -> {
-                TODO("Not yet implemented")
+                instr.addAll(lhs.translate())
+//                instr.add(LoadInstr(Condition.AL,null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+                freeCalleeReg()
+//                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
+//                instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
+//                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+//                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
             }
+//                instruction.add(StoreInstr(getNextFreeCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
+//                freeCalleeReg()
+//                instruction.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+//                freeCalleeReg()
+
+//                instruction.add(LoadInstr(seeLastUsedCalleeReg(),null, RegisterAddr(Register.R0), Condition.AL))
+//                LDR r4, =42
         }
+
         freeCalleeReg()
 
         return instr

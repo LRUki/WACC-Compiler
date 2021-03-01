@@ -6,6 +6,7 @@ import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.*
@@ -48,7 +49,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-
+        var memtype: MemoryType? = null
         //Malloc space for pair
         instr.add(LoadInstr(Condition.AL, null, ImmediateInt(2 * 4), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
@@ -59,16 +60,24 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instr.addAll(fst.translate())
         instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(firstType)), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
-        CodeGenerator.freeCalleeReg()
+        if (firstType.equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
+                || firstType.equals(BaseTypeAST(BaseType.CHAR))) {
+            memtype = MemoryType.B
+        }
+        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
+        freeCalleeReg()
         instr.add(StoreInstr(Condition.AL, null, RegisterAddr(stackReg), Register.R0))
 
         //Malloc second element
         instr.addAll(snd.translate())
         instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(secondType)), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
-        CodeGenerator.freeCalleeReg()
+        if (secondType.equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
+                || secondType.equals(BaseTypeAST(BaseType.CHAR))) {
+            memtype = MemoryType.B
+        }
+        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
+        freeCalleeReg()
         instr.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffset(stackReg, 4, false), Register.R0))
 
         return instr
