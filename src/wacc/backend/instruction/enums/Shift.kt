@@ -1,4 +1,4 @@
-package wacc.backend.instruction.instrs
+package wacc.backend.instruction.enums
 
 import wacc.backend.instruction.Instruction
 
@@ -8,10 +8,4 @@ enum class ShiftType {
     ASR, // Arithmetic shift right
     ROR, // Rotate right
     RRX  // Rotate right extended
-}
-
-class ShiftInstr(val shiftType: ShiftType, val offset: Int): Instruction {
-    override fun toAssembly(): String {
-        return ", $shiftType #$offset"
-    }
 }

@@ -50,11 +50,11 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         val stackOffset = symTable.getStackOffset()
         symTable.startingOffset = stackOffset
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset), shift = null))
+            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         body.forEach { instr.addAll(it.translate()) }
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset), shift = null))
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
         instr.addAll(regsToPopInstrs(listOf(Register.PC)))
         instr.add(DirectiveInstr("ltorg"))

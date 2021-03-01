@@ -1,7 +1,7 @@
 package wacc.backend.instruction.utils
 
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.ShiftType
+import wacc.backend.instruction.enums.ShiftType
 
 interface Operand {
     fun toAssembly(): String

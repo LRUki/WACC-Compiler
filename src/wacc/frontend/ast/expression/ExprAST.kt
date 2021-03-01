@@ -6,6 +6,7 @@ import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.enums.ShiftType
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
@@ -103,20 +104,20 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         when (binOp) {
             BinOp.PLUS -> {
                 if (!useAccumulator) {
-                    instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true, null))
+                    instr.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
                 } else {
                     instr.add(PopInstr(Register.R11))
-                    instr.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true, null))
+                    instr.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
                 }
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }
             BinOp.MINUS -> {
                 if (!useAccumulator) {
-                    instr.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true, null))
+                    instr.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
                 } else {
                     instr.add(PopInstr(Register.R11))
-                    instr.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true, null))
+                    instr.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
                 }
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
@@ -317,7 +318,7 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 instr.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateOperandInt(1)))
             }
             UnOp.MINUS -> {
-                instr.add(ReverseSubInstr(Condition.AL, reg1, reg1, ImmediateOperandInt(0), true, null))
+                instr.add(ReverseSubInstr(Condition.AL, reg1, reg1, ImmediateOperandInt(0), true))
                 instr.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }

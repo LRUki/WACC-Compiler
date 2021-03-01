@@ -52,7 +52,7 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         when (expr) {
             is IdentAST ->{
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(expr.name, (exprType as BaseTypeAST))
-                instr.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateOperandInt(correctSTScope.findOffsetInStack(expr.name) + offset), shift = null))
+                instr.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateOperandInt(correctSTScope.findOffsetInStack(expr.name) + offset)))
             }
             is ArrayElemAST -> {
                 TODO("Implement this")
