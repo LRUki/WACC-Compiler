@@ -8,12 +8,8 @@ import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.LoadInstr
-import wacc.backend.instruction.instrs.MoveInstr
-import wacc.backend.instruction.instrs.StoreInstr
-import wacc.backend.instruction.utils.RegisterAddr
-import wacc.backend.instruction.utils.RegisterAddrWithOffset
-import wacc.backend.instruction.utils.RegisterOperand
+import wacc.backend.instruction.instrs.*
+import wacc.backend.instruction.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
@@ -74,6 +70,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
     override fun translate(): List<Instruction> {
         val instruction = mutableListOf<Instruction>()
         instruction.addAll(rhs.translate())
+        val reg = seeLastUsedCalleeReg()
         if (rhs is StrLiterAST) {
             stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
         }
@@ -95,13 +92,18 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         when (lhs) {
             is IdentAST -> {
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(lhs.name, rhsType)
-                instruction.add(StoreInstr(seeLastUsedCalleeReg(), memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset , false), Condition.AL))
+                instruction.add(StoreInstr(seeLastUsedCalleeReg(), memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset, false), Condition.AL))
             }
             is ArrayElemAST -> {
                 TODO("Not yet implemented")
             }
             is PairElemAST -> {
                 instruction.addAll(lhs.expr.translate())
+                instruction.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
+                instruction.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
+                instruction.add(LoadInstr(seeLastUsedCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
+                instruction.add(StoreInstr(reg, null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
+            }
 //                instruction.add(StoreInstr(getNextFreeCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
 //                freeCalleeReg()
 //                instruction.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
@@ -109,9 +111,8 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 
 //                instruction.add(LoadInstr(seeLastUsedCalleeReg(),null, RegisterAddr(Register.R0), Condition.AL))
 //                LDR r4, =42
-//                TODO("Not yet implemented")
-            }
         }
+
         freeCalleeReg()
 
         return instruction
