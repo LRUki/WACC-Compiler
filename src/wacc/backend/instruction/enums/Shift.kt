@@ -1,7 +1,8 @@
 package wacc.backend.instruction.enums
 
-enum class Shift {
+import wacc.backend.instruction.Instruction
 
+enum class ShiftType {
     LSL, // Logical shift left
     LSR, // Logical shift right
     ASR, // Arithmetic shift right

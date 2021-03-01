@@ -1,13 +1,10 @@
 package wacc.frontend.ast.function
 
-import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.ImmediateOperandInt
-import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST

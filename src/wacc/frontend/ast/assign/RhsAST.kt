@@ -50,26 +50,26 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         val instr = mutableListOf<Instruction>()
 
         //Malloc space for pair
-        instr.add(LoadInstr(Register.R0, null, ImmediateInt(2 * 4), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(2 * 4), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
         val stackReg = getNextFreeCalleeReg()
         instr.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
         //Malloc first element
         instr.addAll(fst.translate())
-        instr.add(LoadInstr(Register.R0, null, ImmediateInt(getBytesOfType(firstType)), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(firstType)), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
+        instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
         CodeGenerator.freeCalleeReg()
-        instr.add(StoreInstr(Register.R0, null, RegisterAddr(stackReg), Condition.AL))
+        instr.add(StoreInstr(Condition.AL, null, RegisterAddr(stackReg), Register.R0))
 
         //Malloc second element
         instr.addAll(snd.translate())
-        instr.add(LoadInstr(Register.R0, null, ImmediateInt(getBytesOfType(secondType)), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(secondType)), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
+        instr.add(StoreInstr(Condition.AL, null, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
         freeCalleeReg()
-        instr.add(StoreInstr(Register.R0, null, RegisterAddrWithOffset(stackReg, 4, false), Condition.AL))
+        instr.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffset(stackReg, 4, false), Register.R0))
 
         return instr
     }
@@ -132,7 +132,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             instr.addAll(arg.translate())
             val bytes = getBytesOfType(argTypes.get(totalLength - index))
             totalBytes += bytes
-            instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), Condition.AL))
+            instr.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
             freeCalleeReg()
         }
 

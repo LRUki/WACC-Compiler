@@ -19,11 +19,13 @@ object CodeGenerator {
 
     val resultRegisters = mutableListOf(Register.R0, Register.R1)
     val argumentRegisters = mutableListOf(Register.R2, Register.R3)
-    val freeCalleeSavedRegs: Stack<Register> = makeStack(listOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10, Register.R11))
+    val freeCalleeSavedRegs: Stack<Register> = makeStack(listOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10))
     val calleSavedRegsInUse: Stack<Register> = makeStack(emptyList())
 
     var freeResultRegs = resultRegisters
     var freeArgumentRegs = argumentRegisters
+
+    var useAccumulator = false
 
     private fun <T> makeStack(list: List<T>): Stack<T> {
         val stack = Stack<T>()
@@ -39,14 +41,15 @@ object CodeGenerator {
 
     fun seeNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()) {
-            return Register.CPSR// TODO() Change later
+            return Register.NONE// TODO() Change later
         }
         return freeCalleeSavedRegs.peek()
     }
 
     fun getNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()){
-            return Register.CPSR//TODO() CHANGE LATER
+            useAccumulator = true
+            return Register.NONE//TODO() CHANGE LATER
         }
         val reg = freeCalleeSavedRegs.pop()
         calleSavedRegsInUse.push(reg)
@@ -55,8 +58,10 @@ object CodeGenerator {
     }
 
     fun seeLastUsedCalleeReg(): Register {
-        if (calleSavedRegsInUse.isEmpty()) {
-            return Register.CPSR//TODO() CHANGE LATER
+        if (useAccumulator) {
+            useAccumulator = false
+
+            return Register.NONE
         }
         return calleSavedRegsInUse.peek()
     }

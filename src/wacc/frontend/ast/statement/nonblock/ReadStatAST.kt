@@ -11,7 +11,6 @@ import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.utils.CLibrary
 import wacc.backend.instruction.utils.ImmediateOperandInt
 import wacc.backend.instruction.utils.RegisterOperand
-import wacc.backend.instruction.utils.RuntimeError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST

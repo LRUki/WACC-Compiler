@@ -13,10 +13,12 @@ import wacc.backend.instruction.instrs.Label
 import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.utils.CLibrary
+import wacc.backend.instruction.utils.RegisterAddr
 import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
@@ -75,15 +77,18 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         instr.addAll(expr.translate())
         val reg = seeLastUsedCalleeReg()
         val exprType = expr.getRealType(symTable)
+        if (expr is ArrayElemAST) {
+            instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
+        }
         when (action) {
             Action.EXIT -> {
                 instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                 instr.add(BranchInstr(Condition.AL, Label("exit"), true))
             }
             Action.PRINT, Action.PRINTLN -> {
-                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                 when (exprType) {
                     is BaseTypeAST -> {
+                        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         when (exprType.type) {
                             BaseType.INT -> {
                                 CLib.addCode(CLibrary.Call.PRINT_INT)
@@ -103,7 +108,9 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                         }
                     }
                     is ArrayTypeAST -> {
-                        TODO()
+                        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                        instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
+                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                     }
                     is PairTypeAST -> {
                         CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
