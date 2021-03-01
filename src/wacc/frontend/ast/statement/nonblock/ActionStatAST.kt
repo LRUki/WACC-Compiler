@@ -18,6 +18,7 @@ import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.backend.instruction.utils.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
@@ -76,6 +77,9 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         instr.addAll(expr.translate())
         val reg = seeLastUsedCalleeReg()
         val exprType = expr.getRealType(symTable)
+        if (expr is ArrayElemAST) {
+            instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
+        }
         when (action) {
             Action.EXIT -> {
                 instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
