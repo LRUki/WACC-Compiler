@@ -111,6 +111,25 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return offset
     }
 
+    private fun findIfParamInFuncSymbolTableToAddOffset(name: String, flag: Boolean): Boolean {
+        val identAst = lookup(name)
+        if (identAst.isPresent) {
+            if ((this is FuncSymbolTable) && (identAst.get() is ParamAST)) {
+                return ((currSymbolTable.size > funcAST.paramList.size) || flag)
+            }
+            return false
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0)
+        }
+        return false
+    }
+
+    fun checkParamInFuncSymbolTable(name: String): Boolean {
+        return findIfParamInFuncSymbolTableToAddOffset(name, false)
+    }
+
+
     fun findOffsetInStack(ident: String): Int {
         var offset = 0
         for ((k, v) in currSymbolTable) {
