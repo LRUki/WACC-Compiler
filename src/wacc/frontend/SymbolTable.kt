@@ -38,6 +38,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     var offsetSize: Int = 0
     var startingOffset: Int = 0
     var increaseOffsetForCall = 0
+    var callOffset = 0
 
     // Gets the top most symbol table
     fun getTopSymbolTable(): SymbolTable {
