@@ -87,7 +87,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             is ArrayTypeAST -> {
                 getBytesOfType(obj.type)
             }
-            is ParamAST -> { //TODO() Check if this is needed
+            is ParamAST -> {
                 getBytesOfType(obj.type)
             }
             is PairTypeAST -> {
@@ -111,22 +111,32 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return offset
     }
 
-    private fun findIfParamInFuncSymbolTableToAddOffset(name: String, flag: Boolean): Boolean {
+    private fun findIfParamInFuncSymbolTableToAddOffset(name: String, flag: Boolean, offsetCounter: Int): Int {
         val identAst = lookup(name)
         if (identAst.isPresent) {
             if ((this is FuncSymbolTable) && (identAst.get() is ParamAST)) {
-                return ((currSymbolTable.size > funcAST.paramList.size) || flag)
+                if ((currSymbolTable.size > funcAST.paramList.size) || flag) {
+                    var offset = 0
+                    currSymbolTable.toList().dropWhile {
+                        it.second.first != identAst.get()
+                    }.dropWhile { it.second.first == identAst.get() }.forEach {
+                        offset += it.second.second
+                    }
+                    return offset + offsetCounter
+                }
             }
-            return false
+            return 0
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0)
+            var offset = 0
+            currSymbolTable.toList().forEach { offset += it.second.second }
+            return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, offset)
         }
-        return false
+        return 0
     }
 
-    fun checkParamInFuncSymbolTable(name: String): Boolean {
-        return findIfParamInFuncSymbolTableToAddOffset(name, false)
+    fun checkParamInFuncSymbolTable(name: String): Int {
+        return findIfParamInFuncSymbolTableToAddOffset(name, false, 0)
     }
 
 
