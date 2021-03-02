@@ -137,8 +137,8 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         val instr = mutableListOf<Instruction>()
         val totalLength = argTypes.size - 1
         var totalBytes = 0
-        var memType: MemoryType? = null
         for ((index, arg) in argList.reversed().withIndex()) {
+            var memType: MemoryType? = null
             instr.addAll(arg.translate())
             val bytes = getBytesOfType(argTypes[(totalLength - index)])
             totalBytes += bytes
