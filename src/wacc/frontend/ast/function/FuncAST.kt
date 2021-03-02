@@ -1,5 +1,7 @@
 package wacc.frontend.ast.function
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
@@ -58,6 +60,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         }
         instr.addAll(regsToPopInstrs(listOf(Register.PC)))
         instr.add(DirectiveInstr("ltorg"))
+        freeAllCalleeReg()
         return instr
     }
 
