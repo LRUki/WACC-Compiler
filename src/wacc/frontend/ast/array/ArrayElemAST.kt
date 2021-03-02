@@ -16,6 +16,8 @@ import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.type.ArrayTypeAST
+import wacc.frontend.ast.type.BaseType
+import wacc.frontend.ast.type.BaseTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
@@ -43,7 +45,11 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
                     "Expected dimension ${arrayType.dimension}, Actual dimension ${indices.size}", ctx)
             return false
         }
-        indices.forEach { if (!it.check(table)) {return false} }
+        indices.forEach {
+            if (!it.check(table)) {
+                return false
+            }
+        }
         return true
     }
 
@@ -70,7 +76,12 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
             instr.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
             CodeGenerator.runtimeErrors.addArrayBoundsCheck()
             instr.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateOperandInt(4), false))
-            instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
+            val identType = ident.getRealType(symTable)
+            if (identType.equals(ArrayTypeAST(BaseTypeAST(BaseType.CHAR), indices.size))) {
+                instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false))
+            } else {
+                instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
+            }
             freeCalleeReg()
         }
         return instr
