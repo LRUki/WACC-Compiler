@@ -108,13 +108,13 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
             }
             is ArrayElemAST -> {
                 instr.addAll(lhs.translate())
-                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
             }
             is PairElemAST -> {
                 instr.addAll(lhs.translate())
 //                instr.add(LoadInstr(Condition.AL,null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
 //                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
 //                instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
