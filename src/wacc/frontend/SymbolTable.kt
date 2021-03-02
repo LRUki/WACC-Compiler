@@ -36,7 +36,8 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     // A symbol table consists of a HashMap and a list of children.
     val currSymbolTable: LinkedHashMap<String, Pair<Identifiable, Int>> = LinkedHashMap()
     var offsetSize: Int = 0
-    var startingOffset:Int = 0
+    var startingOffset: Int = 0
+    var increaseOffsetForCall = 0
 
     // Gets the top most symbol table
     fun getTopSymbolTable(): SymbolTable {
@@ -86,7 +87,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             is ArrayTypeAST -> {
                 getBytesOfType(obj.type)
             }
-            is ParamAST -> { //TODO() Check if this is needed
+            is ParamAST -> {
                 getBytesOfType(obj.type)
             }
             is PairTypeAST -> {
@@ -110,21 +111,56 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return offset
     }
 
+    private fun findIfParamInFuncSymbolTableToAddOffset(name: String, flag: Boolean, offsetCounter: Int): Int {
+        val identAst = lookup(name)
+        if (identAst.isPresent) {
+            if ((this is FuncSymbolTable) && (identAst.get() is ParamAST)) {
+                if ((currSymbolTable.size > funcAST.paramList.size) || flag) {
+                    var offset = 0
+                    currSymbolTable.toList().dropWhile {
+                        it.second.first != identAst.get()
+                    }.dropWhile { it.second.first == identAst.get() }.forEach {
+                        offset += it.second.second
+                    }
+                    return offset + offsetCounter
+                }
+            }
+            return 0
+        }
+        if (encSymbolTable != null) {
+            var offset = 0
+            currSymbolTable.toList().forEach { offset += it.second.second }
+            return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, offset)
+        }
+        return 0
+    }
+
+    fun checkParamInFuncSymbolTable(name: String): Int {
+        return findIfParamInFuncSymbolTableToAddOffset(name, false, 0)
+    }
+
+
     fun findOffsetInStack(ident: String): Int {
         var offset = 0
         for ((k, v) in currSymbolTable) {
             offset += v.second
         }
+        var paramOffset = 0
         for ((k, v) in currSymbolTable) {
+            if (k == ident && v.first is ParamAST) {
+                return paramOffset + 4
+            }
             offset -= v.second
             if (k == ident) {
-                return offset
+                return offset + increaseOffsetForCall
             }
+            paramOffset += v.second
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.findOffsetInStack(ident)
+            return encSymbolTable.findOffsetInStack(ident) + paramOffset
         }
         return offset
+
     }
 
     fun decreaseOffset(lhs: LhsAST, rhsType: TypeAST) {
@@ -132,7 +168,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (lhs is IdentAST) {
             val ident = lookup(lhs.name)
             if (ident.isEmpty ||
-                    (ident.isPresent && !(ident.get() as DeclareStatAST).type.equals(rhsType))) {
+                    (ident.isPresent && (ident.get() is DeclareStatAST) && !(ident.get() as DeclareStatAST).type.equals(rhsType))) {
                 encSymbolTable?.decreaseOffset(lhs, rhsType)
                 return
             }
@@ -141,9 +177,12 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     private fun findSTWithIdentifier(ident: String, correctType: TypeAST, offset: Int): Pair<SymbolTable, Int> {
-        if (currSymbolTable.containsKey(ident) &&
-                (currSymbolTable[ident]?.first as DeclareStatAST).type.equals(correctType)) {
-            return Pair(this, offset)
+        if (currSymbolTable.containsKey(ident)) {
+            val identAst = currSymbolTable[ident]?.first
+            if ((identAst is ParamAST) ||
+                    ((identAst is DeclareStatAST) && (identAst.type.equals(correctType)))) {
+                return Pair(this, offset)
+            }
         }
         if (encSymbolTable != null) {
             return encSymbolTable.findSTWithIdentifier(ident, correctType, offset + startingOffset)
@@ -155,6 +194,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun getSTWithIdentifier(ident: String, correctType: TypeAST): Pair<SymbolTable, Int> {
         return findSTWithIdentifier(ident, correctType, 0)
     }
+
 }
 
 class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

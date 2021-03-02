@@ -27,7 +27,7 @@ class SubInstr(condition: Condition, reg1: Register, reg2: Register,
                operand: Operand, updateFlag: Boolean = false) : AbstractArithmeticInstr(ArithmeticInstrType.SUB, condition, reg1, reg2, operand, updateFlag)
 
 class ReverseSubInstr(condition: Condition, reg1: Register, reg2: Register,
-               operand: Operand, updateFlag: Boolean = false) : AbstractArithmeticInstr(ArithmeticInstrType.RSB, condition, reg1, reg2, operand, updateFlag)
+                      operand: Operand, updateFlag: Boolean = false) : AbstractArithmeticInstr(ArithmeticInstrType.RSB, condition, reg1, reg2, operand, updateFlag)
 
 class MultInstr(val condition: Condition, val rdLo: Register, val rdHi: Register,
                 val rn: Register, val rm: Register, val updateFlag: Boolean = false) : ArithmeticInstr {

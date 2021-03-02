@@ -1,22 +1,27 @@
 package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
+import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.instrs.StoreInstr
+import wacc.backend.instruction.utils.RegisterAddr
 import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.ast.expression.ArrayLiterAST
-import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.exception.semanticError
@@ -30,11 +35,13 @@ import wacc.frontend.exception.semanticError
  * @property rhs Value to be stored in the variable
  */
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
-    lateinit var stringLabel: String ;
+    lateinit var stringLabel: String;
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
-        if (!rhs.check(table)) {return false}
+        if (!rhs.check(table)) {
+            return false
+        }
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
         if (identName.isPresent && identName.get() !is FuncAST) {
@@ -51,23 +58,41 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
     }
 
 
-
     override fun translate(): List<Instruction> {
-        val instruction = mutableListOf<Instruction>()
-        instruction.addAll(rhs.translate())
+        val instr = mutableListOf<Instruction>()
+        instr.addAll(rhs.translate())
         if (rhs is StrLiterAST) {
-             stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
+            stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
         }
         symTable.decreaseOffset(ident, rhs.getRealType(symTable))
         var memtype: MemoryType? = null
-        if (type is BaseTypeAST) {
-            if (type.type == BaseType.BOOL || type.type == BaseType.CHAR) {
-                memtype = MemoryType.B
+        when (type) {
+            is BaseTypeAST -> {
+                if (type.type == BaseType.BOOL || type.type == BaseType.CHAR) {
+                    memtype = MemoryType.B
+                }
+            }
+            is ArrayTypeAST -> {
+
+            }
+            is PairTypeAST -> {
+                if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is IdentAST &&
+                        rhs !is NullPairLiterAST && rhs !is CallRhsAST && rhs !is PairElemAST) {
+                    instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                }
             }
         }
-        instruction.add(StoreInstr(Register.R4, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Condition.AL))
-        CodeGenerator.freeCalleeReg()
+        when (rhs) {
+            is PairElemAST -> {
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+            }
+            is ArrayElemAST -> {
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+            }
+        }
+        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Register.R4))
+        freeCalleeReg()
 
-        return instruction
+        return instr
     }
 }

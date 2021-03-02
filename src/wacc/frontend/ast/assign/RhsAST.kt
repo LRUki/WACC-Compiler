@@ -1,10 +1,12 @@
 package wacc.frontend.ast.assign
 
 import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.*
@@ -47,28 +49,36 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
 
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
-
+        var memtype: MemoryType? = null
         //Malloc space for pair
-        instr.add(LoadInstr(Register.R0, null, ImmediateInt(2 * 4), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(2 * 4), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
         val stackReg = getNextFreeCalleeReg()
         instr.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
         //Malloc first element
         instr.addAll(fst.translate())
-        instr.add(LoadInstr(Register.R0, null, ImmediateInt(getBytesOfType(firstType)), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(firstType)), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
-        CodeGenerator.freeCalleeReg()
-        instr.add(StoreInstr(Register.R0, null, RegisterAddr(stackReg), Condition.AL))
+        if (firstType.equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
+                || firstType.equals(BaseTypeAST(BaseType.CHAR))) {
+            memtype = MemoryType.B
+        }
+        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
+        freeCalleeReg()
+        instr.add(StoreInstr(Condition.AL, null, RegisterAddr(stackReg), Register.R0))
 
         //Malloc second element
         instr.addAll(snd.translate())
-        instr.add(LoadInstr(Register.R0, null, ImmediateInt(getBytesOfType(secondType)), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(secondType)), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddr(Register.R0), Condition.AL))
-        CodeGenerator.freeCalleeReg()
-        instr.add(StoreInstr(Register.R0, null, RegisterAddrWithOffset(stackReg, 4, false), Condition.AL))
+        if (secondType.equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
+                || secondType.equals(BaseTypeAST(BaseType.CHAR))) {
+            memtype = MemoryType.B
+        }
+        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
+        freeCalleeReg()
+        instr.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffset(stackReg, 4, false), Register.R0))
 
         return instr
     }
@@ -82,6 +92,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
  * @property argList List of expression as arguments for the function
  */
 class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, AbstractAST() {
+    lateinit var argTypes: MutableList<TypeAST>
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         if (!ident.check(table)) {
@@ -105,8 +116,10 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
                     "arguments, Actually got ${argList.size}", ctx)
             return false
         }
+        argTypes = mutableListOf<TypeAST>()
         for (i in argList.indices) {
             val argType = argList[i].getRealType(table)
+            argTypes.add(argType)
             val paramType = funcAst.paramList[i].type
             if (argType != paramType) {
                 semanticError("Type mismatch, Expected type $paramType, Actual type $argType", ctx)
@@ -121,8 +134,38 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
     }
 
     override fun translate(): List<Instruction> {
+        val instr = mutableListOf<Instruction>()
+        val totalLength = argTypes.size - 1
+        var totalBytes = 0
+        for ((index, arg) in argList.reversed().withIndex()) {
+            var memType: MemoryType? = null
+            instr.addAll(arg.translate())
+            val bytes = getBytesOfType(argTypes[(totalLength - index)])
+            totalBytes += bytes
+            if (argTypes[(totalLength - index)].equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
+                    || argTypes[(totalLength - index)].equals(BaseTypeAST(BaseType.CHAR))) {
+                memType = MemoryType.B
+            }
+            instr.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
+            freeCalleeReg()
+            if (index == 0) {
+                symTable.increaseOffsetForCall = 4
+            }
+        }
+        symTable.increaseOffsetForCall = 0
+
+//        argList.reversed().forEach {
+//            instr.addAll(it.translate())
+//            val bytes = getBytesOfType(it.getRealType(symTable))
+//            instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), Condition.AL))
+//            freeCalleeReg()
+//        }
+
         val funcLabel = FunctionLabel(ident.name)
-        return listOf(BranchInstr(Condition.AL, funcLabel, true))
+        instr.add(BranchInstr(Condition.AL, funcLabel, true))
+        instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(totalBytes), false))
+        instr.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
+        return instr
     }
 
 }

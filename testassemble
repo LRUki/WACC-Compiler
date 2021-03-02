@@ -4,24 +4,23 @@ echo 'Testing assemble...'
 make
 rm -rf out_test
 
-
-ALL_SUCESS_COUNT=0
 ALL_FAIL_COUNT=0
-
+ALL_SUCESS_COUNT=0
+declare -A failCounter
+declare -A successCounter
 
 for FOLDER in `find ./wacc_examples/valid -type d -mindepth 1 -maxdepth 1`
 do
   echo "--------------------------------------------------------------------"
   echo "Testing $FOLDER "
   echo "--------------------------------------------------------------------"
-  SUCCESSFUL=0
-  SUCESS_COUNT=0
-  FAIL_COUNT=0
+  
+  FOLDERNAME=${FOLDER#*/*/*/}
+  failCounter[$FOLDERNAME]=0
+  successCounter[$FOLDERNAME]=0
   for WACC_FILENAME in `find $FOLDER -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
   do
-    # echo $WACC_FILENAME
     FILENAME=${WACC_FILENAME#*/*/}
-    # echo $FILENAME
     mkdir -p out_test/"${FILENAME%/*}"
     java -jar wacc-1.0-SNAPSHOT.jar wacc_examples/"$FILENAME".wacc out_test/"$FILENAME".s
 
@@ -37,7 +36,7 @@ do
 
       if [ ! -f out_examples/"$FILENAME".out ]
       then
-        echo "Skipping ${FILENAME}"
+        echo -e "Skipping $FILENAME\n"
         continue
       fi
 
@@ -49,7 +48,7 @@ do
       if [ ! -z $(grep "$FILENAME"'$' "testassembleskip.txt") ]
       then
         OUTPUT_MATCHES=0
-        echo "Assume ${FILENAME} correct."
+        echo "Assume $FILENAME correct."
       fi
 
       echo "$EXITCODE" | diff - out_examples/"$FILENAME".exitcode
@@ -60,28 +59,35 @@ do
 
     if [ "$ASSEMBLE_SUCCESSFUL" == 0 ] && [ "$OUTPUT_MATCHES" == 0 ] && [ "$EXITCODE_MATCHES" == 0 ]
     then
-      echo "Success ${FILENAME}"
-      SUCESS_COUNT=$((SUCESS_COUNT+1))
+      echo -e "Success $FILENAME\n"
+      successCounter[$FOLDERNAME]=$((1 + successCounter[$FOLDERNAME]))
     else
-      echo "Failed ${FILENAME}"
-      FAIL_COUNT=$((FAIL_COUNT+1))
-      SUCCESSFUL=1
+      echo -e "Failed $FILENAME\n"
+      failCounter[$FOLDERNAME]=$((1 + failCounter[$FOLDERNAME]))
     fi
   done
-  echo ""
-  if [ $SUCCESSFUL == 0 ]
-  then
-    echo "All Successful!"
-  fi
-  echo "Passed $SUCESS_COUNT"
-  echo "Failed $FAIL_COUNT"
-  ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ SUCESS_COUNT))
-  ALL_FAIL_COUNT=$((ALL_FAIL_COUNT + FAIL_COUNT))
+  sc=${successCounter[$FOLDERNAME]}
+  fc=${failCounter[$FOLDERNAME]}
+  echo -e "test summary of $FOLDER:\npassed $sc / $((sc + fc))"
+  ALL_SUCESS_COUNT=$((ALL_SUCESS_COUNT+ sc))
+  ALL_FAIL_COUNT=$((ALL_FAIL_COUNT + fc))
 
 done
 
 echo "--------------------------------------------------------------------"
+
+
+echo "TEST SUMMARY:"
+echo "===================================================================="
+for FOLDERNAME in "${!successCounter[@]}"
+do
+  sc=${successCounter[$FOLDERNAME]}
+  fc=${failCounter[$FOLDERNAME]}
+  echo "$FOLDERNAME: passed $sc/$((sc + fc))"
+done 
+echo "===================================================================="
 echo "Passed $ALL_SUCESS_COUNT / $((ALL_FAIL_COUNT + ALL_SUCESS_COUNT))"
+
 if [ "$ALL_FAIL_COUNT" != 0 ]
 then
   echo "Some tests failed."

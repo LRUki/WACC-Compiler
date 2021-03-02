@@ -1,17 +1,16 @@
 #!/bin/bash
 
-echo 'Testing assemble...'
-
+echo 'Testing assemble (wacc files that print memory addresses)...'
 make
 rm -rf out_test
 
-ALL_SUCCESSFUL=0
-SUCESS_COUNT=0
-FAIL_COUNT=0
+FILENAME="testassembleskip.txt"
 
-for WACC_FILENAME in `find $1 -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
+LINES=$(cat $FILENAME)
+
+echo "----------------------------------------------------------------"
+for FILENAME in $LINES
 do
-  FILENAME=${WACC_FILENAME#*/}
   mkdir -p out_test/"${FILENAME%/*}"
   java -jar wacc-1.0-SNAPSHOT.jar wacc_examples/"$FILENAME".wacc out_test/"$FILENAME".s
 
@@ -57,13 +56,7 @@ do
     FAIL_COUNT=$((FAIL_COUNT+1))
     ALL_SUCCESSFUL=1
   fi
+
+  echo "----------------------------------------------------------------"
+
 done
-
-if [ $ALL_SUCCESSFUL == 0 ]
-then
-    echo "All Successful!"
-fi
-echo "Passed $SUCESS_COUNT"
-echo "Failed $FAIL_COUNT"
-
-exit $ALL_SUCCESSFUL

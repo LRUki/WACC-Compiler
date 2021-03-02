@@ -1,7 +1,7 @@
 package wacc.backend.instruction.utils
 
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.enums.Shift
+import wacc.backend.instruction.enums.ShiftType
 
 interface AddressingMode {
     fun toAssembly(): String
@@ -31,7 +31,7 @@ class RegisterAddrWithOffset(val reg: Register, val offset: Int, val isPreIndexe
     }
 }
 
-class RegisterAddrScaled(val reg1: Register, val reg2: Register, val shiftOp: Shift, val offset: Int, val isPreIndexed: Boolean): AddressingMode {
+class RegisterAddrScaled(val reg1: Register, val reg2: Register, val shiftOp: ShiftType, val offset: Int, val isPreIndexed: Boolean): AddressingMode {
     override fun toAssembly(): String {
         return "[${this.reg1.toAssembly()}, ${this.reg2.toAssembly()}, ${shiftOp.name} #${this.offset}]${if (this.isPreIndexed) "!" else ""}"
     }
