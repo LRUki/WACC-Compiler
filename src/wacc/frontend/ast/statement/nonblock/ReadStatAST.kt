@@ -11,12 +11,12 @@ import wacc.backend.instruction.instrs.MoveInstr
 import wacc.backend.instruction.utils.CLibrary
 import wacc.backend.instruction.utils.ImmediateOperandInt
 import wacc.backend.instruction.utils.RegisterOperand
-import wacc.backend.instruction.utils.RuntimeError
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.BaseType
@@ -25,6 +25,7 @@ import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.ast.type.TypeInstance
 import wacc.frontend.exception.semanticError
 import java.lang.RuntimeException
+import kotlin.math.exp
 
 /**
  * AST node representing Read Statement
@@ -59,7 +60,8 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
                 TODO("Implement this")
             }
             is PairElemAST -> {
-                TODO("Implement this")
+//                TODO("Implement this")
+                instr.addAll(expr.translate())
             }
         }
         instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)))

@@ -61,30 +61,30 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
 
     override fun translate(): List<Instruction> {
 //      Translate function definitions
-        val functionInstructions = mutableListOf<Instruction>()
-        funcList.forEach { functionInstructions.addAll(it.translate()) }
-        val mainInstructions = mutableListOf<Instruction>()
+        val instr = mutableListOf<Instruction>()
         //add some stuff here. directives, .globalMain, .data,.text
 //
 //        addMsg()
 //        // add msg here
-        mainInstructions.add(DirectiveInstr("text"))
-        mainInstructions.add(DirectiveInstr("global main"))
-        mainInstructions.add(Label("main"))
+        instr.add(DirectiveInstr("text"))
+        instr.add(DirectiveInstr("global main"))
+        funcList.forEach { instr.addAll(it.translate()) }
+
+        instr.add(Label("main"))
         // AI: PUSH {lr}
-        mainInstructions.add(PushInstr(Register.LR))
-        translateScoped(symTable, mainInstructions, stats)
+        instr.add(PushInstr(Register.LR))
+        translateScoped(symTable, instr, stats)
         // AI: LDR r0, =0
-        mainInstructions.add(LoadInstr(Register.R0, null, ImmediateInt(0), Condition.AL))
+        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(0), Register.R0))
         // AI: POP {pc}
-        mainInstructions.add(PopInstr(Register.PC))
-        mainInstructions.add(DirectiveInstr("ltorg"))
+        instr.add(PopInstr(Register.PC))
+        instr.add(DirectiveInstr("ltorg"))
 
         val data = dataDirective.translate()
         val cLib = CLib.translate()
         val runtime = runtimeErrors.translate()
-        // data + function + main + runtime err + clib calls
-        return data + functionInstructions + mainInstructions + runtime + cLib
+        // data + main + runtime err + clib calls
+        return data + instr + runtime + cLib
     }
 
 }

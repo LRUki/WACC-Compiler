@@ -71,7 +71,7 @@ class RuntimeError {
                     nullReferenceLabel,
                     PushInstr(Register.LR),
                     CompareInstr(Register.R0, ImmediateOperandInt(0)),
-                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsgLabel), Condition.EQ),
+                    LoadInstr(Condition.EQ, null, ImmediateLabel(errorMsgLabel), Register.R0),
                     BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
             )
@@ -92,7 +92,7 @@ class RuntimeError {
                     divideZeroCheckLabel,
                     PushInstr(Register.LR),
                     CompareInstr(Register.R1, ImmediateOperandInt(0)),
-                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsgLabel), Condition.EQ),
+                    LoadInstr(Condition.EQ, null, ImmediateLabel(errorMsgLabel), Register.R0),
                     BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
             )
@@ -115,11 +115,11 @@ class RuntimeError {
                     checkArrayBoundsLabel,
                     PushInstr(Register.LR),
                     CompareInstr(Register.R0, ImmediateOperandInt(0)),
-                    LoadInstr(Register.R0, null,  ImmediateLabel(negativeMsgLabel), Condition.LT),
+                    LoadInstr(Condition.LT, null, ImmediateLabel(negativeMsgLabel), Register.R0),
                     BranchInstr(Condition.LT, throwRuntimeErrorLabel, true),
-                    LoadInstr(Register.R1, null, RegisterAddr(Register.R1), Condition.AL),
+                    LoadInstr(Condition.AL, null, RegisterAddr(Register.R1), Register.R1),
                     CompareInstr(Register.R0, RegisterOperand(Register.R1)),
-                    LoadInstr(Register.R0, null,  ImmediateLabel(tooLargeMsgLabel), Condition.CS),
+                    LoadInstr(Condition.CS, null, ImmediateLabel(tooLargeMsgLabel), Register.R0),
                     BranchInstr(Condition.CS, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
             )
@@ -145,7 +145,7 @@ class RuntimeError {
             val errorMsg = CodeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())
             overflowError = listOf(
                     throwOverflowErrorLabel,
-                    LoadInstr(Register.R0, null,  ImmediateLabel(errorMsg), Condition.AL),
+                    LoadInstr(Condition.AL, null, ImmediateLabel(errorMsg), Register.R0),
                     BranchInstr(Condition.AL, throwRuntimeErrorLabel, true),
             )
         }
