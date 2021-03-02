@@ -157,9 +157,10 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             paramOffset += v.second
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.findOffsetInStack(ident)
+            return encSymbolTable.findOffsetInStack(ident) + paramOffset
         }
         return offset
+
     }
 
     fun decreaseOffset(lhs: LhsAST, rhsType: TypeAST) {
