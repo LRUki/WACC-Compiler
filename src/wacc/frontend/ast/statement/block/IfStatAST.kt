@@ -1,5 +1,7 @@
 package wacc.frontend.ast.statement.block
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextLabel
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
@@ -71,6 +73,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         if((lastStat is ActionStatAST) && lastStat.action == Action.RETURN){
             instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(symTable.getFuncStackOffset())))
             instr.addAll(regsToPopInstrs(listOf(Register.PC)))
+            freeAllCalleeReg()
         }
         if (stackOffset > 0) {
             instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))

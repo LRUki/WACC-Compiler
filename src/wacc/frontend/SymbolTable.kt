@@ -129,9 +129,12 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                     var offset = 0
                     currSymbolTable.toList().dropWhile {
                         it.second.first != identAst.get()
-                    }.dropWhile { it.second.first == identAst.get() }.dropWhile { it.second.first is ParamAST}.forEach {
-                        offset += it.second.second
-                    }
+                    }.dropWhile {
+                        it.second.first == identAst.get()
+                    }.dropWhile { it.second.first is ParamAST }
+                            .forEach {
+                                offset += it.second.second
+                            }
                     return offset + offsetCounter
                 }
             }
@@ -140,7 +143,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (encSymbolTable != null) {
             var offset = 0
             currSymbolTable.toList().forEach { offset += it.second.second }
-            return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, offset)
+            return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, startingOffset)
         }
         return 0
     }

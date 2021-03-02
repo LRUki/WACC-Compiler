@@ -61,15 +61,14 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         val type = getRealType(symTable)
         if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
             memType = MemoryType.SB
-        } else {
-            if (symTable.lookup(name).isPresent) {
-                offset += symTable.checkParamInFuncSymbolTable(name)
-//                offset += symTable.offsetSize
-            }
         }
-        if(symTable.lookupFirstFunc().isPresent){
-                offset += symTable.getFuncStackOffset()
-        }
+        offset += symTable.checkParamInFuncSymbolTable(name)
+//            if (symTable.lookup(name).isPresent) {
+//            }
+
+//        if(symTable.lookupFirstFunc().isPresent){
+//                offset += symTable.getFuncStackOffset()
+//        }
         return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, offset, false), getNextFreeCalleeReg()))
     }
 }
