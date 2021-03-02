@@ -7,6 +7,7 @@ import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.LoadInstr
 import wacc.backend.instruction.utils.RegisterAddrWithOffset
+import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -55,11 +56,18 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
     }
 
     override fun translate(): List<Instruction> {
-        val offset = symTable.findOffsetInStack(name)
+        var offset = symTable.findOffsetInStack(name)
         var memType: MemoryType? = null
         val type = getRealType(symTable)
         if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
             memType = MemoryType.SB
+        } else {
+            if ((symTable is FuncSymbolTable) && symTable.lookup(name).get() is ParamAST) {
+                val table = symTable as FuncSymbolTable
+                if (table.currSymbolTable.size > table.funcAST.paramList.size) {
+                    offset += 4
+                }
+            }
         }
         return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, offset, false), getNextFreeCalleeReg()))
     }

@@ -119,7 +119,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         var paramOffset = 0
         for ((k, v) in currSymbolTable) {
             if (k == ident && v.first is ParamAST) {
-                return paramOffset + 8
+                return paramOffset + 4
             }
             offset -= v.second
             if (k == ident) {
