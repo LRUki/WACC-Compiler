@@ -109,16 +109,17 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     lateinit var symTable: SymbolTable
     override fun getRealType(table: SymbolTable): TypeAST {
         symTable = table
-        if (values.isEmpty()) {
-            return ArrayTypeAST(AnyTypeAST(), 1)
+        arrayType = if (values.isEmpty()) {
+            ArrayTypeAST(AnyTypeAST(), 1)
+        }else{
+            val exprType = values[0].getRealType(table)
+            if(exprType is ArrayTypeAST){
+                ArrayTypeAST(exprType.type, exprType.dimension + 1)
+            }else{
+                ArrayTypeAST(exprType, 1)
+            }
         }
-
-        val exprType = values[0].getRealType(table)
-        return if (exprType is ArrayTypeAST) {
-            ArrayTypeAST(exprType.type, exprType.dimension + 1)
-        } else {
-            ArrayTypeAST(exprType, 1)
-        }
+        return arrayType
     }
 
     override fun translate(): List<Instruction> {
