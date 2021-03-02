@@ -18,6 +18,7 @@ import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.pair.PairElemAST
@@ -75,7 +76,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 
             }
             is PairTypeAST -> {
-                if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST) {
+                if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is NullPairLiterAST && rhs !is CallRhsAST) {
                     instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }

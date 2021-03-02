@@ -77,7 +77,8 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
             CodeGenerator.runtimeErrors.addArrayBoundsCheck()
             instr.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateOperandInt(4), false))
             val identType = ident.getRealType(symTable)
-            if (identType.equals(ArrayTypeAST(BaseTypeAST(BaseType.CHAR), indices.size))) {
+            if (identType is ArrayTypeAST &&
+                    ((identType.type.equals(BaseTypeAST(BaseType.CHAR)) || identType.type.equals(BaseTypeAST(BaseType.BOOL))))) {
                 instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false))
             } else {
                 instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
