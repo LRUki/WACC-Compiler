@@ -36,7 +36,7 @@ do
 
       if [ ! -f out_examples/"$FILENAME".out ]
       then
-        echo -e "\tSkipping $FILENAME"
+        echo -e "Skipping $FILENAME\n"
         continue
       fi
 
