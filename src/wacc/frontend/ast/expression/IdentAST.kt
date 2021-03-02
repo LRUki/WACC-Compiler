@@ -62,7 +62,7 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
             memType = MemoryType.SB
         } else {
-            if (symTable.lookup(name).isPresent) {
+            if (symTable.lookupAll(name).isPresent) {
                 offset += symTable.checkParamInFuncSymbolTable(name)
 //                offset += symTable.offsetSize
             }
