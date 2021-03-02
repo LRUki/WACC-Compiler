@@ -76,7 +76,8 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 
             }
             is PairTypeAST -> {
-                if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is NullPairLiterAST && rhs !is CallRhsAST) {
+                if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is IdentAST &&
+                        rhs !is NullPairLiterAST && rhs !is CallRhsAST && rhs !is PairElemAST) {
                     instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }
