@@ -66,9 +66,9 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
                 offset += symTable.checkParamInFuncSymbolTable(name)
 //                offset += symTable.offsetSize
             }
-            if(symTable.lookupFirstFunc().isPresent){
+        }
+        if(symTable.lookupFirstFunc().isPresent){
                 offset += symTable.getFuncStackOffset()
-            }
         }
         return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, offset, false), getNextFreeCalleeReg()))
     }
