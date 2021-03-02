@@ -87,15 +87,10 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         when (rhs) {
             // only other RHS which requires "setting up"
             is CallRhsAST -> {
-//                var name = ""
-//                if (lhs is IdentAST) {
-//                    name = lhs.name
-//                } else if (lhs is ArrayElemAST) {
-//                    name = lhs.ident.name
-//                } else if (lhs is PairElemAST) {
-//                    name = lhs.
-//                }
-                val offset = symTable.findOffsetInStack((lhs as IdentAST).name)
+                var offset = 0
+                if (lhs is IdentAST) {
+                    offset = symTable.findOffsetInStack(lhs.name)
+                }
                 instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, offset, false), calleeReg))
                 freeCalleeReg()
                 return instr
