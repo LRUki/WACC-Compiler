@@ -7,6 +7,7 @@ import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.Instruction
 import wacc.backend.instruction.enums.Condition
+import wacc.backend.instruction.enums.MemoryType
 import wacc.backend.instruction.enums.Register
 import wacc.backend.instruction.instrs.BranchInstr
 import wacc.backend.instruction.instrs.Label
@@ -78,7 +79,11 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         val reg = seeLastUsedCalleeReg()
         val exprType = expr.getRealType(symTable)
         if (expr is ArrayElemAST) {
-            instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
+            var memType : MemoryType? = null
+            if (exprType == BaseTypeAST(BaseType.BOOL) || exprType == BaseTypeAST(BaseType.CHAR)) {
+                memType = MemoryType.SB
+            }
+            instr.add(LoadInstr(Condition.AL, memType, RegisterAddr(reg), reg))
         }
         when (action) {
             Action.EXIT -> {

@@ -87,7 +87,11 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         when (rhs) {
             // only other RHS which requires "setting up"
             is CallRhsAST -> {
-                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.SP), calleeReg))
+                var offset = 0
+                if (lhs is IdentAST) {
+                    offset = symTable.findOffsetInStack(lhs.name)
+                }
+                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, offset, false), calleeReg))
                 freeCalleeReg()
                 return instr
             }
@@ -95,23 +99,22 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 instr.add(LoadInstr(Condition.AL, null, RegisterAddr(calleeReg), calleeReg))
             }
         }
-        val rhsBytes = SymbolTable.getBytesOfType(rhsType)
-        symTable.decreaseOffset(lhs, rhsType)
 
+        symTable.decreaseOffset(lhs, rhsType)
         when (lhs) {
             is IdentAST -> {
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(lhs.name, rhsType)
-                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset , false), calleeReg))
+                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset, false), calleeReg))
             }
             is ArrayElemAST -> {
                 instr.addAll(lhs.translate())
-                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
             }
             is PairElemAST -> {
                 instr.addAll(lhs.translate())
 //                instr.add(LoadInstr(Condition.AL,null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
 //                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
 //                instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))

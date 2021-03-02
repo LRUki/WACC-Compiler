@@ -13,8 +13,12 @@ import wacc.backend.instruction.utils.RegisterAddr
 import wacc.backend.instruction.utils.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.array.ArrayElemAST
+import wacc.frontend.ast.assign.CallRhsAST
+import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.pair.PairElemAST
@@ -55,8 +59,8 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 
 
     override fun translate(): List<Instruction> {
-        val instruction = mutableListOf<Instruction>()
-        instruction.addAll(rhs.translate())
+        val instr = mutableListOf<Instruction>()
+        instr.addAll(rhs.translate())
         if (rhs is StrLiterAST) {
             stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
         }
@@ -69,15 +73,26 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                 }
             }
             is ArrayTypeAST -> {
-            }
 
+            }
+            is PairTypeAST -> {
+                if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is IdentAST &&
+                        rhs !is NullPairLiterAST && rhs !is CallRhsAST && rhs !is PairElemAST) {
+                    instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                }
+            }
         }
-        if (rhs is PairElemAST) {
-            instruction.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+        when (rhs) {
+            is PairElemAST -> {
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+            }
+            is ArrayElemAST -> {
+                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+            }
         }
-        instruction.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Register.R4))
+        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Register.R4))
         freeCalleeReg()
 
-        return instruction
+        return instr
     }
 }
