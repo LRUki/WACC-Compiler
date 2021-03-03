@@ -8,6 +8,8 @@ bin
 *~
 
 .idea
+.classpath
+.project
 antlr_config/.antlr
 antlr_config/gen
 gen
