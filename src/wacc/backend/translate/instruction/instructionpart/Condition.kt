@@ -1,4 +1,4 @@
-package wacc.backend.instruction.enums
+package wacc.backend.translate.instruction.instructionpart
 
 enum class Condition {
 
@@ -18,8 +18,8 @@ enum class Condition {
     LE,   // Signed <=
     AL;    // Always
 
-    fun toAssembly(): String  {
-        return if (this == Condition.AL) "" else this.name
+    fun toAssembly(): String {
+        return if (this == AL) "" else this.name
     }
 }
 

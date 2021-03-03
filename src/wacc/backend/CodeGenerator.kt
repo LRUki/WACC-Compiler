@@ -1,18 +1,18 @@
 package wacc.backend
 
-import wacc.backend.instruction.DataDirective
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.StringLabels
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.Label
-import wacc.backend.instruction.utils.CLibrary
-import wacc.backend.instruction.utils.RuntimeError
+import wacc.backend.translate.DataDirective
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.StringLabels
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.Label
+import wacc.backend.translate.CLibrary
+import wacc.backend.translate.RuntimeError
 import wacc.frontend.ast.program.ProgramAST
-import java.util.Stack
+import java.util.*
 
 object CodeGenerator {
 
-    var dataDirective: DataDirective = DataDirective(StringLabels(mutableListOf()));
+    var dataDirective: DataDirective = DataDirective(StringLabels(mutableListOf()))
     var CLib: CLibrary = CLibrary()
     var runtimeErrors: RuntimeError = RuntimeError()
     var labelNumber: Int = 0
@@ -41,15 +41,15 @@ object CodeGenerator {
 
     fun seeNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()) {
-            return Register.NONE// TODO() Change later
+            return Register.NONE
         }
         return freeCalleeSavedRegs.peek()
     }
 
     fun getNextFreeCalleeReg(): Register {
-        if (freeCalleeSavedRegs.isEmpty()){
+        if (freeCalleeSavedRegs.isEmpty()) {
             useAccumulator = true
-            return Register.NONE//TODO() CHANGE LATER
+            return Register.NONE
         }
         val reg = freeCalleeSavedRegs.pop()
         calleSavedRegsInUse.push(reg)
@@ -104,9 +104,7 @@ object CodeGenerator {
 }
 
 fun generateCode(ast: ProgramAST): List<Instruction> {
-    // TODO: implement real code gen
     val result = ast.translate()
     return result
-//    return AssemblyCode(emptyList())
 }
     

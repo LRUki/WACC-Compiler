@@ -2,14 +2,14 @@ package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.*
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.assign.RhsAST
@@ -24,12 +24,12 @@ class IntLiterAST(val value: Int) : LiterAST {
 
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
-        instrs += LoadInstr(Condition.AL, null, ImmediateInt(value), reg)
+        instrs += LoadInstr(Condition.AL, null, ImmediateIntMode(value), reg)
         return instrs
     }
 }
@@ -41,12 +41,12 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
 
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
-        instrs += MoveInstr(Condition.AL, reg, ImmediateOperandBool(value))
+        instrs += MoveInstr(Condition.AL, reg, ImmediateBoolOperand(value))
         return instrs
     }
 }
@@ -58,13 +58,13 @@ class StrLiterAST(val value: String) : LiterAST {
 
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
         val strLabel = CodeGenerator.dataDirective.addStringLabel(value)
-        instrs += LoadInstr(Condition.AL, null, ImmediateLabel(strLabel), reg)
+        instrs += LoadInstr(Condition.AL, null, ImmediateLabelMode(strLabel), reg)
         return instrs
     }
 }
@@ -76,12 +76,12 @@ class CharLiterAST(val value: Char) : LiterAST {
 
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
-        instrs += MoveInstr(Condition.AL, reg, ImmediateOperandChar(value))
+        instrs += MoveInstr(Condition.AL, reg, ImmediateCharOperand(value))
         return instrs
     }
 
@@ -94,12 +94,12 @@ class NullPairLiterAST : LiterAST {
 
     override fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
-        instrs += LoadInstr(Condition.AL, null, ImmediateInt(0), reg)
+        instrs += LoadInstr(Condition.AL, null, ImmediateIntMode(0), reg)
         return instrs
     }
 }
@@ -111,11 +111,11 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
         symTable = table
         arrayType = if (values.isEmpty()) {
             ArrayTypeAST(AnyTypeAST(), 1)
-        }else{
+        } else {
             val exprType = values[0].getRealType(table)
-            if(exprType is ArrayTypeAST){
+            if (exprType is ArrayTypeAST) {
                 ArrayTypeAST(exprType.type, exprType.dimension + 1)
-            }else{
+            } else {
                 ArrayTypeAST(exprType, 1)
             }
         }
@@ -123,41 +123,41 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     }
 
     override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+        val instrs = mutableListOf<Instruction>()
         val elemSize = getBytesOfType((arrayType as ArrayTypeAST).type)
-        println("This is the bytes of ${arrayType} ${elemSize}")
+//        println("This is the bytes of ${arrayType} ${elemSize}")
         //loading the length of array * elemSize + size of INT
         val sizeOfInt = getBytesOfType(BaseTypeAST(BaseType.INT))
-        instr.add(LoadInstr(Condition.AL, null,
-                ImmediateInt(elemSize * values.size + sizeOfInt), Register.R0))
+        instrs.add(LoadInstr(Condition.AL, null,
+                ImmediateIntMode(elemSize * values.size + sizeOfInt), Register.R0))
 
-        instr.add(BranchInstr(Condition.AL, Label("malloc"), true))
+        instrs.add(BranchInstr(Condition.AL, Label("malloc"), true))
         val stackReg = getNextFreeCalleeReg()
-        instr.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
+        instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
         //add element to stack
-        var memType: MemoryType? = null;
+        var memType: MemoryType? = null
         for ((i, expr) in values.withIndex()) {
             if (expr is IdentAST) {
                 expr.symTable = symTable
             }
-            instr.addAll(expr.translate())
+            instrs.addAll(expr.translate())
 
             if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
                 memType = MemoryType.B
             }
-            instr.add(StoreInstr(Condition.AL, memType,
-                    RegisterAddrWithOffset(stackReg,
+            instrs.add(StoreInstr(Condition.AL, memType,
+                    RegisterAddrWithOffsetMode(stackReg,
                             sizeOfInt + (i * elemSize),
                             false), seeLastUsedCalleeReg()))
             freeCalleeReg()
         }
 
         //add the length of the array to stack
-        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(values.size), getNextFreeCalleeReg()))
-        instr.add(StoreInstr(Condition.AL, null,
-                RegisterAddr(stackReg), seeLastUsedCalleeReg()))
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(values.size), getNextFreeCalleeReg()))
+        instrs.add(StoreInstr(Condition.AL, null,
+                RegisterMode(stackReg), seeLastUsedCalleeReg()))
         freeCalleeReg()
-        return instr
+        return instrs
     }
 }

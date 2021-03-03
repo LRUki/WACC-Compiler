@@ -1,7 +1,6 @@
-package wacc.backend.instruction.instrs
+package wacc.backend.translate.instruction
 
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Register
+import wacc.backend.translate.instruction.instructionpart.Register
 
 class PopInstr(val register: Register) : Instruction {
     override fun toAssembly(): String {
@@ -14,6 +13,6 @@ class PopInstr(val register: Register) : Instruction {
 
 }
 
-fun regsToPopInstrs(list: List<Register>) : List<PopInstr> {
+fun regsToPopInstrs(list: List<Register>): List<PopInstr> {
     return list.map { reg -> PopInstr(reg) }
 }

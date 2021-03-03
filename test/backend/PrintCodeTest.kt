@@ -3,22 +3,22 @@ package backend
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.ImmediateInt
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instructionpart.ImmediateIntMode
 import wacc.backend.printCode
 
 class PrintCodeTest {
 
     @Test
     fun `can print code for skip files`() {
-        var instrs = listOf(
+        val instrs = listOf(
                 DirectiveInstr("text"),
                 DirectiveInstr("global main"),
                 Label("main"),
                 PushInstr(Register.LR),
-                LoadInstr(Condition.AL, null, ImmediateInt(0), Register.R0),
+                LoadInstr(Condition.AL, null, ImmediateIntMode(0), Register.R0),
                 PopInstr(Register.PC),
                 DirectiveInstr("ltorg")
         )

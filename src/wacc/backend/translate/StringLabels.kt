@@ -1,9 +1,9 @@
-package wacc.backend.instruction
+package wacc.backend.translate
 
 
-import wacc.backend.instruction.instrs.DirectiveInstr
-import wacc.backend.instruction.instrs.Label
-import kotlin.text.Regex.Companion.escape
+import wacc.backend.translate.instruction.DirectiveInstr
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.Label
 
 class StringLabels(val strings: MutableList<String>) {
 
@@ -40,7 +40,7 @@ class StringLabels(val strings: MutableList<String>) {
             }"))
 
             // display escaped characters in full
-//            val newString = escape(string) //TODO check this was producing the wrong characters in msg
+//            val newString = escape(string)
 //            instructions.add(DirectiveInstr("ascii \"$newString\""))
             instructions.add(DirectiveInstr("ascii \"${string}\""))
 

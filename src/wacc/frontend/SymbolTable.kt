@@ -7,7 +7,6 @@ import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.*
 import java.util.*
-import kotlin.RuntimeException
 import kotlin.collections.LinkedHashMap
 
 /**
@@ -91,9 +90,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             is ParamAST -> {
                 getBytesOfType(obj.type)
             }
-            is PairTypeAST -> {
-                TODO()
-            }
+//            is PairTypeAST -> {
+//
+//            }
             else -> 0
         }
         currSymbolTable[name] = Pair(obj, size)
@@ -113,7 +112,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     fun getFuncStackOffset(): Int {
-        if(this is FuncSymbolTable){
+        if (this is FuncSymbolTable) {
             return startingOffset
         }
         if (encSymbolTable != null) {
@@ -182,7 +181,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (lhs is IdentAST) {
             val ident = lookup(lhs.name)
             if (ident.isEmpty ||
-                    (ident.isPresent && (ident.get() is DeclareStatAST) && !(ident.get() as DeclareStatAST).type.equals(rhsType))) {
+                    (ident.isPresent && (ident.get() is DeclareStatAST) && (ident.get() as DeclareStatAST).type != rhsType)) {
                 encSymbolTable?.decreaseOffset(lhs, rhsType)
                 return
             }
@@ -194,7 +193,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (currSymbolTable.containsKey(ident)) {
             val identAst = currSymbolTable[ident]?.first
             if ((identAst is ParamAST) ||
-                    ((identAst is DeclareStatAST) && (identAst.type.equals(correctType)))) {
+                    ((identAst is DeclareStatAST) && (identAst.type == correctType))) {
                 return Pair(this, offset)
             }
         }

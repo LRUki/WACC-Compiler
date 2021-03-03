@@ -1,11 +1,10 @@
-package wacc.backend.instruction.instrs
+package wacc.backend.translate.instruction
 
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.utils.Operand
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.instructionpart.Operand
 
-interface LogicInstr: Instruction {
+interface LogicInstr : Instruction {
 }
 
 enum class LogicInstrType {
@@ -13,7 +12,7 @@ enum class LogicInstrType {
 }
 
 abstract class AbstractLogicInstr(val type: LogicInstrType, val condition: Condition,
-                                       val reg1: Register, val reg2: Register, val operand: Operand, val updateFlag: Boolean) : ArithmeticInstr {
+                                  val reg1: Register, val reg2: Register, val operand: Operand, val updateFlag: Boolean) : ArithmeticInstr {
     override fun toAssembly(): String {
         return "${type.name}${if (updateFlag) "S" else ""}${condition.toAssembly()} ${reg1.toAssembly()}, ${reg2.toAssembly()}, ${operand.toAssembly()}"
     }
@@ -21,9 +20,12 @@ abstract class AbstractLogicInstr(val type: LogicInstrType, val condition: Condi
 
 class AndInstrType(condition: Condition, reg1: Register, reg2: Register,
                    operand: Operand, updateFlag: Boolean = false) : AbstractLogicInstr(LogicInstrType.AND, condition, reg1, reg2, operand, updateFlag)
+
 class XorInstrType(condition: Condition, reg1: Register, reg2: Register,
                    operand: Operand, updateFlag: Boolean = false) : AbstractLogicInstr(LogicInstrType.EOR, condition, reg1, reg2, operand, updateFlag)
+
 class OrInstrType(condition: Condition, reg1: Register, reg2: Register,
-                   operand: Operand, updateFlag: Boolean = false) : AbstractLogicInstr(LogicInstrType.ORR, condition, reg1, reg2, operand, updateFlag)
+                  operand: Operand, updateFlag: Boolean = false) : AbstractLogicInstr(LogicInstrType.ORR, condition, reg1, reg2, operand, updateFlag)
+
 class BitClearInstrType(condition: Condition, reg1: Register, reg2: Register,
-                   operand: Operand, updateFlag: Boolean = false) : AbstractLogicInstr(LogicInstrType.BIC, condition, reg1, reg2, operand, updateFlag)
+                        operand: Operand, updateFlag: Boolean = false) : AbstractLogicInstr(LogicInstrType.BIC, condition, reg1, reg2, operand, updateFlag)

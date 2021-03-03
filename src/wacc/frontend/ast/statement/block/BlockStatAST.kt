@@ -1,11 +1,6 @@
 package wacc.frontend.ast.statement.block
 
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.AddInstr
-import wacc.backend.instruction.instrs.SubInstr
-import wacc.backend.instruction.utils.ImmediateOperandInt
+import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.program.ProgramAST.Companion.translateScoped
 import wacc.frontend.ast.statement.StatAST
@@ -19,7 +14,11 @@ class BlockStatAST(val body: List<StatAST>) : StatAST {
     lateinit var symTable: SymbolTable
     override fun check(table: SymbolTable): Boolean {
         symTable = SymbolTable(table)
-        body.forEach { if (!it.check(symTable)) {return false} }
+        body.forEach {
+            if (!it.check(symTable)) {
+                return false
+            }
+        }
         return true
     }
 

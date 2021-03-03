@@ -1,15 +1,15 @@
 package wacc.frontend.ast.assign
 
-import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.*
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
+import wacc.backend.translate.CLibrary
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AST
@@ -48,39 +48,39 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
     }
 
     override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+        val instrs = mutableListOf<Instruction>()
         var memtype: MemoryType? = null
         //Malloc space for pair
-        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(2 * 4), Register.R0))
-        instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(2 * 4), Register.R0))
+        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
         val stackReg = getNextFreeCalleeReg()
-        instr.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
+        instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
         //Malloc first element
-        instr.addAll(fst.translate())
-        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(firstType)), Register.R0))
-        instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (firstType.equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
-                || firstType.equals(BaseTypeAST(BaseType.CHAR))) {
+        instrs.addAll(fst.translate())
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(getBytesOfType(firstType)), Register.R0))
+        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+        if (firstType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                || firstType == BaseTypeAST(BaseType.CHAR)) {
             memtype = MemoryType.B
         }
-        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
+        instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
         freeCalleeReg()
-        instr.add(StoreInstr(Condition.AL, null, RegisterAddr(stackReg), Register.R0))
+        instrs.add(StoreInstr(Condition.AL, null, RegisterMode(stackReg), Register.R0))
 
         //Malloc second element
-        instr.addAll(snd.translate())
-        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(secondType)), Register.R0))
-        instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (secondType.equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
-                || secondType.equals(BaseTypeAST(BaseType.CHAR))) {
+        instrs.addAll(snd.translate())
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(getBytesOfType(secondType)), Register.R0))
+        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+        if (secondType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                || secondType == BaseTypeAST(BaseType.CHAR)) {
             memtype = MemoryType.B
         }
-        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
+        instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
         freeCalleeReg()
-        instr.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffset(stackReg, 4, false), Register.R0))
+        instrs.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
 
-        return instr
+        return instrs
     }
 
 }
@@ -116,7 +116,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
                     "arguments, Actually got ${argList.size}", ctx)
             return false
         }
-        argTypes = mutableListOf<TypeAST>()
+        argTypes = mutableListOf()
         for (i in argList.indices) {
             val argType = argList[i].getRealType(table)
             argTypes.add(argType)
@@ -134,20 +134,20 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
     }
 
     override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+        val instrs = mutableListOf<Instruction>()
         val totalLength = argTypes.size - 1
         var totalBytes = 0
         for ((index, arg) in argList.reversed().withIndex()) {
             var memType: MemoryType? = null
-            instr.addAll(arg.translate())
+            instrs.addAll(arg.translate())
             val bytes = getBytesOfType(argTypes[(totalLength - index)])
             symTable.callOffset = bytes
             totalBytes += bytes
-            if (argTypes[(totalLength - index)].equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
-                    || argTypes[(totalLength - index)].equals(BaseTypeAST(BaseType.CHAR))) {
+            if (argTypes[(totalLength - index)] == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                    || argTypes[(totalLength - index)] == BaseTypeAST(BaseType.CHAR)) {
                 memType = MemoryType.B
             }
-            instr.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
+            instrs.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
             freeCalleeReg()
             if (index == 0) {
                 symTable.increaseOffsetForCall = 4
@@ -157,17 +157,17 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         symTable.increaseOffsetForCall = 0
 
 //        argList.reversed().forEach {
-//            instr.addAll(it.translate())
+//            instrs.addAll(it.translate())
 //            val bytes = getBytesOfType(it.getRealType(symTable))
-//            instr.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), Condition.AL))
+//            instrs.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), Condition.AL))
 //            freeCalleeReg()
 //        }
 
         val funcLabel = FunctionLabel(ident.name)
-        instr.add(BranchInstr(Condition.AL, funcLabel, true))
-        instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(totalBytes), false))
-        instr.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
-        return instr
+        instrs.add(BranchInstr(Condition.AL, funcLabel, true))
+        instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(totalBytes), false))
+        instrs.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
+        return instrs
     }
 
 }

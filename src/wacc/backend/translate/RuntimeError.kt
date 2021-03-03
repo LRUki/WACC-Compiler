@@ -1,10 +1,14 @@
-package wacc.backend.instruction.utils
+package wacc.backend.translate
 
 import wacc.backend.CodeGenerator
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instructionpart.ImmediateLabelMode
+import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
+import wacc.backend.translate.instruction.instructionpart.RegisterMode
+import wacc.backend.translate.instruction.instructionpart.RegisterOperand
 
 class RuntimeError {
 
@@ -40,7 +44,7 @@ class RuntimeError {
     fun translate(): List<Instruction> {
         val instructions = mutableListOf<Instruction>()
         runtimeError?.let { instructions.addAll(it) }
-        nullReferenceError?.let {instructions.addAll(it)}
+        nullReferenceError?.let { instructions.addAll(it) }
         divideZeroError?.let { instructions.addAll(it) }
         checkArrayBounds?.let { instructions.addAll(it) }
         overflowError?.let { instructions.addAll(it) }
@@ -53,7 +57,7 @@ class RuntimeError {
             runtimeError = listOf(
                     throwRuntimeErrorLabel,
                     BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true),
-                    MoveInstr(Condition.AL, Register.R0, ImmediateOperandInt(EXIT_CODE)),
+                    MoveInstr(Condition.AL, Register.R0, ImmediateIntOperand(EXIT_CODE)),
                     BranchInstr(Condition.AL, exitLabel, true)
             )
             CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_STRING)
@@ -70,8 +74,8 @@ class RuntimeError {
             nullReferenceError = listOf(
                     nullReferenceLabel,
                     PushInstr(Register.LR),
-                    CompareInstr(Register.R0, ImmediateOperandInt(0)),
-                    LoadInstr(Condition.EQ, null, ImmediateLabel(errorMsgLabel), Register.R0),
+                    CompareInstr(Register.R0, ImmediateIntOperand(0)),
+                    LoadInstr(Condition.EQ, null, ImmediateLabelMode(errorMsgLabel), Register.R0),
                     BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
             )
@@ -91,8 +95,8 @@ class RuntimeError {
             divideZeroError = listOf(
                     divideZeroCheckLabel,
                     PushInstr(Register.LR),
-                    CompareInstr(Register.R1, ImmediateOperandInt(0)),
-                    LoadInstr(Condition.EQ, null, ImmediateLabel(errorMsgLabel), Register.R0),
+                    CompareInstr(Register.R1, ImmediateIntOperand(0)),
+                    LoadInstr(Condition.EQ, null, ImmediateLabelMode(errorMsgLabel), Register.R0),
                     BranchInstr(Condition.EQ, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
             )
@@ -106,7 +110,7 @@ class RuntimeError {
         //   POP {pc}
     }
 
-    fun addArrayBoundsCheck(){
+    fun addArrayBoundsCheck() {
         if (checkArrayBounds == null) {
             val negativeMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
             val tooLargeMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.LARGE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
@@ -114,12 +118,12 @@ class RuntimeError {
             checkArrayBounds = listOf(
                     checkArrayBoundsLabel,
                     PushInstr(Register.LR),
-                    CompareInstr(Register.R0, ImmediateOperandInt(0)),
-                    LoadInstr(Condition.LT, null, ImmediateLabel(negativeMsgLabel), Register.R0),
+                    CompareInstr(Register.R0, ImmediateIntOperand(0)),
+                    LoadInstr(Condition.LT, null, ImmediateLabelMode(negativeMsgLabel), Register.R0),
                     BranchInstr(Condition.LT, throwRuntimeErrorLabel, true),
-                    LoadInstr(Condition.AL, null, RegisterAddr(Register.R1), Register.R1),
+                    LoadInstr(Condition.AL, null, RegisterMode(Register.R1), Register.R1),
                     CompareInstr(Register.R0, RegisterOperand(Register.R1)),
-                    LoadInstr(Condition.CS, null, ImmediateLabel(tooLargeMsgLabel), Register.R0),
+                    LoadInstr(Condition.CS, null, ImmediateLabelMode(tooLargeMsgLabel), Register.R0),
                     BranchInstr(Condition.CS, throwRuntimeErrorLabel, true),
                     PopInstr(Register.PC)
             )
@@ -137,7 +141,6 @@ class RuntimeError {
         }
 
 
-
     }
 
     fun addOverflowError() {
@@ -145,7 +148,7 @@ class RuntimeError {
             val errorMsg = CodeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())
             overflowError = listOf(
                     throwOverflowErrorLabel,
-                    LoadInstr(Condition.AL, null, ImmediateLabel(errorMsg), Register.R0),
+                    LoadInstr(Condition.AL, null, ImmediateLabelMode(errorMsg), Register.R0),
                     BranchInstr(Condition.AL, throwRuntimeErrorLabel, true),
             )
         }

@@ -1,4 +1,4 @@
-package wacc.backend.instruction.enums
+package wacc.backend.translate.instruction.instructionpart
 
 //16 visible registers
 enum class Register {
@@ -15,7 +15,7 @@ enum class Register {
 
     NONE;
 
-    fun toAssembly(): String  {
+    fun toAssembly(): String {
         return this.name.toLowerCase()
     }
 }

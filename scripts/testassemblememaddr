@@ -1,12 +1,13 @@
 #!/bin/bash
 
+cd ../
 echo 'Testing assemble (wacc files that print memory addresses)...'
 make
 rm -rf out_test
 
-FILENAME="testassembleskip.txt"
+SKIPFILE_FILENAME="testassemble.skip"
 
-LINES=$(cat $FILENAME)
+LINES=$(cat $SKIPFILE_FILENAME)
 
 echo "----------------------------------------------------------------"
 for FILENAME in $LINES
@@ -35,7 +36,7 @@ do
     EXITCODE=$(echo "$PIPE_RESULT" | cut -d' ' -f 1)
 
     OUTPUT_MATCHES=$(echo "$PIPE_RESULT" | cut -d' ' -f 2)
-    if [ ! -z $(grep "$FILENAME"'$' "testassembleskip.txt") ]
+    if [ ! -z $(grep "$FILENAME"'$' "testassemble.skip") ]
     then
       OUTPUT_MATCHES=0
       echo "Assume ${FILENAME} correct."

@@ -1,4 +1,4 @@
-package wacc.backend.instruction.enums
+package wacc.backend.translate.instruction.instructionpart
 
 enum class MemoryType {
     B,  // unsigned Byte
