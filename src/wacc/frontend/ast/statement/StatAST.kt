@@ -1,6 +1,6 @@
 package wacc.frontend.ast.statement
 
-import wacc.backend.instruction.Instruction
+import wacc.backend.translate.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.Translatable

@@ -1,9 +1,8 @@
-package wacc.backend.instruction
+package wacc.backend.translate
 
 
-import wacc.backend.instruction.instrs.DirectiveInstr
-import wacc.backend.instruction.instrs.Label
-import kotlin.text.Regex.Companion.escape
+import wacc.backend.translate.instrs.DirectiveInstr
+import wacc.backend.translate.instrs.Label
 
 class StringLabels(val strings: MutableList<String>) {
 

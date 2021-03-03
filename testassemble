@@ -91,5 +91,5 @@ echo "Passed $ALL_SUCESS_COUNT / $((ALL_FAIL_COUNT + ALL_SUCESS_COUNT))"
 if [ "$ALL_FAIL_COUNT" != 0 ]
 then
   echo "Some tests failed."
-#  exit 1
+  exit 1
 fi

@@ -1,15 +1,14 @@
 package wacc.frontend.ast.assign
 
-import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.*
+import wacc.backend.translate.Instruction
+import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.enums.MemoryType
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.instrs.*
+import wacc.backend.translate.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AST

@@ -1,7 +1,7 @@
-package wacc.backend.instruction.utils
+package wacc.backend.translate.utils
 
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.enums.ShiftType
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.enums.ShiftType
 
 interface Operand {
     fun toAssembly(): String

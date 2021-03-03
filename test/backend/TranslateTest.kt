@@ -3,8 +3,8 @@ package backend
 import frontend.actionOnFiles
 import org.junit.Test
 import wacc.backend.generateCode
-import wacc.backend.instruction.instrs.DirectiveInstr
-import wacc.backend.instruction.instrs.Label
+import wacc.backend.translate.instrs.DirectiveInstr
+import wacc.backend.translate.instrs.Label
 import wacc.buildAST
 import wacc.checkSemantics
 import wacc.checkSyntax

@@ -1,8 +1,7 @@
-package wacc.backend.instruction.instrs
+package wacc.backend.translate.instrs
 
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Register
+import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.Instruction
 
 class BranchInstr(val condition: Condition,
                   val label: LabelInstr, val link : Boolean): Instruction {

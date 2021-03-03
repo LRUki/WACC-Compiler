@@ -1,6 +1,6 @@
 package wacc.frontend.ast.function
 
-import wacc.backend.instruction.Instruction
+import wacc.backend.translate.Instruction
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.IdentAST

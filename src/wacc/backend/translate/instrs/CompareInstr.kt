@@ -1,9 +1,8 @@
-package wacc.backend.instruction.instrs
+package wacc.backend.translate.instrs
 
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.utils.Operand
+import wacc.backend.translate.Instruction
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.utils.Operand
 
 class CompareInstr(val register: Register,
                    val operand: Operand): Instruction {

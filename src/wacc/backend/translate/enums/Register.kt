@@ -1,4 +1,4 @@
-package wacc.backend.instruction.enums
+package wacc.backend.translate.enums
 
 //16 visible registers
 enum class Register {

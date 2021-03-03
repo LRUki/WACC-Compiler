@@ -1,13 +1,12 @@
 package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.LoadInstr
-import wacc.backend.instruction.utils.RegisterAddrWithOffset
-import wacc.frontend.FuncSymbolTable
+import wacc.backend.translate.Instruction
+import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.enums.MemoryType
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.instrs.LoadInstr
+import wacc.backend.translate.utils.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST

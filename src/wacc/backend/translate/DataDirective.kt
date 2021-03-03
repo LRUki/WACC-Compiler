@@ -1,6 +1,6 @@
-package wacc.backend.instruction
+package wacc.backend.translate
 
-import wacc.backend.instruction.instrs.DirectiveInstr
+import wacc.backend.translate.instrs.DirectiveInstr
 
 class DataDirective(val stringLabels: StringLabels) {
 

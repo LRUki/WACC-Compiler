@@ -1,6 +1,6 @@
 package wacc.backend
 
-import wacc.backend.instruction.Instruction
+import wacc.backend.translate.Instruction
 
 fun printCode(instrs: List<Instruction>): String {
     val lines = instrs.map { instr -> instr.toAssembly() }

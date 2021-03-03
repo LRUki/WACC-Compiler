@@ -1,12 +1,11 @@
 package wacc.frontend.ast.function
 
-import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeAllCalleeReg
-import wacc.backend.instruction.*
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.ImmediateOperandInt
+import wacc.backend.translate.*
+import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.instrs.*
+import wacc.backend.translate.utils.ImmediateOperandInt
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST

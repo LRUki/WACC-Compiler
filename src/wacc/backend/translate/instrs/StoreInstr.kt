@@ -1,10 +1,10 @@
-package wacc.backend.instruction.instrs
+package wacc.backend.translate.instrs
 
-import wacc.backend.instruction.*
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.utils.*
+import wacc.backend.translate.*
+import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.enums.MemoryType
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.utils.*
 
 class StoreInstr(val condition: Condition, val memType: MemoryType?,
                  val mode: AddressingMode, val srcRegister: Register): Instruction {

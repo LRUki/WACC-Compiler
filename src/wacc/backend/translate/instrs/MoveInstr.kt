@@ -1,9 +1,9 @@
-package wacc.backend.instruction.instrs
+package wacc.backend.translate.instrs
 
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.utils.Operand
-import wacc.backend.instruction.enums.Register
+import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.Instruction
+import wacc.backend.translate.utils.Operand
+import wacc.backend.translate.enums.Register
 
 class MoveInstr(val condition: Condition, val register: Register, val operand: Operand): Instruction {
     override fun toAssembly(): String {

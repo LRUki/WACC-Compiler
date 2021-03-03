@@ -1,11 +1,11 @@
-package wacc.backend.instruction.utils
+package wacc.backend.translate.utils
 
 import wacc.backend.CodeGenerator
-import wacc.backend.instruction.Instruction
+import wacc.backend.translate.Instruction
 //import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.*
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.RuntimeError.Companion.throwRuntimeErrorLabel
+import wacc.backend.translate.enums.*
+import wacc.backend.translate.instrs.*
+import wacc.backend.translate.utils.RuntimeError.Companion.throwRuntimeErrorLabel
 
 class CLibrary {
     enum class LibraryFunctions {

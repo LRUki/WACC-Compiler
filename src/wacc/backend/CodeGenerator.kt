@@ -1,12 +1,12 @@
 package wacc.backend
 
-import wacc.backend.instruction.DataDirective
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.StringLabels
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.Label
-import wacc.backend.instruction.utils.CLibrary
-import wacc.backend.instruction.utils.RuntimeError
+import wacc.backend.translate.DataDirective
+import wacc.backend.translate.Instruction
+import wacc.backend.translate.StringLabels
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.instrs.Label
+import wacc.backend.translate.utils.CLibrary
+import wacc.backend.translate.utils.RuntimeError
 import wacc.frontend.ast.program.ProgramAST
 import java.util.Stack
 

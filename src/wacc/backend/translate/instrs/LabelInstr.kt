@@ -1,6 +1,6 @@
-package wacc.backend.instruction.instrs
+package wacc.backend.translate.instrs
 
-import wacc.backend.instruction.Instruction
+import wacc.backend.translate.Instruction
 
 abstract class LabelInstr(val name: String): Instruction {
     override fun toAssembly(): String {

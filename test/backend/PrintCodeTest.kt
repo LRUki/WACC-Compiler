@@ -3,10 +3,10 @@ package backend
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.ImmediateInt
+import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.instrs.*
+import wacc.backend.translate.utils.ImmediateInt
 import wacc.backend.printCode
 
 class PrintCodeTest {

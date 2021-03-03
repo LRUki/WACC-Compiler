@@ -2,16 +2,14 @@ package wacc.frontend.ast.pair
 
 
 import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.BranchInstr
-import wacc.backend.instruction.instrs.LoadInstr
-import wacc.backend.instruction.instrs.MoveInstr
-import wacc.backend.instruction.instrs.StoreInstr
-import wacc.backend.instruction.utils.*
+import wacc.backend.translate.Instruction
+import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.enums.Register
+import wacc.backend.translate.instrs.BranchInstr
+import wacc.backend.translate.instrs.LoadInstr
+import wacc.backend.translate.instrs.MoveInstr
+import wacc.backend.translate.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
