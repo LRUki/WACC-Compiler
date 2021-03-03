@@ -7,6 +7,7 @@ import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.Label
 import wacc.backend.translate.CLibrary
 import wacc.backend.translate.RuntimeError
+import wacc.backend.visitor.TranslateVisitor
 import wacc.frontend.ast.program.ProgramAST
 import java.util.*
 
@@ -104,7 +105,7 @@ object CodeGenerator {
 }
 
 fun generateCode(ast: ProgramAST): List<Instruction> {
-    val result = ast.translate()
+    val result = TranslateVisitor().visit(ast)
     return result
 }
     
