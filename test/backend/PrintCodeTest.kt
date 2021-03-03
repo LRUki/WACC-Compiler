@@ -107,6 +107,18 @@ class PrintCodeTest {
     }
 
     @Test
+    fun PushAndPopInstrPrintsCode() {
+        assertEquals("PUSH {r0}",
+                PushInstr(Register.R0)
+                        .toAssembly())
+
+        assertEquals("POP {r0}",
+                PopInstr(Register.R0)
+                        .toAssembly())
+
+    }
+
+    @Test
     fun printCodeIndentsMainCode() {
         val instrs = listOf(
                 DirectiveInstr("text"),
