@@ -119,6 +119,18 @@ class PrintCodeTest {
     }
 
     @Test
+    fun StoreInstrPrintsCode() {
+        assertEquals("STR r0, =1",
+                StoreInstr(Condition.AL, null, ImmediateIntMode(1),Register.R0)
+                        .toAssembly())
+
+        assertEquals("STRB r0, [r1, #4]",
+                StoreInstr(Condition.AL, MemoryType.B, RegisterAddrWithOffsetMode(Register.R1,4,false),Register.R0)
+                        .toAssembly())
+
+    }
+
+    @Test
     fun printCodeIndentsMainCode() {
         val instrs = listOf(
                 DirectiveInstr("text"),
