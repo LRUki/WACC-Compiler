@@ -166,7 +166,7 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
             if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(Condition.AL, memType,
+            instrs.add(StoreInstr(memType,
                     RegisterAddrWithOffsetMode(stackReg,sizeOfInt + (index * elemSize),false),
                     seeLastUsedCalleeReg()))
             freeCalleeReg()
@@ -174,7 +174,7 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
 
         //add the length of the array to stack
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(values.size), getNextFreeCalleeReg()))
-        instrs.add(StoreInstr(Condition.AL, null,
+        instrs.add(StoreInstr(null,
                 RegisterMode(stackReg), seeLastUsedCalleeReg()))
         freeCalleeReg()
         return instrs

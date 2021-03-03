@@ -64,9 +64,9 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         if (firstType.isBoolOrChar()) {
             memtype = MemoryType.B
         }
-        instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
+        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
         freeCalleeReg()
-        instrs.add(StoreInstr(Condition.AL, null, RegisterMode(stackReg), Register.R0))
+        instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
 
         //Malloc second element
         instrs.addAll(snd.translate())
@@ -75,9 +75,9 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         if (secondType.isBoolOrChar()) {
             memtype = MemoryType.B
         }
-        instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
+        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
         freeCalleeReg()
-        instrs.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
+        instrs.add(StoreInstr(null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
 
         return instrs
     }
@@ -149,7 +149,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(Condition.AL, memType,
+            instrs.add(StoreInstr(memType,
                     RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true),
                     seeLastUsedCalleeReg()))
             freeCalleeReg()

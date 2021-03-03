@@ -246,7 +246,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
                 if (ast.lhs is IdentAST) {
                     offset = ast.symTable.findOffsetInStack(ast.lhs.name)
                 }
-                instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), calleeReg))
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), calleeReg))
                 CodeGenerator.freeCalleeReg()
                 return instrs
             }
@@ -259,26 +259,26 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
         when (ast.lhs) {
             is IdentAST -> {
                 val (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
-                instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(ast.lhs.name) + offset, false), calleeReg))
+                instrs.add(StoreInstr( memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(ast.lhs.name) + offset, false), calleeReg))
             }
             is ArrayElemAST -> {
                 instrs.addAll(visit(ast.lhs))
-                instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
+                instrs.add(StoreInstr( memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
                 CodeGenerator.freeCalleeReg()
             }
             is PairElemAST -> {
                 instrs.addAll(visit(ast.lhs))
 //                instrs.add(LoadInstr(Condition.AL,null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-                instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
+                instrs.add(StoreInstr(memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
                 CodeGenerator.freeCalleeReg()
 //                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
 //                instrs.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
 //                instrs.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
-//                instrs.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+//                instrs.add(StoreInstr(null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
             }
 //                instruction.add(StoreInstr(getNextFreeCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
 //                freeCalleeReg()
-//                instruction.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+//                instruction.add(StoreInstr(null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
 //                freeCalleeReg()
 
 //                instruction.add(LoadInstr(seeLastUsedCalleeReg(),null, RegisterAddr(Register.R0), Condition.AL))
@@ -323,7 +323,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), CodeGenerator.seeLastUsedCalleeReg()))
             }
         }
-        instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.offsetSize, false), Register.R4))
+        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.offsetSize, false), Register.R4))
         CodeGenerator.freeCalleeReg()
 
         return instrs
@@ -387,9 +387,9 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
                 || ast.firstType == BaseTypeAST(BaseType.CHAR)) {
             memtype = MemoryType.B
         }
-        instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
+        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
         CodeGenerator.freeCalleeReg()
-        instrs.add(StoreInstr(Condition.AL, null, RegisterMode(stackReg), Register.R0))
+        instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
 
         //Malloc second element
         instrs.addAll(visit(ast.snd))
@@ -399,9 +399,9 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
                 || ast.secondType == BaseTypeAST(BaseType.CHAR)) {
             memtype = MemoryType.B
         }
-        instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
+        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
         CodeGenerator.freeCalleeReg()
-        instrs.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
+        instrs.add(StoreInstr(null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
 
         return instrs
 
@@ -421,7 +421,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
                     || ast.argTypes[(totalLength - index)] == BaseTypeAST(BaseType.CHAR)) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), CodeGenerator.seeLastUsedCalleeReg()))
+            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), CodeGenerator.seeLastUsedCalleeReg()))
             CodeGenerator.freeCalleeReg()
             if (index == 0) {
                 ast.symTable.increaseOffsetForCall = 4
@@ -768,7 +768,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
             if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(Condition.AL, memType,
+            instrs.add(StoreInstr(memType,
                     RegisterAddrWithOffsetMode(stackReg,
                             sizeOfInt + (i * elemSize),
                             false), CodeGenerator.seeLastUsedCalleeReg()))
@@ -777,7 +777,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
 
         //add the length of the array to stack
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(ast.values.size), CodeGenerator.getNextFreeCalleeReg()))
-        instrs.add(StoreInstr(Condition.AL, null,
+        instrs.add(StoreInstr(null,
                 RegisterMode(stackReg), CodeGenerator.seeLastUsedCalleeReg()))
         CodeGenerator.freeCalleeReg()
         return instrs

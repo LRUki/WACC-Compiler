@@ -90,7 +90,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 if (lhs is IdentAST) {
                     offset = symTable.findOffsetInStack(lhs.name)
                 }
-                instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), calleeReg))
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), calleeReg))
                 freeCalleeReg()
                 return instrs
             }
@@ -103,16 +103,16 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         when (lhs) {
             is IdentAST -> {
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(lhs.name, rhsType)
-                instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset, false), calleeReg))
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset, false), calleeReg))
             }
             is ArrayElemAST -> {
                 instrs.addAll(lhs.translate())
-                instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
+                instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
             }
             is PairElemAST -> {
                 instrs.addAll(lhs.translate())
-                instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
+                instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
             }
         }
