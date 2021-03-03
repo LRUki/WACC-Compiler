@@ -15,7 +15,6 @@ import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST

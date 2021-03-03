@@ -12,7 +12,6 @@ import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
 

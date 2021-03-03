@@ -4,7 +4,6 @@ import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.Translatable
 
 /**
  * Implemented by Statement AST nodes
