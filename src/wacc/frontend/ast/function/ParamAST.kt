@@ -15,6 +15,6 @@ import wacc.frontend.ast.type.TypeAST
  */
 class ParamAST(val type: TypeAST, val ident: IdentAST) : AST, Identifiable, Translatable {
     override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 }

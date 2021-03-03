@@ -54,10 +54,9 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
                 instr.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateOperandInt(correctSTScope.findOffsetInStack(expr.name) + offset)))
             }
             is ArrayElemAST -> {
-                TODO("Implement this")
+
             }
             is PairElemAST -> {
-//                TODO("Implement this")
                 instr.addAll(expr.translate())
             }
         }

@@ -129,7 +129,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                     instr.add(PopInstr(Register.R11))
                     instr.add(MultInstr(Condition.AL, reg1, reg2, reg2, reg1))
                 }
-                instr.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, 31))) //TODO( MIGHT NEED TO ADD ASR)
+                instr.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, 31)))
                 instr.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, true))
                 CodeGenerator.runtimeErrors.addOverflowError()
             }

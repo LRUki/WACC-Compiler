@@ -39,7 +39,7 @@ class StringLabels(val strings: MutableList<String>) {
             }"))
 
             // display escaped characters in full
-//            val newString = escape(string) //TODO check this was producing the wrong characters in msg
+//            val newString = escape(string)
 //            instructions.add(DirectiveInstr("ascii \"$newString\""))
             instructions.add(DirectiveInstr("ascii \"${string}\""))
 

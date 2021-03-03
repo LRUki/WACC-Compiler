@@ -59,8 +59,8 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instr.addAll(fst.translate())
         instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(firstType)), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (firstType.equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
-                || firstType.equals(BaseTypeAST(BaseType.CHAR))) {
+        if (firstType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                || firstType == BaseTypeAST(BaseType.CHAR)) {
             memtype = MemoryType.B
         }
         instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
@@ -71,8 +71,8 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instr.addAll(snd.translate())
         instr.add(LoadInstr(Condition.AL, null, ImmediateInt(getBytesOfType(secondType)), Register.R0))
         instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (secondType.equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
-                || secondType.equals(BaseTypeAST(BaseType.CHAR))) {
+        if (secondType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                || secondType == BaseTypeAST(BaseType.CHAR)) {
             memtype = MemoryType.B
         }
         instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(Register.R0), seeLastUsedCalleeReg()))
@@ -115,7 +115,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
                     "arguments, Actually got ${argList.size}", ctx)
             return false
         }
-        argTypes = mutableListOf<TypeAST>()
+        argTypes = mutableListOf()
         for (i in argList.indices) {
             val argType = argList[i].getRealType(table)
             argTypes.add(argType)
@@ -142,8 +142,8 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             val bytes = getBytesOfType(argTypes[(totalLength - index)])
             symTable.callOffset = bytes
             totalBytes += bytes
-            if (argTypes[(totalLength - index)].equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
-                    || argTypes[(totalLength - index)].equals(BaseTypeAST(BaseType.CHAR))) {
+            if (argTypes[(totalLength - index)] == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                    || argTypes[(totalLength - index)] == BaseTypeAST(BaseType.CHAR)) {
                 memType = MemoryType.B
             }
             instr.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))

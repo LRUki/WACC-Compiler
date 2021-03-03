@@ -12,7 +12,7 @@ import java.util.*
 
 object CodeGenerator {
 
-    var dataDirective: DataDirective = DataDirective(StringLabels(mutableListOf()));
+    var dataDirective: DataDirective = DataDirective(StringLabels(mutableListOf()))
     var CLib: CLibrary = CLibrary()
     var runtimeErrors: RuntimeError = RuntimeError()
     var labelNumber: Int = 0
@@ -41,7 +41,7 @@ object CodeGenerator {
 
     fun seeNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()) {
-            return Register.NONE// TODO() Change later
+            return Register.NONE
         }
         return freeCalleeSavedRegs.peek()
     }
@@ -49,7 +49,7 @@ object CodeGenerator {
     fun getNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()) {
             useAccumulator = true
-            return Register.NONE//TODO() CHANGE LATER
+            return Register.NONE
         }
         val reg = freeCalleeSavedRegs.pop()
         calleSavedRegsInUse.push(reg)
@@ -104,9 +104,7 @@ object CodeGenerator {
 }
 
 fun generateCode(ast: ProgramAST): List<Instruction> {
-    // TODO: implement real code gen
     val result = ast.translate()
     return result
-//    return AssemblyCode(emptyList())
 }
     
