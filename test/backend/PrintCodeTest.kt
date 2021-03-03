@@ -41,5 +41,18 @@ class PrintCodeTest {
                         .toAssembly())
     }
 
+    @Test
+    fun CompareInstrPrintsCode() {
+        assertEquals("CMP r0, #1",
+                CompareInstr(Register.R0, ImmediateIntOperand(1))
+                        .toAssembly())
 
+        assertEquals("CMP r0, #'a'",
+                CompareInstr(Register.R0, ImmediateCharOperand('a'))
+                        .toAssembly())
+
+        assertEquals("CMP r0, r1, LSL #1",
+                CompareInstr(Register.R0, RegShiftOffsetOperand(Register.R1,ShiftType.LSL, 1))
+                        .toAssembly())
+    }
 }
