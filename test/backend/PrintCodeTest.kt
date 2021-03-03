@@ -95,6 +95,18 @@ class PrintCodeTest {
     }
 
     @Test
+    fun MoveInstrPrintsCode() {
+        assertEquals("MOV r0, #1",
+                MoveInstr(Condition.AL,Register.R0,ImmediateIntOperand(1))
+                        .toAssembly())
+
+        assertEquals("MOVEQ r0, #1",
+                MoveInstr(Condition.EQ,Register.R0,ImmediateIntOperand(1))
+                        .toAssembly())
+
+    }
+
+    @Test
     fun printCodeIndentsMainCode() {
         val instrs = listOf(
                 DirectiveInstr("text"),
