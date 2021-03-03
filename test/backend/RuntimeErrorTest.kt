@@ -14,7 +14,7 @@ import java.io.File
 import kotlin.test.assertTrue
 
 class RuntimeErrorTest {
-    val path = "wacc_examples/valid/runtimeErr/"
+    val path = "wacc_examples/valid/runtimeErr"
     @Test
     fun runtimeErrorContainsThrowRuntimeErrorLabel() {
         val folder = File(path)
@@ -31,13 +31,25 @@ class RuntimeErrorTest {
 
     @Test
     fun arrayRuntimeErrorContainsCheckArrayBounds() {
-        val folder = File("${path}arrayOutOfBounds")
+        val folder = File("${path}/arrayOutOfBounds")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
             generateCode(ast as ProgramAST).contains(RuntimeError.checkArrayBoundsLabel)
+        }
+    }
+
+    @Test
+    fun divideByZeroRuntimeErrorContainsCheckDivideByZero() {
+        val folder = File("${path}/divideByZero")
+        actionOnFiles(folder) { file ->
+            val program = parse(file.inputStream())
+            checkSyntax(program)
+            val ast = buildAST(program)
+            checkSemantics(ast)
+            generateCode(ast as ProgramAST).contains(RuntimeError.divideZeroCheckLabel)
         }
     }
 }
