@@ -3,11 +3,11 @@ package wacc.backend.translate
 //import wacc.backend.instruction.enums.Condition
 import wacc.backend.CodeGenerator
 import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instrpart.Condition
-import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.RuntimeError.Companion.throwRuntimeErrorLabel
-import wacc.backend.translate.instruction.instrpart.*
+import wacc.backend.translate.instruction.instructionpart.*
 
 class CLibrary {
     enum class LibraryFunctions {

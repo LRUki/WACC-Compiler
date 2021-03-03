@@ -1,9 +1,9 @@
 package wacc.backend.translate.instruction
 
-import wacc.backend.translate.instruction.instrpart.Condition
-import wacc.backend.translate.instruction.instrpart.MemoryType
-import wacc.backend.translate.instruction.instrpart.Register
-import wacc.backend.translate.instruction.instrpart.AddressingMode
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.instructionpart.AddressingMode
 
 class LoadInstr(val condition: Condition, val memType: MemoryType?,
                 val mode: AddressingMode, val destRegister: Register) : Instruction {

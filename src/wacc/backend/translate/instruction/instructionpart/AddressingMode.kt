@@ -1,4 +1,4 @@
-package wacc.backend.translate.instruction.instrpart
+package wacc.backend.translate.instruction.instructionpart
 
 interface AddressingMode {
     fun toAssembly(): String

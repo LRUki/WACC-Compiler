@@ -1,6 +1,6 @@
 package wacc.backend.translate.instruction
 
-import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instructionpart.Register
 
 class PopInstr(val register: Register) : Instruction {
     override fun toAssembly(): String {

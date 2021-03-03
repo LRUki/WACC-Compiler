@@ -5,11 +5,11 @@ import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instrpart.Condition
-import wacc.backend.translate.instruction.instrpart.MemoryType
-import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instrpart.*
+import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.assign.RhsAST

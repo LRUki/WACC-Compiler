@@ -2,13 +2,13 @@ package wacc.backend.translate
 
 import wacc.backend.CodeGenerator
 import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instrpart.Condition
-import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instrpart.ImmediateLabelMode
-import wacc.backend.translate.instruction.instrpart.ImmediateIntOperand
-import wacc.backend.translate.instruction.instrpart.RegisterMode
-import wacc.backend.translate.instruction.instrpart.RegisterOperand
+import wacc.backend.translate.instruction.instructionpart.ImmediateLabelMode
+import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
+import wacc.backend.translate.instruction.instructionpart.RegisterMode
+import wacc.backend.translate.instruction.instructionpart.RegisterOperand
 
 class RuntimeError {
 

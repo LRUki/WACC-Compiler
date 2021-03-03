@@ -3,7 +3,7 @@ package wacc.backend
 import wacc.backend.translate.DataDirective
 import wacc.backend.translate.instruction.Instruction
 import wacc.backend.translate.StringLabels
-import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.Label
 import wacc.backend.translate.CLibrary
 import wacc.backend.translate.RuntimeError

@@ -1,7 +1,7 @@
 package wacc.backend.translate.instruction
 
-import wacc.backend.translate.instruction.instrpart.Register
-import wacc.backend.translate.instruction.instrpart.Operand
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.instructionpart.Operand
 
 class CompareInstr(val register: Register,
                    val operand: Operand) : Instruction {

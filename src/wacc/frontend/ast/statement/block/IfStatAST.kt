@@ -5,10 +5,10 @@ import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextLabel
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instrpart.Condition
-import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instrpart.ImmediateIntOperand
+import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST

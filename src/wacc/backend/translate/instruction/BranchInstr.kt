@@ -1,6 +1,6 @@
 package wacc.backend.translate.instruction
 
-import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Condition
 
 class BranchInstr(val condition: Condition,
                   val label: LabelInstr, val link: Boolean) : Instruction {
