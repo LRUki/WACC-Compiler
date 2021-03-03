@@ -2,8 +2,10 @@ package wacc.backend.visitor
 
 import wacc.backend.CodeGenerator
 import wacc.backend.translate.CLibrary
+import wacc.backend.translate.RuntimeError
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
+import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
@@ -11,6 +13,7 @@ import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
+import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
@@ -368,55 +371,416 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
     }
 
     override fun visitNewPairRhsAST(ast: NewPairRhsAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        var memtype: MemoryType? = null
+        //Malloc space for pair
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(2 * 4), Register.R0))
+        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+        val stackReg = CodeGenerator.getNextFreeCalleeReg()
+        instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
+
+        //Malloc first element
+        instrs.addAll(visit(ast.fst))
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(ast.firstType)), Register.R0))
+        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+        if (ast.firstType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                || ast.firstType == BaseTypeAST(BaseType.CHAR)) {
+            memtype = MemoryType.B
+        }
+        instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
+        CodeGenerator.freeCalleeReg()
+        instrs.add(StoreInstr(Condition.AL, null, RegisterMode(stackReg), Register.R0))
+
+        //Malloc second element
+        instrs.addAll(visit(ast.snd))
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(ast.secondType)), Register.R0))
+        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+        if (ast.secondType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                || ast.secondType == BaseTypeAST(BaseType.CHAR)) {
+            memtype = MemoryType.B
+        }
+        instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
+        CodeGenerator.freeCalleeReg()
+        instrs.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
+
+        return instrs
+
     }
 
     override fun visitCallRhsAST(ast: CallRhsAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        val totalLength = ast.argTypes.size - 1
+        var totalBytes = 0
+        for ((index, arg) in ast.argList.reversed().withIndex()) {
+            var memType: MemoryType? = null
+            instrs.addAll(visit(arg))
+            val bytes = SymbolTable.getBytesOfType(ast.argTypes[(totalLength - index)])
+            ast.symTable.callOffset = bytes
+            totalBytes += bytes
+            if (ast.argTypes[(totalLength - index)] == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                    || ast.argTypes[(totalLength - index)] == BaseTypeAST(BaseType.CHAR)) {
+                memType = MemoryType.B
+            }
+            instrs.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), CodeGenerator.seeLastUsedCalleeReg()))
+            CodeGenerator.freeCalleeReg()
+            if (index == 0) {
+                ast.symTable.increaseOffsetForCall = 4
+            }
+        }
+        ast.symTable.callOffset = 0
+        ast.symTable.increaseOffsetForCall = 0
+
+//        argList.reversed().forEach {
+//            instrs.addAll(visit(it))
+//            val bytes = getBytesOfType(it.getRealType(symTable))
+//            instrs.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), Condition.AL))
+//            freeCalleeReg()
+//        }
+
+        val funcLabel = FunctionLabel(ast.ident.name)
+        instrs.add(BranchInstr(Condition.AL, funcLabel, true))
+        instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(totalBytes), false))
+        instrs.add(MoveInstr(Condition.AL, CodeGenerator.getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
+        return instrs
     }
 
     override fun visitBinOpExprAST(ast: BinOpExprAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        instrs.addAll(visit(ast.expr1))
+        var reg1 = CodeGenerator.seeLastUsedCalleeReg()
+        instrs.addAll(visit(ast.expr2))
+        var reg2 = CodeGenerator.seeLastUsedCalleeReg()
+
+        var useAccumulator = false
+        if (reg1 == Register.NONE || reg1 == Register.R10) {
+            useAccumulator = true
+            reg1 = Register.R10
+            reg2 = Register.R11
+        }
+
+        when (ast.binOp) {
+            BinOp.PLUS -> {
+                if (!useAccumulator) {
+                    instrs.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                }
+                instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
+                CodeGenerator.runtimeErrors.addOverflowError()
+            }
+            BinOp.MINUS -> {
+                if (!useAccumulator) {
+                    instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                }
+                instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
+                CodeGenerator.runtimeErrors.addOverflowError()
+            }
+            BinOp.MULT -> {
+                if (!useAccumulator) {
+                    instrs.add(MultInstr(Condition.AL, reg1, reg2, reg1, reg2))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(MultInstr(Condition.AL, reg1, reg2, reg2, reg1))
+                }
+                instrs.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, 31)))
+                instrs.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, true))
+                CodeGenerator.runtimeErrors.addOverflowError()
+            }
+            BinOp.DIV -> {
+                if (!useAccumulator) {
+                    instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
+                    instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg2)))
+                    instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg1)))
+                }
+                instrs.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
+                CodeGenerator.runtimeErrors.addDivideByZeroCheck()
+                instrs.add(BranchInstr(Condition.AL, Label("__aeabi_idiv"), true))
+                instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R0)))
+            }
+            BinOp.MOD -> {
+                if (!useAccumulator) {
+                    instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
+                    instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg2)))
+                    instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg1)))
+                }
+                instrs.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
+                CodeGenerator.runtimeErrors.addDivideByZeroCheck()
+                instrs.add(BranchInstr(Condition.AL, Label("__aeabi_idivmod"), true))
+                instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
+            }
+            BinOp.EQ -> {
+                if (!useAccumulator) {
+                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
+                instrs.add(MoveInstr(Condition.EQ, reg1, ImmediateBoolOperand(true)))
+                instrs.add(MoveInstr(Condition.NE, reg1, ImmediateBoolOperand(false)))
+            }
+
+            BinOp.NEQ -> {
+                if (!useAccumulator) {
+                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
+                instrs.add(MoveInstr(Condition.NE, reg1, ImmediateBoolOperand(true)))
+                instrs.add(MoveInstr(Condition.EQ, reg1, ImmediateBoolOperand(false)))
+            }
+            BinOp.LTE -> {
+                if (!useAccumulator) {
+                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
+                instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(true)))
+                instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(false)))
+            }
+            BinOp.LT -> {
+                if (!useAccumulator) {
+                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
+                instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(true)))
+                instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(false)))
+            }
+            BinOp.GTE -> {
+                if (!useAccumulator) {
+                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
+                instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(true)))
+                instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(false)))
+            }
+            BinOp.GT -> {
+                if (!useAccumulator) {
+                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                }
+                instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(true)))
+                instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(false)))
+            }
+
+            BinOp.AND -> {
+                if (!useAccumulator) {
+                    instrs.add(AndInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(AndInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
+
+                }
+            }
+            BinOp.OR -> {
+                if (!useAccumulator) {
+                    instrs.add(OrInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
+                } else {
+                    instrs.add(PopInstr(Register.R11))
+                    instrs.add(OrInstrType(Condition.AL, reg1, reg2, RegisterOperand(reg1)))
+                }
+            }
+        }
+        if (!useAccumulator) {
+            CodeGenerator.freeCalleeReg()
+        }
+        return instrs
     }
 
     override fun visitUnOpExprAST(ast: UnOpExprAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        instrs.addAll(visit(ast.expr))
+        val reg1 = CodeGenerator.seeLastUsedCalleeReg()
+        when (ast.unOp) {
+            UnOp.NOT -> {
+                instrs.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateIntOperand(1)))
+            }
+            UnOp.MINUS -> {
+                instrs.add(ReverseSubInstr(Condition.AL, reg1, reg1, ImmediateIntOperand(0), true))
+                instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
+                CodeGenerator.runtimeErrors.addOverflowError()
+            }
+            UnOp.LEN -> {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(Register.SP), reg1))
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
+//                instrs.add(LoadInstr(Condition.AL, null, ImmediateInt((expr as ArrayElemAST).indices.size), reg1))
+//                  consider the case when expr is a variable
+            }
+            UnOp.ORD -> {
+//                instrs.add(MoveInstr(Condition.AL, reg1,  ImmediateOperandChar((expr as CharLiterAST).value)))
+            }
+            UnOp.CHR -> {
+//                instrs.add(LoadInstr(reg1, null, ImmediateInt((expr as IntLiterAST).value), Condition.AL))
+            }
+        }
+        return instrs
     }
 
     override fun visitArrayElemAST(ast: ArrayElemAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        val stackReg = CodeGenerator.getNextFreeCalleeReg()
+        val stackOffset = ast.symTable.findOffsetInStack(ast.ident.name)
+        instrs.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateIntOperand(stackOffset), false))
+        ast.indices.forEach {
+            instrs.addAll(visit(it))
+            instrs.add(LoadInstr(Condition.AL, null, RegisterMode(stackReg), stackReg))
+            instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(CodeGenerator.seeLastUsedCalleeReg())))
+            instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
+            instrs.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
+            CodeGenerator.runtimeErrors.addArrayBoundsCheck()
+            instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(4), false))
+            val identType = ast.ident.getRealType(ast.symTable)
+            if (identType is ArrayTypeAST &&
+                    ((identType.type.equals(BaseTypeAST(BaseType.CHAR)) || identType.type.equals(BaseTypeAST(BaseType.BOOL))))) {
+                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(CodeGenerator.seeLastUsedCalleeReg()), false))
+            } else {
+                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(CodeGenerator.seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
+            }
+            CodeGenerator.freeCalleeReg()
+        }
+        return instrs
+
     }
 
     override fun visitPairElemAST(ast: PairElemAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+
+        instrs.addAll(visit(ast.expr))
+        val reg = CodeGenerator.seeLastUsedCalleeReg()
+//        instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), reg))
+        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+        instrs.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
+        CodeGenerator.runtimeErrors.addNullReferenceCheck()
+        if (ast.choice == PairChoice.FST) {
+            instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
+        } else {
+            instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(reg, 4, false), reg))
+        }
+        return instrs
     }
 
     override fun visitIdentAST(ast: IdentAST): List<Instruction> {
-        TODO("Not yet implemented")
+        var offset = ast.symTable.findOffsetInStack(ast.name)
+        var memType: MemoryType? = null
+        val type = ast.getRealType(ast.symTable)
+        if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
+            memType = MemoryType.SB
+        }
+        offset += ast.symTable.checkParamInFuncSymbolTable(ast.name) + ast.symTable.callOffset
+        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, offset, false), CodeGenerator.getNextFreeCalleeReg()))
+
     }
 
     override fun visitIntLiterAST(ast: IntLiterAST): List<Instruction> {
-        TODO("Not yet implemented")
+        var reg = CodeGenerator.getNextFreeCalleeReg()
+        val instrs = mutableListOf<Instruction>()
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        instrs += LoadInstr(Condition.AL, null, ImmediateIntMode(ast.value), reg)
+        return instrs
     }
 
     override fun visitBoolLiterAST(ast: BoolLiterAST): List<Instruction> {
-        TODO("Not yet implemented")
+        var reg = CodeGenerator.getNextFreeCalleeReg()
+        val instrs = mutableListOf<Instruction>()
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        instrs += MoveInstr(Condition.AL, reg, ImmediateBoolOperand(ast.value))
+        return instrs
     }
 
     override fun visitStrLiterAST(ast: StrLiterAST): List<Instruction> {
-        TODO("Not yet implemented")
+        var reg = CodeGenerator.getNextFreeCalleeReg()
+        val instrs = mutableListOf<Instruction>()
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        val strLabel = CodeGenerator.dataDirective.addStringLabel(ast.value)
+        instrs += LoadInstr(Condition.AL, null, ImmediateLabelMode(strLabel), reg)
+        return instrs
     }
 
     override fun visitCharLiterAST(ast: CharLiterAST): List<Instruction> {
-        TODO("Not yet implemented")
+        var reg = CodeGenerator.getNextFreeCalleeReg()
+        val instrs = mutableListOf<Instruction>()
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        instrs += MoveInstr(Condition.AL, reg, ImmediateCharOperand(ast.value))
+        return instrs
     }
 
     override fun visitNullPairLiterAST(ast: NullPairLiterAST): List<Instruction> {
-        TODO("Not yet implemented")
+        var reg = CodeGenerator.getNextFreeCalleeReg()
+        val instrs = mutableListOf<Instruction>()
+        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+            reg = Register.R10
+            instrs += PushInstr(reg)
+        }
+        instrs += LoadInstr(Condition.AL, null, ImmediateIntMode(0), reg)
+        return instrs
     }
 
     override fun visitArrayLiterAST(ast: ArrayLiterAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        val elemSize = SymbolTable.getBytesOfType((ast.arrayType as ArrayTypeAST).type)
+//        println("This is the bytes of ${arrayType} ${elemSize}")
+        //loading the length of array * elemSize + size of INT
+        val sizeOfInt = SymbolTable.getBytesOfType(BaseTypeAST(BaseType.INT))
+        instrs.add(LoadInstr(Condition.AL, null,
+                ImmediateIntMode(elemSize * ast.values.size + sizeOfInt), Register.R0))
+
+        instrs.add(BranchInstr(Condition.AL, Label("malloc"), true))
+        val stackReg = CodeGenerator.getNextFreeCalleeReg()
+        instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
+
+        //add element to stack
+        var memType: MemoryType? = null
+        for ((i, expr) in ast.values.withIndex()) {
+            if (expr is IdentAST) {
+                expr.symTable = ast.symTable
+            }
+            instrs.addAll(visit(expr))
+
+            if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
+                memType = MemoryType.B
+            }
+            instrs.add(StoreInstr(Condition.AL, memType,
+                    RegisterAddrWithOffsetMode(stackReg,
+                            sizeOfInt + (i * elemSize),
+                            false), CodeGenerator.seeLastUsedCalleeReg()))
+            CodeGenerator.freeCalleeReg()
+        }
+
+        //add the length of the array to stack
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(ast.values.size), CodeGenerator.getNextFreeCalleeReg()))
+        instrs.add(StoreInstr(Condition.AL, null,
+                RegisterMode(stackReg), CodeGenerator.seeLastUsedCalleeReg()))
+        CodeGenerator.freeCalleeReg()
+        return instrs
     }
 
     override fun visitTypeAST(ast: TypeAST): List<Instruction> {
