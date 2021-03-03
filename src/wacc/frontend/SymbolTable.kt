@@ -130,8 +130,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                     currSymbolTable.toList().dropWhile {
                         it.second.first != identAst.get()
                     }.dropWhile {
-                        it.second.first == identAst.get()
-                    }.dropWhile { it.second.first is ParamAST }
+                        it.second.first == identAst.get() || it.second.first is ParamAST }
                             .forEach {
                                 offset += it.second.second
                             }
