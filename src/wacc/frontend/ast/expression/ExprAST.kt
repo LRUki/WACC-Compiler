@@ -333,10 +333,10 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
             }
             UnOp.ORD -> {
-//                Intentionally Blank
+                // Intentionally Left Blank
             }
             UnOp.CHR -> {
-//                Intentionally Blank
+                // Intentionally Left Blank
             }
         }
         return instrs

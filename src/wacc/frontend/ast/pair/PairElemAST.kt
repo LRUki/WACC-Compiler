@@ -58,7 +58,6 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
 
         instrs.addAll(expr.translate())
         val reg = seeLastUsedCalleeReg()
-//        instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), reg))
         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
         instrs.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
         CodeGenerator.runtimeErrors.addNullReferenceCheck()

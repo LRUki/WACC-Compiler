@@ -149,7 +149,9 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
+            instrs.add(StoreInstr(Condition.AL, memType,
+                    RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true),
+                    seeLastUsedCalleeReg()))
             freeCalleeReg()
             if (index == 0) {
                 symTable.increaseOffsetForCall = 4

@@ -145,7 +145,7 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     override fun translate(): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val elemSize = getBytesOfType((arrayType as ArrayTypeAST).type)
-//        println("This is the bytes of ${arrayType} ${elemSize}")
+
         //loading the length of array * elemSize + size of INT
         val sizeOfInt = getBytesOfType(BaseTypeAST(BaseType.INT))
         instrs.add(LoadInstr(Condition.AL, null,
@@ -157,7 +157,7 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
 
         //add element to stack
         var memType: MemoryType? = null
-        for ((i, expr) in values.withIndex()) {
+        for ((index, expr) in values.withIndex()) {
             if (expr is IdentAST) {
                 expr.symTable = symTable
             }
@@ -167,9 +167,8 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
                 memType = MemoryType.B
             }
             instrs.add(StoreInstr(Condition.AL, memType,
-                    RegisterAddrWithOffsetMode(stackReg,
-                            sizeOfInt + (i * elemSize),
-                            false), seeLastUsedCalleeReg()))
+                    RegisterAddrWithOffsetMode(stackReg,sizeOfInt + (index * elemSize),false),
+                    seeLastUsedCalleeReg()))
             freeCalleeReg()
         }
 

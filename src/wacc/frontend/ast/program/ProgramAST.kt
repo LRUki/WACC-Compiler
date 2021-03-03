@@ -67,10 +67,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
     override fun translate(): List<Instruction> {
 //      Translate function definitions
         val instrs = mutableListOf<Instruction>()
-        //add some stuff here. directives, .globalMain, .data,.text
-//
-//        addMsg()
-//        // add msg here
+
         instrs.add(DirectiveInstr("text"))
         instrs.add(DirectiveInstr("global main"))
         funcList.forEach { instrs.addAll(it.translate()) }
@@ -88,7 +85,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         val data = dataDirective.translate()
         val cLib = CLib.translate()
         val runtime = runtimeErrors.translate()
-        // data + main + runtime err + clib calls
+
         return data + instrs + runtime + cLib
     }
 
