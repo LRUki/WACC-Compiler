@@ -154,7 +154,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
         val exprType = ast.expr.getRealType(ast.symTable)
         if (ast.expr is ArrayElemAST) {
             var memType: MemoryType? = null
-            if (exprType == BaseTypeAST(BaseType.BOOL) || exprType == BaseTypeAST(BaseType.CHAR)) {
+            if (exprType.isBoolOrChar()) {
                 memType = MemoryType.SB
             }
             instrs.add(LoadInstr(Condition.AL, memType, RegisterMode(reg), reg))
@@ -234,7 +234,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
         val rhsType = ast.rhs.getRealType(ast.symTable)
         var memtype: MemoryType? = null
         if (rhsType is BaseTypeAST) {
-            if (rhsType.type == BaseType.BOOL || rhsType.type == BaseType.CHAR) {
+            if (rhsType.isBoolOrChar()) {
                 memtype = MemoryType.B
             }
         }
@@ -301,7 +301,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
         var memtype: MemoryType? = null
         when (ast.type) {
             is BaseTypeAST -> {
-                if (ast.type.type == BaseType.BOOL || ast.type.type == BaseType.CHAR) {
+                if (ast.type.isBoolOrChar()) {
                     memtype = MemoryType.B
                 }
             }
@@ -383,8 +383,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
         instrs.addAll(visit(ast.fst))
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(ast.firstType)), Register.R0))
         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (ast.firstType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
-                || ast.firstType == BaseTypeAST(BaseType.CHAR)) {
+        if (ast.firstType.isBoolOrChar()) {
             memtype = MemoryType.B
         }
         instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
@@ -395,8 +394,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
         instrs.addAll(visit(ast.snd))
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(ast.secondType)), Register.R0))
         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (ast.secondType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
-                || ast.secondType == BaseTypeAST(BaseType.CHAR)) {
+        if (ast.secondType.isBoolOrChar()) {
             memtype = MemoryType.B
         }
         instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
@@ -418,8 +416,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
             val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
             ast.symTable.callOffset = bytes
             totalBytes += bytes
-            if (argTypesReversed[index] == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
-                    || argTypesReversed[index] == BaseTypeAST(BaseType.CHAR)) {
+            if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
             instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), CodeGenerator.seeLastUsedCalleeReg()))
@@ -681,7 +678,7 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
         var offset = ast.symTable.findOffsetInStack(ast.name)
         var memType: MemoryType? = null
         val type = ast.getRealType(ast.symTable)
-        if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
+        if (type.isBoolOrChar()) {
             memType = MemoryType.SB
         }
         offset += ast.symTable.checkParamInFuncSymbolTable(ast.name) + ast.symTable.callOffset
