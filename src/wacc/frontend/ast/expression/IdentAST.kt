@@ -59,7 +59,7 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         var offset = symTable.findOffsetInStack(name)
         var memType: MemoryType? = null
         val type = getRealType(symTable)
-        if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
+        if (type.isBoolOrChar()) {
             memType = MemoryType.SB
         }
         offset += symTable.checkParamInFuncSymbolTable(name) + symTable.callOffset

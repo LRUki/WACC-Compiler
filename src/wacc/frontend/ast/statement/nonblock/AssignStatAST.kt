@@ -79,10 +79,8 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
 
         val rhsType = rhs.getRealType(symTable)
         var memtype: MemoryType? = null
-        if (rhsType is BaseTypeAST) {
-            if (rhsType.type == BaseType.BOOL || rhsType.type == BaseType.CHAR) {
-                memtype = MemoryType.B
-            }
+        if (rhsType.isBoolOrChar()) {
+            memtype = MemoryType.B
         }
 
         when (rhs) {

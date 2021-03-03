@@ -69,7 +69,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         var memtype: MemoryType? = null
         when (type) {
             is BaseTypeAST -> {
-                if (type.type == BaseType.BOOL || type.type == BaseType.CHAR) {
+                if (type.isBoolOrChar()) {
                     memtype = MemoryType.B
                 }
             }
