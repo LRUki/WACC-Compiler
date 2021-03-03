@@ -26,7 +26,7 @@ import wacc.frontend.exception.semanticError
  * Implemented by AST nodes that can be on the right hand-side of an assignment statement.
  * Implements Typed interface to get underlying types during declare and assign statements
  */
-interface RhsAST : AST, Typed, Translatable
+interface RhsAST : AST, Typed
 
 /**
  * AST node to represent a New Pair
@@ -46,40 +46,6 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         firstType = fst.getRealType(table)
         secondType = snd.getRealType(table)
         return PairTypeAST(firstType, secondType)
-    }
-
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        var memtype: MemoryType? = null
-        //Malloc space for pair
-        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(2 * 4), Register.R0))
-        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        val stackReg = getNextFreeCalleeReg()
-        instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
-
-        //Malloc first element
-        instrs.addAll(fst.translate())
-        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(getBytesOfType(firstType)), Register.R0))
-        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (firstType.isBoolOrChar()) {
-            memtype = MemoryType.B
-        }
-        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
-        freeCalleeReg()
-        instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
-
-        //Malloc second element
-        instrs.addAll(snd.translate())
-        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(getBytesOfType(secondType)), Register.R0))
-        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (secondType.isBoolOrChar()) {
-            memtype = MemoryType.B
-        }
-        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
-        freeCalleeReg()
-        instrs.add(StoreInstr(null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
-
-        return instrs
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
@@ -134,37 +100,6 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
 
     override fun getRealType(table: SymbolTable): TypeAST {
         return ident.getRealType(table)
-    }
-
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        var totalBytes = 0
-        val argTypesReversed = argTypes.reversed()
-        for ((index, arg) in argList.reversed().withIndex()) {
-            var memType: MemoryType? = null
-            instrs.addAll(arg.translate())
-            val bytes = getBytesOfType(argTypesReversed[index])
-            symTable.callOffset = bytes
-            totalBytes += bytes
-            if (argTypesReversed[index].isBoolOrChar()) {
-                memType = MemoryType.B
-            }
-            instrs.add(StoreInstr(memType,
-                    RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true),
-                    seeLastUsedCalleeReg()))
-            freeCalleeReg()
-            if (index == 0) {
-                symTable.increaseOffsetForCall = 4
-            }
-        }
-        symTable.callOffset = 0
-        symTable.increaseOffsetForCall = 0
-
-        val funcLabel = FunctionLabel(ident.name)
-        instrs.add(BranchInstr(Condition.AL, funcLabel, true))
-        instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(totalBytes), false))
-        instrs.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
-        return instrs
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {

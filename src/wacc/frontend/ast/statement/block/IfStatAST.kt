@@ -56,48 +56,12 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         return true
     }
 
-
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        val elseLabel = getNextLabel()
-        val afterElseLabel = getNextLabel()
-
-        instrs.addAll(cond.translate())
-        instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(0)))
-        instrs.add(BranchInstr(Condition.EQ, elseLabel, false))
-        freeCalleeReg()
-        var stackOffset = thenST.getStackOffset()
-        if (stackOffset > 0) {
-            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
-        thenBody.forEach {instrs.addAll(it.translate())}
-        val lastStat = thenBody.last()
-        if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(symTable.getFuncStackOffset())))
-            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-            freeAllCalleeReg()
-        }
-        if (stackOffset > 0) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
-
-        instrs.add(BranchInstr(Condition.AL, afterElseLabel, false))
-        instrs.add(elseLabel)
-
-        stackOffset = elseST.getStackOffset()
-        if (stackOffset > 0) {
-            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
-        elseBody.forEach { instrs.addAll(it.translate()) }
-        if (stackOffset > 0) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
-        instrs.add(afterElseLabel)
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitIfStatAST(this)
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
 }

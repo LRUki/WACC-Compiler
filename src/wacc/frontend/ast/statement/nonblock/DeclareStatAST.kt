@@ -58,47 +58,12 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         return true
     }
 
-
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        instrs.addAll(rhs.translate())
-        if (rhs is StrLiterAST) {
-            stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
-        }
-        symTable.decreaseOffset(ident, rhs.getRealType(symTable))
-        var memtype: MemoryType? = null
-        when (type) {
-            is BaseTypeAST -> {
-                if (type.isBoolOrChar()) {
-                    memtype = MemoryType.B
-                }
-            }
-            is ArrayTypeAST -> {
-                // Intentionally Left Blank
-            }
-            is PairTypeAST -> {
-                if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is IdentAST &&
-                        rhs !is NullPairLiterAST && rhs !is CallRhsAST && rhs !is PairElemAST) {
-                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-                }
-            }
-        }
-        when (rhs) {
-            is PairElemAST -> {
-                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-            }
-            is ArrayElemAST -> {
-                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-            }
-        }
-        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, symTable.offsetSize, false), Register.R4))
-        freeCalleeReg()
-
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitDeclareStatAST(this)
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
 }

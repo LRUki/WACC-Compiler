@@ -23,7 +23,7 @@ class IntLiterAST(val value: Int) : LiterAST {
         return BaseTypeAST(BaseType.INT)
     }
 
-    override fun translate(): List<Instruction> {
+    fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
@@ -44,7 +44,7 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
         return BaseTypeAST(BaseType.BOOL)
     }
 
-    override fun translate(): List<Instruction> {
+     fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
@@ -65,7 +65,7 @@ class StrLiterAST(val value: String) : LiterAST {
         return BaseTypeAST(BaseType.STRING)
     }
 
-    override fun translate(): List<Instruction> {
+    fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
@@ -87,7 +87,7 @@ class CharLiterAST(val value: Char) : LiterAST {
         return BaseTypeAST(BaseType.CHAR)
     }
 
-    override fun translate(): List<Instruction> {
+     fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
@@ -108,7 +108,7 @@ class NullPairLiterAST : LiterAST {
         return AnyPairTypeAST()
     }
 
-    override fun translate(): List<Instruction> {
+     fun translate(): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
@@ -140,44 +140,6 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
             }
         }
         return arrayType
-    }
-
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        val elemSize = getBytesOfType((arrayType as ArrayTypeAST).type)
-
-        //loading the length of array * elemSize + size of INT
-        val sizeOfInt = getBytesOfType(BaseTypeAST(BaseType.INT))
-        instrs.add(LoadInstr(Condition.AL, null,
-                ImmediateIntMode(elemSize * values.size + sizeOfInt), Register.R0))
-
-        instrs.add(BranchInstr(Condition.AL, Label("malloc"), true))
-        val stackReg = getNextFreeCalleeReg()
-        instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
-
-        //add element to stack
-        var memType: MemoryType? = null
-        for ((index, expr) in values.withIndex()) {
-            if (expr is IdentAST) {
-                expr.symTable = symTable
-            }
-            instrs.addAll(expr.translate())
-
-            if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
-                memType = MemoryType.B
-            }
-            instrs.add(StoreInstr(memType,
-                    RegisterAddrWithOffsetMode(stackReg,sizeOfInt + (index * elemSize),false),
-                    seeLastUsedCalleeReg()))
-            freeCalleeReg()
-        }
-
-        //add the length of the array to stack
-        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(values.size), getNextFreeCalleeReg()))
-        instrs.add(StoreInstr(null,
-                RegisterMode(stackReg), seeLastUsedCalleeReg()))
-        freeCalleeReg()
-        return instrs
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {

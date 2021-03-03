@@ -69,61 +69,12 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         return true
     }
 
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        instrs.addAll(rhs.translate())
-        val calleeReg = seeLastUsedCalleeReg()
-        if (rhs is StrLiterAST) {
-            stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
-        }
-
-        val rhsType = rhs.getRealType(symTable)
-        var memtype: MemoryType? = null
-        if (rhsType.isBoolOrChar()) {
-            memtype = MemoryType.B
-        }
-
-        when (rhs) {
-            // only other RHS which requires "setting up"
-            is CallRhsAST -> {
-                var offset = 0
-                if (lhs is IdentAST) {
-                    offset = symTable.findOffsetInStack(lhs.name)
-                }
-                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), calleeReg))
-                freeCalleeReg()
-                return instrs
-            }
-            is PairElemAST -> {
-                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
-            }
-        }
-
-        symTable.decreaseOffset(lhs, rhsType)
-        when (lhs) {
-            is IdentAST -> {
-                val (correctSTScope, offset) = symTable.getSTWithIdentifier(lhs.name, rhsType)
-                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset, false), calleeReg))
-            }
-            is ArrayElemAST -> {
-                instrs.addAll(lhs.translate())
-                instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
-                freeCalleeReg()
-            }
-            is PairElemAST -> {
-                instrs.addAll(lhs.translate())
-                instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
-                freeCalleeReg()
-            }
-        }
-
-        freeCalleeReg()
-
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitAssignStatAST(this)
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
 }

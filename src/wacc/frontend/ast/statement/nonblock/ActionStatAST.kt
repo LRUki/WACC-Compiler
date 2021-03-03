@@ -70,81 +70,12 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         return false
     }
 
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        instrs.addAll(expr.translate())
-        val reg = seeLastUsedCalleeReg()
-        val exprType = expr.getRealType(symTable)
-        if (expr is ArrayElemAST) {
-            var memType: MemoryType? = null
-            if (exprType.isBoolOrChar()) {
-                memType = MemoryType.SB
-            }
-            instrs.add(LoadInstr(Condition.AL, memType, RegisterMode(reg), reg))
-        }
-        when (action) {
-            Action.EXIT -> {
-                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                instrs.add(BranchInstr(Condition.AL, Label("exit"), true))
-            }
-            Action.PRINT, Action.PRINTLN -> {
-                when (exprType) {
-                    is BaseTypeAST -> {
-                        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                        when (exprType.type) {
-                            BaseType.INT -> {
-                                CLib.addCode(CLibrary.Call.PRINT_INT)
-                                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_INT.toString()), true))
-                            }
-                            BaseType.CHAR -> {
-                                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.PUTCHAR.toString()), true))
-                            }
-                            BaseType.BOOL -> {
-                                CLib.addCode(CLibrary.Call.PRINT_BOOL)
-                                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_BOOL.toString()), true))
-                            }
-                            BaseType.STRING -> {
-                                CLib.addCode(CLibrary.Call.PRINT_STRING)
-                                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
-                            }
-                        }
-                    }
-                    is ArrayTypeAST -> {
-                        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                        if (exprType.type == BaseTypeAST(BaseType.CHAR)) {
-                            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
-                            CLib.addCode(CLibrary.Call.PRINT_STRING)
-                        } else {
-                            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                            CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
-                        }
-                    }
-                    is PairTypeAST, is AnyPairTypeAST -> {
-                        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
-                    }
-                }
-                if (action == Action.PRINTLN) {
-                    CLib.addCode(CLibrary.Call.PRINT_LN)
-                    instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_LN.toString()), true))
-                }
-                freeCalleeReg()
-            }
-            Action.FREE -> {
-                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
-                CLib.addCode(CLibrary.Call.FREE_PAIR)
-            }
-            Action.RETURN -> {
-                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-            }
-        }
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitActionStatAST(this)
+    }
+
+    override fun translate(): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
 }

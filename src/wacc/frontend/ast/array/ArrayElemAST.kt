@@ -68,28 +68,7 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
     }
 
     override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        val stackReg = getNextFreeCalleeReg()
-        val stackOffset = symTable.findOffsetInStack(ident.name)
-        instrs.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateIntOperand(stackOffset), false))
-        indices.forEach {
-            instrs.addAll(it.translate())
-            instrs.add(LoadInstr(Condition.AL, null, RegisterMode(stackReg), stackReg))
-            instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-            instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
-            instrs.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
-            CodeGenerator.runtimeErrors.addArrayBoundsCheck()
-            instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(4), false))
-            val identType = ident.getRealType(symTable)
-            if (identType is ArrayTypeAST &&
-                    identType.type.isBoolOrChar()) {
-                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false))
-            } else {
-                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
-            }
-            freeCalleeReg()
-        }
-        return instrs
+        TODO("Not yet implemented")
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
