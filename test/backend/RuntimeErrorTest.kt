@@ -4,7 +4,9 @@ import frontend.actionOnFiles
 import org.junit.Test
 import wacc.backend.generateCode
 import wacc.backend.translate.RuntimeError
+import wacc.backend.translate.instruction.BranchInstr
 import wacc.backend.translate.instruction.DirectiveInstr
+import wacc.backend.translate.instruction.instructionpart.Condition
 import wacc.buildAST
 import wacc.checkSemantics
 import wacc.checkSyntax
@@ -65,5 +67,16 @@ class RuntimeErrorTest {
         }
     }
 
+    @Test
+    fun nullDereferenceRuntimeErrorContainsCheckNullPointer() {
+        val folder = File("${path}/nullDereference")
+        actionOnFiles(folder) { file ->
+            val program = parse(file.inputStream())
+            checkSyntax(program)
+            val ast = buildAST(program)
+            checkSemantics(ast)
+            generateCode(ast as ProgramAST).contains(RuntimeError.nullReferenceLabel)
+        }
+    }
 
 }
