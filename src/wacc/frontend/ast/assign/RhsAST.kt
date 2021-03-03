@@ -14,6 +14,7 @@ import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
@@ -81,6 +82,10 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instrs.add(StoreInstr(Condition.AL, null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
 
         return instrs
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitNewPairRhsAST(this)
     }
 
 }
@@ -168,6 +173,10 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(totalBytes), false))
         instrs.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
         return instrs
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitCallRhsAST(this)
     }
 
 }

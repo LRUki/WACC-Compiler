@@ -11,6 +11,7 @@ import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.nonblock.Action
@@ -96,4 +97,9 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         instrs.add(afterElseLabel)
         return instrs
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitIfStatAST(this)
+    }
+
 }

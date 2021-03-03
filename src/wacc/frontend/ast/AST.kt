@@ -20,6 +20,9 @@ interface AST {
     fun check(table: SymbolTable): Boolean {
         return true
     }
+
+    fun <S : T, T> accept(visitor: AstVisitor<S>): T
+
 }
 
 interface Translatable {

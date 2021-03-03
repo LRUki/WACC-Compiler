@@ -2,6 +2,7 @@ package wacc.frontend.ast.statement.block
 
 import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.program.ProgramAST.Companion.translateScoped
 import wacc.frontend.ast.statement.StatAST
 
@@ -27,4 +28,9 @@ class BlockStatAST(val body: List<StatAST>) : StatAST {
         translateScoped(symTable, instr, body)
         return instr
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitBlockStatAST(this)
+    }
+
 }

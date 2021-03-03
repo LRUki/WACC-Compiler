@@ -13,6 +13,7 @@ import wacc.backend.translate.instruction.SubInstr
 import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.TypeInstance
@@ -68,4 +69,9 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         }
         return instrs
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitWhileStatAST(this)
+    }
+
 }

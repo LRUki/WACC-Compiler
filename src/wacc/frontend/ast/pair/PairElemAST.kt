@@ -13,6 +13,7 @@ import wacc.backend.translate.instruction.MoveInstr
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
@@ -68,6 +69,11 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         }
         return instrs
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitPairElemAST(this)
+    }
+
 }
 
 enum class PairChoice {

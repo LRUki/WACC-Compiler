@@ -9,6 +9,7 @@ import wacc.backend.translate.instruction.LoadInstr
 import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -64,4 +65,9 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         offset += symTable.checkParamInFuncSymbolTable(name) + symTable.callOffset
         return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, offset, false), getNextFreeCalleeReg()))
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitIdentAST(this)
+    }
+
 }

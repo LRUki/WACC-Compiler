@@ -11,6 +11,7 @@ import wacc.backend.translate.instruction.instructionpart.ImmediateIntMode
 import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
@@ -89,6 +90,10 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         val runtime = runtimeErrors.translate()
         // data + main + runtime err + clib calls
         return data + instrs + runtime + cLib
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitProgramAST(this)
     }
 
 }

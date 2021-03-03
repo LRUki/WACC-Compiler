@@ -12,6 +12,7 @@ import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
 
@@ -32,6 +33,10 @@ class IntLiterAST(val value: Int) : LiterAST {
         instrs += LoadInstr(Condition.AL, null, ImmediateIntMode(value), reg)
         return instrs
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitIntLiterAST(this)
+    }
 }
 
 class BoolLiterAST(val value: Boolean) : LiterAST {
@@ -48,6 +53,10 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
         }
         instrs += MoveInstr(Condition.AL, reg, ImmediateBoolOperand(value))
         return instrs
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitBoolLiterAST(this)
     }
 }
 
@@ -67,6 +76,10 @@ class StrLiterAST(val value: String) : LiterAST {
         instrs += LoadInstr(Condition.AL, null, ImmediateLabelMode(strLabel), reg)
         return instrs
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitStrLiterAST(this)
+    }
 }
 
 class CharLiterAST(val value: Char) : LiterAST {
@@ -85,6 +98,9 @@ class CharLiterAST(val value: Char) : LiterAST {
         return instrs
     }
 
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitCharLiterAST(this)
+    }
 }
 
 class NullPairLiterAST : LiterAST {
@@ -101,6 +117,10 @@ class NullPairLiterAST : LiterAST {
         }
         instrs += LoadInstr(Condition.AL, null, ImmediateIntMode(0), reg)
         return instrs
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitNullPairLiterAST(this)
     }
 }
 
@@ -159,5 +179,9 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
                 RegisterMode(stackReg), seeLastUsedCalleeReg()))
         freeCalleeReg()
         return instrs
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitArrayLiterAST(this)
     }
 }

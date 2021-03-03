@@ -9,6 +9,7 @@ import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
@@ -69,6 +70,10 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
 
     override fun toString(): String {
         return ident.toString()
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitFuncAST(this)
     }
 
 }

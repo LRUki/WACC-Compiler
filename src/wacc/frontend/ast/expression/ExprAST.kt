@@ -12,6 +12,7 @@ import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.BaseType
@@ -248,6 +249,10 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         return instrs
     }
 
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitBinOpExprAST(this)
+    }
+
 }
 
 enum class BinOp {
@@ -337,6 +342,10 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
             }
         }
         return instrs
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitUnOpExprAST(this)
     }
 }
 
