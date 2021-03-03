@@ -411,14 +411,15 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
         val instrs = mutableListOf<Instruction>()
         val totalLength = ast.argTypes.size - 1
         var totalBytes = 0
+        val argTypesReversed = ast.argTypes.reversed()
         for ((index, arg) in ast.argList.reversed().withIndex()) {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
-            val bytes = SymbolTable.getBytesOfType(ast.argTypes[(totalLength - index)])
+            val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
             ast.symTable.callOffset = bytes
             totalBytes += bytes
-            if (ast.argTypes[(totalLength - index)] == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
-                    || ast.argTypes[(totalLength - index)] == BaseTypeAST(BaseType.CHAR)) {
+            if (argTypesReversed[index] == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
+                    || argTypesReversed[index] == BaseTypeAST(BaseType.CHAR)) {
                 memType = MemoryType.B
             }
             instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), CodeGenerator.seeLastUsedCalleeReg()))
