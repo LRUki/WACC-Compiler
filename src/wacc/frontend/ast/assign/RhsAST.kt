@@ -141,6 +141,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             var memType: MemoryType? = null
             instr.addAll(arg.translate())
             val bytes = getBytesOfType(argTypes[(totalLength - index)])
+            symTable.callOffset = bytes
             totalBytes += bytes
             if (argTypes[(totalLength - index)].equals(BaseTypeAST(BaseType.BOOL)) // TODO() Refactor this
                     || argTypes[(totalLength - index)].equals(BaseTypeAST(BaseType.CHAR))) {
@@ -152,6 +153,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
                 symTable.increaseOffsetForCall = 4
             }
         }
+        symTable.callOffset = 0
         symTable.increaseOffsetForCall = 0
 
 //        argList.reversed().forEach {

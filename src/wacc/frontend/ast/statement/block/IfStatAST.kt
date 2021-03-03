@@ -1,20 +1,21 @@
 package wacc.frontend.ast.statement.block
 
+import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextLabel
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.instruction.*
 import wacc.backend.instruction.enums.Condition
 import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.AddInstr
-import wacc.backend.instruction.instrs.BranchInstr
-import wacc.backend.instruction.instrs.CompareInstr
-import wacc.backend.instruction.instrs.SubInstr
+import wacc.backend.instruction.instrs.*
 import wacc.backend.instruction.utils.ImmediateOperandInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.statement.StatAST
+import wacc.frontend.ast.statement.nonblock.Action
+import wacc.frontend.ast.statement.nonblock.ActionStatAST
 import wacc.frontend.ast.type.TypeInstance
 import wacc.frontend.exception.semanticError
 
@@ -65,7 +66,15 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         if (stackOffset > 0) {
             instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }
-        thenBody.forEach { instr.addAll(it.translate()) }
+        thenBody.forEach {
+            instr.addAll(it.translate())
+        }
+        val lastStat = thenBody.last()
+        if((lastStat is ActionStatAST) && lastStat.action == Action.RETURN){
+            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(symTable.getFuncStackOffset())))
+            instr.addAll(regsToPopInstrs(listOf(Register.PC)))
+            freeAllCalleeReg()
+        }
         if (stackOffset > 0) {
             instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
         }

@@ -61,12 +61,8 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         val type = getRealType(symTable)
         if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
             memType = MemoryType.SB
-        } else {
-            if (symTable.lookup(name).isPresent) {
-                offset += symTable.checkParamInFuncSymbolTable(name)
-//                offset += symTable.offsetSize
-            }
         }
+        offset += symTable.checkParamInFuncSymbolTable(name) + symTable.callOffset
         return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, offset, false), getNextFreeCalleeReg()))
     }
 }

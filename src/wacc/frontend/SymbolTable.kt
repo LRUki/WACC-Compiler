@@ -6,8 +6,8 @@ import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.*
-import java.lang.RuntimeException
 import java.util.*
+import kotlin.RuntimeException
 import kotlin.collections.LinkedHashMap
 
 /**
@@ -38,6 +38,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     var offsetSize: Int = 0
     var startingOffset: Int = 0
     var increaseOffsetForCall = 0
+    var callOffset = 0
 
     // Gets the top most symbol table
     fun getTopSymbolTable(): SymbolTable {
@@ -111,6 +112,16 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return offset
     }
 
+    fun getFuncStackOffset(): Int {
+        if(this is FuncSymbolTable){
+            return startingOffset
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.getFuncStackOffset()
+        }
+        throw RuntimeException("Semantic Failure: Return used outside of a function")
+    }
+
     private fun findIfParamInFuncSymbolTableToAddOffset(name: String, flag: Boolean, offsetCounter: Int): Int {
         val identAst = lookup(name)
         if (identAst.isPresent) {
@@ -119,9 +130,12 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                     var offset = 0
                     currSymbolTable.toList().dropWhile {
                         it.second.first != identAst.get()
-                    }.dropWhile { it.second.first == identAst.get() }.forEach {
-                        offset += it.second.second
-                    }
+                    }.dropWhile {
+                        it.second.first == identAst.get()
+                    }.dropWhile { it.second.first is ParamAST }
+                            .forEach {
+                                offset += it.second.second
+                            }
                     return offset + offsetCounter
                 }
             }
@@ -130,7 +144,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (encSymbolTable != null) {
             var offset = 0
             currSymbolTable.toList().forEach { offset += it.second.second }
-            return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, offset)
+            return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, startingOffset)
         }
         return 0
     }
