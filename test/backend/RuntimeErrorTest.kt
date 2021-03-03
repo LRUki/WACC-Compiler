@@ -29,5 +29,15 @@ class RuntimeErrorTest {
         }
     }
 
-
+    @Test
+    fun arrayRuntimeErrorContainsCheckArrayBounds() {
+        val folder = File("${path}arrayOutOfBounds")
+        actionOnFiles(folder) { file ->
+            val program = parse(file.inputStream())
+            checkSyntax(program)
+            val ast = buildAST(program)
+            checkSemantics(ast)
+            generateCode(ast as ProgramAST).contains(RuntimeError.checkArrayBoundsLabel)
+        }
+    }
 }
