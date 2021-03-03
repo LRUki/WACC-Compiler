@@ -121,23 +121,36 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         throw RuntimeException("Semantic Failure: Return used outside of a function")
     }
 
-    private fun findIfParamInFuncSymbolTableToAddOffset(name: String, flag: Boolean, offsetCounter: Int): Int {
+    /**
+     * Recursive method for finding if identifier is a parameter and returns offset on stack if so
+     *
+     * @param name Identifier string of the parameter
+     * @param innerScopeHasVar Have variables been declared inside the function scope
+     * @param offsetCounter Accumulative offset until parameter is reached
+     * @return The offset of the provided parameter on the stack
+     */
+    private fun findIfParamInFuncSymbolTableToAddOffset(name: String, innerScopeHasVar: Boolean, offsetCounter: Int): Int {
         val identAst = lookup(name)
         if (identAst.isPresent) {
             val identValue = identAst.get()
             if ((this is FuncSymbolTable) && (identValue is ParamAST)) {
-                if ((currSymbolTable.size > funcAST.paramList.size) || flag) {
+                /* Parameter offset only needed when there are declared variables in the current
+                *  scope or inside any inner scope (signified by flag) */
+                if ((currSymbolTable.size > funcAST.paramList.size) || innerScopeHasVar) {
                     var offset = 0
+                    /* Removes all parameters of the function and
+                    * then sums the offset of the remaining identifiers */
                     currSymbolTable.toList()
-                            .dropWhile { it.second.first != identValue }
-                            .dropWhile { it.second.first == identValue || it.second.first is ParamAST }
+                            .dropWhile { it.second.first is ParamAST }
                             .forEach { offset += it.second.second }
                     return offset + offsetCounter
                 }
             }
             return 0
         }
+        /* Keeps checking the enclosing symbol table until the identifier is found */
         if (encSymbolTable != null) {
+            /* Sums offsets of all entries in current symbol table to add to final offset  */
             var offset = 0
             currSymbolTable.toList().forEach { offset += it.second.second }
             return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, startingOffset)
@@ -145,11 +158,22 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return 0
     }
 
+    /**
+     * Calls findIfParamInFuncSymbolTableToAddOffset to compute offset
+     *
+     * @param name Identifier string in question
+     * @return The offset of the provided parameter on the stack
+     */
     fun checkParamInFuncSymbolTable(name: String): Int {
         return findIfParamInFuncSymbolTableToAddOffset(name, false, 0)
     }
 
-
+    /**
+     * Find offset in stack
+     *
+     * @param ident
+     * @return
+     */
     fun findOffsetInStack(ident: String): Int {
         var offset = 0
         for ((k, v) in currSymbolTable) {

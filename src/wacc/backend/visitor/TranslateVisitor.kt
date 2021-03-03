@@ -394,6 +394,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val instrs = mutableListOf<Instruction>()
         var totalBytes = 0
         val argTypesReversed = ast.argTypes.reversed()
+        val negativeCallStackOffset = -1
         for ((index, arg) in ast.argList.reversed().withIndex()) {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
@@ -403,7 +404,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), CodeGenerator.seeLastUsedCalleeReg()))
+            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), CodeGenerator.seeLastUsedCalleeReg()))
             freeCalleeReg()
             if (index == 0) {
                 ast.symTable.increaseOffsetForCall = 4
