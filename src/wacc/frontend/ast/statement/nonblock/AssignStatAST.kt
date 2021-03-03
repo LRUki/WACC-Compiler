@@ -112,21 +112,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
             }
             is PairElemAST -> {
                 instrs.addAll(lhs.translate())
-//                instrs.add(LoadInstr(Condition.AL,null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
-//                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-//                instrs.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
-//                instrs.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
-//                instrs.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
             }
-//                instruction.add(StoreInstr(getNextFreeCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
-//                freeCalleeReg()
-//                instruction.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
-//                freeCalleeReg()
-
-//                instruction.add(LoadInstr(seeLastUsedCalleeReg(),null, RegisterAddr(Register.R0), Condition.AL))
-//                LDR r4, =42
         }
 
         freeCalleeReg()

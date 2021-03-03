@@ -132,8 +132,6 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
                 freeCalleeReg()
             }
             Action.FREE -> {
-//                val stackOffset = symTable.findOffsetInStack((expr as IdentAST).name)
-//                instrs.add(LoadInstr(getNextFreeCalleeReg(), null, RegisterAddrWithOffset(Register.SP, stackOffset, false), Condition.AL))
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
                 CLib.addCode(CLibrary.Call.FREE_PAIR)

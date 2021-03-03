@@ -74,7 +74,7 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                 }
             }
             is ArrayTypeAST -> {
-
+                // Intentionally Left Blank
             }
             is PairTypeAST -> {
                 if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is IdentAST &&

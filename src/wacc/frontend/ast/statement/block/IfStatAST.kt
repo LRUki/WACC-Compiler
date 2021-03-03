@@ -70,9 +70,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         if (stackOffset > 0) {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        thenBody.forEach {
-            instrs.addAll(it.translate())
-        }
+        thenBody.forEach {instrs.addAll(it.translate())}
         val lastStat = thenBody.last()
         if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(symTable.getFuncStackOffset())))

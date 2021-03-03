@@ -55,7 +55,7 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
                 instrs.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateIntOperand(correctSTScope.findOffsetInStack(expr.name) + offset)))
             }
             is ArrayElemAST -> {
-
+                // Intentionally Left Blank
             }
             is PairElemAST -> {
                 instrs.addAll(expr.translate())
