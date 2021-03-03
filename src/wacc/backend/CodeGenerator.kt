@@ -105,7 +105,7 @@ object CodeGenerator {
 }
 
 fun generateCode(ast: ProgramAST): List<Instruction> {
-    val result = TranslateVisitor().visit(ast)
+    val result = ast.translate()
     return result
 }
     
