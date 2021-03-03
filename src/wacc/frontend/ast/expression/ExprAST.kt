@@ -331,14 +331,12 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
             UnOp.LEN -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(Register.SP), reg1))
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
-//                instrs.add(LoadInstr(Condition.AL, null, ImmediateInt((expr as ArrayElemAST).indices.size), reg1))
-//                  consider the case when expr is a variable
             }
             UnOp.ORD -> {
-//                instrs.add(MoveInstr(Condition.AL, reg1,  ImmediateOperandChar((expr as CharLiterAST).value)))
+//                Intentionally Blank
             }
             UnOp.CHR -> {
-//                instrs.add(LoadInstr(reg1, null, ImmediateInt((expr as IntLiterAST).value), Condition.AL))
+//                Intentionally Blank
             }
         }
         return instrs

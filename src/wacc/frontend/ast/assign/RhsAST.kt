@@ -61,8 +61,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instrs.addAll(fst.translate())
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(getBytesOfType(firstType)), Register.R0))
         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (firstType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
-                || firstType == BaseTypeAST(BaseType.CHAR)) {
+        if (firstType.isBoolOrChar()) {
             memtype = MemoryType.B
         }
         instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
@@ -73,8 +72,7 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         instrs.addAll(snd.translate())
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(getBytesOfType(secondType)), Register.R0))
         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
-        if (secondType == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
-                || secondType == BaseTypeAST(BaseType.CHAR)) {
+        if (secondType.isBoolOrChar()) {
             memtype = MemoryType.B
         }
         instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
@@ -140,7 +138,6 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
 
     override fun translate(): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-        val totalLength = argTypes.size - 1
         var totalBytes = 0
         val argTypesReversed = argTypes.reversed()
         for ((index, arg) in argList.reversed().withIndex()) {
@@ -149,8 +146,7 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             val bytes = getBytesOfType(argTypesReversed[index])
             symTable.callOffset = bytes
             totalBytes += bytes
-            if (argTypesReversed[index] == BaseTypeAST(BaseType.BOOL) // TODO: refactor this
-                    || argTypesReversed[index] == BaseTypeAST(BaseType.CHAR)) {
+            if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
             instrs.add(StoreInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, -1 * bytes, true), seeLastUsedCalleeReg()))
@@ -161,13 +157,6 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         }
         symTable.callOffset = 0
         symTable.increaseOffsetForCall = 0
-
-//        argList.reversed().forEach {
-//            instrs.addAll(it.translate())
-//            val bytes = getBytesOfType(it.getRealType(symTable))
-//            instrs.add(StoreInstr(seeLastUsedCalleeReg(), null, RegisterAddrWithOffset(Register.SP, -1 * bytes, true), Condition.AL))
-//            freeCalleeReg()
-//        }
 
         val funcLabel = FunctionLabel(ident.name)
         instrs.add(BranchInstr(Condition.AL, funcLabel, true))

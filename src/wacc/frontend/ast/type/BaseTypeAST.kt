@@ -19,6 +19,10 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
         }
     }
 
+    override fun isBoolOrChar(): Boolean {
+        return (type == BaseType.BOOL) || (type == BaseType.CHAR)
+    }
+
     override fun toString(): String {
         return type.name
     }

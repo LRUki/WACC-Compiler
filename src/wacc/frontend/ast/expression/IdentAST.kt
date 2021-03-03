@@ -63,7 +63,9 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
             memType = MemoryType.SB
         }
         offset += symTable.checkParamInFuncSymbolTable(name) + symTable.callOffset
-        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, offset, false), getNextFreeCalleeReg()))
+        return listOf(LoadInstr(Condition.AL, memType,
+                        RegisterAddrWithOffsetMode(Register.SP, offset, false),
+                      getNextFreeCalleeReg()))
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
