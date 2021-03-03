@@ -1,12 +1,12 @@
-package wacc.backend.translate.instr
+package wacc.backend.translate.instruction
 
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.MemoryType
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.parts.AddressingMode
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.MemoryType
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instrpart.AddressingMode
 
 class LoadInstr(val condition: Condition, val memType: MemoryType?,
-                val mode: AddressingMode, val destRegister: Register) : Instr {
+                val mode: AddressingMode, val destRegister: Register) : Instruction {
     override fun toAssembly(): String {
         return "LDR${memType?.name ?: ""}${condition.toAssembly()} ${destRegister.toAssembly()}, ${mode.toAssembly()}"
     }

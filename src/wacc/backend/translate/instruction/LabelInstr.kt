@@ -1,6 +1,6 @@
-package wacc.backend.translate.instr
+package wacc.backend.translate.instruction
 
-abstract class LabelInstr(val name: String) : Instr {
+abstract class LabelInstr(val name: String) : Instruction {
     override fun toAssembly(): String {
         return "$name:"
     }

@@ -1,9 +1,9 @@
 package wacc.backend.translate
 
 
-import wacc.backend.translate.instr.DirectiveInstr
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.Label
+import wacc.backend.translate.instruction.DirectiveInstr
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.Label
 
 class StringLabels(val strings: MutableList<String>) {
 
@@ -31,8 +31,8 @@ class StringLabels(val strings: MutableList<String>) {
      *     .word <length of string>
      *     .ascii "<actual string literal>"
      */
-    fun translateAll(): List<Instr> {
-        val instructions = mutableListOf<Instr>()
+    fun translateAll(): List<Instruction> {
+        val instructions = mutableListOf<Instruction>()
         for ((index, string) in strings.withIndex()) {
             instructions.add(Label("msg_$index"))
             instructions.add(DirectiveInstr("word ${

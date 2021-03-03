@@ -4,13 +4,13 @@ package wacc.frontend.ast.pair
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.RuntimeError
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.BranchInstr
-import wacc.backend.translate.instr.LoadInstr
-import wacc.backend.translate.instr.MoveInstr
-import wacc.backend.translate.instr.parts.*
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.BranchInstr
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.MoveInstr
+import wacc.backend.translate.instruction.instrpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -52,21 +52,21 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         return type
     }
 
-    override fun translate(): List<Instr> {
-        val instr = mutableListOf<Instr>()
+    override fun translate(): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
 
-        instr.addAll(expr.translate())
+        instrs.addAll(expr.translate())
         val reg = seeLastUsedCalleeReg()
-//        instr.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), reg))
-        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-        instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
+//        instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), reg))
+        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+        instrs.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
         CodeGenerator.runtimeErrors.addNullReferenceCheck()
         if (choice == PairChoice.FST) {
-            instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
+            instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
         } else {
-            instr.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(reg, 4, false), reg))
+            instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(reg, 4, false), reg))
         }
-        return instr
+        return instrs
     }
 }
 

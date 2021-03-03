@@ -3,8 +3,8 @@ package backend
 import frontend.actionOnFiles
 import org.junit.Test
 import wacc.backend.generateCode
-import wacc.backend.translate.instr.DirectiveInstr
-import wacc.backend.translate.instr.Label
+import wacc.backend.translate.instruction.DirectiveInstr
+import wacc.backend.translate.instruction.Label
 import wacc.buildAST
 import wacc.checkSemantics
 import wacc.checkSyntax
@@ -24,12 +24,12 @@ class TranslateTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            val instr = generateCode(ast as ProgramAST)
-//            assertTrue(instr.contains(DirectiveInstr("data")))
-            assertTrue(instr.contains(DirectiveInstr("text")))
-            assertTrue(instr.contains(DirectiveInstr("global main")))
-//            assertTrue(instr.contains(Label("main")))
-            assertTrue(instr.contains(DirectiveInstr("ltorg")))
+            val instrs = generateCode(ast as ProgramAST)
+//            assertTrue(instrs.contains(DirectiveInstr("data")))
+            assertTrue(instrs.contains(DirectiveInstr("text")))
+            assertTrue(instrs.contains(DirectiveInstr("global main")))
+//            assertTrue(instrs.contains(Label("main")))
+            assertTrue(instrs.contains(DirectiveInstr("ltorg")))
         }
     }
 

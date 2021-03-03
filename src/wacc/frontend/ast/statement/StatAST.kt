@@ -1,6 +1,6 @@
 package wacc.frontend.ast.statement
 
-import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.Translatable
@@ -12,7 +12,7 @@ import wacc.frontend.ast.Translatable
 interface StatAST : AST, Translatable
 
 class SkipStatAST : StatAST {
-    override fun translate(): List<Instr> {
+    override fun translate(): List<Instruction> {
         return emptyList()
     }
 }
@@ -35,8 +35,8 @@ class MultiStatAST(val stats: List<StatAST>) : StatAST {
         return true
     }
 
-    override fun translate(): List<Instr> {
-        val instructions = mutableListOf<Instr>()
+    override fun translate(): List<Instruction> {
+        val instructions = mutableListOf<Instruction>()
         stats.forEach { instructions.addAll(it.translate()) }
         return instructions
     }

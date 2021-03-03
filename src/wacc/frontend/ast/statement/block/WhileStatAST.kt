@@ -3,14 +3,14 @@ package wacc.frontend.ast.statement.block
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.AddInstr
-import wacc.backend.translate.instr.BranchInstr
-import wacc.backend.translate.instr.CompareInstr
-import wacc.backend.translate.instr.SubInstr
-import wacc.backend.translate.instr.parts.ImmediateOperandInt
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.AddInstr
+import wacc.backend.translate.instruction.BranchInstr
+import wacc.backend.translate.instruction.CompareInstr
+import wacc.backend.translate.instruction.SubInstr
+import wacc.backend.translate.instruction.instrpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -46,26 +46,26 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         return true
     }
 
-    override fun translate(): List<Instr> {
-        val instr = mutableListOf<Instr>()
+    override fun translate(): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
         val condLabel = CodeGenerator.getNextLabel()
         val bodyLabel = CodeGenerator.getNextLabel()
-        instr.add(BranchInstr(Condition.AL, condLabel, false))
+        instrs.add(BranchInstr(Condition.AL, condLabel, false))
 
-        instr.add(bodyLabel)
+        instrs.add(bodyLabel)
         val stackOffset = blockST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        body.forEach { instr.addAll(it.translate()) }
-        instr.add(condLabel)
-        instr.addAll(cond.translate())
-        instr.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateOperandInt(1)))
-        instr.add(BranchInstr(Condition.EQ, bodyLabel, false))
+        body.forEach { instrs.addAll(it.translate()) }
+        instrs.add(condLabel)
+        instrs.addAll(cond.translate())
+        instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
+        instrs.add(BranchInstr(Condition.EQ, bodyLabel, false))
         freeCalleeReg()
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        return instr
+        return instrs
     }
 }

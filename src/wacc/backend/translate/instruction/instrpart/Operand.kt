@@ -1,19 +1,16 @@
-package wacc.backend.translate.instr.parts
-
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.enums.ShiftType
+package wacc.backend.translate.instruction.instrpart
 
 interface Operand {
     fun toAssembly(): String
 }
 
-class ImmediateOperandInt(val offset: Int) : Operand {
+class ImmediateIntOperand(val offset: Int) : Operand {
     override fun toAssembly(): String {
         return "#$offset"
     }
 }
 
-class ImmediateOperandChar(val char: Char) : Operand {
+class ImmediateCharOperand(val char: Char) : Operand {
     override fun toAssembly(): String {
         val charStr: String = when (char) {
             0.toChar() -> "\\0"
@@ -31,7 +28,7 @@ class ImmediateOperandChar(val char: Char) : Operand {
     }
 }
 
-class ImmediateOperandBool(val bool: Boolean) : Operand {
+class ImmediateBoolOperand(val bool: Boolean) : Operand {
     override fun toAssembly(): String {
         return "#${if (bool) 1 else 0}"
     }

@@ -5,15 +5,15 @@ import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.RuntimeError
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.enums.ShiftType
-import wacc.backend.translate.instr.AddInstr
-import wacc.backend.translate.instr.BranchInstr
-import wacc.backend.translate.instr.LoadInstr
-import wacc.backend.translate.instr.MoveInstr
-import wacc.backend.translate.instr.parts.*
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instrpart.ShiftType
+import wacc.backend.translate.instruction.AddInstr
+import wacc.backend.translate.instruction.BranchInstr
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.MoveInstr
+import wacc.backend.translate.instruction.instrpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -67,28 +67,28 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
         }
     }
 
-    override fun translate(): List<Instr> {
-        val instr = mutableListOf<Instr>()
+    override fun translate(): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
         val stackReg = getNextFreeCalleeReg()
         val stackOffset = symTable.findOffsetInStack(ident.name)
-        instr.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateOperandInt(stackOffset), false))
+        instrs.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateIntOperand(stackOffset), false))
         indices.forEach {
-            instr.addAll(it.translate())
-            instr.add(LoadInstr(Condition.AL, null, RegisterAddr(stackReg), stackReg))
-            instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-            instr.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
-            instr.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
+            instrs.addAll(it.translate())
+            instrs.add(LoadInstr(Condition.AL, null, RegisterMode(stackReg), stackReg))
+            instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
+            instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
+            instrs.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
             CodeGenerator.runtimeErrors.addArrayBoundsCheck()
-            instr.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateOperandInt(4), false))
+            instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(4), false))
             val identType = ident.getRealType(symTable)
             if (identType is ArrayTypeAST &&
                     ((identType.type.equals(BaseTypeAST(BaseType.CHAR)) || identType.type.equals(BaseTypeAST(BaseType.BOOL))))) {
-                instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false))
+                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false))
             } else {
-                instr.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
+                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
             }
             freeCalleeReg()
         }
-        return instr
+        return instrs
     }
 }

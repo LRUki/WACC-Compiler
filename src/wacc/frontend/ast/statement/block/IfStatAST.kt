@@ -4,11 +4,11 @@ import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextLabel
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.*
-import wacc.backend.translate.instr.parts.ImmediateOperandInt
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instrpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -56,44 +56,44 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
     }
 
 
-    override fun translate(): List<Instr> {
-        val instr = mutableListOf<Instr>()
+    override fun translate(): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
         val elseLabel = getNextLabel()
         val afterElseLabel = getNextLabel()
 
-        instr.addAll(cond.translate())
-        instr.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateOperandInt(0)))
-        instr.add(BranchInstr(Condition.EQ, elseLabel, false))
+        instrs.addAll(cond.translate())
+        instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(0)))
+        instrs.add(BranchInstr(Condition.EQ, elseLabel, false))
         freeCalleeReg()
         var stackOffset = thenST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         thenBody.forEach {
-            instr.addAll(it.translate())
+            instrs.addAll(it.translate())
         }
         val lastStat = thenBody.last()
         if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(symTable.getFuncStackOffset())))
-            instr.addAll(regsToPopInstrs(listOf(Register.PC)))
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(symTable.getFuncStackOffset())))
+            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
             freeAllCalleeReg()
         }
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
 
-        instr.add(BranchInstr(Condition.AL, afterElseLabel, false))
-        instr.add(elseLabel)
+        instrs.add(BranchInstr(Condition.AL, afterElseLabel, false))
+        instrs.add(elseLabel)
 
         stackOffset = elseST.getStackOffset()
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        elseBody.forEach { instr.addAll(it.translate()) }
+        elseBody.forEach { instrs.addAll(it.translate()) }
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        instr.add(afterElseLabel)
-        return instr
+        instrs.add(afterElseLabel)
+        return instrs
     }
 }

@@ -1,12 +1,12 @@
 package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.MemoryType
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.LoadInstr
-import wacc.backend.translate.instr.parts.RegisterAddrWithOffset
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.MemoryType
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.instrpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -54,7 +54,7 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         }
     }
 
-    override fun translate(): List<Instr> {
+    override fun translate(): List<Instruction> {
         var offset = symTable.findOffsetInStack(name)
         var memType: MemoryType? = null
         val type = getRealType(symTable)
@@ -62,6 +62,6 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
             memType = MemoryType.SB
         }
         offset += symTable.checkParamInFuncSymbolTable(name) + symTable.callOffset
-        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, offset, false), getNextFreeCalleeReg()))
+        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, offset, false), getNextFreeCalleeReg()))
     }
 }

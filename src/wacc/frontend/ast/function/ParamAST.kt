@@ -1,6 +1,6 @@
 package wacc.frontend.ast.function
 
-import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.IdentAST
@@ -14,7 +14,7 @@ import wacc.frontend.ast.type.TypeAST
  * @property ident Name of the parameter
  */
 class ParamAST(val type: TypeAST, val ident: IdentAST) : AST, Identifiable, Translatable {
-    override fun translate(): List<Instr> {
+    override fun translate(): List<Instruction> {
         return emptyList()
     }
 }

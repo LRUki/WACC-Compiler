@@ -1,11 +1,11 @@
 package wacc.frontend.ast.function
 
 import wacc.backend.CodeGenerator.freeAllCalleeReg
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.*
-import wacc.backend.translate.instr.parts.ImmediateOperandInt
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instrpart.ImmediateIntOperand
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -48,23 +48,23 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         table.add(ident.name, this)
     }
 
-    override fun translate(): List<Instr> {
-        val instr = mutableListOf<Instr>()
-        instr.add(FunctionLabel(ident.name))
-        instr.add(PushInstr(Register.LR))
+    override fun translate(): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        instrs.add(FunctionLabel(ident.name))
+        instrs.add(PushInstr(Register.LR))
         val stackOffset = symTable.getStackOffset()
         symTable.startingOffset = stackOffset
         if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        body.forEach { instr.addAll(it.translate()) }
+        body.forEach { instrs.addAll(it.translate()) }
         if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        instr.addAll(regsToPopInstrs(listOf(Register.PC)))
-        instr.add(DirectiveInstr("ltorg"))
+        instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+        instrs.add(DirectiveInstr("ltorg"))
         freeAllCalleeReg()
-        return instr
+        return instrs
     }
 
     override fun toString(): String {

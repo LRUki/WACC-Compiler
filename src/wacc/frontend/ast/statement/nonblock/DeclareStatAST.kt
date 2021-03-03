@@ -3,14 +3,14 @@ package wacc.frontend.ast.statement.nonblock
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.MemoryType
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.LoadInstr
-import wacc.backend.translate.instr.StoreInstr
-import wacc.backend.translate.instr.parts.RegisterAddr
-import wacc.backend.translate.instr.parts.RegisterAddrWithOffset
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.MemoryType
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.StoreInstr
+import wacc.backend.translate.instruction.instrpart.RegisterMode
+import wacc.backend.translate.instruction.instrpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
@@ -58,9 +58,9 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
     }
 
 
-    override fun translate(): List<Instr> {
-        val instr = mutableListOf<Instr>()
-        instr.addAll(rhs.translate())
+    override fun translate(): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        instrs.addAll(rhs.translate())
         if (rhs is StrLiterAST) {
             stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
         }
@@ -78,21 +78,21 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
             is PairTypeAST -> {
                 if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is IdentAST &&
                         rhs !is NullPairLiterAST && rhs !is CallRhsAST && rhs !is PairElemAST) {
-                    instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }
         }
         when (rhs) {
             is PairElemAST -> {
-                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
             is ArrayElemAST -> {
-                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
         }
-        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Register.R4))
+        instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, symTable.offsetSize, false), Register.R4))
         freeCalleeReg()
 
-        return instr
+        return instrs
     }
 }

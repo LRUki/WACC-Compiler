@@ -3,10 +3,10 @@ package backend
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.*
-import wacc.backend.translate.instr.parts.ImmediateInt
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instrpart.ImmediateIntMode
 import wacc.backend.printCode
 
 class PrintCodeTest {
@@ -18,7 +18,7 @@ class PrintCodeTest {
                 DirectiveInstr("global main"),
                 Label("main"),
                 PushInstr(Register.LR),
-                LoadInstr(Condition.AL, null, ImmediateInt(0), Register.R0),
+                LoadInstr(Condition.AL, null, ImmediateIntMode(0), Register.R0),
                 PopInstr(Register.PC),
                 DirectiveInstr("ltorg")
         )

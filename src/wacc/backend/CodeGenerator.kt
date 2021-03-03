@@ -1,10 +1,10 @@
 package wacc.backend
 
 import wacc.backend.translate.DataDirective
-import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instruction.Instruction
 import wacc.backend.translate.StringLabels
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.Label
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.Label
 import wacc.backend.translate.CLibrary
 import wacc.backend.translate.RuntimeError
 import wacc.frontend.ast.program.ProgramAST
@@ -103,7 +103,7 @@ object CodeGenerator {
 
 }
 
-fun generateCode(ast: ProgramAST): List<Instr> {
+fun generateCode(ast: ProgramAST): List<Instruction> {
     val result = ast.translate()
     return result
 }

@@ -1,16 +1,16 @@
 package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
-import wacc.backend.translate.instr.Instr
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.AddInstr
-import wacc.backend.translate.instr.BranchInstr
-import wacc.backend.translate.instr.Label
-import wacc.backend.translate.instr.MoveInstr
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.AddInstr
+import wacc.backend.translate.instruction.BranchInstr
+import wacc.backend.translate.instruction.Label
+import wacc.backend.translate.instruction.MoveInstr
 import wacc.backend.translate.CLibrary
-import wacc.backend.translate.instr.parts.ImmediateOperandInt
-import wacc.backend.translate.instr.parts.RegisterOperand
+import wacc.backend.translate.instruction.instrpart.ImmediateIntOperand
+import wacc.backend.translate.instruction.instrpart.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
@@ -45,34 +45,34 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         return true
     }
 
-    override fun translate(): List<Instr> {
-        val instr = mutableListOf<Instr>()
+    override fun translate(): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
 
         when (expr) {
             is IdentAST -> {
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(expr.name, (exprType as BaseTypeAST))
-                instr.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateOperandInt(correctSTScope.findOffsetInStack(expr.name) + offset)))
+                instrs.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateIntOperand(correctSTScope.findOffsetInStack(expr.name) + offset)))
             }
             is ArrayElemAST -> {
 
             }
             is PairElemAST -> {
-                instr.addAll(expr.translate())
+                instrs.addAll(expr.translate())
             }
         }
-        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)))
+        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)))
 
         when ((exprType as BaseTypeAST).type) {
             BaseType.INT -> {
-                instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_INT.toString()), true))
+                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_INT.toString()), true))
                 CodeGenerator.CLib.addCode(CLibrary.Call.READ_INT)
             }
             BaseType.CHAR -> {
-                instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_CHAR.toString()), true))
+                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_CHAR.toString()), true))
                 CodeGenerator.CLib.addCode(CLibrary.Call.READ_CHAR)
             }
             else -> throw RuntimeException("Read can only be used for int or char, semantic check failed")
         }
-        return instr
+        return instrs
     }
 }

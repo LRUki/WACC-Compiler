@@ -1,10 +1,10 @@
-package wacc.backend.translate.instr
+package wacc.backend.translate.instruction
 
-import wacc.backend.translate.instr.enums.Condition
-import wacc.backend.translate.instr.enums.Register
-import wacc.backend.translate.instr.parts.Operand
+import wacc.backend.translate.instruction.instrpart.Condition
+import wacc.backend.translate.instruction.instrpart.Register
+import wacc.backend.translate.instruction.instrpart.Operand
 
-interface ArithmeticInstr : Instr
+interface ArithmeticInstr : Instruction
 
 enum class ArithmeticInstrType {
     ADD,
