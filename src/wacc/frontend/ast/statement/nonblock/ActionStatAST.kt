@@ -16,6 +16,7 @@ import wacc.backend.translate.instruction.instructionpart.RegisterMode
 import wacc.backend.translate.instruction.instructionpart.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.statement.StatAST
@@ -143,6 +144,11 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         }
         return instrs
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitActionStatAST(this)
+    }
+
 }
 
 enum class Action {

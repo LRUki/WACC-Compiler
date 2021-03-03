@@ -16,6 +16,7 @@ import wacc.backend.translate.instruction.MoveInstr
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
@@ -57,7 +58,6 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
         return true
     }
 
-
     override fun getRealType(table: SymbolTable): TypeAST {
         val typeAST = ident.getRealType(table) as ArrayTypeAST
         return if (typeAST.dimension > indices.size) {
@@ -91,4 +91,9 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
         }
         return instrs
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitArrayElemAST(this)
+    }
+
 }

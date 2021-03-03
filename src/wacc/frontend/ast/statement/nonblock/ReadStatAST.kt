@@ -13,6 +13,7 @@ import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.backend.translate.instruction.instructionpart.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.expression.IdentAST
@@ -75,4 +76,9 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         }
         return instrs
     }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitReadStatAST(this)
+    }
+
 }
