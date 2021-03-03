@@ -657,7 +657,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             memType = MemoryType.SB
         }
         offset += ast.symTable.checkParamInFuncSymbolTable(ast.name) + ast.symTable.callOffset
-        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, offset, false), CodeGenerator.getNextFreeCalleeReg()))
+        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, offset, false), getNextFreeCalleeReg()))
 
     }
 
@@ -749,7 +749,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         }
 
         //add the length of the array to stack
-        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(ast.values.size), CodeGenerator.getNextFreeCalleeReg()))
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(ast.values.size), getNextFreeCalleeReg()))
         instrs.add(StoreInstr(null,
                 RegisterMode(stackReg), CodeGenerator.seeLastUsedCalleeReg()))
         freeCalleeReg()

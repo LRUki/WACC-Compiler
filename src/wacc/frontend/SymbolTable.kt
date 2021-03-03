@@ -124,16 +124,14 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     private fun findIfParamInFuncSymbolTableToAddOffset(name: String, flag: Boolean, offsetCounter: Int): Int {
         val identAst = lookup(name)
         if (identAst.isPresent) {
-            if ((this is FuncSymbolTable) && (identAst.get() is ParamAST)) {
+            val identValue = identAst.get()
+            if ((this is FuncSymbolTable) && (identValue is ParamAST)) {
                 if ((currSymbolTable.size > funcAST.paramList.size) || flag) {
                     var offset = 0
-                    currSymbolTable.toList().dropWhile {
-                        it.second.first != identAst.get()
-                    }.dropWhile {
-                        it.second.first == identAst.get() || it.second.first is ParamAST }
-                            .forEach {
-                                offset += it.second.second
-                            }
+                    currSymbolTable.toList()
+                            .dropWhile { it.second.first != identValue }
+                            .dropWhile { it.second.first == identValue || it.second.first is ParamAST }
+                            .forEach { offset += it.second.second }
                     return offset + offsetCounter
                 }
             }
