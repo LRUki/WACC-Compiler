@@ -3,12 +3,12 @@ package wacc.frontend.ast.program
 import wacc.backend.CodeGenerator.CLib
 import wacc.backend.CodeGenerator.dataDirective
 import wacc.backend.CodeGenerator.runtimeErrors
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.ImmediateInt
-import wacc.backend.translate.utils.ImmediateOperandInt
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.instr.parts.ImmediateInt
+import wacc.backend.translate.instr.parts.ImmediateOperandInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.Translatable
@@ -24,7 +24,7 @@ import wacc.frontend.ast.statement.StatAST
 class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST(), Translatable {
 
     companion object {
-        fun translateScoped(table: SymbolTable, instr: MutableList<Instruction>, stats: List<StatAST>) {
+        fun translateScoped(table: SymbolTable, instr: MutableList<Instr>, stats: List<StatAST>) {
             val MAX_STACK_OFFSET = 1024
             val stackOffset = table.getStackOffset()
             if (stackOffset > 0) {
@@ -63,9 +63,9 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         return true
     }
 
-    override fun translate(): List<Instruction> {
+    override fun translate(): List<Instr> {
 //      Translate function definitions
-        val instr = mutableListOf<Instruction>()
+        val instr = mutableListOf<Instr>()
         //add some stuff here. directives, .globalMain, .data,.text
 //
 //        addMsg()

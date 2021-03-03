@@ -3,17 +3,17 @@ package backend
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.ImmediateInt
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.instr.parts.ImmediateInt
 import wacc.backend.printCode
 
 class PrintCodeTest {
 
     @Test
     fun `can print code for skip files`() {
-        var instrs = listOf(
+        val instrs = listOf(
                 DirectiveInstr("text"),
                 DirectiveInstr("global main"),
                 Label("main"),

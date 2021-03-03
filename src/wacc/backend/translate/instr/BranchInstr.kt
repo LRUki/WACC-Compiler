@@ -1,10 +1,9 @@
-package wacc.backend.translate.instrs
+package wacc.backend.translate.instr
 
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
+import wacc.backend.translate.instr.enums.Condition
 
 class BranchInstr(val condition: Condition,
-                  val label: LabelInstr, val link: Boolean) : Instruction {
+                  val label: LabelInstr, val link: Boolean) : Instr {
     override fun toAssembly(): String {
         var instr = "B"
         if (link) {

@@ -4,11 +4,11 @@ import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextLabel
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.ImmediateOperandInt
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.instr.parts.ImmediateOperandInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.ExprAST
@@ -56,8 +56,8 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
     }
 
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         val elseLabel = getNextLabel()
         val afterElseLabel = getNextLabel()
 

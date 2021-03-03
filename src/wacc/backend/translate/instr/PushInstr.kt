@@ -1,9 +1,8 @@
-package wacc.backend.translate.instrs
+package wacc.backend.translate.instr
 
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Register
+import wacc.backend.translate.instr.enums.Register
 
-class PushInstr(val register: Register) : Instruction {
+class PushInstr(val register: Register) : Instr {
     override fun toAssembly(): String {
         return "PUSH {${register.toAssembly()}}"
     }

@@ -3,14 +3,14 @@ package wacc.frontend.ast.statement.nonblock
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.MemoryType
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.LoadInstr
-import wacc.backend.translate.instrs.StoreInstr
-import wacc.backend.translate.utils.RegisterAddr
-import wacc.backend.translate.utils.RegisterAddrWithOffset
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.MemoryType
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.LoadInstr
+import wacc.backend.translate.instr.StoreInstr
+import wacc.backend.translate.instr.parts.RegisterAddr
+import wacc.backend.translate.instr.parts.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
@@ -35,7 +35,7 @@ import wacc.frontend.exception.semanticError
  * @property rhs Value to be stored in the variable
  */
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
-    lateinit var stringLabel: String;
+    lateinit var stringLabel: String
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -58,8 +58,8 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
     }
 
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         instr.addAll(rhs.translate())
         if (rhs is StrLiterAST) {
             stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)

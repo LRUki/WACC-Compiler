@@ -1,4 +1,4 @@
-package wacc.backend.translate.enums
+package wacc.backend.translate.instr.enums
 
 enum class ShiftType {
     LSL, // Logical shift left

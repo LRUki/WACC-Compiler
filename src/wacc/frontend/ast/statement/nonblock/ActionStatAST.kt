@@ -3,17 +3,17 @@ package wacc.frontend.ast.statement.nonblock
 import wacc.backend.CodeGenerator.CLib
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.MemoryType
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.BranchInstr
-import wacc.backend.translate.instrs.Label
-import wacc.backend.translate.instrs.LoadInstr
-import wacc.backend.translate.instrs.MoveInstr
-import wacc.backend.translate.utils.CLibrary
-import wacc.backend.translate.utils.RegisterAddr
-import wacc.backend.translate.utils.RegisterOperand
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.MemoryType
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.BranchInstr
+import wacc.backend.translate.instr.Label
+import wacc.backend.translate.instr.LoadInstr
+import wacc.backend.translate.instr.MoveInstr
+import wacc.backend.translate.CLibrary
+import wacc.backend.translate.instr.parts.RegisterAddr
+import wacc.backend.translate.instr.parts.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
@@ -69,8 +69,8 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         return false
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         instr.addAll(expr.translate())
         val reg = seeLastUsedCalleeReg()
         val exprType = expr.getRealType(symTable)

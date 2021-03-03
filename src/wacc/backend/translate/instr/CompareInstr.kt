@@ -1,11 +1,10 @@
-package wacc.backend.translate.instrs
+package wacc.backend.translate.instr
 
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.utils.Operand
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.parts.Operand
 
 class CompareInstr(val register: Register,
-                   val operand: Operand) : Instruction {
+                   val operand: Operand) : Instr {
     override fun toAssembly(): String {
         val compareInstr = "CMP ${register.toAssembly()}, ${operand.toAssembly()}"
         return compareInstr

@@ -1,7 +1,7 @@
-package wacc.backend.translate.utils
+package wacc.backend.translate.instr.parts
 
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.enums.ShiftType
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.enums.ShiftType
 
 interface AddressingMode {
     fun toAssembly(): String

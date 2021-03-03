@@ -1,12 +1,13 @@
-package wacc.backend.translate.utils
+package wacc.backend.translate
 
 //import wacc.backend.instruction.enums.Condition
 import wacc.backend.CodeGenerator
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.RuntimeError.Companion.throwRuntimeErrorLabel
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.RuntimeError.Companion.throwRuntimeErrorLabel
+import wacc.backend.translate.instr.parts.*
 
 class CLibrary {
     enum class LibraryFunctions {
@@ -39,14 +40,14 @@ class CLibrary {
         }
     }
 
-    private val LibraryCalls: HashMap<Call, List<Instruction>> = LinkedHashMap()
+    private val libraryCalls: HashMap<Call, List<Instr>> = LinkedHashMap()
 
 
     fun addCode(call: Call) {
-        if (LibraryCalls.containsKey(call)) {
+        if (libraryCalls.containsKey(call)) {
             return
         }
-        val instructions = mutableListOf<Instruction>()
+        val instructions = mutableListOf<Instr>()
         val callLabel = Label(call.toString())
         val body = when (call) {
             Call.READ_INT, Call.READ_CHAR -> generateReadCall(call)
@@ -57,22 +58,21 @@ class CLibrary {
             Call.PRINT_LN -> generatePrintLnCall()
             Call.FREE_PAIR -> generateFreePairCall()
             Call.FREE_ARRAY -> generateFreeArrayCall()
-            else -> throw NotImplementedError()
         }
         instructions.add(callLabel)
         instructions.addAll(body)
-        LibraryCalls[call] = instructions
+        libraryCalls[call] = instructions
     }
 
-    fun translate(): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
-        for ((_, value) in LibraryCalls) {
+    fun translate(): List<Instr> {
+        val instructions = mutableListOf<Instr>()
+        for ((_, value) in libraryCalls) {
             instructions.addAll(value)
         }
         return instructions
     }
 
-    fun generateReadCall(call: Call): List<Instruction> {
+    fun generateReadCall(call: Call): List<Instr> {
         val stringFormat: String = when (call) {
             Call.READ_INT -> "%d\\0"
             Call.READ_CHAR -> " %c\\0"
@@ -96,8 +96,8 @@ class CLibrary {
 
     }
 
-    fun generatePrintIntCall(): List<Instruction> {
-        val stringFormat: String = "%d\\0"
+    fun generatePrintIntCall(): List<Instr> {
+        val stringFormat = "%d\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
@@ -119,7 +119,7 @@ class CLibrary {
         // POP {pc}
     }
 
-    fun generatePrintBoolCall(): List<Instruction> {
+    fun generatePrintBoolCall(): List<Instr> {
         val trueString = "true\\0"
         val falseString = "false\\0"
         val trueLabel = CodeGenerator.dataDirective.addStringLabel(trueString)
@@ -148,8 +148,8 @@ class CLibrary {
     }
 
 
-    fun generatePrintStringCall(): List<Instruction> {
-        val stringFormat: String = "%.*s\\0"
+    fun generatePrintStringCall(): List<Instr> {
+        val stringFormat = "%.*s\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
@@ -174,8 +174,8 @@ class CLibrary {
     }
 
 
-    fun generatePrintReferenceCall(): List<Instruction> {
-        val stringFormat: String = "%p\\0"
+    fun generatePrintReferenceCall(): List<Instr> {
+        val stringFormat = "%p\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
@@ -198,8 +198,8 @@ class CLibrary {
         // POP {pc}
     }
 
-    fun generatePrintLnCall(): List<Instruction> {
-        val stringFormat: String = "\\0"
+    fun generatePrintLnCall(): List<Instr> {
+        val stringFormat = "\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
@@ -219,7 +219,7 @@ class CLibrary {
         // POP {pc}
     }
 
-    fun generateFreePairCall(): List<Instruction> {
+    fun generateFreePairCall(): List<Instr> {
 //    val errorLabel = codeGenerator.getDataSegment().addString(RuntimeErrors.RuntimeErrorType.NULL_REFERENCE.toString())
 //    codeGenerator.getRuntimeErrors().addThrowRuntimeError()
 
@@ -256,7 +256,7 @@ class CLibrary {
     }
 
 
-    fun generateFreeArrayCall(): List<Instruction> {
+    fun generateFreeArrayCall(): List<Instr> {
         val errorMessage = RuntimeError.ErrorType.NULL_REFERENCE.toString()
         val errorLabel = CodeGenerator.dataDirective.addStringLabel(errorMessage)
         //codeGenerator.getDataSegment().addString(errorMsg)

@@ -3,13 +3,14 @@ package wacc.frontend.ast.pair
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.BranchInstr
-import wacc.backend.translate.instrs.LoadInstr
-import wacc.backend.translate.instrs.MoveInstr
-import wacc.backend.translate.utils.*
+import wacc.backend.translate.RuntimeError
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.BranchInstr
+import wacc.backend.translate.instr.LoadInstr
+import wacc.backend.translate.instr.MoveInstr
+import wacc.backend.translate.instr.parts.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -23,8 +24,8 @@ import wacc.frontend.exception.semanticError
 /**
  * AST node to represent a Pair Element
  *
- * @param Pair elem command, either 'fst' or 'snd'
- * @param Expression evaluating to a pair object
+ * @param choice elem command, either 'fst' or 'snd'
+ * @param expr evaluating to a pair object
  */
 class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, AbstractAST() {
     lateinit var type: TypeAST
@@ -51,8 +52,8 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         return type
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
 
         instr.addAll(expr.translate())
         val reg = seeLastUsedCalleeReg()

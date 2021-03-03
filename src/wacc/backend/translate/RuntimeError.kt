@@ -1,19 +1,23 @@
-package wacc.backend.translate.utils
+package wacc.backend.translate
 
 import wacc.backend.CodeGenerator
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.instr.parts.ImmediateLabel
+import wacc.backend.translate.instr.parts.ImmediateOperandInt
+import wacc.backend.translate.instr.parts.RegisterAddr
+import wacc.backend.translate.instr.parts.RegisterOperand
 
 class RuntimeError {
 
     private val EXIT_CODE = -1
-    private var runtimeError: List<Instruction>? = null
-    private var nullReferenceError: List<Instruction>? = null
-    private var divideZeroError: List<Instruction>? = null
-    private var checkArrayBounds: List<Instruction>? = null
-    private var overflowError: List<Instruction>? = null
+    private var runtimeError: List<Instr>? = null
+    private var nullReferenceError: List<Instr>? = null
+    private var divideZeroError: List<Instr>? = null
+    private var checkArrayBounds: List<Instr>? = null
+    private var overflowError: List<Instr>? = null
 
     /* labels for each type of error. */
     companion object {
@@ -37,8 +41,8 @@ class RuntimeError {
         }
     }
 
-    fun translate(): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
+    fun translate(): List<Instr> {
+        val instructions = mutableListOf<Instr>()
         runtimeError?.let { instructions.addAll(it) }
         nullReferenceError?.let { instructions.addAll(it) }
         divideZeroError?.let { instructions.addAll(it) }

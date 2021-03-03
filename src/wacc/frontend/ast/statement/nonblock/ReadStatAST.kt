@@ -1,16 +1,16 @@
 package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.AddInstr
-import wacc.backend.translate.instrs.BranchInstr
-import wacc.backend.translate.instrs.Label
-import wacc.backend.translate.instrs.MoveInstr
-import wacc.backend.translate.utils.CLibrary
-import wacc.backend.translate.utils.ImmediateOperandInt
-import wacc.backend.translate.utils.RegisterOperand
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.AddInstr
+import wacc.backend.translate.instr.BranchInstr
+import wacc.backend.translate.instr.Label
+import wacc.backend.translate.instr.MoveInstr
+import wacc.backend.translate.CLibrary
+import wacc.backend.translate.instr.parts.ImmediateOperandInt
+import wacc.backend.translate.instr.parts.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST
@@ -45,8 +45,8 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         return true
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
 
         when (expr) {
             is IdentAST -> {

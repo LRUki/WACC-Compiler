@@ -4,12 +4,12 @@ import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.MemoryType
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.*
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.MemoryType
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.instr.parts.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.assign.RhsAST
@@ -22,9 +22,9 @@ class IntLiterAST(val value: Int) : LiterAST {
         return BaseTypeAST(BaseType.INT)
     }
 
-    override fun translate(): List<Instruction> {
+    override fun translate(): List<Instr> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instr>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
@@ -39,9 +39,9 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
         return BaseTypeAST(BaseType.BOOL)
     }
 
-    override fun translate(): List<Instruction> {
+    override fun translate(): List<Instr> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instr>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
@@ -56,9 +56,9 @@ class StrLiterAST(val value: String) : LiterAST {
         return BaseTypeAST(BaseType.STRING)
     }
 
-    override fun translate(): List<Instruction> {
+    override fun translate(): List<Instr> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instr>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
@@ -74,9 +74,9 @@ class CharLiterAST(val value: Char) : LiterAST {
         return BaseTypeAST(BaseType.CHAR)
     }
 
-    override fun translate(): List<Instruction> {
+    override fun translate(): List<Instr> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instr>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
@@ -92,9 +92,9 @@ class NullPairLiterAST : LiterAST {
         return AnyPairTypeAST()
     }
 
-    override fun translate(): List<Instruction> {
+    override fun translate(): List<Instr> {
         var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
+        val instrs = mutableListOf<Instr>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
@@ -122,8 +122,8 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
         return arrayType
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         val elemSize = getBytesOfType((arrayType as ArrayTypeAST).type)
 //        println("This is the bytes of ${arrayType} ${elemSize}")
         //loading the length of array * elemSize + size of INT
@@ -136,7 +136,7 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
         instr.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
         //add element to stack
-        var memType: MemoryType? = null;
+        var memType: MemoryType? = null
         for ((i, expr) in values.withIndex()) {
             if (expr is IdentAST) {
                 expr.symTable = symTable

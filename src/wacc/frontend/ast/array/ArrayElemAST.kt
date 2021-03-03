@@ -4,15 +4,16 @@ import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.enums.ShiftType
-import wacc.backend.translate.instrs.AddInstr
-import wacc.backend.translate.instrs.BranchInstr
-import wacc.backend.translate.instrs.LoadInstr
-import wacc.backend.translate.instrs.MoveInstr
-import wacc.backend.translate.utils.*
+import wacc.backend.translate.RuntimeError
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.enums.ShiftType
+import wacc.backend.translate.instr.AddInstr
+import wacc.backend.translate.instr.BranchInstr
+import wacc.backend.translate.instr.LoadInstr
+import wacc.backend.translate.instr.MoveInstr
+import wacc.backend.translate.instr.parts.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -66,8 +67,8 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
         }
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         val stackReg = getNextFreeCalleeReg()
         val stackOffset = symTable.findOffsetInStack(ident.name)
         instr.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateOperandInt(stackOffset), false))

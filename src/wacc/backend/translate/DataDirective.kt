@@ -1,6 +1,7 @@
 package wacc.backend.translate
 
-import wacc.backend.translate.instrs.DirectiveInstr
+import wacc.backend.translate.instr.DirectiveInstr
+import wacc.backend.translate.instr.Instr
 
 class DataDirective(val stringLabels: StringLabels) {
 
@@ -19,9 +20,9 @@ class DataDirective(val stringLabels: StringLabels) {
     /**
      * Translate the data section into assembly code.
      */
-    fun translate(): List<Instruction> {
+    fun translate(): List<Instr> {
         if (stringLabels.strings.size == 0) return emptyList()
-        val instructions = mutableListOf<Instruction>()
+        val instructions = mutableListOf<Instr>()
         instructions.add(DirectiveInstr("data"))
         val strings = stringLabels.translateAll()
         instructions.addAll(strings)

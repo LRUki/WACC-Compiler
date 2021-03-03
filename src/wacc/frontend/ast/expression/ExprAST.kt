@@ -3,12 +3,13 @@ package wacc.frontend.ast.expression
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.enums.ShiftType
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.*
+import wacc.backend.translate.RuntimeError
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.enums.ShiftType
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.instr.parts.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.RhsAST
@@ -87,8 +88,8 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         }
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         instr.addAll(expr1.translate())
         var reg1 = seeLastUsedCalleeReg()
         instr.addAll(expr2.translate())
@@ -309,8 +310,8 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
         }
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         instr.addAll(expr.translate())
         val reg1 = seeLastUsedCalleeReg()
         when (unOp) {

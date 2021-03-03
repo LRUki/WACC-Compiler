@@ -1,12 +1,12 @@
 package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.MemoryType
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.LoadInstr
-import wacc.backend.translate.utils.RegisterAddrWithOffset
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.MemoryType
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.LoadInstr
+import wacc.backend.translate.instr.parts.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.LhsAST
@@ -54,7 +54,7 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         }
     }
 
-    override fun translate(): List<Instruction> {
+    override fun translate(): List<Instr> {
         var offset = symTable.findOffsetInStack(name)
         var memType: MemoryType? = null
         val type = getRealType(symTable)

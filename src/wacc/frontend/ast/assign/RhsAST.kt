@@ -3,12 +3,13 @@ package wacc.frontend.ast.assign
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.MemoryType
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.*
+import wacc.backend.translate.CLibrary
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.MemoryType
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.instr.parts.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AST
@@ -46,8 +47,8 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         return PairTypeAST(firstType, secondType)
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         var memtype: MemoryType? = null
         //Malloc space for pair
         instr.add(LoadInstr(Condition.AL, null, ImmediateInt(2 * 4), Register.R0))
@@ -132,8 +133,8 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         return ident.getRealType(table)
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         val totalLength = argTypes.size - 1
         var totalBytes = 0
         for ((index, arg) in argList.reversed().withIndex()) {

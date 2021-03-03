@@ -1,11 +1,11 @@
 package wacc.frontend.ast.function
 
 import wacc.backend.CodeGenerator.freeAllCalleeReg
-import wacc.backend.translate.Instruction
-import wacc.backend.translate.enums.Condition
-import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.ImmediateOperandInt
+import wacc.backend.translate.instr.Instr
+import wacc.backend.translate.instr.enums.Condition
+import wacc.backend.translate.instr.enums.Register
+import wacc.backend.translate.instr.*
+import wacc.backend.translate.instr.parts.ImmediateOperandInt
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -48,8 +48,8 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         table.add(ident.name, this)
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
+    override fun translate(): List<Instr> {
+        val instr = mutableListOf<Instr>()
         instr.add(FunctionLabel(ident.name))
         instr.add(PushInstr(Register.LR))
         val stackOffset = symTable.getStackOffset()

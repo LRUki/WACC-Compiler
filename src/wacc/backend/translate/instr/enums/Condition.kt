@@ -1,4 +1,4 @@
-package wacc.backend.translate.enums
+package wacc.backend.translate.instr.enums
 
 enum class Condition {
 
@@ -19,7 +19,7 @@ enum class Condition {
     AL;    // Always
 
     fun toAssembly(): String {
-        return if (this == Condition.AL) "" else this.name
+        return if (this == AL) "" else this.name
     }
 }
 

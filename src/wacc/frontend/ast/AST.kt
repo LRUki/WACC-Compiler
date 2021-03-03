@@ -1,7 +1,7 @@
 package wacc.frontend.ast
 
 import org.antlr.v4.runtime.ParserRuleContext
-import wacc.backend.translate.Instruction
+import wacc.backend.translate.instr.Instr
 import wacc.frontend.SymbolTable
 
 /**
@@ -23,7 +23,7 @@ interface AST {
 }
 
 interface Translatable {
-    fun translate(): List<Instruction>
+    fun translate(): List<Instr>
 }
 
 /**

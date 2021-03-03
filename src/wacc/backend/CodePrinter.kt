@@ -1,8 +1,8 @@
 package wacc.backend
 
-import wacc.backend.translate.Instruction
+import wacc.backend.translate.instr.Instr
 
-fun printCode(instrs: List<Instruction>): String {
+fun printCode(instrs: List<Instr>): String {
     val lines = instrs.map { instr -> instr.toAssembly() }
             .map { line -> if (shouldIndent(line)) "\t" + line else line }
     val builder = StringBuilder()
