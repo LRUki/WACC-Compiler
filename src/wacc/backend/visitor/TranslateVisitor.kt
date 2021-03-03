@@ -31,10 +31,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitProgramAST(ast: ProgramAST): List<Instruction> {
 //      Translate function definitions
         val instrs = mutableListOf<Instruction>()
-        //add some stuff here. directives, .globalMain, .data,.text
-//
-//        addMsg()
-//        // add msg here
+
         instrs.add(DirectiveInstr("text"))
         instrs.add(DirectiveInstr("global main"))
         ast.funcList.forEach { instrs.addAll(visit(it)) }
@@ -208,11 +205,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_LN)
                     instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_LN.toString()), true))
                 }
-                CodeGenerator.freeCalleeReg()
+                freeCalleeReg()
             }
             Action.FREE -> {
-//                val stackOffset = symTable.findOffsetInStack((expr as IdentAST).name)
-//                instrs.add(LoadInstr(getNextFreeCalleeReg(), null, RegisterAddrWithOffset(Register.SP, stackOffset, false), Condition.AL))
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(CodeGenerator.seeLastUsedCalleeReg())))
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
                 CodeGenerator.CLib.addCode(CLibrary.Call.FREE_PAIR)
@@ -270,9 +265,8 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             is PairElemAST -> {
                 instrs.addAll(visit(ast.lhs))
-//                instrs.add(LoadInstr(Condition.AL,null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 instrs.add(StoreInstr(memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
-                CodeGenerator.freeCalleeReg()
+                freeCalleeReg()
             }
         }
 
@@ -315,7 +309,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
         }
         instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.offsetSize, false), Register.R4))
-        CodeGenerator.freeCalleeReg()
+        freeCalleeReg()
 
         return instrs
     }
@@ -421,7 +415,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val funcLabel = FunctionLabel(ast.ident.name)
         instrs.add(BranchInstr(Condition.AL, funcLabel, true))
         instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(totalBytes), false))
-        instrs.add(MoveInstr(Condition.AL, CodeGenerator.getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
+        instrs.add(MoveInstr(Condition.AL, getNextFreeCalleeReg(), RegisterOperand(Register.R0)))
         return instrs
     }
 
@@ -679,7 +673,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     }
 
     override fun visitBoolLiterAST(ast: BoolLiterAST): List<Instruction> {
-        var reg = CodeGenerator.getNextFreeCalleeReg()
+        var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
@@ -690,7 +684,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     }
 
     override fun visitStrLiterAST(ast: StrLiterAST): List<Instruction> {
-        var reg = CodeGenerator.getNextFreeCalleeReg()
+        var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
@@ -702,7 +696,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     }
 
     override fun visitCharLiterAST(ast: CharLiterAST): List<Instruction> {
-        var reg = CodeGenerator.getNextFreeCalleeReg()
+        var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
@@ -713,7 +707,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     }
 
     override fun visitNullPairLiterAST(ast: NullPairLiterAST): List<Instruction> {
-        var reg = CodeGenerator.getNextFreeCalleeReg()
+        var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
         if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
             reg = Register.R10
@@ -758,7 +752,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(ast.values.size), CodeGenerator.getNextFreeCalleeReg()))
         instrs.add(StoreInstr(null,
                 RegisterMode(stackReg), CodeGenerator.seeLastUsedCalleeReg()))
-        CodeGenerator.freeCalleeReg()
+        freeCalleeReg()
         return instrs
     }
 
