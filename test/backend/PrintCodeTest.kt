@@ -55,4 +55,19 @@ class PrintCodeTest {
                 CompareInstr(Register.R0, RegShiftOffsetOperand(Register.R1,ShiftType.LSL, 1))
                         .toAssembly())
     }
+
+    @Test
+    fun ArithmeticInstrPrintsCode() {
+        assertEquals("ADD r0, r1, #1",
+                AddInstr(Condition.AL,Register.R0,Register.R1, ImmediateIntOperand(1),false)
+                        .toAssembly())
+
+        assertEquals("SUBSGE r0, r1, #1",
+                SubInstr(Condition.GE ,Register.R0,Register.R1, ImmediateIntOperand(1),true)
+                        .toAssembly())
+
+        assertEquals("SMULL r0, r1, r2, r3",
+                MultInstr(Condition.AL ,Register.R0,Register.R1, Register.R2,Register.R3,false)
+                        .toAssembly())
+    }
 }
