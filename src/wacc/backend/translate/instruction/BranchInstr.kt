@@ -2,7 +2,7 @@ package wacc.backend.translate.instruction
 
 import wacc.backend.translate.instruction.instructionpart.Condition
 
-class BranchInstr(val condition: Condition,
+data class BranchInstr(val condition: Condition,
                   val label: LabelInstr, val link: Boolean) : Instruction {
     override fun toAssembly(): String {
         var instr = "B"

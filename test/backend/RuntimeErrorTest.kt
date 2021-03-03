@@ -28,6 +28,7 @@ class RuntimeErrorTest {
             val instrs = generateCode(ast as ProgramAST)
             println(file.path)
             assertTrue(instrs.contains(RuntimeError.throwOverflowErrorLabel))
+            assertTrue(instrs.contains(BranchInstr(Condition.AL, RuntimeError.exitLabel, true)))
         }
     }
 
