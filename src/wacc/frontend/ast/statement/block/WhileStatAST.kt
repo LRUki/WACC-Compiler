@@ -3,10 +3,13 @@ package wacc.frontend.ast.statement.block
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.*
+import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
+import wacc.backend.translate.instrs.AddInstr
+import wacc.backend.translate.instrs.BranchInstr
+import wacc.backend.translate.instrs.CompareInstr
+import wacc.backend.translate.instrs.SubInstr
 import wacc.backend.translate.utils.ImmediateOperandInt
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -26,14 +29,20 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
-        if (!cond.check(table)) {return false}
+        if (!cond.check(table)) {
+            return false
+        }
         val condType = cond.getRealType(table)
         if (condType != TypeInstance.boolTypeInstance) {
             semanticError("While condition must evaluate to a BOOL, but was actually $condType", ctx)
             return false
         }
         blockST = SymbolTable(table)
-        body.forEach { if (!it.check(blockST)) {return false} }
+        body.forEach {
+            if (!it.check(blockST)) {
+                return false
+            }
+        }
         return true
     }
 
@@ -41,7 +50,7 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         val instr = mutableListOf<Instruction>()
         val condLabel = CodeGenerator.getNextLabel()
         val bodyLabel = CodeGenerator.getNextLabel()
-        instr.add(BranchInstr(Condition.AL, condLabel,  false))
+        instr.add(BranchInstr(Condition.AL, condLabel, false))
 
         instr.add(bodyLabel)
         val stackOffset = blockST.getStackOffset()

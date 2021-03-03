@@ -4,7 +4,7 @@ import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextLabel
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.*
+import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.Register
 import wacc.backend.translate.instrs.*
@@ -42,11 +42,15 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         }
         thenST = SymbolTable(table)
         for (stat in thenBody) {
-            if (!stat.check(thenST)) {break}
+            if (!stat.check(thenST)) {
+                break
+            }
         }
         elseST = SymbolTable(table)
         for (stat in elseBody) {
-            if (!stat.check(elseST)) {break}
+            if (!stat.check(elseST)) {
+                break
+            }
         }
         return true
     }
@@ -59,7 +63,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
 
         instr.addAll(cond.translate())
         instr.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateOperandInt(0)))
-        instr.add(BranchInstr(Condition.EQ, elseLabel,  false))
+        instr.add(BranchInstr(Condition.EQ, elseLabel, false))
         freeCalleeReg()
         var stackOffset = thenST.getStackOffset()
         if (stackOffset > 0) {
@@ -69,7 +73,7 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
             instr.addAll(it.translate())
         }
         val lastStat = thenBody.last()
-        if((lastStat is ActionStatAST) && lastStat.action == Action.RETURN){
+        if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
             instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(symTable.getFuncStackOffset())))
             instr.addAll(regsToPopInstrs(listOf(Register.PC)))
             freeAllCalleeReg()

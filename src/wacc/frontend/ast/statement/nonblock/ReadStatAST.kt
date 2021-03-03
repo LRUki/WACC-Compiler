@@ -23,7 +23,6 @@ import wacc.frontend.ast.type.BaseTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.ast.type.TypeInstance
 import wacc.frontend.exception.semanticError
-import java.lang.RuntimeException
 
 /**
  * AST node representing Read Statement
@@ -50,7 +49,7 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         val instr = mutableListOf<Instruction>()
 
         when (expr) {
-            is IdentAST ->{
+            is IdentAST -> {
                 val (correctSTScope, offset) = symTable.getSTWithIdentifier(expr.name, (exprType as BaseTypeAST))
                 instr.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateOperandInt(correctSTScope.findOffsetInStack(expr.name) + offset)))
             }

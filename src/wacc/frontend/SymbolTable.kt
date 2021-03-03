@@ -7,7 +7,6 @@ import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.*
 import java.util.*
-import kotlin.RuntimeException
 import kotlin.collections.LinkedHashMap
 
 /**
@@ -113,7 +112,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     fun getFuncStackOffset(): Int {
-        if(this is FuncSymbolTable){
+        if (this is FuncSymbolTable) {
             return startingOffset
         }
         if (encSymbolTable != null) {

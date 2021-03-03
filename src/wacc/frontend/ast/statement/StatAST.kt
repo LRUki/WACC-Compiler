@@ -9,7 +9,7 @@ import wacc.frontend.ast.Translatable
  * Implemented by Statement AST nodes
  * Implements the AST interface to be able to override the check method
  */
-interface   StatAST : AST, Translatable
+interface StatAST : AST, Translatable
 
 class SkipStatAST : StatAST {
     override fun translate(): List<Instruction> {
@@ -27,7 +27,11 @@ class SkipStatAST : StatAST {
 class MultiStatAST(val stats: List<StatAST>) : StatAST {
     override fun check(table: SymbolTable): Boolean {
         val blockST = SymbolTable(table)
-        stats.forEach { if (!it.check(blockST)) {return false} }
+        stats.forEach {
+            if (!it.check(blockST)) {
+                return false
+            }
+        }
         return true
     }
 

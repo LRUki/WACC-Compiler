@@ -4,10 +4,10 @@ import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.MemoryType
 import wacc.backend.translate.enums.Register
-import wacc.backend.translate.utils.*
+import wacc.backend.translate.utils.AddressingMode
 
 class LoadInstr(val condition: Condition, val memType: MemoryType?,
-                val mode: AddressingMode, val destRegister: Register): Instruction {
+                val mode: AddressingMode, val destRegister: Register) : Instruction {
     override fun toAssembly(): String {
         return "LDR${memType?.name ?: ""}${condition.toAssembly()} ${destRegister.toAssembly()}, ${mode.toAssembly()}"
     }

@@ -2,10 +2,19 @@ package wacc
 
 import antlr.WaccLexer
 import antlr.WaccParser
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
+import wacc.Main.semanticErrorChannel
+import wacc.Main.syntaxErrorChannel
+import wacc.backend.generateCode
+import wacc.backend.printCode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
+import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
@@ -14,22 +23,15 @@ import wacc.frontend.visitor.BuildAstVisitor
 import wacc.frontend.visitor.CheckSyntaxVisitor
 import java.io.File
 import java.io.InputStream
-import kotlin.system.exitProcess
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
-import wacc.Main.semanticErrorChannel
-import wacc.Main.syntaxErrorChannel
-import wacc.backend.generateCode
-import wacc.backend.printCode
-import wacc.frontend.ast.program.ProgramAST
 import java.nio.file.Files
+import kotlin.system.exitProcess
 
 object Main {
     lateinit var syntaxErrorChannel: Channel<SyntaxException>
     lateinit var semanticErrorChannel: Channel<SemanticException>
 }
 
-suspend fun main(args: Array<String>){
+suspend fun main(args: Array<String>) {
     val ast: AST
     if (args.isEmpty()) {
         println("Missing argument!")
@@ -109,7 +111,8 @@ fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
             allErrors.add(error)
         }
         var count = 0
-        allErrors.forEach { System.err.println("${count++} $it");printErrorLineInCode(it as Exception, file)
+        allErrors.forEach {
+            System.err.println("${count++} $it");printErrorLineInCode(it as Exception, file)
         }
         if (allErrors.size > 0) {
             when (val err = allErrors[0]) {
@@ -120,7 +123,7 @@ fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
     }
 }
 
-fun backend(ast : AST): String {
+fun backend(ast: AST): String {
     val instrs = generateCode(ast as ProgramAST)
     return printCode(instrs)
 }

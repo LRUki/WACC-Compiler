@@ -40,7 +40,7 @@ class RuntimeError {
     fun translate(): List<Instruction> {
         val instructions = mutableListOf<Instruction>()
         runtimeError?.let { instructions.addAll(it) }
-        nullReferenceError?.let {instructions.addAll(it)}
+        nullReferenceError?.let { instructions.addAll(it) }
         divideZeroError?.let { instructions.addAll(it) }
         checkArrayBounds?.let { instructions.addAll(it) }
         overflowError?.let { instructions.addAll(it) }
@@ -106,7 +106,7 @@ class RuntimeError {
         //   POP {pc}
     }
 
-    fun addArrayBoundsCheck(){
+    fun addArrayBoundsCheck() {
         if (checkArrayBounds == null) {
             val negativeMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
             val tooLargeMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.LARGE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
@@ -135,7 +135,6 @@ class RuntimeError {
             //   BLCS p_throw_runtime_error
             //   POP {pc}
         }
-
 
 
     }

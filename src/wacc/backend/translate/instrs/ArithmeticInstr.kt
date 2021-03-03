@@ -1,9 +1,9 @@
 package wacc.backend.translate.instrs
 
-import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.Instruction
-import wacc.backend.translate.utils.Operand
+import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.Register
+import wacc.backend.translate.utils.Operand
 
 interface ArithmeticInstr : Instruction
 

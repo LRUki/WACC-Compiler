@@ -14,6 +14,6 @@ class PopInstr(val register: Register) : Instruction {
 
 }
 
-fun regsToPopInstrs(list: List<Register>) : List<PopInstr> {
+fun regsToPopInstrs(list: List<Register>): List<PopInstr> {
     return list.map { reg -> PopInstr(reg) }
 }

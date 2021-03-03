@@ -1,7 +1,5 @@
 package wacc.frontend.exception
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.antlr.v4.runtime.ParserRuleContext
 import wacc.Main
@@ -11,7 +9,7 @@ object ErrorUtil {
     val LINES_ABOVE_BELOW_ERROR = 3
 }
 
-fun syntaxError(msg: String, ctx: ParserRuleContext) = runBlocking{
+fun syntaxError(msg: String, ctx: ParserRuleContext) = runBlocking {
     runBlocking {
         Main.syntaxErrorChannel.send(SyntaxException(
                 "Syntax Error at line" +
@@ -21,7 +19,8 @@ fun syntaxError(msg: String, ctx: ParserRuleContext) = runBlocking{
 }
 
 fun semanticError(msg: String, ctx: ParserRuleContext) = runBlocking {
-    runBlocking {  Main.semanticErrorChannel.send(SemanticException(
+    runBlocking {
+        Main.semanticErrorChannel.send(SemanticException(
                 "Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $msg",
                 ctx.start.line))
     }

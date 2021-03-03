@@ -1,8 +1,8 @@
 package wacc.frontend.ast.assign
 
 import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.MemoryType

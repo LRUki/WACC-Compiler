@@ -7,13 +7,13 @@ interface Operand {
     fun toAssembly(): String
 }
 
-class ImmediateOperandInt(val offset: Int): Operand {
+class ImmediateOperandInt(val offset: Int) : Operand {
     override fun toAssembly(): String {
         return "#$offset"
     }
 }
 
-class ImmediateOperandChar(val char: Char): Operand {
+class ImmediateOperandChar(val char: Char) : Operand {
     override fun toAssembly(): String {
         val charStr: String = when (char) {
             0.toChar() -> "\\0"
@@ -31,26 +31,26 @@ class ImmediateOperandChar(val char: Char): Operand {
     }
 }
 
-class ImmediateOperandBool(val bool: Boolean): Operand {
+class ImmediateOperandBool(val bool: Boolean) : Operand {
     override fun toAssembly(): String {
         return "#${if (bool) 1 else 0}"
     }
 }
 
 
-class RegisterOperand(val reg: Register): Operand {
+class RegisterOperand(val reg: Register) : Operand {
     override fun toAssembly(): String {
         return reg.toAssembly()
     }
 }
 
-class RegShiftRegOperand(val reg1: Register, val shiftOp: ShiftType, val reg2: Register): Operand {
+class RegShiftRegOperand(val reg1: Register, val shiftOp: ShiftType, val reg2: Register) : Operand {
     override fun toAssembly(): String {
         return "${reg1.toAssembly()}, ${shiftOp.name} ${reg2.toAssembly()}"
     }
 }
 
-class RegShiftOffsetOperand(val reg: Register, val shiftOp: ShiftType, val offset: Int): Operand {
+class RegShiftOffsetOperand(val reg: Register, val shiftOp: ShiftType, val offset: Int) : Operand {
     override fun toAssembly(): String {
         return "${reg.toAssembly()}, ${shiftOp.name} #$offset"
     }

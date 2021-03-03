@@ -2,8 +2,8 @@ package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.MemoryType
@@ -111,11 +111,11 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
         symTable = table
         arrayType = if (values.isEmpty()) {
             ArrayTypeAST(AnyTypeAST(), 1)
-        }else{
+        } else {
             val exprType = values[0].getRealType(table)
-            if(exprType is ArrayTypeAST){
+            if (exprType is ArrayTypeAST) {
                 ArrayTypeAST(exprType.type, exprType.dimension + 1)
-            }else{
+            } else {
                 ArrayTypeAST(exprType, 1)
             }
         }
@@ -125,7 +125,7 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     override fun translate(): List<Instruction> {
         val instr = mutableListOf<Instruction>()
         val elemSize = getBytesOfType((arrayType as ArrayTypeAST).type)
-        println("This is the bytes of ${arrayType} ${elemSize}")
+//        println("This is the bytes of ${arrayType} ${elemSize}")
         //loading the length of array * elemSize + size of INT
         val sizeOfInt = getBytesOfType(BaseTypeAST(BaseType.INT))
         instr.add(LoadInstr(Condition.AL, null,

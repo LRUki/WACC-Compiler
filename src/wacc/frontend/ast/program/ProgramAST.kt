@@ -3,7 +3,7 @@ package wacc.frontend.ast.program
 import wacc.backend.CodeGenerator.CLib
 import wacc.backend.CodeGenerator.dataDirective
 import wacc.backend.CodeGenerator.runtimeErrors
-import wacc.backend.translate.*
+import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.Register
 import wacc.backend.translate.instrs.*
@@ -55,7 +55,11 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         symTable = table
         funcList.forEach { it.checkNameAndAddToST(table) }
         funcList.forEach { it.check(table) }
-        stats.forEach { if (!it.check(table)) {return false} }
+        stats.forEach {
+            if (!it.check(table)) {
+                return false
+            }
+        }
         return true
     }
 

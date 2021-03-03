@@ -1,5 +1,5 @@
 package wacc.backend.translate
 
 interface Instruction {
-    fun toAssembly():String
+    fun toAssembly(): String
 }

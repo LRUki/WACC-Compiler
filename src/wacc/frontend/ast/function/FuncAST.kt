@@ -1,7 +1,7 @@
 package wacc.frontend.ast.function
 
 import wacc.backend.CodeGenerator.freeAllCalleeReg
-import wacc.backend.translate.*
+import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.Register
 import wacc.backend.translate.instrs.*
@@ -31,7 +31,11 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         //create a symbol table for the function and add all parameters to it
         symTable = FuncSymbolTable(table, this)
         paramList.forEach { symTable.add(it.ident.name, it) }
-        body.forEach { if (!it.check(symTable)) {return false} }
+        body.forEach {
+            if (!it.check(symTable)) {
+                return false
+            }
+        }
         return true
     }
 

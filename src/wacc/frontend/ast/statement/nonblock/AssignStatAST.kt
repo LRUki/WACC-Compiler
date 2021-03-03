@@ -7,8 +7,10 @@ import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.MemoryType
 import wacc.backend.translate.enums.Register
-import wacc.backend.translate.instrs.*
-import wacc.backend.translate.utils.*
+import wacc.backend.translate.instrs.LoadInstr
+import wacc.backend.translate.instrs.StoreInstr
+import wacc.backend.translate.utils.RegisterAddr
+import wacc.backend.translate.utils.RegisterAddrWithOffset
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.array.ArrayElemAST

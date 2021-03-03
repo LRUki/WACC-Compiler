@@ -75,7 +75,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         val reg = seeLastUsedCalleeReg()
         val exprType = expr.getRealType(symTable)
         if (expr is ArrayElemAST) {
-            var memType : MemoryType? = null
+            var memType: MemoryType? = null
             if (exprType == BaseTypeAST(BaseType.BOOL) || exprType == BaseTypeAST(BaseType.CHAR)) {
                 memType = MemoryType.SB
             }

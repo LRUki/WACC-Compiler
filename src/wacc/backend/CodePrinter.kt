@@ -10,13 +10,13 @@ fun printCode(instrs: List<Instruction>): String {
     return builder.toString()
 }
 
-fun shouldIndent(line: String) : Boolean {
+fun shouldIndent(line: String): Boolean {
     return when {
         line.isBlank() ||
-        line[line.lastIndex] == ':' ||
-        line.startsWith(".text") ||
-        line.startsWith(".data") ||
-        line.startsWith(".global main") -> false
+                line[line.lastIndex] == ':' ||
+                line.startsWith(".text") ||
+                line.startsWith(".data") ||
+                line.startsWith(".global main") -> false
         else -> true
     }
 }

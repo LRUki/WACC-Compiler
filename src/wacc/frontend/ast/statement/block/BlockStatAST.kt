@@ -14,7 +14,11 @@ class BlockStatAST(val body: List<StatAST>) : StatAST {
     lateinit var symTable: SymbolTable
     override fun check(table: SymbolTable): Boolean {
         symTable = SymbolTable(table)
-        body.forEach { if (!it.check(symTable)) {return false} }
+        body.forEach {
+            if (!it.check(symTable)) {
+                return false
+            }
+        }
         return true
     }
 

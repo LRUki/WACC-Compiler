@@ -8,7 +8,7 @@ import wacc.backend.translate.instrs.Label
 import wacc.backend.translate.utils.CLibrary
 import wacc.backend.translate.utils.RuntimeError
 import wacc.frontend.ast.program.ProgramAST
-import java.util.Stack
+import java.util.*
 
 object CodeGenerator {
 
@@ -47,7 +47,7 @@ object CodeGenerator {
     }
 
     fun getNextFreeCalleeReg(): Register {
-        if (freeCalleeSavedRegs.isEmpty()){
+        if (freeCalleeSavedRegs.isEmpty()) {
             useAccumulator = true
             return Register.NONE//TODO() CHANGE LATER
         }

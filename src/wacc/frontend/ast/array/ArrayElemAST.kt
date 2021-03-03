@@ -8,7 +8,10 @@ import wacc.backend.translate.Instruction
 import wacc.backend.translate.enums.Condition
 import wacc.backend.translate.enums.Register
 import wacc.backend.translate.enums.ShiftType
-import wacc.backend.translate.instrs.*
+import wacc.backend.translate.instrs.AddInstr
+import wacc.backend.translate.instrs.BranchInstr
+import wacc.backend.translate.instrs.LoadInstr
+import wacc.backend.translate.instrs.MoveInstr
 import wacc.backend.translate.utils.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
