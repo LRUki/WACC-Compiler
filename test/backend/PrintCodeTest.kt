@@ -64,6 +64,21 @@ class PrintCodeTest {
     }
 
     @Test
+    fun LoadInstrPrintsCode() {
+        assertEquals("LDR r0, =1",
+                LoadInstr(Condition.AL,null,ImmediateIntMode(1), Register.R0)
+                        .toAssembly())
+
+        assertEquals("LDRB r0, =1",
+                LoadInstr(Condition.AL,MemoryType.B,ImmediateIntMode(1), Register.R0)
+                        .toAssembly())
+
+        assertEquals("LDREQ r0, [r0, #3]!",
+                LoadInstr(Condition.EQ,null,RegisterAddrWithOffsetMode(Register.R0 ,3,true), Register.R0)
+                        .toAssembly())
+    }
+
+    @Test
     fun printCodeIndentsMainCode() {
         val instrs = listOf(
                 DirectiveInstr("text"),
