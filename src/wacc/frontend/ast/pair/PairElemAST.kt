@@ -53,10 +53,6 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         return type
     }
 
-    override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitPairElemAST(this)
     }

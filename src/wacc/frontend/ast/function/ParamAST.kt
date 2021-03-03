@@ -14,12 +14,8 @@ import wacc.frontend.ast.type.TypeAST
  * @property type Type of the parameter
  * @property ident Name of the parameter
  */
-class ParamAST(val type: TypeAST, val ident: IdentAST) : AST, Identifiable, Translatable {
-    override fun translate(): List<Instruction> {
-        return emptyList()
-    }
-
-    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+class ParamAST(val type: TypeAST, val ident: IdentAST) : AST, Identifiable {
+      override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitParamAST(this)
     }
 }

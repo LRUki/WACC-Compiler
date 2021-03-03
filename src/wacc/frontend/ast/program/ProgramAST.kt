@@ -22,7 +22,7 @@ import wacc.frontend.ast.statement.StatAST
  * @property funcList List of Function ASTs defined in the program
  * @property stats List of all the statements in the program
  */
-class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST(), Translatable {
+class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST() {
 
     companion object {
         fun translateScoped(table: SymbolTable, instrs: MutableList<Instruction>, stats: List<StatAST>) {
@@ -64,30 +64,6 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         return true
     }
 
-    override fun translate(): List<Instruction> {
-//      Translate function definitions
-        val instrs = mutableListOf<Instruction>()
-
-        instrs.add(DirectiveInstr("text"))
-        instrs.add(DirectiveInstr("global main"))
-        funcList.forEach { instrs.addAll(it.translate()) }
-
-        instrs.add(Label("main"))
-        // AI: PUSH {lr}
-        instrs.add(PushInstr(Register.LR))
-        translateScoped(symTable, instrs, stats)
-        // AI: LDR r0, =0
-        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(0), Register.R0))
-        // AI: POP {pc}
-        instrs.add(PopInstr(Register.PC))
-        instrs.add(DirectiveInstr("ltorg"))
-
-        val data = dataDirective.translate()
-        val cLib = CLib.translate()
-        val runtime = runtimeErrors.translate()
-
-        return data + instrs + runtime + cLib
-    }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitProgramAST(this)
