@@ -79,6 +79,22 @@ class PrintCodeTest {
     }
 
     @Test
+    fun LogicInstrPrintsCode() {
+        assertEquals("AND r0, r1, #1",
+                AndInstrType(Condition.AL,Register.R0,Register.R1,ImmediateIntOperand(1))
+                        .toAssembly())
+
+        assertEquals("EORSEQ r0, r1, #1",
+                XorInstrType(Condition.EQ,Register.R0,Register.R1,ImmediateIntOperand(1), true)
+                        .toAssembly())
+
+
+        assertEquals("ORRS r0, r1, r2",
+                OrInstrType(Condition.AL,Register.R0,Register.R1,RegisterOperand(Register.R2), true)
+                        .toAssembly())
+    }
+
+    @Test
     fun printCodeIndentsMainCode() {
         val instrs = listOf(
                 DirectiveInstr("text"),
