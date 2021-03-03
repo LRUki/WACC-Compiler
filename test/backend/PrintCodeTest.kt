@@ -11,20 +11,12 @@ import wacc.backend.translate.instruction.instructionpart.*
 class PrintCodeTest {
 
     @Test
-    fun DirectiveInstrPrintsCodeWithIndentation() {
-        val instrs = listOf(
-                DirectiveInstr("text"),
-                DirectiveInstr("global main"),
-                DirectiveInstr("ltorg")
-        )
-        val output = printCode(instrs)
-        assertThat(output, `is`("""
-        .text
-        .global main
-        	.ltorg
-        
-        """.trimIndent()))
+    fun DirectiveInstrPrintsCode() {
 
+        assertEquals(".text",
+                DirectiveInstr("text").toAssembly())
+        assertEquals(".word 3",
+                DirectiveInstr("word", "3").toAssembly())
     }
 
     @Test
@@ -69,5 +61,30 @@ class PrintCodeTest {
         assertEquals("SMULL r0, r1, r2, r3",
                 MultInstr(Condition.AL ,Register.R0,Register.R1, Register.R2,Register.R3,false)
                         .toAssembly())
+    }
+
+    @Test
+    fun printCodeIndentsMainCode() {
+        val instrs = listOf(
+                DirectiveInstr("text"),
+                DirectiveInstr("global main"),
+                Label("main"),
+                PushInstr(Register.LR),
+                LoadInstr(Condition.AL, null, ImmediateIntMode(0), Register.R0),
+                PopInstr(Register.PC),
+                DirectiveInstr("ltorg")
+        )
+        val output = printCode(instrs)
+        assertThat(output, `is`("""
+        .text
+        .global main
+        main:
+        	PUSH {lr}
+        	LDR r0, =0
+        	POP {pc}
+        	.ltorg
+        
+        """.trimIndent()))
+
     }
 }
