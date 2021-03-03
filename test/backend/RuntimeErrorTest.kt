@@ -52,4 +52,18 @@ class RuntimeErrorTest {
             generateCode(ast as ProgramAST).contains(RuntimeError.divideZeroCheckLabel)
         }
     }
+
+    @Test
+    fun integerOverflowRuntimeErrorContainsThrowIntegerOverflow() {
+        val folder = File("${path}/integerOverflow")
+        actionOnFiles(folder) { file ->
+            val program = parse(file.inputStream())
+            checkSyntax(program)
+            val ast = buildAST(program)
+            checkSemantics(ast)
+            generateCode(ast as ProgramAST).contains(RuntimeError.throwOverflowErrorLabel)
+        }
+    }
+
+
 }
