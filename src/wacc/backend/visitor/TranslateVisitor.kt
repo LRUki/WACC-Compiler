@@ -1,11 +1,9 @@
 package wacc.backend.visitor
 
 import wacc.backend.CodeGenerator
+import wacc.backend.translate.CLibrary
 import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.ImmediateIntMode
-import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
-import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
@@ -21,7 +19,7 @@ import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
-import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.*
 
 class TranslateVisitor: AstVisitor<List<Instruction>> {
 
@@ -147,27 +145,226 @@ class TranslateVisitor: AstVisitor<List<Instruction>> {
     }
 
     override fun visitActionStatAST(ast: ActionStatAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        instrs.addAll(visit(ast.expr))
+        val reg = CodeGenerator.seeLastUsedCalleeReg()
+        val exprType = ast.expr.getRealType(ast.symTable)
+        if (ast.expr is ArrayElemAST) {
+            var memType: MemoryType? = null
+            if (exprType == BaseTypeAST(BaseType.BOOL) || exprType == BaseTypeAST(BaseType.CHAR)) {
+                memType = MemoryType.SB
+            }
+            instrs.add(LoadInstr(Condition.AL, memType, RegisterMode(reg), reg))
+        }
+        when (ast.action) {
+            Action.EXIT -> {
+                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                instrs.add(BranchInstr(Condition.AL, Label("exit"), true))
+            }
+            Action.PRINT, Action.PRINTLN -> {
+                when (exprType) {
+                    is BaseTypeAST -> {
+                        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                        when (exprType.type) {
+                            BaseType.INT -> {
+                                CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_INT)
+                                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_INT.toString()), true))
+                            }
+                            BaseType.CHAR -> {
+                                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.PUTCHAR.toString()), true))
+                            }
+                            BaseType.BOOL -> {
+                                CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_BOOL)
+                                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_BOOL.toString()), true))
+                            }
+                            BaseType.STRING -> {
+                                CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_STRING)
+                                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
+                            }
+                        }
+                    }
+                    is ArrayTypeAST -> {
+                        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                        if (exprType.type == BaseTypeAST(BaseType.CHAR)) {
+                            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
+                            CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_STRING)
+                        } else {
+                            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
+                            CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                        }
+                    }
+                    is PairTypeAST, is AnyPairTypeAST -> {
+                        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
+                        CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                    }
+                }
+                if (ast.action == Action.PRINTLN) {
+                    CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_LN)
+                    instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_LN.toString()), true))
+                }
+                CodeGenerator.freeCalleeReg()
+            }
+            Action.FREE -> {
+//                val stackOffset = symTable.findOffsetInStack((expr as IdentAST).name)
+//                instrs.add(LoadInstr(getNextFreeCalleeReg(), null, RegisterAddrWithOffset(Register.SP, stackOffset, false), Condition.AL))
+                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(CodeGenerator.seeLastUsedCalleeReg())))
+                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
+                CodeGenerator.CLib.addCode(CLibrary.Call.FREE_PAIR)
+            }
+            Action.RETURN -> {
+                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+            }
+        }
+        return instrs
+
     }
 
     override fun visitAssignStatAST(ast: AssignStatAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        instrs.addAll(visit(ast.rhs))
+        val calleeReg = CodeGenerator.seeLastUsedCalleeReg()
+        if (ast.rhs is StrLiterAST) {
+            ast.stringLabel = CodeGenerator.dataDirective.getStringLabel(ast.rhs.value)
+        }
+
+        val rhsType = ast.rhs.getRealType(ast.symTable)
+        var memtype: MemoryType? = null
+        if (rhsType is BaseTypeAST) {
+            if (rhsType.type == BaseType.BOOL || rhsType.type == BaseType.CHAR) {
+                memtype = MemoryType.B
+            }
+        }
+
+        when (ast.rhs) {
+            // only other RHS which requires "setting up"
+            is CallRhsAST -> {
+                var offset = 0
+                if (ast.lhs is IdentAST) {
+                    offset = ast.symTable.findOffsetInStack(ast.lhs.name)
+                }
+                instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), calleeReg))
+                CodeGenerator.freeCalleeReg()
+                return instrs
+            }
+            is PairElemAST -> {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
+            }
+        }
+
+        ast.symTable.decreaseOffset(ast.lhs, rhsType)
+        when (ast.lhs) {
+            is IdentAST -> {
+                val (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
+                instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(ast.lhs.name) + offset, false), calleeReg))
+            }
+            is ArrayElemAST -> {
+                instrs.addAll(visit(ast.lhs))
+                instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
+                CodeGenerator.freeCalleeReg()
+            }
+            is PairElemAST -> {
+                instrs.addAll(visit(ast.lhs))
+//                instrs.add(LoadInstr(Condition.AL,null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                instrs.add(StoreInstr(Condition.AL, memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
+                CodeGenerator.freeCalleeReg()
+//                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
+//                instrs.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
+//                instrs.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+//                instrs.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+            }
+//                instruction.add(StoreInstr(getNextFreeCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
+//                freeCalleeReg()
+//                instruction.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
+//                freeCalleeReg()
+
+//                instruction.add(LoadInstr(seeLastUsedCalleeReg(),null, RegisterAddr(Register.R0), Condition.AL))
+//                LDR r4, =42
+        }
+
+        CodeGenerator.freeCalleeReg()
+
+        return instrs
+
     }
 
     override fun visitDeclareStatAST(ast: DeclareStatAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        instrs.addAll(visit(ast.rhs))
+        if (ast.rhs is StrLiterAST) {
+            ast.stringLabel = CodeGenerator.dataDirective.getStringLabel(ast.rhs.value)
+        }
+        ast.symTable.decreaseOffset(ast.ident, ast.rhs.getRealType(ast.symTable))
+        var memtype: MemoryType? = null
+        when (ast.type) {
+            is BaseTypeAST -> {
+                if (ast.type.type == BaseType.BOOL || ast.type.type == BaseType.CHAR) {
+                    memtype = MemoryType.B
+                }
+            }
+            is ArrayTypeAST -> {
+
+            }
+            is PairTypeAST -> {
+                if (ast.rhs !is NewPairRhsAST && ast.rhs !is ArrayElemAST && ast.rhs !is IdentAST &&
+                        ast.rhs !is NullPairLiterAST && ast.rhs !is CallRhsAST && ast.rhs !is PairElemAST) {
+                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), CodeGenerator.seeLastUsedCalleeReg()))
+                }
+            }
+        }
+        when (ast.rhs) {
+            is PairElemAST -> {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), CodeGenerator.seeLastUsedCalleeReg()))
+            }
+            is ArrayElemAST -> {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), CodeGenerator.seeLastUsedCalleeReg()))
+            }
+        }
+        instrs.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.offsetSize, false), Register.R4))
+        CodeGenerator.freeCalleeReg()
+
+        return instrs
     }
 
     override fun visitReadStatAST(ast: ReadStatAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+
+        when (ast.expr) {
+            is IdentAST -> {
+                val (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.expr.name, (ast.exprType as BaseTypeAST))
+                instrs.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateIntOperand(correctSTScope.findOffsetInStack(ast.expr.name) + offset)))
+            }
+            is ArrayElemAST -> {
+                // Handled elsewhere
+            }
+            is PairElemAST -> {
+                instrs.addAll(visit(ast.expr))
+            }
+        }
+        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)))
+
+        when ((ast.exprType as BaseTypeAST).type) {
+            BaseType.INT -> {
+                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_INT.toString()), true))
+                CodeGenerator.CLib.addCode(CLibrary.Call.READ_INT)
+            }
+            BaseType.CHAR -> {
+                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_CHAR.toString()), true))
+                CodeGenerator.CLib.addCode(CLibrary.Call.READ_CHAR)
+            }
+            else -> throw RuntimeException("Read can only be used for int or char, semantic check failed")
+        }
+        return instrs
     }
 
     override fun visitSkipStatAST(ast: SkipStatAST): List<Instruction> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 
     override fun visitMultiStatAST(ast: MultiStatAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instructions = mutableListOf<Instruction>()
+        ast.stats.forEach { instructions.addAll(visit(it)) }
+        return instructions
     }
 
     override fun visitNewPairRhsAST(ast: NewPairRhsAST): List<Instruction> {
