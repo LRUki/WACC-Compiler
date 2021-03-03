@@ -23,17 +23,6 @@ class IntLiterAST(val value: Int) : LiterAST {
         return BaseTypeAST(BaseType.INT)
     }
 
-    fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        instrs += LoadInstr(Condition.AL, null, ImmediateIntMode(value), reg)
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitIntLiterAST(this)
     }
@@ -42,17 +31,6 @@ class IntLiterAST(val value: Int) : LiterAST {
 class BoolLiterAST(val value: Boolean) : LiterAST {
     override fun getRealType(table: SymbolTable): TypeAST {
         return BaseTypeAST(BaseType.BOOL)
-    }
-
-     fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        instrs += MoveInstr(Condition.AL, reg, ImmediateBoolOperand(value))
-        return instrs
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
@@ -65,18 +43,6 @@ class StrLiterAST(val value: String) : LiterAST {
         return BaseTypeAST(BaseType.STRING)
     }
 
-    fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        val strLabel = CodeGenerator.dataDirective.addStringLabel(value)
-        instrs += LoadInstr(Condition.AL, null, ImmediateLabelMode(strLabel), reg)
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitStrLiterAST(this)
     }
@@ -87,17 +53,6 @@ class CharLiterAST(val value: Char) : LiterAST {
         return BaseTypeAST(BaseType.CHAR)
     }
 
-     fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        instrs += MoveInstr(Condition.AL, reg, ImmediateCharOperand(value))
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitCharLiterAST(this)
     }
@@ -106,17 +61,6 @@ class CharLiterAST(val value: Char) : LiterAST {
 class NullPairLiterAST : LiterAST {
     override fun getRealType(table: SymbolTable): TypeAST {
         return AnyPairTypeAST()
-    }
-
-     fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        instrs += LoadInstr(Condition.AL, null, ImmediateIntMode(0), reg)
-        return instrs
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
