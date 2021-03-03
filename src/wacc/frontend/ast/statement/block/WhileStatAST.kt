@@ -51,8 +51,4 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         return visitor.visitWhileStatAST(this)
     }
 
-    override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
-    }
-
 }

@@ -62,8 +62,4 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         return visitor.visitDeclareStatAST(this)
     }
 
-    override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
-    }
-
 }

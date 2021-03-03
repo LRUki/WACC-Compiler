@@ -46,37 +46,6 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         return true
     }
 
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-
-        when (expr) {
-            is IdentAST -> {
-                val (correctSTScope, offset) = symTable.getSTWithIdentifier(expr.name, (exprType as BaseTypeAST))
-                instrs.add(AddInstr(Condition.AL, Register.R4, Register.SP, ImmediateIntOperand(correctSTScope.findOffsetInStack(expr.name) + offset)))
-            }
-            is ArrayElemAST -> {
-                // Intentionally Left Blank
-            }
-            is PairElemAST -> {
-                instrs.addAll(expr.translate())
-            }
-        }
-        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)))
-
-        when ((exprType as BaseTypeAST).type) {
-            BaseType.INT -> {
-                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_INT.toString()), true))
-                CodeGenerator.CLib.addCode(CLibrary.Call.READ_INT)
-            }
-            BaseType.CHAR -> {
-                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_CHAR.toString()), true))
-                CodeGenerator.CLib.addCode(CLibrary.Call.READ_CHAR)
-            }
-            else -> throw RuntimeException("Read can only be used for int or char, semantic check failed")
-        }
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitReadStatAST(this)
     }

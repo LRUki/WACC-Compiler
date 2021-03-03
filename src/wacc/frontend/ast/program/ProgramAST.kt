@@ -39,7 +39,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
             }
 
             // Visit the statements and add to instruction list
-            stats.forEach { instrs.addAll(it.translate()) }
+//            stats.forEach { instrs.addAll(it.translate()) }
 
             if (stackOffset > 0) {
                 var stackOffsetLeft = stackOffset

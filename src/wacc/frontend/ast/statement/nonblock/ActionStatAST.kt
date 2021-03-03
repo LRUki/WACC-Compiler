@@ -74,10 +74,6 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         return visitor.visitActionStatAST(this)
     }
 
-    override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
-    }
-
 }
 
 enum class Action {

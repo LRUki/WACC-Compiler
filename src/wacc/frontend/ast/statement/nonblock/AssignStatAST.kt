@@ -73,8 +73,4 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         return visitor.visitAssignStatAST(this)
     }
 
-    override fun translate(): List<Instruction> {
-        TODO("Not yet implemented")
-    }
-
 }

@@ -58,7 +58,7 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         if (stackOffset > 0) {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        body.forEach { instrs.addAll(it.translate()) }
+//        body.forEach { instrs.addAll(it.translate()) }
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }

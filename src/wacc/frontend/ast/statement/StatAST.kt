@@ -10,12 +10,9 @@ import wacc.frontend.ast.Translatable
  * Implemented by Statement AST nodes
  * Implements the AST interface to be able to override the check method
  */
-interface StatAST : AST, Translatable
+interface StatAST : AST
 
 class SkipStatAST : StatAST {
-    override fun translate(): List<Instruction> {
-        return emptyList()
-    }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitSkipStatAST(this)
@@ -38,12 +35,6 @@ class MultiStatAST(val stats: List<StatAST>) : StatAST {
             }
         }
         return true
-    }
-
-    override fun translate(): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
-        stats.forEach { instructions.addAll(it.translate()) }
-        return instructions
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {

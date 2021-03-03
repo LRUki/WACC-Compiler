@@ -23,12 +23,6 @@ class BlockStatAST(val body: List<StatAST>) : StatAST {
         return true
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-        translateScoped(symTable, instr, body)
-        return instr
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitBlockStatAST(this)
     }
