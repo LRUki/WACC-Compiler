@@ -9,6 +9,7 @@ import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.ImmediateIntMode
 import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
+import wacc.backend.visitor.TranslateVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
@@ -39,6 +40,7 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
 
             // Visit the statements and add to instruction list
 //            stats.forEach { instrs.addAll(it.translate()) }
+            stats.forEach { instrs.addAll(TranslateVisitor().visit(it)) }
 
             if (stackOffset > 0) {
                 var stackOffsetLeft = stackOffset

@@ -51,7 +51,6 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
             is ArrayTypeAST -> type
             is PairTypeAST -> type
             else -> throw RuntimeException("Unknown class implementing Identifiable")
-
         }
     }
 
