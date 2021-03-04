@@ -295,7 +295,8 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         ast.symTable.decreaseOffset(ast.lhs, rhsType)
         when (ast.lhs) {
             is IdentAST -> {
-                val (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
+                var (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
+                offset += ast.symTable.checkParamInFuncSymbolTable(ast.lhs.name)
                 instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(ast.lhs.name) + offset, false), calleeReg))
             }
             is ArrayElemAST -> {
