@@ -7,13 +7,11 @@ import wacc.backend.translate.instruction.instructionpart.AddressingMode
 
 
 /**
- * Load instr
- *
- * @property condition
- * @property memType
- * @property mode
- * @property destRegister
- * @constructor Create empty Load instr
+ * Represents load instructions
+ * @property condition A condition which needs to be satisfied to execute the instruction
+ * @property memType An optional memory type
+ * @property mode The content we are loading
+ * @property destRegister The register we are loading into
  */
 class LoadInstr(val condition: Condition, val memType: MemoryType?,
                 val mode: AddressingMode, val destRegister: Register) : Instruction {

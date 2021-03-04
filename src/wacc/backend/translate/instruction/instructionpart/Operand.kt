@@ -17,7 +17,7 @@ class ImmediateIntOperand(val offset: Int) : Operand {
 class ImmediateCharOperand(val char: Char) : Operand {
     override fun toAssembly(): String {
         val charStr: String = when (char) {
-            0.toChar() -> return "#0"
+            0.toChar() -> return "#0" /* Special case for null terminator */
             '\b' -> "\\b"
             '\t' -> "\\t"
             '\n' -> "\\n"

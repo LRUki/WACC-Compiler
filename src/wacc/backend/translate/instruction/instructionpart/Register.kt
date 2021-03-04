@@ -1,7 +1,7 @@
 package wacc.backend.translate.instruction.instructionpart
 
 /**
- * An enum to represent the 16 visible registers ARM has
+ * An enum to represent the 16 visible registers ARM has.
  *
  */
 enum class Register {

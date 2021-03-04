@@ -40,7 +40,7 @@ object CodeGenerator {
 
         resultRegisters = mutableListOf(Register.R0, Register.R1)
         argumentRegisters = mutableListOf(Register.R2, Register.R3)
-        freeCalleeSavedRegs = makeStack(listOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10))
+        freeCalleeSavedRegs = makeStack(listOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10, Register.R12))
         calleSavedRegsInUse = makeStack(emptyList())
 
         freeResultRegs = resultRegisters

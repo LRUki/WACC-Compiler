@@ -1,10 +1,9 @@
 package wacc.backend.translate.instruction
 
 /**
- * Label instr
+ * Represents Label instructions
  *
- * @property name
- * @constructor Create empty Label instr
+ * @property name String representing the label
  */
 abstract class LabelInstr(val name: String) : Instruction {
     override fun toAssembly(): String {
