@@ -1,7 +1,9 @@
 package backend
 
 import frontend.actionOnFiles
+import org.junit.Before
 import org.junit.Test
+import wacc.backend.CodeGenerator
 import wacc.backend.generateCode
 import wacc.backend.translate.instruction.BranchInstr
 import wacc.backend.translate.instruction.DirectiveInstr
@@ -17,6 +19,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class TranslateTest {
+
+    @Before
+    @Throws(Exception::class)
+    fun setUp() {
+        CodeGenerator.reset()
+    }
 
     @Test
     fun TranslateOfSkipFilesContainsDirectives() {

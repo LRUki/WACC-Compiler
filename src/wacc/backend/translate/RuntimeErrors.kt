@@ -10,8 +10,13 @@ import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.backend.translate.instruction.instructionpart.RegisterMode
 import wacc.backend.translate.instruction.instructionpart.RegisterOperand
 
+/**
+ * Runtime errors is a class to represent runtime errors
+ * we encounter in our program
+ */
 class RuntimeErrors {
 
+    /* Initially we have no errors so each error is null*/
     private val EXIT_CODE = -1
     private var runtimeError: List<Instruction>? = null
     private var nullReferenceError: List<Instruction>? = null
@@ -19,7 +24,7 @@ class RuntimeErrors {
     private var checkArrayBounds: List<Instruction>? = null
     private var overflowError: List<Instruction>? = null
 
-    /* labels for each type of error. */
+    /* We also have labels for each type of error. */
     companion object {
         val throwRuntimeErrorLabel = Label("p_throw_runtime_error")
         val nullReferenceLabel = Label("p_check_null_pointer")
@@ -41,6 +46,8 @@ class RuntimeErrors {
         }
     }
 
+    /* Translates all non-null errors. These are the runtime
+    errors we need to have in our program */
     fun translate(): List<Instruction> {
         val instructions = mutableListOf<Instruction>()
         runtimeError?.let { instructions.addAll(it) }
@@ -52,6 +59,7 @@ class RuntimeErrors {
     }
 
 
+    /* Sets the runtimeError variable to the list of instructions for runtime errors */
     fun addThrowRuntimeError() {
         if (runtimeError == null) {
             runtimeError = listOf(
@@ -61,13 +69,16 @@ class RuntimeErrors {
                     BranchInstr(Condition.AL, exitLabel, true)
             )
             CodeGenerator.cLib.addCode(CLibrary.Call.PRINT_STRING)
-            // p_throw_runtime_error:
-            //   BL p_print_string
-            //   MOV r0, #-1
-            //   BL exit
+            /**
+             * p_throw_runtime_error:
+             * BL p_print_string
+             * MOV r0, #-1
+             * BL exit
+             */
         }
     }
 
+    /* Sets the nullReferenceError variable to the list of instructions for null reference errors */
     fun addNullReferenceCheck() {
         if (nullReferenceError == null) {
             val errorMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NULL_REFERENCE.toString())
@@ -81,14 +92,17 @@ class RuntimeErrors {
             )
         }
         addThrowRuntimeError()
-//        p_check_null_pointer:
-//        PUSH {lr}
-//        CMP r0, #0
-//        LDREQ r0, =msg_7
-//        BLEQ p_throw_runtime_error
-//        POP {pc}
+        /**
+         *  p_check_null_pointer:
+         *  PUSH {lr}
+         *  CMP r0, #0
+         *  LDREQ r0, =msg_7
+         *  BLEQ p_throw_runtime_error
+         *  POP {pc}
+         */
     }
 
+    /* Sets the divideZero variable to the list of instructions for divide by 0 errors */
     fun addDivideByZeroCheck() {
         if (divideZeroError == null) {
             val errorMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.DIVIDE_BY_ZERO.toString())
@@ -102,14 +116,17 @@ class RuntimeErrors {
             )
         }
         addThrowRuntimeError()
-        // p_check_divide_by_zero:
-        //   PUSH {lr}
-        //   CMP r1, #0
-        //   LDREQ r0, =msg_0
-        //   BLEQ p_throw_runtime_error
-        //   POP {pc}
+        /**
+         * p_check_divide_by_zero:
+         * PUSH {lr}
+         * CMP r1, #0
+         * LDREQ r0, =msg_0
+         * BLEQ p_throw_runtime_error
+         * POP {pc}
+         */
     }
 
+    /* Sets the checkArrayBounds variable to the list of instructions for array bounds checking */
     fun addArrayBoundsCheck() {
         if (checkArrayBounds == null) {
             val negativeMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
@@ -128,21 +145,25 @@ class RuntimeErrors {
                     PopInstr(Register.PC)
             )
             addThrowRuntimeError()
-            // p_check_array_bounds:
-            //   PUSH {lr}
-            //   CMP r0, #0
-            //   LDRLT r0, =msg_0
-            //   BLLT p_throw_runtime_error
-            //   LDR r1, [r1]
-            //   CMP r0, r1
-            //   LDRCS r0, =msg_1
-            //   BLCS p_throw_runtime_error
-            //   POP {pc}
+            /**
+             * p_check_array_bounds:
+             * PUSH {lr}
+             * CMP r0, #0
+             * LDRLT r0, =msg_0
+             * BLLT p_throw_runtime_error
+             * LDR r1, [r1]
+             * CMP r0, r1
+             * LDRCS r0, =msg_1
+             * BLCS p_throw_runtime_error
+             * POP {pc}
+             */
         }
 
 
     }
 
+
+    /* Sets the overflowError variable to the list of instructions for overflow errors */
     fun addOverflowError() {
         if (overflowError == null) {
             val errorMsg = CodeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())
@@ -153,9 +174,11 @@ class RuntimeErrors {
             )
         }
         addThrowRuntimeError()
-        // p_throw_overflow_error:
-        //   LDR r0, =msg_0
-        //   BL p_throw_runtime_error
+        /**
+         * p_throw_overflow_error:
+         * LDR r0, =msg_0
+         * BL p_throw_runtime_error
+         */
     }
 
 

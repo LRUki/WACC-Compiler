@@ -1,5 +1,9 @@
 package wacc.backend.translate.instruction.instructionpart
 
+/**
+ * An interface to represent the different types of
+ * Addressing modes an instruction can take in as a parameter
+ */
 interface AddressingMode {
     fun toAssembly(): String
 }

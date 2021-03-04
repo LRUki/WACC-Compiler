@@ -1,7 +1,9 @@
 package backend
 
 import frontend.actionOnFiles
+import org.junit.Before
 import org.junit.Test
+import wacc.backend.CodeGenerator
 import wacc.backend.generateCode
 import wacc.backend.translate.RuntimeErrors
 import wacc.buildAST
@@ -12,11 +14,17 @@ import wacc.parse
 import java.io.File
 
 class RuntimeErrorTest {
-    val path = "wacc_examples/valid/runtimeErr"
+    val PATH = "wacc_examples/valid/runtimeErr"
+
+    @Before
+    @Throws(Exception::class)
+    fun setUp() {
+        CodeGenerator.reset()
+    }
 
     @Test
     fun arrayRuntimeErrorContainsCheckArrayBounds() {
-        val folder = File("${path}/arrayOutOfBounds")
+        val folder = File("${PATH}/arrayOutOfBounds")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
@@ -28,7 +36,7 @@ class RuntimeErrorTest {
 
     @Test
     fun divideByZeroRuntimeErrorContainsCheckDivideByZero() {
-        val folder = File("${path}/divideByZero")
+        val folder = File("${PATH}/divideByZero")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
@@ -40,7 +48,7 @@ class RuntimeErrorTest {
 
     @Test
     fun integerOverflowRuntimeErrorContainsThrowIntegerOverflow() {
-        val folder = File("${path}/integerOverflow")
+        val folder = File("${PATH}/integerOverflow")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
@@ -52,7 +60,7 @@ class RuntimeErrorTest {
 
     @Test
     fun nullDereferenceRuntimeErrorContainsCheckNullPointer() {
-        val folder = File("${path}/nullDereference")
+        val folder = File("${PATH}/nullDereference")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
