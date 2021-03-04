@@ -1,5 +1,9 @@
 package wacc.backend.translate.instruction.instructionpart
 
+/**
+ * An interface to represent the different types of
+ * operand an instruction can take in as a parameter
+ */
 interface Operand {
     fun toAssembly(): String
 }
