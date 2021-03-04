@@ -32,6 +32,7 @@ object CodeGenerator {
         reset()
     }
 
+    /** A function which resets the state of the code generator*/
     fun reset() {
         dataDirective = DataDirective(StringLabels(mutableListOf()))
         cLib = CLibrary()
@@ -49,6 +50,8 @@ object CodeGenerator {
         useAccumulator = false
     }
 
+    /** Given a list of objects creates a stack and
+     * pushes the objects in reverse order*/
     private fun <T> makeStack(list: List<T>): Stack<T> {
         val stack = Stack<T>()
         list.reversed().forEach {
@@ -57,10 +60,13 @@ object CodeGenerator {
         return stack
     }
 
+    /** Gets the next free label number using a global counter */
     fun getNextLabel(): Label {
         return Label("L${labelNumber++}")
     }
 
+    /** Return at next free callee register available
+     *  without modification */
     fun seeNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()) {
             return Register.NONE
@@ -68,6 +74,9 @@ object CodeGenerator {
         return freeCalleeSavedRegs.peek()
     }
 
+    /** Returns the next free callee register available,
+     *  removes it from the free callee reigsters and adds to
+     *  in use callee registers */
     fun getNextFreeCalleeReg(): Register {
         if (freeCalleeSavedRegs.isEmpty()) {
             useAccumulator = true
@@ -78,6 +87,7 @@ object CodeGenerator {
         return reg
     }
 
+    /** Returns the most recently used callee register */
     fun seeLastUsedCalleeReg(): Register {
         if (useAccumulator) {
             useAccumulator = false
@@ -87,6 +97,7 @@ object CodeGenerator {
         return calleSavedRegsInUse.peek()
     }
 
+    /** Frees the most recently used callee register */
     fun freeCalleeReg() {
         if (calleSavedRegsInUse.isEmpty()) {
             return
@@ -94,15 +105,21 @@ object CodeGenerator {
         freeCalleeSavedRegs.push(calleSavedRegsInUse.pop())
     }
 
+    /** Frees all callee registers */
     fun freeAllCalleeReg() {
         while (!calleSavedRegsInUse.isEmpty()) {
             freeCalleeReg()
         }
     }
-
 }
 
+/**
+ * Function that is called by backend function in main
+ * to generate the intermediate code representation
+ *
+ * @param ast The main program AST which will be visited first
+ * @return The list of instructions generated
+ */
 fun generateCode(ast: ProgramAST): List<Instruction> {
-    val result = TranslateVisitor().visit(ast)
-    return result
+    return TranslateVisitor().visit(ast)
 }
