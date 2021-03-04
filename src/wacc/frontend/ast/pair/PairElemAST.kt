@@ -1,16 +1,6 @@
 package wacc.frontend.ast.pair
 
 
-import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.RuntimeError
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.BranchInstr
-import wacc.backend.translate.instruction.LoadInstr
-import wacc.backend.translate.instruction.MoveInstr
-import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor

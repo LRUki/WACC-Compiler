@@ -6,7 +6,7 @@ import wacc.backend.translate.StringLabels
 import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.Label
 import wacc.backend.translate.CLibrary
-import wacc.backend.translate.RuntimeError
+import wacc.backend.translate.RuntimeErrors
 import wacc.backend.visitor.TranslateVisitor
 import wacc.frontend.ast.program.ProgramAST
 import java.util.*
@@ -14,8 +14,8 @@ import java.util.*
 object CodeGenerator {
 
     var dataDirective: DataDirective = DataDirective(StringLabels(mutableListOf()))
-    var CLib: CLibrary = CLibrary()
-    var runtimeErrors: RuntimeError = RuntimeError()
+    var cLib: CLibrary = CLibrary()
+    var runtimeErrors: RuntimeErrors = RuntimeErrors()
     var labelNumber: Int = 0
 
     val resultRegisters = mutableListOf(Register.R0, Register.R1)

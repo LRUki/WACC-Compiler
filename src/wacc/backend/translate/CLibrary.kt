@@ -5,7 +5,7 @@ import wacc.backend.translate.instruction.Instruction
 import wacc.backend.translate.instruction.instructionpart.Condition
 import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.*
-import wacc.backend.translate.RuntimeError.Companion.throwRuntimeErrorLabel
+import wacc.backend.translate.RuntimeErrors.Companion.throwRuntimeErrorLabel
 import wacc.backend.translate.instruction.instructionpart.*
 
 class CLibrary {
@@ -219,7 +219,7 @@ class CLibrary {
     }
 
     fun generateFreePairCall(): List<Instruction> {
-        val label = CodeGenerator.dataDirective.addStringLabel(RuntimeError.ErrorType.NULL_REFERENCE.toString())
+        val label = CodeGenerator.dataDirective.addStringLabel(RuntimeErrors.ErrorType.NULL_REFERENCE.toString())
 
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateIntOperand(0)),
@@ -253,7 +253,7 @@ class CLibrary {
 
 
     fun generateFreeArrayCall(): List<Instruction> {
-        val errorMessage = RuntimeError.ErrorType.NULL_REFERENCE.toString()
+        val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
         val errorLabel = CodeGenerator.dataDirective.addStringLabel(errorMessage)
 
         val instructions = listOf(

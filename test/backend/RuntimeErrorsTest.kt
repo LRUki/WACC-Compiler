@@ -3,19 +3,15 @@ package backend
 import frontend.actionOnFiles
 import org.junit.Test
 import wacc.backend.generateCode
-import wacc.backend.translate.RuntimeError
-import wacc.backend.translate.instruction.BranchInstr
-import wacc.backend.translate.instruction.DirectiveInstr
-import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.RuntimeErrors
 import wacc.buildAST
 import wacc.checkSemantics
 import wacc.checkSyntax
 import wacc.frontend.ast.program.ProgramAST
 import wacc.parse
 import java.io.File
-import kotlin.test.assertTrue
 
-class RuntimeErrorTest {
+class RuntimeErrorsTest {
     val path = "wacc_examples/valid/runtimeErr"
 
     @Test
@@ -26,7 +22,7 @@ class RuntimeErrorTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeError.checkArrayBoundsLabel)
+            generateCode(ast as ProgramAST).contains(RuntimeErrors.checkArrayBoundsLabel)
         }
     }
 
@@ -38,7 +34,7 @@ class RuntimeErrorTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeError.divideZeroCheckLabel)
+            generateCode(ast as ProgramAST).contains(RuntimeErrors.divideZeroCheckLabel)
         }
     }
 
@@ -50,7 +46,7 @@ class RuntimeErrorTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeError.throwOverflowErrorLabel)
+            generateCode(ast as ProgramAST).contains(RuntimeErrors.throwOverflowErrorLabel)
         }
     }
 
@@ -62,7 +58,7 @@ class RuntimeErrorTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeError.nullReferenceLabel)
+            generateCode(ast as ProgramAST).contains(RuntimeErrors.nullReferenceLabel)
         }
     }
 
