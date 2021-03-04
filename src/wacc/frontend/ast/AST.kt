@@ -1,10 +1,8 @@
 package wacc.frontend.ast
 
 import org.antlr.v4.runtime.ParserRuleContext
-import wacc.backend.instruction.Instruction
+import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
-import wacc.frontend.ast.type.BaseType
-import wacc.frontend.ast.type.TypeAST
 
 /**
  * Implemented by all AST nodes
@@ -22,10 +20,9 @@ interface AST {
     fun check(table: SymbolTable): Boolean {
         return true
     }
-}
 
-interface Translatable {
-    fun translate(): List<Instruction>
+    fun <S : T, T> accept(visitor: AstVisitor<S>): T
+
 }
 
 /**

@@ -2,16 +2,17 @@ package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.*
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
 
@@ -22,15 +23,8 @@ class IntLiterAST(val value: Int) : LiterAST {
         return BaseTypeAST(BaseType.INT)
     }
 
-    override fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        instrs += LoadInstr(Condition.AL, null, ImmediateInt(value), reg)
-        return instrs
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitIntLiterAST(this)
     }
 }
 
@@ -39,15 +33,8 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
         return BaseTypeAST(BaseType.BOOL)
     }
 
-    override fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        instrs += MoveInstr(Condition.AL, reg, ImmediateOperandBool(value))
-        return instrs
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitBoolLiterAST(this)
     }
 }
 
@@ -56,16 +43,8 @@ class StrLiterAST(val value: String) : LiterAST {
         return BaseTypeAST(BaseType.STRING)
     }
 
-    override fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        val strLabel = CodeGenerator.dataDirective.addStringLabel(value)
-        instrs += LoadInstr(Condition.AL, null, ImmediateLabel(strLabel), reg)
-        return instrs
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitStrLiterAST(this)
     }
 }
 
@@ -74,17 +53,9 @@ class CharLiterAST(val value: Char) : LiterAST {
         return BaseTypeAST(BaseType.CHAR)
     }
 
-    override fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        instrs += MoveInstr(Condition.AL, reg, ImmediateOperandChar(value))
-        return instrs
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitCharLiterAST(this)
     }
-
 }
 
 class NullPairLiterAST : LiterAST {
@@ -92,15 +63,8 @@ class NullPairLiterAST : LiterAST {
         return AnyPairTypeAST()
     }
 
-    override fun translate(): List<Instruction> {
-        var reg = getNextFreeCalleeReg()
-        var instrs = emptyList<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
-            reg = Register.R10
-            instrs += PushInstr(reg)
-        }
-        instrs += LoadInstr(Condition.AL, null, ImmediateInt(0), reg)
-        return instrs
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitNullPairLiterAST(this)
     }
 }
 
@@ -111,53 +75,18 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
         symTable = table
         arrayType = if (values.isEmpty()) {
             ArrayTypeAST(AnyTypeAST(), 1)
-        }else{
+        } else {
             val exprType = values[0].getRealType(table)
-            if(exprType is ArrayTypeAST){
+            if (exprType is ArrayTypeAST) {
                 ArrayTypeAST(exprType.type, exprType.dimension + 1)
-            }else{
+            } else {
                 ArrayTypeAST(exprType, 1)
             }
         }
         return arrayType
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-        val elemSize = getBytesOfType((arrayType as ArrayTypeAST).type)
-        println("This is the bytes of ${arrayType} ${elemSize}")
-        //loading the length of array * elemSize + size of INT
-        val sizeOfInt = getBytesOfType(BaseTypeAST(BaseType.INT))
-        instr.add(LoadInstr(Condition.AL, null,
-                ImmediateInt(elemSize * values.size + sizeOfInt), Register.R0))
-
-        instr.add(BranchInstr(Condition.AL, Label("malloc"), true))
-        val stackReg = getNextFreeCalleeReg()
-        instr.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
-
-        //add element to stack
-        var memType: MemoryType? = null;
-        for ((i, expr) in values.withIndex()) {
-            if (expr is IdentAST) {
-                expr.symTable = symTable
-            }
-            instr.addAll(expr.translate())
-
-            if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
-                memType = MemoryType.B
-            }
-            instr.add(StoreInstr(Condition.AL, memType,
-                    RegisterAddrWithOffset(stackReg,
-                            sizeOfInt + (i * elemSize),
-                            false), seeLastUsedCalleeReg()))
-            freeCalleeReg()
-        }
-
-        //add the length of the array to stack
-        instr.add(LoadInstr(Condition.AL, null, ImmediateInt(values.size), getNextFreeCalleeReg()))
-        instr.add(StoreInstr(Condition.AL, null,
-                RegisterAddr(stackReg), seeLastUsedCalleeReg()))
-        freeCalleeReg()
-        return instr
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitArrayLiterAST(this)
     }
 }

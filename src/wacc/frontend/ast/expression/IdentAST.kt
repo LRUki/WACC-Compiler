@@ -1,15 +1,15 @@
 package wacc.frontend.ast.expression
 
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.LoadInstr
-import wacc.backend.instruction.utils.RegisterAddrWithOffset
-import wacc.frontend.FuncSymbolTable
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -51,18 +51,12 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
             is ArrayTypeAST -> type
             is PairTypeAST -> type
             else -> throw RuntimeException("Unknown class implementing Identifiable")
-
         }
     }
 
-    override fun translate(): List<Instruction> {
-        var offset = symTable.findOffsetInStack(name)
-        var memType: MemoryType? = null
-        val type = getRealType(symTable)
-        if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
-            memType = MemoryType.SB
-        }
-        offset += symTable.checkParamInFuncSymbolTable(name) + symTable.callOffset
-        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffset(Register.SP, offset, false), getNextFreeCalleeReg()))
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitIdentAST(this)
     }
+
 }

@@ -2,18 +2,18 @@ package wacc.frontend.ast.pair
 
 
 import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.BranchInstr
-import wacc.backend.instruction.instrs.LoadInstr
-import wacc.backend.instruction.instrs.MoveInstr
-import wacc.backend.instruction.instrs.StoreInstr
-import wacc.backend.instruction.utils.*
+import wacc.backend.translate.RuntimeError
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.BranchInstr
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.MoveInstr
+import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
@@ -25,8 +25,8 @@ import wacc.frontend.exception.semanticError
 /**
  * AST node to represent a Pair Element
  *
- * @param Pair elem command, either 'fst' or 'snd'
- * @param Expression evaluating to a pair object
+ * @param choice elem command, either 'fst' or 'snd'
+ * @param expr evaluating to a pair object
  */
 class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, AbstractAST() {
     lateinit var type: TypeAST
@@ -53,22 +53,10 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         return type
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-
-        instr.addAll(expr.translate())
-        val reg = seeLastUsedCalleeReg()
-//        instr.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(Register.SP, SymbolTable.getBytesOfType(type), false), reg))
-        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-        instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
-        CodeGenerator.runtimeErrors.addNullReferenceCheck()
-        if (choice == PairChoice.FST) {
-            instr.add(LoadInstr(Condition.AL, null, RegisterAddr(reg), reg))
-        } else {
-            instr.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffset(reg, 4, false), reg))
-        }
-        return instr
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitPairElemAST(this)
     }
+
 }
 
 enum class PairChoice {

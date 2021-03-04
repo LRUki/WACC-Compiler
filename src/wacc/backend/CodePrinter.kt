@@ -1,6 +1,6 @@
 package wacc.backend
 
-import wacc.backend.instruction.Instruction
+import wacc.backend.translate.instruction.Instruction
 
 fun printCode(instrs: List<Instruction>): String {
     val lines = instrs.map { instr -> instr.toAssembly() }
@@ -10,13 +10,13 @@ fun printCode(instrs: List<Instruction>): String {
     return builder.toString()
 }
 
-fun shouldIndent(line: String) : Boolean {
+fun shouldIndent(line: String): Boolean {
     return when {
         line.isBlank() ||
-        line[line.lastIndex] == ':' ||
-        line.startsWith(".text") ||
-        line.startsWith(".data") ||
-        line.startsWith(".global main") -> false
+                line[line.lastIndex] == ':' ||
+                line.startsWith(".text") ||
+                line.startsWith(".data") ||
+                line.startsWith(".global main") -> false
         else -> true
     }
 }

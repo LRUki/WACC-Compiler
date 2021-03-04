@@ -2,17 +2,18 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.CodeGenerator.seeNextFreeCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.*
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.StoreInstr
+import wacc.backend.translate.instruction.instructionpart.RegisterMode
+import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.LhsAST
@@ -68,70 +69,8 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         return true
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-        instr.addAll(rhs.translate())
-        val calleeReg = seeLastUsedCalleeReg()
-        if (rhs is StrLiterAST) {
-            stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
-        }
-
-        val rhsType = rhs.getRealType(symTable)
-        var memtype: MemoryType? = null
-        if (rhsType is BaseTypeAST) {
-            if (rhsType.type == BaseType.BOOL || rhsType.type == BaseType.CHAR) {
-                memtype = MemoryType.B
-            }
-        }
-
-        when (rhs) {
-            // only other RHS which requires "setting up"
-            is CallRhsAST -> {
-                var offset = 0
-                if (lhs is IdentAST) {
-                    offset = symTable.findOffsetInStack(lhs.name)
-                }
-                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, offset, false), calleeReg))
-                freeCalleeReg()
-                return instr
-            }
-            is PairElemAST -> {
-                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(calleeReg), calleeReg))
-            }
-        }
-
-        symTable.decreaseOffset(lhs, rhsType)
-        when (lhs) {
-            is IdentAST -> {
-                val (correctSTScope, offset) = symTable.getSTWithIdentifier(lhs.name, rhsType)
-                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, correctSTScope.findOffsetInStack(lhs.name) + offset, false), calleeReg))
-            }
-            is ArrayElemAST -> {
-                instr.addAll(lhs.translate())
-                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
-                freeCalleeReg()
-            }
-            is PairElemAST -> {
-                instr.addAll(lhs.translate())
-//                instr.add(LoadInstr(Condition.AL,null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-                instr.add(StoreInstr(Condition.AL, memtype, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
-                freeCalleeReg()
-//                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-//                instr.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
-//                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
-//                instr.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
-            }
-//                instruction.add(StoreInstr(getNextFreeCalleeReg(), null, RegisterAddr(seeLastUsedCalleeReg()), Condition.AL))
-//                freeCalleeReg()
-//                instruction.add(StoreInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), calleeReg))
-//                freeCalleeReg()
-
-//                instruction.add(LoadInstr(seeLastUsedCalleeReg(),null, RegisterAddr(Register.R0), Condition.AL))
-//                LDR r4, =42
-        }
-
-        freeCalleeReg()
-
-        return instr
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitAssignStatAST(this)
     }
+
 }

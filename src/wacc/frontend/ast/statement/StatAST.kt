@@ -1,19 +1,20 @@
 package wacc.frontend.ast.statement
 
-import wacc.backend.instruction.Instruction
+import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
-import wacc.frontend.ast.Translatable
+import wacc.frontend.ast.AstVisitor
 
 /**
  * Implemented by Statement AST nodes
  * Implements the AST interface to be able to override the check method
  */
-interface   StatAST : AST, Translatable
+interface StatAST : AST
 
 class SkipStatAST : StatAST {
-    override fun translate(): List<Instruction> {
-        return emptyList()
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitSkipStatAST(this)
     }
 }
 
@@ -27,13 +28,15 @@ class SkipStatAST : StatAST {
 class MultiStatAST(val stats: List<StatAST>) : StatAST {
     override fun check(table: SymbolTable): Boolean {
         val blockST = SymbolTable(table)
-        stats.forEach { if (!it.check(blockST)) {return false} }
+        stats.forEach {
+            if (!it.check(blockST)) {
+                return false
+            }
+        }
         return true
     }
 
-    override fun translate(): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
-        stats.forEach { instructions.addAll(it.translate()) }
-        return instructions
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitMultiStatAST(this)
     }
 }

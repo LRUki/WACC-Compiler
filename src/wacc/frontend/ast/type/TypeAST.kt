@@ -2,6 +2,7 @@ package wacc.frontend.ast.type
 
 
 import wacc.frontend.ast.AST
+import wacc.frontend.ast.AstVisitor
 
 /**
  * Implemented by Type AST nodes
@@ -18,5 +19,14 @@ interface TypeAST : AST {
     override fun equals(other: Any?): Boolean
 
     override fun toString(): String
+
+    fun isBoolOrChar(): Boolean {
+        return false
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitTypeAST(this)
+    }
+
 }
 

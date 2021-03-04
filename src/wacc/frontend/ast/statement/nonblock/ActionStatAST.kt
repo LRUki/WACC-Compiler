@@ -1,27 +1,24 @@
 package wacc.frontend.ast.statement.nonblock
 
-import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.CLib
 import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.BranchInstr
-import wacc.backend.instruction.instrs.Label
-import wacc.backend.instruction.instrs.LoadInstr
-import wacc.backend.instruction.instrs.MoveInstr
-import wacc.backend.instruction.utils.CLibrary
-import wacc.backend.instruction.utils.RegisterAddr
-import wacc.backend.instruction.utils.RegisterAddrWithOffset
-import wacc.backend.instruction.utils.RegisterOperand
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.BranchInstr
+import wacc.backend.translate.instruction.Label
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.MoveInstr
+import wacc.backend.translate.CLibrary
+import wacc.backend.translate.instruction.instructionpart.RegisterMode
+import wacc.backend.translate.instruction.instructionpart.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.expression.ExprAST
-import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.exception.semanticError
@@ -73,80 +70,10 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         return false
     }
 
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-        instr.addAll(expr.translate())
-        val reg = seeLastUsedCalleeReg()
-        val exprType = expr.getRealType(symTable)
-        if (expr is ArrayElemAST) {
-            var memType : MemoryType? = null
-            if (exprType == BaseTypeAST(BaseType.BOOL) || exprType == BaseTypeAST(BaseType.CHAR)) {
-                memType = MemoryType.SB
-            }
-            instr.add(LoadInstr(Condition.AL, memType, RegisterAddr(reg), reg))
-        }
-        when (action) {
-            Action.EXIT -> {
-                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                instr.add(BranchInstr(Condition.AL, Label("exit"), true))
-            }
-            Action.PRINT, Action.PRINTLN -> {
-                when (exprType) {
-                    is BaseTypeAST -> {
-                        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                        when (exprType.type) {
-                            BaseType.INT -> {
-                                CLib.addCode(CLibrary.Call.PRINT_INT)
-                                instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_INT.toString()), true))
-                            }
-                            BaseType.CHAR -> {
-                                instr.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.PUTCHAR.toString()), true))
-                            }
-                            BaseType.BOOL -> {
-                                CLib.addCode(CLibrary.Call.PRINT_BOOL)
-                                instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_BOOL.toString()), true))
-                            }
-                            BaseType.STRING -> {
-                                CLib.addCode(CLibrary.Call.PRINT_STRING)
-                                instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
-                            }
-                        }
-                    }
-                    is ArrayTypeAST -> {
-                        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                        if (exprType.type == BaseTypeAST(BaseType.CHAR)) {
-                            instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
-                            CLib.addCode(CLibrary.Call.PRINT_STRING)
-                        } else {
-                            instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                            CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
-                        }
-                    }
-                    is PairTypeAST, is AnyPairTypeAST -> {
-                        instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-                        instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
-                    }
-                }
-                if (action == Action.PRINTLN) {
-                    CLib.addCode(CLibrary.Call.PRINT_LN)
-                    instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_LN.toString()), true))
-                }
-                freeCalleeReg()
-            }
-            Action.FREE -> {
-//                val stackOffset = symTable.findOffsetInStack((expr as IdentAST).name)
-//                instr.add(LoadInstr(getNextFreeCalleeReg(), null, RegisterAddrWithOffset(Register.SP, stackOffset, false), Condition.AL))
-                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-                instr.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
-                CLib.addCode(CLibrary.Call.FREE_PAIR)
-            }
-            Action.RETURN -> {
-                instr.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-            }
-        }
-        return instr
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitActionStatAST(this)
     }
+
 }
 
 enum class Action {

@@ -1,17 +1,17 @@
 package wacc.frontend.ast.statement.block
 
-import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextLabel
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.instruction.*
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.*
-import wacc.backend.instruction.utils.ImmediateOperandInt
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.*
+import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.nonblock.Action
@@ -43,54 +43,21 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         }
         thenST = SymbolTable(table)
         for (stat in thenBody) {
-            if (!stat.check(thenST)) {break}
+            if (!stat.check(thenST)) {
+                break
+            }
         }
         elseST = SymbolTable(table)
         for (stat in elseBody) {
-            if (!stat.check(elseST)) {break}
+            if (!stat.check(elseST)) {
+                break
+            }
         }
         return true
     }
 
-
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-        val elseLabel = getNextLabel()
-        val afterElseLabel = getNextLabel()
-
-        instr.addAll(cond.translate())
-        instr.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateOperandInt(0)))
-        instr.add(BranchInstr(Condition.EQ, elseLabel,  false))
-        freeCalleeReg()
-        var stackOffset = thenST.getStackOffset()
-        if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
-        }
-        thenBody.forEach {
-            instr.addAll(it.translate())
-        }
-        val lastStat = thenBody.last()
-        if((lastStat is ActionStatAST) && lastStat.action == Action.RETURN){
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(symTable.getFuncStackOffset())))
-            instr.addAll(regsToPopInstrs(listOf(Register.PC)))
-            freeAllCalleeReg()
-        }
-        if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
-        }
-
-        instr.add(BranchInstr(Condition.AL, afterElseLabel, false))
-        instr.add(elseLabel)
-
-        stackOffset = elseST.getStackOffset()
-        if (stackOffset > 0) {
-            instr.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
-        }
-        elseBody.forEach { instr.addAll(it.translate()) }
-        if (stackOffset > 0) {
-            instr.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateOperandInt(stackOffset)))
-        }
-        instr.add(afterElseLabel)
-        return instr
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitIfStatAST(this)
     }
+
 }

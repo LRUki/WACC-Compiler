@@ -1,8 +1,9 @@
 package wacc.frontend.exception
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.*
-import org.antlr.v4.runtime.*
+import kotlinx.coroutines.runBlocking
+import org.antlr.v4.runtime.BaseErrorListener
+import org.antlr.v4.runtime.RecognitionException
+import org.antlr.v4.runtime.Recognizer
 import wacc.Main
 
 /**
@@ -18,7 +19,7 @@ class SyntaxErrorListener : BaseErrorListener() {
             e: RecognitionException?
     ) {
 
-        runBlocking {Main.syntaxErrorChannel.send(SyntaxException("Syntax Error at line $line:$charPositionInLine $msg", line))}
+        runBlocking { Main.syntaxErrorChannel.send(SyntaxException("Syntax Error at line $line:$charPositionInLine $msg", line)) }
     }
 }
 

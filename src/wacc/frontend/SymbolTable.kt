@@ -7,7 +7,6 @@ import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.type.*
 import java.util.*
-import kotlin.RuntimeException
 import kotlin.collections.LinkedHashMap
 
 /**
@@ -28,7 +27,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                     }
                 }
                 is ArrayTypeAST, is PairTypeAST, is AnyPairTypeAST -> 4
-                else -> 0 //
+                else -> 0
             }
         }
     }
@@ -37,8 +36,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     val currSymbolTable: LinkedHashMap<String, Pair<Identifiable, Int>> = LinkedHashMap()
     var offsetSize: Int = 0
     var startingOffset: Int = 0
-    var increaseOffsetForCall = 0
-    var callOffset = 0
+    var callOffset = 0 /* Accounts for negative stack pointer values when setting up parameters */
 
     // Gets the top most symbol table
     fun getTopSymbolTable(): SymbolTable {
@@ -91,9 +89,6 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             is ParamAST -> {
                 getBytesOfType(obj.type)
             }
-            is PairTypeAST -> {
-                TODO()
-            }
             else -> 0
         }
         currSymbolTable[name] = Pair(obj, size)
@@ -113,7 +108,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     fun getFuncStackOffset(): Int {
-        if(this is FuncSymbolTable){
+        if (this is FuncSymbolTable) {
             return startingOffset
         }
         if (encSymbolTable != null) {
@@ -122,26 +117,36 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         throw RuntimeException("Semantic Failure: Return used outside of a function")
     }
 
-    private fun findIfParamInFuncSymbolTableToAddOffset(name: String, flag: Boolean, offsetCounter: Int): Int {
+    /**
+     * Recursive method for finding if identifier is a parameter and returns offset on stack if so
+     *
+     * @param name Identifier string of the parameter
+     * @param innerScopeHasVar Have variables been declared inside the function scope
+     * @param offsetCounter Accumulative offset until parameter is reached
+     * @return The offset of the provided parameter on the stack
+     */
+    private fun findIfParamInFuncSymbolTableToAddOffset(name: String, innerScopeHasVar: Boolean, offsetCounter: Int): Int {
         val identAst = lookup(name)
         if (identAst.isPresent) {
-            if ((this is FuncSymbolTable) && (identAst.get() is ParamAST)) {
-                if ((currSymbolTable.size > funcAST.paramList.size) || flag) {
+            val identValue = identAst.get()
+            if ((this is FuncSymbolTable) && (identValue is ParamAST)) {
+                /* Parameter offset only needed when there are declared variables in the current
+                *  scope or inside any inner scope (signified by flag) */
+                if ((currSymbolTable.size > funcAST.paramList.size) || innerScopeHasVar) {
                     var offset = 0
-                    currSymbolTable.toList().dropWhile {
-                        it.second.first != identAst.get()
-                    }.dropWhile {
-                        it.second.first == identAst.get()
-                    }.dropWhile { it.second.first is ParamAST }
-                            .forEach {
-                                offset += it.second.second
-                            }
+                    /* Removes all parameters of the function and
+                    * then sums the offset of the remaining identifiers */
+                    currSymbolTable.toList()
+                            .dropWhile { it.second.first is ParamAST }
+                            .forEach { offset += it.second.second }
                     return offset + offsetCounter
                 }
             }
             return 0
         }
+        /* Keeps checking the enclosing symbol table until the identifier is found */
         if (encSymbolTable != null) {
+            /* Sums offsets of all entries in current symbol table to add to final offset  */
             var offset = 0
             currSymbolTable.toList().forEach { offset += it.second.second }
             return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, startingOffset)
@@ -149,40 +154,64 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return 0
     }
 
+    /**
+     * Calls findIfParamInFuncSymbolTableToAddOffset to compute offset
+     *
+     * @param name Identifier string in question
+     * @return The offset of the provided parameter on the stack
+     */
     fun checkParamInFuncSymbolTable(name: String): Int {
         return findIfParamInFuncSymbolTableToAddOffset(name, false, 0)
     }
 
-
+    /**
+     * Finds offset of given identifier in stack
+     *
+     * @param ident Identifier string of variable in question
+     * @return offset of the identifier
+     */
     fun findOffsetInStack(ident: String): Int {
-        var offset = 0
-        for ((k, v) in currSymbolTable) {
-            offset += v.second
-        }
+        var totalOffset = 0
+        val pointerOffset = 4
+        currSymbolTable.values.forEach { totalOffset += it.second }
         var paramOffset = 0
+        /* Computes offset being the summed offset of remaining symbol table entries
+        * For parameters it is the sum of entries up till that point */
         for ((k, v) in currSymbolTable) {
             if (k == ident && v.first is ParamAST) {
-                return paramOffset + 4
+                return paramOffset + pointerOffset
             }
-            offset -= v.second
+            totalOffset -= v.second
             if (k == ident) {
-                return offset + increaseOffsetForCall
+                return totalOffset
             }
             paramOffset += v.second
         }
         if (encSymbolTable != null) {
+            /* Searches enclosing symbol table when not found in current table.
+            * Includes offset off all entries in current table */
             return encSymbolTable.findOffsetInStack(ident) + paramOffset
         }
-        return offset
+        return totalOffset
 
     }
 
+    /**
+     * Decreases offset
+     *
+     * @param lhs
+     * @param rhsType
+     */
     fun decreaseOffset(lhs: LhsAST, rhsType: TypeAST) {
         val size = getBytesOfType(rhsType)
         if (lhs is IdentAST) {
             val ident = lookup(lhs.name)
-            if (ident.isEmpty ||
-                    (ident.isPresent && (ident.get() is DeclareStatAST) && !(ident.get() as DeclareStatAST).type.equals(rhsType))) {
+            if (ident.isEmpty) {
+                encSymbolTable?.decreaseOffset(lhs, rhsType)
+                return
+            }
+            val identObject = ident.get()
+            if ((identObject is DeclareStatAST) && (identObject.type != rhsType)) {
                 encSymbolTable?.decreaseOffset(lhs, rhsType)
                 return
             }
@@ -190,11 +219,20 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         offsetSize -= size
     }
 
+    /**
+     * Find s t with identifier
+     *
+     * @param ident
+     * @param correctType
+     * @param offset
+     * @return
+     */
+
     private fun findSTWithIdentifier(ident: String, correctType: TypeAST, offset: Int): Pair<SymbolTable, Int> {
         if (currSymbolTable.containsKey(ident)) {
             val identAst = currSymbolTable[ident]?.first
             if ((identAst is ParamAST) ||
-                    ((identAst is DeclareStatAST) && (identAst.type.equals(correctType)))) {
+                    ((identAst is DeclareStatAST) && (identAst.type == correctType))) {
                 return Pair(this, offset)
             }
         }
@@ -204,7 +242,13 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         throw RuntimeException("$ident is not present in any symbol table, semantic check failed")
     }
 
-    // Gets the symbol table containing the provided ident, used for scoping
+    /**
+     * Gets the symbol table containing the provided identifier which will then be used for scoping
+     *
+     * @param ident
+     * @param correctType
+     * @return
+     */
     fun getSTWithIdentifier(ident: String, correctType: TypeAST): Pair<SymbolTable, Int> {
         return findSTWithIdentifier(ident, correctType, 0)
     }

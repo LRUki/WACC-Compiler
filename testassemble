@@ -45,7 +45,7 @@ do
       EXITCODE=$(echo "$PIPE_RESULT" | cut -d' ' -f 1)
 
       OUTPUT_MATCHES=$(echo "$PIPE_RESULT" | cut -d' ' -f 2)
-      if [ ! -z $(grep "$FILENAME"'$' "testassembleskip.txt") ]
+      if [ ! -z $(grep "$FILENAME"'$' "testassemble.skip") ]
       then
         OUTPUT_MATCHES=0
         echo "Assume $FILENAME correct."
@@ -91,5 +91,5 @@ echo "Passed $ALL_SUCESS_COUNT / $((ALL_FAIL_COUNT + ALL_SUCESS_COUNT))"
 if [ "$ALL_FAIL_COUNT" != 0 ]
 then
   echo "Some tests failed."
-#  exit 1
+  exit 1
 fi

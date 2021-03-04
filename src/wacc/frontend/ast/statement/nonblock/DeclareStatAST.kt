@@ -3,16 +3,17 @@ package wacc.frontend.ast.statement.nonblock
 import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.instruction.Instruction
-import wacc.backend.instruction.enums.Condition
-import wacc.backend.instruction.enums.MemoryType
-import wacc.backend.instruction.enums.Register
-import wacc.backend.instruction.instrs.LoadInstr
-import wacc.backend.instruction.instrs.StoreInstr
-import wacc.backend.instruction.utils.RegisterAddr
-import wacc.backend.instruction.utils.RegisterAddrWithOffset
+import wacc.backend.translate.instruction.Instruction
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.MemoryType
+import wacc.backend.translate.instruction.instructionpart.Register
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.StoreInstr
+import wacc.backend.translate.instruction.instructionpart.RegisterMode
+import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
@@ -35,7 +36,7 @@ import wacc.frontend.exception.semanticError
  * @property rhs Value to be stored in the variable
  */
 class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
-    lateinit var stringLabel: String;
+    lateinit var stringLabel: String
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -57,42 +58,8 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         return true
     }
 
-
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-        instr.addAll(rhs.translate())
-        if (rhs is StrLiterAST) {
-            stringLabel = CodeGenerator.dataDirective.getStringLabel(rhs.value)
-        }
-        symTable.decreaseOffset(ident, rhs.getRealType(symTable))
-        var memtype: MemoryType? = null
-        when (type) {
-            is BaseTypeAST -> {
-                if (type.type == BaseType.BOOL || type.type == BaseType.CHAR) {
-                    memtype = MemoryType.B
-                }
-            }
-            is ArrayTypeAST -> {
-
-            }
-            is PairTypeAST -> {
-                if (rhs !is NewPairRhsAST && rhs !is ArrayElemAST && rhs !is IdentAST &&
-                        rhs !is NullPairLiterAST && rhs !is CallRhsAST && rhs !is PairElemAST) {
-                    instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-                }
-            }
-        }
-        when (rhs) {
-            is PairElemAST -> {
-                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-            }
-            is ArrayElemAST -> {
-                instr.add(LoadInstr(Condition.AL, null, RegisterAddr(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-            }
-        }
-        instr.add(StoreInstr(Condition.AL, memtype, RegisterAddrWithOffset(Register.SP, symTable.offsetSize, false), Register.R4))
-        freeCalleeReg()
-
-        return instr
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitDeclareStatAST(this)
     }
+
 }

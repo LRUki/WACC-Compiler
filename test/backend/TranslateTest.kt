@@ -3,8 +3,10 @@ package backend
 import frontend.actionOnFiles
 import org.junit.Test
 import wacc.backend.generateCode
-import wacc.backend.instruction.instrs.DirectiveInstr
-import wacc.backend.instruction.instrs.Label
+import wacc.backend.translate.instruction.BranchInstr
+import wacc.backend.translate.instruction.DirectiveInstr
+import wacc.backend.translate.instruction.Label
+import wacc.backend.translate.instruction.instructionpart.Condition
 import wacc.buildAST
 import wacc.checkSemantics
 import wacc.checkSyntax
@@ -24,12 +26,10 @@ class TranslateTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            val instr = generateCode(ast as ProgramAST)
-//            assertTrue(instr.contains(DirectiveInstr("data")))
-            assertTrue(instr.contains(DirectiveInstr("text")))
-            assertTrue(instr.contains(DirectiveInstr("global main")))
-//            assertTrue(instr.contains(Label("main")))
-            assertTrue(instr.contains(DirectiveInstr("ltorg")))
+            val instrs = generateCode(ast as ProgramAST)
+            assertTrue(instrs.contains(DirectiveInstr("text")))
+            assertTrue(instrs.contains(DirectiveInstr("global main")))
+            assertTrue(instrs.contains(DirectiveInstr("ltorg")))
         }
     }
 
@@ -46,6 +46,19 @@ class TranslateTest {
             assertFalse(instrs.contains(DirectiveInstr("word")))
             assertFalse(instrs.contains(DirectiveInstr("ascii")))
             assertFalse(instrs.contains(Label("msg_")))
+        }
+    }
+
+    @Test
+    fun TranslateOfExitFilesContainsExitBranch() {
+        val folder = File("wacc_examples/valid/basic/exit/")
+        val actionOnFiles = actionOnFiles(folder) { file ->
+            val program = parse(file.inputStream())
+            checkSyntax(program)
+            val ast = buildAST(program)
+            checkSemantics(ast)
+            generateCode(ast as ProgramAST)
+                    .contains(BranchInstr(Condition.AL, Label("exit"), true))
         }
     }
 
