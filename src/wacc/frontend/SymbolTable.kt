@@ -36,7 +36,6 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     val currSymbolTable: LinkedHashMap<String, Pair<Identifiable, Int>> = LinkedHashMap()
     var offsetSize: Int = 0
     var startingOffset: Int = 0
-    var increaseOffsetForCall = 0 /* Accounts for return address setting up function parameters */
     var callOffset = 0 /* Accounts for negative stack pointer values when setting up parameters */
 
     // Gets the top most symbol table
@@ -184,7 +183,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             }
             totalOffset -= v.second
             if (k == ident) {
-                return totalOffset + increaseOffsetForCall
+                return totalOffset
             }
             paramOffset += v.second
         }

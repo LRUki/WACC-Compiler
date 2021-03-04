@@ -339,7 +339,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         }
         when (ast.rhs) {
             is PairElemAST -> {
-                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                instrs.add(LoadInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
             is ArrayElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
@@ -436,19 +436,15 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
             val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
-            ast.symTable.callOffset = bytes
             totalBytes += bytes
+            ast.symTable.callOffset = totalBytes
             if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
             instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), seeLastUsedCalleeReg()))
             freeCalleeReg()
-            if (index == 0) {
-                ast.symTable.increaseOffsetForCall = 4
-            }
         }
         ast.symTable.callOffset = 0
-        ast.symTable.increaseOffsetForCall = 0
 
         val funcLabel = FunctionLabel(ast.ident.name)
         instrs.add(BranchInstr(Condition.AL, funcLabel, true))
