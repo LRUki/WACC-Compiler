@@ -5,11 +5,17 @@ import wacc.backend.translate.instruction.DirectiveInstr
 import wacc.backend.translate.instruction.Instruction
 import wacc.backend.translate.instruction.Label
 
+/**
+ * String labels represents a list of strings in the program that
+ * need to appear in the data directive
+ *
+ * @property strings is an initially empty list of strings
+ */
 class StringLabels(val strings: MutableList<String>) {
 
-    /**
-     * Add a string and returns its label of the format "msg_<int>".
-     */
+
+    // Adds a string to the list of strings
+    // and returns its label of the format "msg_<int>".
     fun add(string: String): String {
         if (strings.contains(string)) {
             return "msg_${strings.indexOf(string)}"
@@ -27,6 +33,7 @@ class StringLabels(val strings: MutableList<String>) {
     }
 
     /**
+     * Translates into the form
      * <string label>:
      *     .word <length of string>
      *     .ascii "<actual string literal>"
@@ -39,9 +46,6 @@ class StringLabels(val strings: MutableList<String>) {
                 string.length - string.filter { c -> c == '\\' }.count()
             }"))
 
-            // display escaped characters in full
-//            val newString = escape(string)
-//            instructions.add(DirectiveInstr("ascii \"$newString\""))
             instructions.add(DirectiveInstr("ascii \"${string}\""))
 
         }
