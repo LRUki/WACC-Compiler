@@ -14,6 +14,8 @@ import wacc.backend.translate.instruction.instructionpart.*
  *
  */
 class CLibrary {
+    private val pointerOffset = 4
+
     /**
      * Library Functions are those that are branched to directly
      */
@@ -97,7 +99,7 @@ class CLibrary {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Condition.AL, null, ImmediateLabelMode(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(pointerOffset)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
@@ -119,7 +121,7 @@ class CLibrary {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Condition.AL, null, ImmediateLabelMode(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(pointerOffset)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateIntOperand(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -149,7 +151,7 @@ class CLibrary {
                 CompareInstr(Register.R0, ImmediateIntOperand(0)),
                 LoadInstr(Condition.NE, null, ImmediateLabelMode(trueLabel), Register.R0),
                 LoadInstr(Condition.EQ, null, ImmediateLabelMode(falseLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(pointerOffset)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateIntOperand(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -175,9 +177,9 @@ class CLibrary {
 
         val instructions = listOf(
                 LoadInstr(Condition.AL, null, RegisterMode(Register.R0), Register.R1),
-                AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateIntOperand(4)),
+                AddInstr(Condition.AL, Register.R2, Register.R0, ImmediateIntOperand(pointerOffset)),
                 LoadInstr(Condition.AL, null, ImmediateLabelMode(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(pointerOffset)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateIntOperand(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -204,7 +206,7 @@ class CLibrary {
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Condition.AL, null, ImmediateLabelMode(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(pointerOffset)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PRINTF.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateIntOperand(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -229,7 +231,7 @@ class CLibrary {
 
         val instructions = listOf(
                 LoadInstr(Condition.AL, null, ImmediateLabelMode(stringFormatLabel), Register.R0),
-                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(4)),
+                AddInstr(Condition.AL, Register.R0, Register.R0, ImmediateIntOperand(pointerOffset)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.PUTS.toString()), true),
                 MoveInstr(Condition.AL, Register.R0, ImmediateIntOperand(0)),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FFLUSH.toString()), true)
@@ -258,14 +260,13 @@ class CLibrary {
                 LoadInstr(Condition.AL, null, RegisterMode(Register.R0), Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
                 LoadInstr(Condition.AL, null, RegisterMode(Register.SP), Register.R0),
-                LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(Register.R0, 4, false), Register.R0),
+                LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(Register.R0, pointerOffset, false), Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
                 PopInstr(Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
         )
         CodeGenerator.runtimeErrors.addThrowRuntimeError()
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
-
         /**
          * PUSH {lr}
          * CMP r0, #0

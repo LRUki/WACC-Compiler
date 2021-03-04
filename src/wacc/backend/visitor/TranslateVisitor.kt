@@ -39,6 +39,8 @@ import wacc.frontend.ast.type.*
  */
 class TranslateVisitor : AstVisitor<List<Instruction>> {
 
+    private val pointerOffset = 4
+
     private fun translateScoped(table: SymbolTable, instrs: MutableList<Instruction>, stats: List<StatAST>) {
         val MAX_STACK_OFFSET = 1024
         val stackOffset = table.getStackOffset()
@@ -86,7 +88,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val data = dataDirective.translate()
         val cLib = cLib.translate()
         val runtime = runtimeErrors.translate()
-        // data + main + runtime err + clib calls
+
         return data + instrs + runtime + cLib
     }
 
@@ -334,9 +336,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 // Intentionally Left Blank
             }
             is PairTypeAST -> {
-                if (ast.rhs !is NewPairRhsAST && ast.rhs !is ArrayElemAST && ast.rhs !is IdentAST &&
-                        ast.rhs !is NullPairLiterAST && ast.rhs !is CallRhsAST && ast.rhs !is PairElemAST) {
-                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                when (ast.rhs) {
+                    !is NewPairRhsAST, !is ArrayElemAST, !is IdentAST,
+                    !is NullPairLiterAST, !is CallRhsAST, !is PairElemAST -> {
+                        instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+                    }
                 }
             }
         }
@@ -398,8 +402,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitNewPairRhsAST(ast: NewPairRhsAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         var memtype: MemoryType? = null
+        val spaceForTwoPointers = 2 * pointerOffset
         //Malloc space for pair
-        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(2 * 4), Register.R0))
+        instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(spaceForTwoPointers), Register.R0))
         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
         val stackReg = getNextFreeCalleeReg()
         instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
@@ -424,7 +429,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         }
         instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
         freeCalleeReg()
-        instrs.add(StoreInstr(null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
+        instrs.add(StoreInstr(null, RegisterAddrWithOffsetMode(stackReg, pointerOffset, false), Register.R0))
 
         return instrs
 
@@ -492,17 +497,19 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 runtimeErrors.addOverflowError()
             }
             BinOp.MULT -> {
+                val shiftAmount = 31
                 if (!useAccumulator) {
                     instrs.add(MultInstr(Condition.AL, reg1, reg2, reg1, reg2))
                 } else {
                     instrs.add(PopInstr(Register.R11))
                     instrs.add(MultInstr(Condition.AL, reg1, reg2, reg2, reg1))
                 }
-                instrs.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, 31)))
+                instrs.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, shiftAmount)))
                 instrs.add(BranchInstr(Condition.NE, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
             BinOp.DIV -> {
+                val assemblyDivideFunName = "__aeabi_idiv"
                 if (!useAccumulator) {
                     instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
                     instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
@@ -513,10 +520,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
                 instrs.add(BranchInstr(Condition.AL, RuntimeErrors.divideZeroCheckLabel, true))
                 runtimeErrors.addDivideByZeroCheck()
-                instrs.add(BranchInstr(Condition.AL, Label("__aeabi_idiv"), true))
+                instrs.add(BranchInstr(Condition.AL, Label(assemblyDivideFunName), true))
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R0)))
             }
             BinOp.MOD -> {
+                val assemblyDivModFunName = "__aeabi_idivmod"
                 if (!useAccumulator) {
                     instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
                     instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg2)))
@@ -527,7 +535,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
                 instrs.add(BranchInstr(Condition.AL, RuntimeErrors.divideZeroCheckLabel, true))
                 runtimeErrors.addDivideByZeroCheck()
-                instrs.add(BranchInstr(Condition.AL, Label("__aeabi_idivmod"), true))
+                instrs.add(BranchInstr(Condition.AL, Label(assemblyDivModFunName), true))
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
             }
             BinOp.EQ -> {
@@ -632,7 +640,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             UnOp.LEN -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(Register.SP), reg1))
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
-
             }
             UnOp.ORD -> {
                 // Intentionally Left Blank
@@ -656,7 +663,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
             instrs.add(BranchInstr(Condition.AL, RuntimeErrors.checkArrayBoundsLabel, true))
             runtimeErrors.addArrayBoundsCheck()
-            instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(4), false))
+            instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(pointerOffset), false))
             val identType = ast.ident.getRealType(ast.symTable)
             if (identType is ArrayTypeAST &&
                     ((identType.type == BaseTypeAST(BaseType.CHAR) || identType.type == BaseTypeAST(BaseType.BOOL)))) {
@@ -681,7 +688,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         if (ast.choice == PairChoice.FST) {
             instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
         } else {
-            instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(reg, 4, false), reg))
+            instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(reg, pointerOffset, false), reg))
         }
         return instrs
     }
