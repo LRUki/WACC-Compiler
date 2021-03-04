@@ -13,7 +13,7 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
     override fun equals(other: Any?): Boolean {
         return when (other) {
             is AnyTypeAST -> true
-            is ArrayTypeAST -> this.dimension == other.dimension
+            is ArrayTypeAST -> dimension == other.dimension
             else -> false
         }
     }

@@ -5,6 +5,16 @@ import wacc.backend.translate.instruction.instructionpart.MemoryType
 import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.instructionpart.AddressingMode
 
+
+/**
+ * Load instr
+ *
+ * @property condition
+ * @property memType
+ * @property mode
+ * @property destRegister
+ * @constructor Create empty Load instr
+ */
 class LoadInstr(val condition: Condition, val memType: MemoryType?,
                 val mode: AddressingMode, val destRegister: Register) : Instruction {
     override fun toAssembly(): String {

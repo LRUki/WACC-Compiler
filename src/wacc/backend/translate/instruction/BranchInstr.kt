@@ -2,13 +2,19 @@ package wacc.backend.translate.instruction
 
 import wacc.backend.translate.instruction.instructionpart.Condition
 
+/**
+ * Branch instr
+ *
+ * @property condition
+ * @property label
+ * @property link
+ * @constructor Create empty Branch instr
+ */
 data class BranchInstr(val condition: Condition,
                   val label: LabelInstr, val link: Boolean) : Instruction {
     override fun toAssembly(): String {
         var instr = "B"
-        if (link) {
-            instr += "L"
-        }
+        if (link) { instr += "L" }
         instr += condition.toAssembly()
         return instr + " " + label.name
     }

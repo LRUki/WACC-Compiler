@@ -3,6 +3,13 @@ package wacc.backend.translate.instruction
 import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.instructionpart.Operand
 
+/**
+ * Compare instr
+ *
+ * @property register
+ * @property operand
+ * @constructor Create empty Compare instr
+ */
 class CompareInstr(val register: Register,
                    val operand: Operand) : Instruction {
     override fun toAssembly(): String {

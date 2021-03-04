@@ -19,6 +19,6 @@ enum class Register {
     NONE;
 
     fun toAssembly(): String {
-        return this.name.toLowerCase()
+        return name.toLowerCase()
     }
 }
