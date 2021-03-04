@@ -9,14 +9,14 @@ import wacc.backend.translate.RuntimeErrors.Companion.throwRuntimeErrorLabel
 import wacc.backend.translate.instruction.instructionpart.*
 
 /**
- * C library class represents everything that require the C Library
+ * C library class represents everything that requires the C Library
+ * Generates the C library functions assembly code
  *
- *  Library Functions are those that are branched to directly
- *  Calls are blocks of code that branch to Library functions.
- *
- *  Both can be used directly in our assembly code.
  */
 class CLibrary {
+    /**
+     * Library Functions are those that are branched to directly
+     */
     enum class LibraryFunctions {
         SCANF,
         PRINTF,
@@ -31,6 +31,9 @@ class CLibrary {
         }
     }
 
+    /**
+     * Calls are blocks of code that branch to Library functions
+     */
     enum class Call {
         READ_INT,
         READ_CHAR,
@@ -47,10 +50,10 @@ class CLibrary {
         }
     }
 
-    /* Creates an empty hashmap between Calls and their respective blocks of code */
+    /** Creates an empty hashmap between Calls and their respective blocks of code */
     private val libraryCalls: HashMap<Call, List<Instruction>> = LinkedHashMap()
 
-    /* Given a call, we add it and it's list of instructions
+    /** Given a call, we add it and it's list of instructions
      to the hash map (provided it isn't already in the map)*/
     fun addCode(call: Call) {
         if (libraryCalls.containsKey(call)) {
@@ -73,7 +76,7 @@ class CLibrary {
         libraryCalls[call] = instructions
     }
 
-    /* Adds all the individual blocks of code in the hash map together and returns the result.*/
+    /** Adds all the individual blocks of code in the hash map together and returns the result.*/
     fun translate(): List<Instruction> {
         val instructions = mutableListOf<Instruction>()
         for ((_, value) in libraryCalls) {
@@ -82,6 +85,7 @@ class CLibrary {
         return instructions
     }
 
+    /** Generates the block of code for read call */
     fun generateReadCall(call: Call): List<Instruction> {
         val stringFormat: String = when (call) {
             Call.READ_INT -> "%d\\0"
@@ -97,16 +101,18 @@ class CLibrary {
                 BranchInstr(Condition.AL, Label(LibraryFunctions.SCANF.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
-//    PUSH {lr}
-//    MOV r1, r0
-//    LDR r0, =stringFormatLabel
-//    ADD r0, r0, #4
-//    BL scanf
-//    POP {pc}
+        /**
+         * PUSH {lr}
+         * MOV r1, r0
+         * LDR r0, =stringFormatLabel
+         * ADD r0, r0, #4
+         * BL scanf
+         * POP {pc}
+         */
 
     }
 
-    /* Generates the block of code for print int call */
+    /** Generates the block of code for print int call */
     fun generatePrintIntCall(): List<Instruction> {
         val stringFormat = "%d\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
@@ -132,7 +138,7 @@ class CLibrary {
          */
     }
 
-    /* Generates the block of code for print bool call */
+    /** Generates the block of code for print bool call */
     fun generatePrintBoolCall(): List<Instruction> {
         val trueString = "true\\0"
         val falseString = "false\\0"
@@ -162,7 +168,7 @@ class CLibrary {
          */
     }
 
-    /* Generates the block of code for print string call */
+    /** Generates the block of code for print string call */
     fun generatePrintStringCall(): List<Instruction> {
         val stringFormat = "%.*s\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
@@ -190,7 +196,7 @@ class CLibrary {
           */
     }
 
-    /* Generates the block of code for print reference call */
+    /** Generates the block of code for print reference call */
     fun generatePrintReferenceCall(): List<Instruction> {
         val stringFormat = "%p\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
@@ -216,7 +222,7 @@ class CLibrary {
          */
     }
 
-    /* Generates the block of code for print new line call */
+    /** Generates the block of code for print new line call */
     fun generatePrintLnCall(): List<Instruction> {
         val stringFormat = "\\0"
         val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
@@ -240,7 +246,7 @@ class CLibrary {
          */
     }
 
-    /* Generates the block of code for free pair call */
+    /** Generates the block of code for free pair call */
     fun generateFreePairCall(): List<Instruction> {
         val label = CodeGenerator.dataDirective.addStringLabel(RuntimeErrors.ErrorType.NULL_REFERENCE.toString())
 
@@ -277,7 +283,7 @@ class CLibrary {
          */
     }
 
-    /* Generates the block of code for free array call */
+    /** Generates the block of code for free array call */
     fun generateFreeArrayCall(): List<Instruction> {
         val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
         val errorLabel = CodeGenerator.dataDirective.addStringLabel(errorMessage)

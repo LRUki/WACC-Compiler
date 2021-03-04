@@ -13,9 +13,7 @@ class PushInstr(val register: Register) : Instruction {
     }
 }
 
-/**
- *  Makes a push instruction for each register in a given list
- */
+/* Makes a push instruction for each register in a given list */
 fun regsToPushInstrs(list: List<Register>): List<PushInstr> {
     return list.map { reg -> PushInstr(reg) }
 }

@@ -16,7 +16,7 @@ import wacc.backend.translate.instruction.instructionpart.RegisterOperand
  */
 class RuntimeErrors {
 
-    /* Initially we have no errors so each error is null*/
+    /** Initially we have no errors so each error is null*/
     private val EXIT_CODE = -1
     private var runtimeError: List<Instruction>? = null
     private var nullReferenceError: List<Instruction>? = null
@@ -24,7 +24,7 @@ class RuntimeErrors {
     private var checkArrayBounds: List<Instruction>? = null
     private var overflowError: List<Instruction>? = null
 
-    /* We also have labels for each type of error. */
+    /** We also have labels for each type of error. */
     companion object {
         val throwRuntimeErrorLabel = Label("p_throw_runtime_error")
         val nullReferenceLabel = Label("p_check_null_pointer")
@@ -46,8 +46,8 @@ class RuntimeErrors {
         }
     }
 
-    /* Translates all non-null errors. These are the runtime
-    errors we need to have in our program */
+    /** Translates all non-null errors. These are the runtime
+         errors we need to have in our program */
     fun translate(): List<Instruction> {
         val instructions = mutableListOf<Instruction>()
         runtimeError?.let { instructions.addAll(it) }
@@ -59,7 +59,7 @@ class RuntimeErrors {
     }
 
 
-    /* Sets the runtimeError variable to the list of instructions for runtime errors */
+    /** Sets the runtimeError variable to the list of instructions for runtime errors */
     fun addThrowRuntimeError() {
         if (runtimeError == null) {
             runtimeError = listOf(
@@ -78,7 +78,7 @@ class RuntimeErrors {
         }
     }
 
-    /* Sets the nullReferenceError variable to the list of instructions for null reference errors */
+    /** Sets the nullReferenceError variable to the list of instructions for null reference errors */
     fun addNullReferenceCheck() {
         if (nullReferenceError == null) {
             val errorMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NULL_REFERENCE.toString())
@@ -102,7 +102,7 @@ class RuntimeErrors {
          */
     }
 
-    /* Sets the divideZero variable to the list of instructions for divide by 0 errors */
+    /** Sets the divideZero variable to the list of instructions for divide by 0 errors */
     fun addDivideByZeroCheck() {
         if (divideZeroError == null) {
             val errorMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.DIVIDE_BY_ZERO.toString())
@@ -126,7 +126,7 @@ class RuntimeErrors {
          */
     }
 
-    /* Sets the checkArrayBounds variable to the list of instructions for array bounds checking */
+    /** Sets the checkArrayBounds variable to the list of instructions for array bounds checking */
     fun addArrayBoundsCheck() {
         if (checkArrayBounds == null) {
             val negativeMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
@@ -158,12 +158,10 @@ class RuntimeErrors {
              * POP {pc}
              */
         }
-
-
     }
 
 
-    /* Sets the overflowError variable to the list of instructions for overflow errors */
+    /** Sets the overflowError variable to the list of instructions for overflow errors */
     fun addOverflowError() {
         if (overflowError == null) {
             val errorMsg = CodeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())
@@ -180,6 +178,4 @@ class RuntimeErrors {
          * BL p_throw_runtime_error
          */
     }
-
-
 }

@@ -14,8 +14,8 @@ import wacc.backend.translate.instruction.Label
 class StringLabels(val strings: MutableList<String>) {
 
 
-    // Adds a string to the list of strings
-    // and returns its label of the format "msg_<int>".
+    /** Adds a string to the list of strings
+     and returns its label of the format "msg_<int>". */
     fun add(string: String): String {
         if (strings.contains(string)) {
             return "msg_${strings.indexOf(string)}"

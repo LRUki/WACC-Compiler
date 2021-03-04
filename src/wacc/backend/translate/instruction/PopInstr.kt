@@ -13,9 +13,7 @@ class PopInstr(val register: Register) : Instruction {
     }
 }
 
-/**
- * Makes a pop instruction for each register in a given list
- */
+/* Makes a pop instruction for each register in a given list */
 fun regsToPopInstrs(list: List<Register>): List<PopInstr> {
     return list.map { reg -> PopInstr(reg) }
 }
