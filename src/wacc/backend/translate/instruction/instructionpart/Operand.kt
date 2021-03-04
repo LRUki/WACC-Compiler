@@ -13,7 +13,7 @@ class ImmediateIntOperand(val offset: Int) : Operand {
 class ImmediateCharOperand(val char: Char) : Operand {
     override fun toAssembly(): String {
         val charStr: String = when (char) {
-            0.toChar() -> "\\0"
+            0.toChar() -> return "#0"
             '\b' -> "\\b"
             '\t' -> "\\t"
             '\n' -> "\\n"
