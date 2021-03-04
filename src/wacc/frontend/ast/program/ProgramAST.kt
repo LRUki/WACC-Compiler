@@ -1,15 +1,5 @@
 package wacc.frontend.ast.program
 
-import wacc.backend.CodeGenerator.CLib
-import wacc.backend.CodeGenerator.dataDirective
-import wacc.backend.CodeGenerator.runtimeErrors
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instructionpart.ImmediateIntMode
-import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
-import wacc.backend.visitor.TranslateVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor

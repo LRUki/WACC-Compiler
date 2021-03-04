@@ -10,7 +10,7 @@ import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.backend.translate.instruction.instructionpart.RegisterMode
 import wacc.backend.translate.instruction.instructionpart.RegisterOperand
 
-class RuntimeError {
+class RuntimeErrors {
 
     private val EXIT_CODE = -1
     private var runtimeError: List<Instruction>? = null
@@ -60,7 +60,7 @@ class RuntimeError {
                     MoveInstr(Condition.AL, Register.R0, ImmediateIntOperand(EXIT_CODE)),
                     BranchInstr(Condition.AL, exitLabel, true)
             )
-            CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_STRING)
+            CodeGenerator.cLib.addCode(CLibrary.Call.PRINT_STRING)
             // p_throw_runtime_error:
             //   BL p_print_string
             //   MOV r0, #-1

@@ -1,12 +1,11 @@
 package wacc.backend.translate
 
-//import wacc.backend.instruction.enums.Condition
 import wacc.backend.CodeGenerator
 import wacc.backend.translate.instruction.Instruction
 import wacc.backend.translate.instruction.instructionpart.Condition
 import wacc.backend.translate.instruction.instructionpart.Register
 import wacc.backend.translate.instruction.*
-import wacc.backend.translate.RuntimeError.Companion.throwRuntimeErrorLabel
+import wacc.backend.translate.RuntimeErrors.Companion.throwRuntimeErrorLabel
 import wacc.backend.translate.instruction.instructionpart.*
 
 class CLibrary {
@@ -220,11 +219,8 @@ class CLibrary {
     }
 
     fun generateFreePairCall(): List<Instruction> {
-//    val errorLabel = codeGenerator.getDataSegment().addString(RuntimeErrors.RuntimeErrorType.NULL_REFERENCE.toString())
-//    codeGenerator.getRuntimeErrors().addThrowRuntimeError()
+        val label = CodeGenerator.dataDirective.addStringLabel(RuntimeErrors.ErrorType.NULL_REFERENCE.toString())
 
-        val label = CodeGenerator.dataDirective.addStringLabel(RuntimeError.ErrorType.NULL_REFERENCE.toString())
-//        CodeGenerator.runtimeErrors.addNullReferenceCheck()
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateIntOperand(0)),
                 LoadInstr(Condition.EQ, null, ImmediateLabelMode(label), Register.R0),
@@ -257,15 +253,12 @@ class CLibrary {
 
 
     fun generateFreeArrayCall(): List<Instruction> {
-        val errorMessage = RuntimeError.ErrorType.NULL_REFERENCE.toString()
+        val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
         val errorLabel = CodeGenerator.dataDirective.addStringLabel(errorMessage)
-        //codeGenerator.getDataSegment().addString(errorMsg)
-//    codeGenerator.runtimeErrors.addThrowRuntimeError()
 
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateIntOperand(0)),
                 LoadInstr(Condition.EQ, null, ImmediateLabelMode(errorLabel), Register.R0),
-                //BranchInstruction(Condition.EQ,  RuntimeErrors.throwRuntimeErrorLabel, false),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true)
         )
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))

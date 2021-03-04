@@ -1,6 +1,6 @@
 package wacc.backend.visitor
 
-import wacc.backend.CodeGenerator.CLib
+import wacc.backend.CodeGenerator.cLib
 import wacc.backend.CodeGenerator.dataDirective
 import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeReg
@@ -9,7 +9,7 @@ import wacc.backend.CodeGenerator.getNextLabel
 import wacc.backend.CodeGenerator.runtimeErrors
 import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.CLibrary
-import wacc.backend.translate.RuntimeError
+import wacc.backend.translate.RuntimeErrors
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
@@ -84,7 +84,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.add(DirectiveInstr("ltorg"))
 
         val data = dataDirective.translate()
-        val cLib = CLib.translate()
+        val cLib = cLib.translate()
         val runtime = runtimeErrors.translate()
         // data + main + runtime err + clib calls
         return data + instrs + runtime + cLib
@@ -216,18 +216,18 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         when (exprType.type) {
                             BaseType.INT -> {
-                                CLib.addCode(CLibrary.Call.PRINT_INT)
+                                cLib.addCode(CLibrary.Call.PRINT_INT)
                                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_INT.toString()), true))
                             }
                             BaseType.CHAR -> {
                                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.PUTCHAR.toString()), true))
                             }
                             BaseType.BOOL -> {
-                                CLib.addCode(CLibrary.Call.PRINT_BOOL)
+                                cLib.addCode(CLibrary.Call.PRINT_BOOL)
                                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_BOOL.toString()), true))
                             }
                             BaseType.STRING -> {
-                                CLib.addCode(CLibrary.Call.PRINT_STRING)
+                                cLib.addCode(CLibrary.Call.PRINT_STRING)
                                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
                             }
                         }
@@ -236,20 +236,20 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         if (exprType.type == BaseTypeAST(BaseType.CHAR)) {
                             instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
-                            CLib.addCode(CLibrary.Call.PRINT_STRING)
+                            cLib.addCode(CLibrary.Call.PRINT_STRING)
                         } else {
                             instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                            CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                            cLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                         }
                     }
                     is PairTypeAST, is AnyPairTypeAST -> {
                         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                        cLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                     }
                 }
                 if (ast.action == Action.PRINTLN) {
-                    CLib.addCode(CLibrary.Call.PRINT_LN)
+                    cLib.addCode(CLibrary.Call.PRINT_LN)
                     instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_LN.toString()), true))
                 }
                 freeCalleeReg()
@@ -257,7 +257,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             Action.FREE -> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
-                CLib.addCode(CLibrary.Call.FREE_PAIR)
+                cLib.addCode(CLibrary.Call.FREE_PAIR)
                 freeCalleeReg()
             }
             Action.RETURN -> {
@@ -374,11 +374,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         when ((ast.exprType as BaseTypeAST).type) {
             BaseType.INT -> {
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_INT.toString()), true))
-                CLib.addCode(CLibrary.Call.READ_INT)
+                cLib.addCode(CLibrary.Call.READ_INT)
             }
             BaseType.CHAR -> {
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_CHAR.toString()), true))
-                CLib.addCode(CLibrary.Call.READ_CHAR)
+                cLib.addCode(CLibrary.Call.READ_CHAR)
             }
             else -> throw RuntimeException("Read can only be used for int or char, semantic check failed")
         }
@@ -478,7 +478,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(PopInstr(Register.R11))
                     instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
                 }
-                instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
+                instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
             BinOp.MINUS -> {
@@ -488,7 +488,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(PopInstr(Register.R11))
                     instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
                 }
-                instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
+                instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
             BinOp.MULT -> {
@@ -499,7 +499,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(MultInstr(Condition.AL, reg1, reg2, reg2, reg1))
                 }
                 instrs.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, 31)))
-                instrs.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, true))
+                instrs.add(BranchInstr(Condition.NE, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
             BinOp.DIV -> {
@@ -511,7 +511,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg2)))
                     instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg1)))
                 }
-                instrs.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
+                instrs.add(BranchInstr(Condition.AL, RuntimeErrors.divideZeroCheckLabel, true))
                 runtimeErrors.addDivideByZeroCheck()
                 instrs.add(BranchInstr(Condition.AL, Label("__aeabi_idiv"), true))
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R0)))
@@ -525,7 +525,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg2)))
                     instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg1)))
                 }
-                instrs.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
+                instrs.add(BranchInstr(Condition.AL, RuntimeErrors.divideZeroCheckLabel, true))
                 runtimeErrors.addDivideByZeroCheck()
                 instrs.add(BranchInstr(Condition.AL, Label("__aeabi_idivmod"), true))
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
@@ -626,7 +626,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             UnOp.MINUS -> {
                 instrs.add(ReverseSubInstr(Condition.AL, reg1, reg1, ImmediateIntOperand(0), true))
-                instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
+                instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
             UnOp.LEN -> {
@@ -654,7 +654,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(LoadInstr(Condition.AL, null, RegisterMode(stackReg), stackReg))
             instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
             instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
-            instrs.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
+            instrs.add(BranchInstr(Condition.AL, RuntimeErrors.checkArrayBoundsLabel, true))
             runtimeErrors.addArrayBoundsCheck()
             instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(4), false))
             val identType = ast.ident.getRealType(ast.symTable)
@@ -676,7 +676,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.addAll(visit(ast.expr))
         val reg = seeLastUsedCalleeReg()
         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
-        instrs.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
+        instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
         runtimeErrors.addNullReferenceCheck()
         if (ast.choice == PairChoice.FST) {
             instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
