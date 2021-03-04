@@ -1,23 +1,8 @@
 package wacc.frontend.ast.statement.nonblock
 
-import wacc.backend.CodeGenerator.CLib
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.MemoryType
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.BranchInstr
-import wacc.backend.translate.instruction.Label
-import wacc.backend.translate.instruction.LoadInstr
-import wacc.backend.translate.instruction.MoveInstr
-import wacc.backend.translate.CLibrary
-import wacc.backend.translate.instruction.instructionpart.RegisterMode
-import wacc.backend.translate.instruction.instructionpart.RegisterOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*

@@ -1,7 +1,12 @@
 package wacc.backend.translate.instruction
 
-data class DirectiveInstr(val directive: String, val value: String = "") : Instruction {
+/**
+ * Represents Directives
+ *
+ * @property directive Name of the directive
+ */
+data class DirectiveInstr(val directive: String) : Instruction {
     override fun toAssembly(): String {
-        return ".$directive $value".trim()
+        return ".$directive".trim()
     }
 }

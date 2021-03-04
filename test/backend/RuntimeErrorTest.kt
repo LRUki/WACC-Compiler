@@ -1,68 +1,72 @@
 package backend
 
 import frontend.actionOnFiles
+import org.junit.Before
 import org.junit.Test
+import wacc.backend.CodeGenerator
 import wacc.backend.generateCode
-import wacc.backend.translate.RuntimeError
-import wacc.backend.translate.instruction.BranchInstr
-import wacc.backend.translate.instruction.DirectiveInstr
-import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.RuntimeErrors
 import wacc.buildAST
 import wacc.checkSemantics
 import wacc.checkSyntax
 import wacc.frontend.ast.program.ProgramAST
 import wacc.parse
 import java.io.File
-import kotlin.test.assertTrue
 
 class RuntimeErrorTest {
-    val path = "wacc_examples/valid/runtimeErr"
+    val PATH = "wacc_examples/valid/runtimeErr"
+
+    @Before
+    @Throws(Exception::class)
+    fun setUp() {
+        CodeGenerator.reset()
+    }
 
     @Test
     fun arrayRuntimeErrorContainsCheckArrayBounds() {
-        val folder = File("${path}/arrayOutOfBounds")
+        val folder = File("${PATH}/arrayOutOfBounds")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeError.checkArrayBoundsLabel)
+            generateCode(ast as ProgramAST).contains(RuntimeErrors.checkArrayBoundsLabel)
         }
     }
 
     @Test
     fun divideByZeroRuntimeErrorContainsCheckDivideByZero() {
-        val folder = File("${path}/divideByZero")
+        val folder = File("${PATH}/divideByZero")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeError.divideZeroCheckLabel)
+            generateCode(ast as ProgramAST).contains(RuntimeErrors.divideZeroCheckLabel)
         }
     }
 
     @Test
     fun integerOverflowRuntimeErrorContainsThrowIntegerOverflow() {
-        val folder = File("${path}/integerOverflow")
+        val folder = File("${PATH}/integerOverflow")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeError.throwOverflowErrorLabel)
+            generateCode(ast as ProgramAST).contains(RuntimeErrors.throwOverflowErrorLabel)
         }
     }
 
     @Test
     fun nullDereferenceRuntimeErrorContainsCheckNullPointer() {
-        val folder = File("${path}/nullDereference")
+        val folder = File("${PATH}/nullDereference")
         actionOnFiles(folder) { file ->
             val program = parse(file.inputStream())
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeError.nullReferenceLabel)
+            generateCode(ast as ProgramAST).contains(RuntimeErrors.nullReferenceLabel)
         }
     }
 

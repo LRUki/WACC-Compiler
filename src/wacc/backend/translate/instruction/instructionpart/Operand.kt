@@ -1,5 +1,9 @@
 package wacc.backend.translate.instruction.instructionpart
 
+/**
+ * An interface to represent the different types of
+ * operand an instruction can take in as a parameter
+ */
 interface Operand {
     fun toAssembly(): String
 }
@@ -13,7 +17,7 @@ class ImmediateIntOperand(val offset: Int) : Operand {
 class ImmediateCharOperand(val char: Char) : Operand {
     override fun toAssembly(): String {
         val charStr: String = when (char) {
-            0.toChar() -> return "#0"
+            0.toChar() -> return "#0" /* Special case for null terminator */
             '\b' -> "\\b"
             '\t' -> "\\t"
             '\n' -> "\\n"

@@ -15,8 +15,8 @@ class PrintCodeTest {
 
         assertEquals(".text",
                 DirectiveInstr("text").toAssembly())
-        assertEquals(".word 3",
-                DirectiveInstr("word", "3").toAssembly())
+        assertEquals(".word",
+                DirectiveInstr("word").toAssembly())
     }
 
     @Test
@@ -144,6 +144,7 @@ class PrintCodeTest {
         val output = printCode(instrs)
         assertThat(output, `is`("""
         .text
+        
         .global main
         main:
         	PUSH {lr}

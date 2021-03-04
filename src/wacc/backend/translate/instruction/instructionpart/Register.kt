@@ -1,6 +1,9 @@
 package wacc.backend.translate.instruction.instructionpart
 
-//16 visible registers
+/**
+ * An enum to represent the 16 visible registers ARM has.
+ *
+ */
 enum class Register {
 
     R0, R1, // Argument or Result
@@ -16,6 +19,6 @@ enum class Register {
     NONE;
 
     fun toAssembly(): String {
-        return this.name.toLowerCase()
+        return name.toLowerCase()
     }
 }

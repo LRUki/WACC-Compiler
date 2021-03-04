@@ -1,5 +1,8 @@
 package wacc.backend.translate.instruction.instructionpart
 
+/**
+* An enum for conditions that can be associated with an instruction
+*/
 enum class Condition {
 
     EQ,   // Equal
@@ -18,8 +21,9 @@ enum class Condition {
     LE,   // Signed <=
     AL;    // Always
 
+    // The always condition should not be printed
     fun toAssembly(): String {
-        return if (this == AL) "" else this.name
+        return if (this == AL) "" else name
     }
 }
 

@@ -2,24 +2,19 @@ package wacc.backend.translate.instruction
 
 import wacc.backend.translate.instruction.instructionpart.Condition
 
+/**
+ * Represents branch instructions
+ *
+ * @property condition A condition that needs to be satisfied to execute the instruction
+ * @property label Label to branch to
+ * @property link Copies the address of next instruction into link register if set
+ */
 data class BranchInstr(val condition: Condition,
                   val label: LabelInstr, val link: Boolean) : Instruction {
     override fun toAssembly(): String {
         var instr = "B"
-        if (link) {
-            instr += "L"
-        }
+        if (link) { instr += "L" }
         instr += condition.toAssembly()
         return instr + " " + label.name
     }
-
-
-//    Conditional B{cond} <label>
-//    Unconditional B <label>
-//    Branch with link BL <label> Saves (PC+4) in LR and jumps to function
-
-// below arent needed?
-//    Branch, link and exchange BLX <label>
-//    Branch, link and exchange BLX <Rm>
-//    Branch and exchange BX <Rm>
 }
