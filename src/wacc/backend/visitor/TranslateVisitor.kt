@@ -119,6 +119,18 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    private fun addExitCodeForReturnStatement(body: List<StatAST>, ast: IfStatAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        val lastStat = body.last()
+        if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(ast.symTable.getFuncStackOffset())))
+            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+            freeAllCalleeReg()
+        }
+        return instrs
+    }
+
+
     override fun visitIfStatAST(ast: IfStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val elseLabel = getNextLabel()
@@ -135,12 +147,8 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         ast.thenBody.forEach {
             instrs.addAll(visit(it))
         }
-        val lastStat = ast.thenBody.last()
-        if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(ast.symTable.getFuncStackOffset())))
-            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-            freeAllCalleeReg()
-        }
+        instrs.addAll(addExitCodeForReturnStatement(ast.thenBody, ast))
+
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
@@ -153,6 +161,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         ast.elseBody.forEach { instrs.addAll(visit(it)) }
+        instrs.addAll(addExitCodeForReturnStatement(ast.elseBody, ast))
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
@@ -172,14 +181,14 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         ast.body.forEach { instrs.addAll(visit(it)) }
+        if (stackOffset > 0) {
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+        }
         instrs.add(condLabel)
         instrs.addAll(visit(ast.cond))
         instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
         instrs.add(BranchInstr(Condition.EQ, bodyLabel, false))
         freeCalleeReg()
-        if (stackOffset > 0) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
         return instrs
     }
 
@@ -199,6 +208,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             Action.EXIT -> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                 instrs.add(BranchInstr(Condition.AL, Label("exit"), true))
+                freeAllCalleeReg()
             }
             Action.PRINT, Action.PRINTLN -> {
                 when (exprType) {
@@ -248,6 +258,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
                 CLib.addCode(CLibrary.Call.FREE_PAIR)
+                freeCalleeReg()
             }
             Action.RETURN -> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
