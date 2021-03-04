@@ -648,7 +648,8 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitArrayElemAST(ast: ArrayElemAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val stackReg = getNextFreeCalleeReg()
-        val stackOffset = ast.symTable.findOffsetInStack(ast.ident.name)
+        var stackOffset = ast.symTable.findOffsetInStack(ast.ident.name)
+        stackOffset += ast.symTable.checkParamInFuncSymbolTable(ast.ident.name) + ast.symTable.callOffset
         instrs.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateIntOperand(stackOffset), false))
         ast.indices.forEach {
             instrs.addAll(visit(it))
