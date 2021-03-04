@@ -11,7 +11,7 @@ import wacc.frontend.ast.program.ProgramAST
 import wacc.parse
 import java.io.File
 
-class RuntimeErrorsTest {
+class RuntimeErrorTest {
     val path = "wacc_examples/valid/runtimeErr"
 
     @Test
