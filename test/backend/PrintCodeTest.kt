@@ -144,6 +144,7 @@ class PrintCodeTest {
         val output = printCode(instrs)
         assertThat(output, `is`("""
         .text
+        
         .global main
         main:
         	PUSH {lr}

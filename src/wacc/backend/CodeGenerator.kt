@@ -18,10 +18,10 @@ object CodeGenerator {
     var runtimeErrors: RuntimeErrors = RuntimeErrors()
     var labelNumber: Int = 0
 
-    val resultRegisters = mutableListOf(Register.R0, Register.R1)
-    val argumentRegisters = mutableListOf(Register.R2, Register.R3)
-    val freeCalleeSavedRegs: Stack<Register> = makeStack(listOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10))
-    val calleSavedRegsInUse: Stack<Register> = makeStack(emptyList())
+    var resultRegisters = mutableListOf(Register.R0, Register.R1)
+    var argumentRegisters = mutableListOf(Register.R2, Register.R3)
+    var freeCalleeSavedRegs: Stack<Register> = makeStack(listOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10))
+    var calleSavedRegsInUse: Stack<Register> = makeStack(emptyList())
 
     var freeResultRegs = resultRegisters
     var freeArgumentRegs = argumentRegisters
@@ -77,6 +77,23 @@ object CodeGenerator {
         while (!calleSavedRegsInUse.isEmpty()) {
             freeCalleeReg()
         }
+    }
+
+    fun reset() {
+        dataDirective = DataDirective(StringLabels(mutableListOf()))
+        cLib = CLibrary()
+        runtimeErrors = RuntimeErrors()
+        labelNumber = 0
+
+        resultRegisters = mutableListOf(Register.R0, Register.R1)
+        argumentRegisters = mutableListOf(Register.R2, Register.R3)
+        freeCalleeSavedRegs = makeStack(listOf(Register.R4, Register.R5, Register.R6, Register.R7, Register.R8, Register.R9, Register.R10))
+        calleSavedRegsInUse = makeStack(emptyList())
+
+        freeResultRegs = resultRegisters
+        freeArgumentRegs = argumentRegisters
+
+        useAccumulator = false
     }
 
 }
