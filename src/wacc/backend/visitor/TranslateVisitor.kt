@@ -336,11 +336,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 // Intentionally Left Blank
             }
             is PairTypeAST -> {
-                when (ast.rhs) {
-                    !is NewPairRhsAST, !is ArrayElemAST, !is IdentAST,
-                    !is NullPairLiterAST, !is CallRhsAST, !is PairElemAST -> {
-                        instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-                    }
+                if (ast.rhs !is NewPairRhsAST && ast.rhs !is ArrayElemAST && ast.rhs !is IdentAST &&
+                        ast.rhs !is NullPairLiterAST && ast.rhs !is CallRhsAST && ast.rhs !is PairElemAST) {
+                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }
         }
