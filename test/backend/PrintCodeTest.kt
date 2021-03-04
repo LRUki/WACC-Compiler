@@ -16,7 +16,7 @@ class PrintCodeTest {
         assertEquals(".text",
                 DirectiveInstr("text").toAssembly())
         assertEquals(".word 3",
-                DirectiveInstr("word", "3").toAssembly())
+                DirectiveInstr("word").toAssembly())
     }
 
     @Test

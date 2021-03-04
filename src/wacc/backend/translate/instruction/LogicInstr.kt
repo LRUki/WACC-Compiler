@@ -24,7 +24,7 @@ enum class LogicInstrType {
  * @property updateFlag Tells us if we update the flags or not
  */
 abstract class AbstractLogicInstr(val type: LogicInstrType, val condition: Condition,
-                                  val reg1: Register, val reg2: Register, val operand: Operand, val updateFlag: Boolean) : ArithmeticInstr {
+                                  val reg1: Register, val reg2: Register, val operand: Operand, val updateFlag: Boolean) : LogicInstr {
     override fun toAssembly(): String {
         return "${type.name}${if (updateFlag) "S" else ""}${condition.toAssembly()} ${reg1.toAssembly()}, ${reg2.toAssembly()}, ${operand.toAssembly()}"
     }
