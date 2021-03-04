@@ -24,34 +24,6 @@ import wacc.frontend.ast.statement.StatAST
  */
 class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST() {
 
-    companion object {
-        fun translateScoped(table: SymbolTable, instrs: MutableList<Instruction>, stats: List<StatAST>) {
-            val MAX_STACK_OFFSET = 1024
-            val stackOffset = table.getStackOffset()
-            if (stackOffset > 0) {
-                var stackOffsetLeft = stackOffset
-                table.startingOffset = stackOffset
-                while (stackOffsetLeft > MAX_STACK_OFFSET) {
-                    instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(MAX_STACK_OFFSET)))
-                    stackOffsetLeft -= MAX_STACK_OFFSET
-                }
-                instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffsetLeft)))
-            }
-
-            // Visit the statements and add to instruction list
-            stats.forEach { instrs.addAll(TranslateVisitor().visit(it)) }
-
-            if (stackOffset > 0) {
-                var stackOffsetLeft = stackOffset
-                while (stackOffsetLeft > MAX_STACK_OFFSET) {
-                    instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(MAX_STACK_OFFSET)))
-                    stackOffsetLeft -= MAX_STACK_OFFSET
-                }
-                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffsetLeft)))
-            }
-        }
-    }
-
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         funcList.forEach { it.checkNameAndAddToST(table) }

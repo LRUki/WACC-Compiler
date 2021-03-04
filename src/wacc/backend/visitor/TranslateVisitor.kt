@@ -1,8 +1,13 @@
 package wacc.backend.visitor
 
-import wacc.backend.CodeGenerator
+import wacc.backend.CodeGenerator.CLib
+import wacc.backend.CodeGenerator.dataDirective
+import wacc.backend.CodeGenerator.freeAllCalleeReg
 import wacc.backend.CodeGenerator.freeCalleeReg
 import wacc.backend.CodeGenerator.getNextFreeCalleeReg
+import wacc.backend.CodeGenerator.getNextLabel
+import wacc.backend.CodeGenerator.runtimeErrors
+import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.CLibrary
 import wacc.backend.translate.RuntimeError
 import wacc.backend.translate.instruction.*
@@ -20,13 +25,45 @@ import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
+import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.*
 
+/**
+ * Translate visitor
+ *
+ * @constructor Create empty Translate visitor
+ */
 class TranslateVisitor : AstVisitor<List<Instruction>> {
+
+    private fun translateScoped(table: SymbolTable, instrs: MutableList<Instruction>, stats: List<StatAST>) {
+        val MAX_STACK_OFFSET = 1024
+        val stackOffset = table.getStackOffset()
+        if (stackOffset > 0) {
+            var stackOffsetLeft = stackOffset
+            table.startingOffset = stackOffset
+            while (stackOffsetLeft > MAX_STACK_OFFSET) {
+                instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(MAX_STACK_OFFSET)))
+                stackOffsetLeft -= MAX_STACK_OFFSET
+            }
+            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffsetLeft)))
+        }
+
+        // Visit the statements and add to instruction list
+        stats.forEach { instrs.addAll(TranslateVisitor().visit(it)) }
+
+        if (stackOffset > 0) {
+            var stackOffsetLeft = stackOffset
+            while (stackOffsetLeft > MAX_STACK_OFFSET) {
+                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(MAX_STACK_OFFSET)))
+                stackOffsetLeft -= MAX_STACK_OFFSET
+            }
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffsetLeft)))
+        }
+    }
 
     override fun visitProgramAST(ast: ProgramAST): List<Instruction> {
 //      Translate function definitions
@@ -39,16 +76,16 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.add(Label("main"))
         // AI: PUSH {lr}
         instrs.add(PushInstr(Register.LR))
-        ProgramAST.translateScoped(ast.symTable, instrs, ast.stats)
+        translateScoped(ast.symTable, instrs, ast.stats)
         // AI: LDR r0, =0
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(0), Register.R0))
         // AI: POP {pc}
         instrs.add(PopInstr(Register.PC))
         instrs.add(DirectiveInstr("ltorg"))
 
-        val data = CodeGenerator.dataDirective.translate()
-        val cLib = CodeGenerator.CLib.translate()
-        val runtime = CodeGenerator.runtimeErrors.translate()
+        val data = dataDirective.translate()
+        val cLib = CLib.translate()
+        val runtime = runtimeErrors.translate()
         // data + main + runtime err + clib calls
         return data + instrs + runtime + cLib
     }
@@ -68,7 +105,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         }
         instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
         instrs.add(DirectiveInstr("ltorg"))
-        CodeGenerator.freeAllCalleeReg()
+        freeAllCalleeReg()
         return instrs
     }
 
@@ -77,18 +114,18 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     }
 
     override fun visitBlockStatAST(ast: BlockStatAST): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-        ProgramAST.translateScoped(ast.symTable, instr, ast.body)
-        return instr
+        val instrs = mutableListOf<Instruction>()
+        translateScoped(ast.symTable, instrs, ast.body)
+        return instrs
     }
 
     override fun visitIfStatAST(ast: IfStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-        val elseLabel = CodeGenerator.getNextLabel()
-        val afterElseLabel = CodeGenerator.getNextLabel()
+        val elseLabel = getNextLabel()
+        val afterElseLabel = getNextLabel()
 
         instrs.addAll(visit(ast.cond))
-        instrs.add(CompareInstr(CodeGenerator.seeLastUsedCalleeReg(), ImmediateIntOperand(0)))
+        instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(0)))
         instrs.add(BranchInstr(Condition.EQ, elseLabel, false))
         freeCalleeReg()
         var stackOffset = ast.thenST.getStackOffset()
@@ -102,7 +139,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(ast.symTable.getFuncStackOffset())))
             instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-            CodeGenerator.freeAllCalleeReg()
+            freeAllCalleeReg()
         }
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
@@ -125,8 +162,8 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     override fun visitWhileStatAST(ast: WhileStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-        val condLabel = CodeGenerator.getNextLabel()
-        val bodyLabel = CodeGenerator.getNextLabel()
+        val condLabel = getNextLabel()
+        val bodyLabel = getNextLabel()
         instrs.add(BranchInstr(Condition.AL, condLabel, false))
 
         instrs.add(bodyLabel)
@@ -137,7 +174,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         ast.body.forEach { instrs.addAll(visit(it)) }
         instrs.add(condLabel)
         instrs.addAll(visit(ast.cond))
-        instrs.add(CompareInstr(CodeGenerator.seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
+        instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
         instrs.add(BranchInstr(Condition.EQ, bodyLabel, false))
         freeCalleeReg()
         if (stackOffset > 0) {
@@ -149,7 +186,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitActionStatAST(ast: ActionStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         instrs.addAll(visit(ast.expr))
-        val reg = CodeGenerator.seeLastUsedCalleeReg()
+        val reg = seeLastUsedCalleeReg()
         val exprType = ast.expr.getRealType(ast.symTable)
         if (ast.expr is ArrayElemAST) {
             var memType: MemoryType? = null
@@ -169,18 +206,18 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         when (exprType.type) {
                             BaseType.INT -> {
-                                CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_INT)
+                                CLib.addCode(CLibrary.Call.PRINT_INT)
                                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_INT.toString()), true))
                             }
                             BaseType.CHAR -> {
                                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.PUTCHAR.toString()), true))
                             }
                             BaseType.BOOL -> {
-                                CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_BOOL)
+                                CLib.addCode(CLibrary.Call.PRINT_BOOL)
                                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_BOOL.toString()), true))
                             }
                             BaseType.STRING -> {
-                                CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_STRING)
+                                CLib.addCode(CLibrary.Call.PRINT_STRING)
                                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
                             }
                         }
@@ -189,28 +226,28 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         if (exprType.type == BaseTypeAST(BaseType.CHAR)) {
                             instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_STRING.toString()), true))
-                            CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_STRING)
+                            CLib.addCode(CLibrary.Call.PRINT_STRING)
                         } else {
                             instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                            CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                            CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                         }
                     }
                     is PairTypeAST, is AnyPairTypeAST -> {
                         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
                         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
-                        CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                        CLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                     }
                 }
                 if (ast.action == Action.PRINTLN) {
-                    CodeGenerator.CLib.addCode(CLibrary.Call.PRINT_LN)
+                    CLib.addCode(CLibrary.Call.PRINT_LN)
                     instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_LN.toString()), true))
                 }
                 freeCalleeReg()
             }
             Action.FREE -> {
-                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(CodeGenerator.seeLastUsedCalleeReg())))
+                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
-                CodeGenerator.CLib.addCode(CLibrary.Call.FREE_PAIR)
+                CLib.addCode(CLibrary.Call.FREE_PAIR)
             }
             Action.RETURN -> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
@@ -223,9 +260,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitAssignStatAST(ast: AssignStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         instrs.addAll(visit(ast.rhs))
-        val calleeReg = CodeGenerator.seeLastUsedCalleeReg()
+        val calleeReg = seeLastUsedCalleeReg()
         if (ast.rhs is StrLiterAST) {
-            ast.stringLabel = CodeGenerator.dataDirective.getStringLabel(ast.rhs.value)
+            ast.stringLabel = dataDirective.getStringLabel(ast.rhs.value)
         }
 
         val rhsType = ast.rhs.getRealType(ast.symTable)
@@ -260,12 +297,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             is ArrayElemAST -> {
                 instrs.addAll(visit(ast.lhs))
-                instrs.add(StoreInstr(memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
+                instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
             }
             is PairElemAST -> {
                 instrs.addAll(visit(ast.lhs))
-                instrs.add(StoreInstr(memtype, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), calleeReg))
+                instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
             }
         }
@@ -280,7 +317,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val instrs = mutableListOf<Instruction>()
         instrs.addAll(visit(ast.rhs))
         if (ast.rhs is StrLiterAST) {
-            ast.stringLabel = CodeGenerator.dataDirective.getStringLabel(ast.rhs.value)
+            ast.stringLabel = dataDirective.getStringLabel(ast.rhs.value)
         }
         ast.symTable.decreaseOffset(ast.ident, ast.rhs.getRealType(ast.symTable))
         var memtype: MemoryType? = null
@@ -296,16 +333,16 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             is PairTypeAST -> {
                 if (ast.rhs !is NewPairRhsAST && ast.rhs !is ArrayElemAST && ast.rhs !is IdentAST &&
                         ast.rhs !is NullPairLiterAST && ast.rhs !is CallRhsAST && ast.rhs !is PairElemAST) {
-                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), CodeGenerator.seeLastUsedCalleeReg()))
+                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }
         }
         when (ast.rhs) {
             is PairElemAST -> {
-                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), CodeGenerator.seeLastUsedCalleeReg()))
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
             is ArrayElemAST -> {
-                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(CodeGenerator.seeLastUsedCalleeReg()), CodeGenerator.seeLastUsedCalleeReg()))
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
         }
         instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.offsetSize, false), Register.R4))
@@ -334,11 +371,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         when ((ast.exprType as BaseTypeAST).type) {
             BaseType.INT -> {
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_INT.toString()), true))
-                CodeGenerator.CLib.addCode(CLibrary.Call.READ_INT)
+                CLib.addCode(CLibrary.Call.READ_INT)
             }
             BaseType.CHAR -> {
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_CHAR.toString()), true))
-                CodeGenerator.CLib.addCode(CLibrary.Call.READ_CHAR)
+                CLib.addCode(CLibrary.Call.READ_CHAR)
             }
             else -> throw RuntimeException("Read can only be used for int or char, semantic check failed")
         }
@@ -350,9 +387,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     }
 
     override fun visitMultiStatAST(ast: MultiStatAST): List<Instruction> {
-        val instructions = mutableListOf<Instruction>()
-        ast.stats.forEach { instructions.addAll(visit(it)) }
-        return instructions
+        val instr = mutableListOf<Instruction>()
+        ast.stats.forEach { instr.addAll(visit(it)) }
+        return instr
     }
 
     override fun visitNewPairRhsAST(ast: NewPairRhsAST): List<Instruction> {
@@ -371,7 +408,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         if (ast.firstType.isBoolOrChar()) {
             memtype = MemoryType.B
         }
-        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
+        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
         freeCalleeReg()
         instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
 
@@ -382,7 +419,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         if (ast.secondType.isBoolOrChar()) {
             memtype = MemoryType.B
         }
-        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), CodeGenerator.seeLastUsedCalleeReg()))
+        instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
         freeCalleeReg()
         instrs.add(StoreInstr(null, RegisterAddrWithOffsetMode(stackReg, 4, false), Register.R0))
 
@@ -404,7 +441,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), CodeGenerator.seeLastUsedCalleeReg()))
+            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), seeLastUsedCalleeReg()))
             freeCalleeReg()
             if (index == 0) {
                 ast.symTable.increaseOffsetForCall = 4
@@ -423,9 +460,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitBinOpExprAST(ast: BinOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         instrs.addAll(visit(ast.expr1))
-        var reg1 = CodeGenerator.seeLastUsedCalleeReg()
+        var reg1 = seeLastUsedCalleeReg()
         instrs.addAll(visit(ast.expr2))
-        var reg2 = CodeGenerator.seeLastUsedCalleeReg()
+        var reg2 = seeLastUsedCalleeReg()
 
         var useAccumulator = false
         if (reg1 == Register.NONE || reg1 == Register.R10) {
@@ -443,7 +480,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
-                CodeGenerator.runtimeErrors.addOverflowError()
+                runtimeErrors.addOverflowError()
             }
             BinOp.MINUS -> {
                 if (!useAccumulator) {
@@ -453,7 +490,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
-                CodeGenerator.runtimeErrors.addOverflowError()
+                runtimeErrors.addOverflowError()
             }
             BinOp.MULT -> {
                 if (!useAccumulator) {
@@ -464,7 +501,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
                 instrs.add(CompareInstr(reg2, RegShiftOffsetOperand(reg1, ShiftType.ASR, 31)))
                 instrs.add(BranchInstr(Condition.NE, RuntimeError.throwOverflowErrorLabel, true))
-                CodeGenerator.runtimeErrors.addOverflowError()
+                runtimeErrors.addOverflowError()
             }
             BinOp.DIV -> {
                 if (!useAccumulator) {
@@ -476,7 +513,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg1)))
                 }
                 instrs.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
-                CodeGenerator.runtimeErrors.addDivideByZeroCheck()
+                runtimeErrors.addDivideByZeroCheck()
                 instrs.add(BranchInstr(Condition.AL, Label("__aeabi_idiv"), true))
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R0)))
             }
@@ -490,7 +527,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(reg1)))
                 }
                 instrs.add(BranchInstr(Condition.AL, RuntimeError.divideZeroCheckLabel, true))
-                CodeGenerator.runtimeErrors.addDivideByZeroCheck()
+                runtimeErrors.addDivideByZeroCheck()
                 instrs.add(BranchInstr(Condition.AL, Label("__aeabi_idivmod"), true))
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
             }
@@ -583,7 +620,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitUnOpExprAST(ast: UnOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         instrs.addAll(visit(ast.expr))
-        val reg1 = CodeGenerator.seeLastUsedCalleeReg()
+        val reg1 = seeLastUsedCalleeReg()
         when (ast.unOp) {
             UnOp.NOT -> {
                 instrs.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateIntOperand(1)))
@@ -591,7 +628,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             UnOp.MINUS -> {
                 instrs.add(ReverseSubInstr(Condition.AL, reg1, reg1, ImmediateIntOperand(0), true))
                 instrs.add(BranchInstr(Condition.VS, RuntimeError.throwOverflowErrorLabel, true))
-                CodeGenerator.runtimeErrors.addOverflowError()
+                runtimeErrors.addOverflowError()
             }
             UnOp.LEN -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(Register.SP), reg1))
@@ -616,17 +653,17 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         ast.indices.forEach {
             instrs.addAll(visit(it))
             instrs.add(LoadInstr(Condition.AL, null, RegisterMode(stackReg), stackReg))
-            instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(CodeGenerator.seeLastUsedCalleeReg())))
+            instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
             instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
             instrs.add(BranchInstr(Condition.AL, RuntimeError.checkArrayBoundsLabel, true))
-            CodeGenerator.runtimeErrors.addArrayBoundsCheck()
+            runtimeErrors.addArrayBoundsCheck()
             instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(4), false))
             val identType = ast.ident.getRealType(ast.symTable)
             if (identType is ArrayTypeAST &&
                     ((identType.type == BaseTypeAST(BaseType.CHAR) || identType.type == BaseTypeAST(BaseType.BOOL)))) {
-                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(CodeGenerator.seeLastUsedCalleeReg()), false))
+                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false))
             } else {
-                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(CodeGenerator.seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
+                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
             }
             freeCalleeReg()
         }
@@ -638,10 +675,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val instrs = mutableListOf<Instruction>()
 
         instrs.addAll(visit(ast.expr))
-        val reg = CodeGenerator.seeLastUsedCalleeReg()
+        val reg = seeLastUsedCalleeReg()
         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
         instrs.add(BranchInstr(Condition.AL, RuntimeError.nullReferenceLabel, true))
-        CodeGenerator.runtimeErrors.addNullReferenceCheck()
+        runtimeErrors.addNullReferenceCheck()
         if (ast.choice == PairChoice.FST) {
             instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
         } else {
@@ -691,7 +728,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             reg = Register.R10
             instrs += PushInstr(reg)
         }
-        val strLabel = CodeGenerator.dataDirective.addStringLabel(ast.value)
+        val strLabel = dataDirective.addStringLabel(ast.value)
         instrs += LoadInstr(Condition.AL, null, ImmediateLabelMode(strLabel), reg)
         return instrs
     }
@@ -745,14 +782,14 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(StoreInstr(memType,
                     RegisterAddrWithOffsetMode(stackReg,
                             sizeOfInt + (index * elemSize),
-                            false), CodeGenerator.seeLastUsedCalleeReg()))
+                            false), seeLastUsedCalleeReg()))
             freeCalleeReg()
         }
 
         //add the length of the array to stack
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(ast.values.size), getNextFreeCalleeReg()))
         instrs.add(StoreInstr(null,
-                RegisterMode(stackReg), CodeGenerator.seeLastUsedCalleeReg()))
+                RegisterMode(stackReg), seeLastUsedCalleeReg()))
         freeCalleeReg()
         return instrs
     }
