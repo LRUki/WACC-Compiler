@@ -275,15 +275,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
         when (ast.rhs) {
             // only other RHS which requires "setting up"
-            is CallRhsAST -> {
-                var offset = 0
-                if (ast.lhs is IdentAST) {
-                    offset = ast.symTable.findOffsetInStack(ast.lhs.name)
-                }
-                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), calleeReg))
-                freeCalleeReg()
-                return instrs
-            }
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
             }
@@ -304,6 +295,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.addAll(visit(ast.lhs))
                 instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
+
             }
         }
 
