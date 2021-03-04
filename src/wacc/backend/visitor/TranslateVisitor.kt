@@ -177,6 +177,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
         instrs.add(bodyLabel)
         val stackOffset = ast.blockST.getStackOffset()
+        ast.blockST.startingOffset = stackOffset
         if (stackOffset > 0) {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
