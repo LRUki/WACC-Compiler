@@ -19,6 +19,10 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
         }
     }
 
+    override fun isBoolOrChar(): Boolean {
+        return (type == BaseType.BOOL) || (type == BaseType.CHAR)
+    }
+
     override fun toString(): String {
         return type.name
     }
@@ -28,6 +32,6 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
     }
 }
 
-enum class BaseType(val bytes: Int) {
-    INT(4), BOOL(1), CHAR(1), STRING(4)
+enum class BaseType() {
+    INT(), BOOL(), CHAR(), STRING()
 }

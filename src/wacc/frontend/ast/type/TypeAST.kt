@@ -20,6 +20,10 @@ interface TypeAST : AST {
 
     override fun toString(): String
 
+    fun isBoolOrChar(): Boolean {
+        return false
+    }
+
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitTypeAST(this)
     }

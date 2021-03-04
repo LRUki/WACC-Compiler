@@ -1,9 +1,7 @@
 package wacc.frontend.ast.statement.block
 
-import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.program.ProgramAST.Companion.translateScoped
 import wacc.frontend.ast.statement.StatAST
 
 /**
@@ -21,12 +19,6 @@ class BlockStatAST(val body: List<StatAST>) : StatAST {
             }
         }
         return true
-    }
-
-    override fun translate(): List<Instruction> {
-        val instr = mutableListOf<Instruction>()
-        translateScoped(symTable, instr, body)
-        return instr
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {

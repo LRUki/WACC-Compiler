@@ -47,29 +47,6 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         return true
     }
 
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        val condLabel = CodeGenerator.getNextLabel()
-        val bodyLabel = CodeGenerator.getNextLabel()
-        instrs.add(BranchInstr(Condition.AL, condLabel, false))
-
-        instrs.add(bodyLabel)
-        val stackOffset = blockST.getStackOffset()
-        if (stackOffset > 0) {
-            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
-        body.forEach { instrs.addAll(it.translate()) }
-        instrs.add(condLabel)
-        instrs.addAll(cond.translate())
-        instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
-        instrs.add(BranchInstr(Condition.EQ, bodyLabel, false))
-        freeCalleeReg()
-        if (stackOffset > 0) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
-        return instrs
-    }
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitWhileStatAST(this)
     }

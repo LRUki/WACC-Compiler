@@ -10,7 +10,6 @@ import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.Translatable
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.Identifiable
@@ -26,7 +25,7 @@ import wacc.frontend.exception.semanticError
  * @property body List of statements making up the function body
  */
 class FuncAST(val type: TypeAST, val ident: IdentAST,
-              val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable, Translatable {
+              val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {
 
     override fun check(table: SymbolTable): Boolean {
         //create a symbol table for the function and add all parameters to it
@@ -47,25 +46,6 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
         }
         paramList.forEach { it.check(table) }
         table.add(ident.name, this)
-    }
-
-    override fun translate(): List<Instruction> {
-        val instrs = mutableListOf<Instruction>()
-        instrs.add(FunctionLabel(ident.name))
-        instrs.add(PushInstr(Register.LR))
-        val stackOffset = symTable.getStackOffset()
-        symTable.startingOffset = stackOffset
-        if (stackOffset > 0) {
-            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
-        body.forEach { instrs.addAll(it.translate()) }
-        if (stackOffset > 0) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
-        instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-        instrs.add(DirectiveInstr("ltorg"))
-        freeAllCalleeReg()
-        return instrs
     }
 
     override fun toString(): String {

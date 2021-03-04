@@ -24,7 +24,8 @@ class RegisterMode(val reg: Register) : AddressingMode {
 
 class RegisterAddrWithOffsetMode(val reg: Register, val offset: Int, val isPreIndexed: Boolean) : AddressingMode {
     override fun toAssembly(): String {
-        return "[${this.reg.toAssembly()}, #${this.offset}]${if (this.isPreIndexed) "!" else ""}"
+
+        return "[${this.reg.toAssembly()}${if (offset != 0) ", #${this.offset}" else ""}]${if (this.isPreIndexed) "!" else ""}"
     }
 }
 

@@ -25,10 +25,6 @@ interface AST {
 
 }
 
-interface Translatable {
-    fun translate(): List<Instruction>
-}
-
 /**
  * Implemented by any AST that can throw an exception
  */

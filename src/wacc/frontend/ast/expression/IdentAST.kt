@@ -51,20 +51,9 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
             is ArrayTypeAST -> type
             is PairTypeAST -> type
             else -> throw RuntimeException("Unknown class implementing Identifiable")
-
         }
     }
 
-    override fun translate(): List<Instruction> {
-        var offset = symTable.findOffsetInStack(name)
-        var memType: MemoryType? = null
-        val type = getRealType(symTable)
-        if (type == BaseTypeAST(BaseType.BOOL) || type == BaseTypeAST(BaseType.CHAR)) {
-            memType = MemoryType.SB
-        }
-        offset += symTable.checkParamInFuncSymbolTable(name) + symTable.callOffset
-        return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, offset, false), getNextFreeCalleeReg()))
-    }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitIdentAST(this)
