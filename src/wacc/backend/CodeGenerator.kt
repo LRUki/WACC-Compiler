@@ -54,7 +54,6 @@ object CodeGenerator {
         }
         val reg = freeCalleeSavedRegs.pop()
         calleSavedRegsInUse.push(reg)
-//        println("Adding ${reg}")
         return reg
     }
 
@@ -72,7 +71,6 @@ object CodeGenerator {
             return
         }
         freeCalleeSavedRegs.push(calleSavedRegsInUse.pop())
-//        println("removing ${freeCalleeSavedRegs.push(calleSavedRegsInUse.pop())}")
     }
 
     fun freeAllCalleeReg() {
@@ -81,31 +79,9 @@ object CodeGenerator {
         }
     }
 
-
-    //    private fun translateStatement(stat: StatAST): List<Instruction> {
-//            SkipStatAST -> mutableListOf()
-//            DeclareStatAST -> translateDeclare()
-//            AssignStatAST -> translateAssign()
-//            ReadStatAST -> translateRead()
-//
-//            ActionStat.FREE -> translateFree()
-//            ActionStat.RETURN -> translateReturn()
-//            ActionStat.EXIT -> translateExit()
-//            ActionStat.PRINT -> translatePrint()
-//            ActionStat.PRINTLN -> translatePrintLn()
-
-//            IfStatAST -> translateIf()
-//            WhileStatAST -> translateWhile)
-//            BlockStatAST -> translateStatBlock()
-//            MultiStatAST -> translateStatMulti()
-
-//        }
-
-
 }
 
 fun generateCode(ast: ProgramAST): List<Instruction> {
     val result = TranslateVisitor().visit(ast)
     return result
 }
-    
