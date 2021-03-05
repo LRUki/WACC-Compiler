@@ -112,7 +112,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             return startingOffset
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.getFuncStackOffset()
+            var offset = 0
+            currSymbolTable.forEach { offset += it.value.second }
+            return encSymbolTable.getFuncStackOffset() + offset
         }
         throw RuntimeException("Semantic Failure: Return used outside of a function")
     }
@@ -237,7 +239,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             }
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.findSTWithIdentifier(ident, correctType, offset + startingOffset)
+            var currentSTOffset = 0
+            currSymbolTable.forEach { currentSTOffset += it.value.second }
+            return encSymbolTable.findSTWithIdentifier(ident, correctType, offset + currentSTOffset)
         }
         throw RuntimeException("$ident is not present in any symbol table, semantic check failed")
     }

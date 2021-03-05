@@ -102,7 +102,16 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         ast.body.forEach { instrs.addAll(visit(it)) }
-        if (stackOffset > 0) {
+
+        var returnedOrExited = false
+        val lastStat = ast.body.last()
+        if ((lastStat is IfStatAST) && lastStat.thenHasReturn && lastStat.elseHasReturn) {
+            returnedOrExited = true
+        } else if ((lastStat is ActionStatAST) && lastStat.action == Action.EXIT) {
+            returnedOrExited = true
+        }
+
+        if (stackOffset > 0 && !returnedOrExited) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
@@ -121,15 +130,23 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
-    private fun addExitCodeForReturnStatement(body: List<StatAST>, ast: IfStatAST): List<Instruction> {
+    private fun addExitCodeForReturnStatement(body: List<StatAST>, table: SymbolTable): Pair<List<Instruction>, Boolean> {
         val instrs = mutableListOf<Instruction>()
         val lastStat = body.last()
-        if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(ast.symTable.getFuncStackOffset())))
-            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-            freeAllCalleeReg()
+        var hasReturn = false
+        if ((lastStat is ActionStatAST)) {
+            if (lastStat.action == Action.RETURN) {
+                hasReturn = true
+                val addOffset = table.getFuncStackOffset()
+                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(addOffset)))
+                instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+                freeAllCalleeReg()
+            }
+            if (lastStat.action == Action.EXIT) {
+                hasReturn = true
+            }
         }
-        return instrs
+        return Pair(instrs, hasReturn)
     }
 
 
@@ -149,8 +166,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         ast.thenBody.forEach {
             instrs.addAll(visit(it))
         }
-        instrs.addAll(addExitCodeForReturnStatement(ast.thenBody, ast))
-
+        val (thenInstr, thenHasReturn) = addExitCodeForReturnStatement(ast.thenBody, ast.thenST)
+        instrs.addAll(thenInstr)
+        ast.thenHasReturn = thenHasReturn
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
@@ -163,7 +181,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         ast.elseBody.forEach { instrs.addAll(visit(it)) }
-        instrs.addAll(addExitCodeForReturnStatement(ast.elseBody, ast))
+        val (elseInstr, elseHasReturn) = addExitCodeForReturnStatement(ast.elseBody, ast.elseST)
+        instrs.addAll(elseInstr)
+        ast.elseHasReturn = elseHasReturn
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
@@ -179,6 +199,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
         instrs.add(bodyLabel)
         val stackOffset = ast.blockST.getStackOffset()
+        ast.blockST.startingOffset = stackOffset
         if (stackOffset > 0) {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
@@ -293,10 +314,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
         }
 
-        ast.symTable.decreaseOffset(ast.lhs, rhsType)
+//        ast.symTable.decreaseOffset(ast.lhs, rhsType)
         when (ast.lhs) {
             is IdentAST -> {
-                val (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
+                var (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
+                offset += ast.symTable.checkParamInFuncSymbolTable(ast.lhs.name)
                 instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(ast.lhs.name) + offset, false), calleeReg))
             }
             is ArrayElemAST -> {
@@ -342,6 +364,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
             }
         }
+        var offset = ast.symTable.offsetSize
         when (ast.rhs) {
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
@@ -350,7 +373,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
         }
-        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.offsetSize, false), Register.R4))
+        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), Register.R4))
         freeCalleeReg()
 
         return instrs
@@ -441,13 +464,17 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         for ((index, arg) in ast.argList.reversed().withIndex()) {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
+            val reg = seeLastUsedCalleeReg()
             val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
             totalBytes += bytes
             ast.symTable.callOffset = totalBytes
             if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), seeLastUsedCalleeReg()))
+            if (arg is ArrayElemAST) {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
+            }
+            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), reg))
             freeCalleeReg()
         }
         ast.symTable.callOffset = 0
@@ -652,7 +679,8 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitArrayElemAST(ast: ArrayElemAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val stackReg = getNextFreeCalleeReg()
-        val stackOffset = ast.symTable.findOffsetInStack(ast.ident.name)
+        var stackOffset = ast.symTable.findOffsetInStack(ast.ident.name)
+        stackOffset += ast.symTable.checkParamInFuncSymbolTable(ast.ident.name) + ast.symTable.callOffset
         instrs.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateIntOperand(stackOffset), false))
         ast.indices.forEach {
             instrs.addAll(visit(it))
