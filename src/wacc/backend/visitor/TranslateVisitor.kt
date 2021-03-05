@@ -310,7 +310,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
         }
 
-        ast.symTable.decreaseOffset(ast.lhs, rhsType)
+//        ast.symTable.decreaseOffset(ast.lhs, rhsType)
         when (ast.lhs) {
             is IdentAST -> {
                 var (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
@@ -360,6 +360,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
             }
         }
+        var offset = ast.symTable.offsetSize
         when (ast.rhs) {
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
@@ -368,7 +369,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
         }
-        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.offsetSize, false), Register.R4))
+        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), Register.R4))
         freeCalleeReg()
 
         return instrs
