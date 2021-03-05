@@ -100,7 +100,14 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         ast.body.forEach { instrs.addAll(visit(it)) }
-        if (stackOffset > 0) {
+
+        var lastStatIsIFWithReturnsInBothBranches = false
+        val lastStat = ast.body.last()
+        if ((lastStat is IfStatAST) && lastStat.thenHasReturn && lastStat.elseHasReturn) {
+            lastStatIsIFWithReturnsInBothBranches = true
+        }
+
+        if (stackOffset > 0 && !lastStatIsIFWithReturnsInBothBranches) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
@@ -119,15 +126,18 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
-    private fun addExitCodeForReturnStatement(body: List<StatAST>, ast: IfStatAST): List<Instruction> {
+    private fun addExitCodeForReturnStatement(body: List<StatAST>, table: SymbolTable): Pair<List<Instruction>, Boolean> {
         val instrs = mutableListOf<Instruction>()
         val lastStat = body.last()
+        var hasReturn = false
         if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(ast.symTable.getFuncStackOffset())))
+            hasReturn = true
+            val addOffset = table.getFuncStackOffset()
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(addOffset)))
             instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
             freeAllCalleeReg()
         }
-        return instrs
+        return Pair(instrs, hasReturn)
     }
 
 
@@ -147,8 +157,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         ast.thenBody.forEach {
             instrs.addAll(visit(it))
         }
-        instrs.addAll(addExitCodeForReturnStatement(ast.thenBody, ast))
-
+        val (thenInstr, thenHasReturn) = addExitCodeForReturnStatement(ast.thenBody, ast.thenST)
+        instrs.addAll(thenInstr)
+        ast.thenHasReturn = thenHasReturn
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
@@ -161,7 +172,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         ast.elseBody.forEach { instrs.addAll(visit(it)) }
-        instrs.addAll(addExitCodeForReturnStatement(ast.elseBody, ast))
+        val (elseInstr, elseHasReturn) = addExitCodeForReturnStatement(ast.elseBody, ast.elseST)
+        instrs.addAll(elseInstr)
+        ast.elseHasReturn = elseHasReturn
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }

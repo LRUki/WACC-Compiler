@@ -112,7 +112,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             return startingOffset
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.getFuncStackOffset()
+            var offset = 0
+            currSymbolTable.forEach { offset += it.value.second }
+            return encSymbolTable.getFuncStackOffset() + offset
         }
         throw RuntimeException("Semantic Failure: Return used outside of a function")
     }
