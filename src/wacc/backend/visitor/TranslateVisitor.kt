@@ -101,13 +101,15 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         }
         ast.body.forEach { instrs.addAll(visit(it)) }
 
-        var lastStatIsIFWithReturnsInBothBranches = false
+        var returnedOrExited = false
         val lastStat = ast.body.last()
         if ((lastStat is IfStatAST) && lastStat.thenHasReturn && lastStat.elseHasReturn) {
-            lastStatIsIFWithReturnsInBothBranches = true
+            returnedOrExited = true
+        } else if ((lastStat is ActionStatAST) && lastStat.action == Action.EXIT) {
+            returnedOrExited = true
         }
 
-        if (stackOffset > 0 && !lastStatIsIFWithReturnsInBothBranches) {
+        if (stackOffset > 0 && !returnedOrExited) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
