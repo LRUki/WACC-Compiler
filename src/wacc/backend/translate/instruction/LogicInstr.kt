@@ -26,7 +26,7 @@ enum class LogicInstrType {
 abstract class AbstractLogicInstr(val type: LogicInstrType, val condition: Condition,
                                   val reg1: Register, val reg2: Register, val operand: Operand, val updateFlag: Boolean) : LogicInstr {
     override fun toArm(): String {
-        return "${type.name}${if (updateFlag) "S" else ""}${condition.toAssembly()} ${reg1.toAssembly()}, ${reg2.toAssembly()}, ${operand.toAssembly()}"
+        return "${type.name}${if (updateFlag) "S" else ""}${condition.toArm()} ${reg1.toArm()}, ${reg2.toArm()}, ${operand.toArm()}"
     }
 }
 

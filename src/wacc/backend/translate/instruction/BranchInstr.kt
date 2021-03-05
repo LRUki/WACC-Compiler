@@ -14,7 +14,7 @@ data class BranchInstr(val condition: Condition,
     override fun toArm(): String {
         var instr = "B"
         if (link) { instr += "L" }
-        instr += condition.toAssembly()
+        instr += condition.toArm()
         return instr + " " + label.name
     }
 }

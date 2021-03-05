@@ -5,17 +5,17 @@ package wacc.backend.translate.instruction.instructionpart
  * operand an instruction can take in as a parameter
  */
 interface Operand {
-    fun toAssembly(): String
+    fun toArm(): String
 }
 
 class ImmediateIntOperand(val offset: Int) : Operand {
-    override fun toAssembly(): String {
+    override fun toArm(): String {
         return "#$offset"
     }
 }
 
 class ImmediateCharOperand(val char: Char) : Operand {
-    override fun toAssembly(): String {
+    override fun toArm(): String {
         val charStr: String = when (char) {
             0.toChar() -> return "#0" /* Special case for null terminator */
             '\b' -> "\\b"
@@ -33,27 +33,27 @@ class ImmediateCharOperand(val char: Char) : Operand {
 }
 
 class ImmediateBoolOperand(val bool: Boolean) : Operand {
-    override fun toAssembly(): String {
+    override fun toArm(): String {
         return "#${if (bool) 1 else 0}"
     }
 }
 
 
 class RegisterOperand(val reg: Register) : Operand {
-    override fun toAssembly(): String {
-        return reg.toAssembly()
+    override fun toArm(): String {
+        return reg.toArm()
     }
 }
 
 class RegShiftRegOperand(val reg1: Register, val shiftOp: ShiftType, val reg2: Register) : Operand {
-    override fun toAssembly(): String {
-        return "${reg1.toAssembly()}, ${shiftOp.name} ${reg2.toAssembly()}"
+    override fun toArm(): String {
+        return "${reg1.toArm()}, ${shiftOp.name} ${reg2.toArm()}"
     }
 }
 
 class RegShiftOffsetOperand(val reg: Register, val shiftOp: ShiftType, val offset: Int) : Operand {
-    override fun toAssembly(): String {
-        return "${reg.toAssembly()}, ${shiftOp.name} #$offset"
+    override fun toArm(): String {
+        return "${reg.toArm()}, ${shiftOp.name} #$offset"
     }
 }
 

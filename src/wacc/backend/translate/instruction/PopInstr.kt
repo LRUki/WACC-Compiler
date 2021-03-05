@@ -9,7 +9,7 @@ import wacc.backend.translate.instruction.instructionpart.Register
  */
 class PopInstr(val register: Register) : Instruction {
     override fun toArm(): String {
-        return "POP {${register.toAssembly()}}"
+        return "POP {${register.toArm()}}"
     }
 }
 

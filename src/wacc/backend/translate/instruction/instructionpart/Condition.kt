@@ -22,7 +22,7 @@ enum class Condition {
     AL;    // Always
 
     // The always condition should not be printed
-    fun toAssembly(): String {
+    fun toArm(): String {
         return if (this == AL) "" else name
     }
 }

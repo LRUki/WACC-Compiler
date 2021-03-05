@@ -16,6 +16,6 @@ import wacc.backend.translate.instruction.instructionpart.AddressingMode
 class LoadInstr(val condition: Condition, val memType: MemoryType?,
                 val mode: AddressingMode, val destRegister: Register) : Instruction {
     override fun toArm(): String {
-        return "LDR${memType?.name ?: ""}${condition.toAssembly()} ${destRegister.toAssembly()}, ${mode.toAssembly()}"
+        return "LDR${memType?.name ?: ""}${condition.toArm()} ${destRegister.toArm()}, ${mode.toArm()}"
     }
 }

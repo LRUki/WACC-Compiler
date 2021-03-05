@@ -13,6 +13,6 @@ import wacc.backend.translate.instruction.instructionpart.Operand
  */
 class MoveInstr(val condition: Condition, val register: Register, val operand: Operand) : Instruction {
     override fun toArm(): String {
-        return "MOV${condition.toAssembly()} ${register.toAssembly()}, ${operand.toAssembly()}"
+        return "MOV${condition.toArm()} ${register.toArm()}, ${operand.toArm()}"
     }
 }

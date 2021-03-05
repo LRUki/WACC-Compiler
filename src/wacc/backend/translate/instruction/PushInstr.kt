@@ -9,7 +9,7 @@ import wacc.backend.translate.instruction.instructionpart.Register
  */
 class PushInstr(val register: Register) : Instruction {
     override fun toArm(): String {
-        return "PUSH {${register.toAssembly()}}"
+        return "PUSH {${register.toArm()}}"
     }
 }
 
