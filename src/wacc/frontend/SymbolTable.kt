@@ -32,13 +32,18 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         }
     }
 
-    // A symbol table consists of a HashMap and a list of children.
+    /** A symbol table consists of a HashMap */
     val currSymbolTable: LinkedHashMap<String, Pair<Identifiable, Int>> = LinkedHashMap()
     var offsetSize: Int = 0
-    var startingOffset: Int = 0
-    var callOffset = 0 /* Accounts for negative stack pointer values when setting up parameters */
 
-    // Gets the top most symbol table
+    /** Current offset size, used in DeclareStatAST and IdentAST*/
+    var startingOffset: Int = 0
+
+    /** Initial offset of the table, equal to sum of all offsets in table */
+    var callOffset = 0
+    /** Accounts for negative stack pointer values when setting up parameters */
+
+    /** Gets the top most symbol table */
     fun getTopSymbolTable(): SymbolTable {
         var currentSymbolTable: SymbolTable = this
         while (currentSymbolTable.encSymbolTable != null) {
@@ -75,6 +80,13 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return encSymbolTable.lookupFirstFunc()
     }
 
+    /**
+     * Add an element to the internal representation of the hash table
+     * Calculates the size of the object and store that alongside obj
+     *
+     * @param name Identifier string of the symbol table entry
+     * @param obj Object being added
+     */
     fun add(name: String, obj: Identifiable) {
         val size: Int = when (obj) {
             is FuncAST -> {
@@ -92,10 +104,14 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             else -> 0
         }
         currSymbolTable[name] = Pair(obj, size)
-
     }
 
 
+    /**
+     * Gets the offset in the stack of a variable declared inside a scope
+     *
+     * @return the offset of that variable in the current symbol table
+     */
     fun getStackOffset(): Int {
         var offset = 0
         currSymbolTable.forEach { (name, type) ->
@@ -107,6 +123,12 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return offset
     }
 
+    /**
+     * Gets the offset the stack pointer in a function was shifted by
+     * Equal to the total offset of all variables in the function scope
+     *
+     * @return the offset needed by the closest function symbol table
+     */
     fun getFuncStackOffset(): Int {
         if (this is FuncSymbolTable) {
             return startingOffset
@@ -132,12 +154,12 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (identAst.isPresent) {
             val identValue = identAst.get()
             if ((this is FuncSymbolTable) && (identValue is ParamAST)) {
-                /* Parameter offset only needed when there are declared variables in the current
-                *  scope or inside any inner scope (signified by flag) */
+                /** Parameter offset only needed when there are declared variables in the current
+                 *  scope or inside any inner scope (signified by flag) */
                 if ((currSymbolTable.size > funcAST.paramList.size) || innerScopeHasVar) {
                     var offset = 0
-                    /* Removes all parameters of the function and
-                    * then sums the offset of the remaining identifiers */
+                    /** Removes all parameters of the function and
+                     * then sums the offset of the remaining identifiers */
                     currSymbolTable.toList()
                             .dropWhile { it.second.first is ParamAST }
                             .forEach { offset += it.second.second }
@@ -146,9 +168,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             }
             return 0
         }
-        /* Keeps checking the enclosing symbol table until the identifier is found */
+        /** Keeps checking the enclosing symbol table until the identifier is found */
         if (encSymbolTable != null) {
-            /* Sums offsets of all entries in current symbol table to add to final offset  */
+            /** Sums offsets of all entries in current symbol table to add to final offset  */
             var offset = 0
             currSymbolTable.toList().forEach { offset += it.second.second }
             return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, startingOffset)
@@ -177,8 +199,8 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         val pointerOffset = 4
         currSymbolTable.values.forEach { totalOffset += it.second }
         var paramOffset = 0
-        /* Computes offset being the summed offset of remaining symbol table entries
-        * For parameters it is the sum of entries up till that point */
+        /** Computes offset being the summed offset of remaining symbol table entries
+         * For parameters it is the sum of entries up till that point */
         for ((k, v) in currSymbolTable) {
             if (k == ident && v.first is ParamAST) {
                 return paramOffset + pointerOffset
@@ -190,8 +212,8 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             paramOffset += v.second
         }
         if (encSymbolTable != null) {
-            /* Searches enclosing symbol table when not found in current table.
-            * Includes offset off all entries in current table */
+            /** Searches enclosing symbol table when not found in current table.
+             * Includes offset off all entries in current table */
             return encSymbolTable.findOffsetInStack(ident) + paramOffset
         }
         return totalOffset
@@ -199,13 +221,17 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     /**
-     * Decreases offset
+     * Decreases the offsetSize of the table containing the rhs
+     * Used in declareStatASTs and IdentASTs
      *
-     * @param lhs
-     * @param rhsType
+     * @param lhs The Lhs being used in the declareStatAST
+     * @param rhsType The type of the rhs to check for re-declaration with a different type
      */
     fun decreaseOffset(lhs: LhsAST, rhsType: TypeAST) {
         val size = getBytesOfType(rhsType)
+        /** Recursively calls decreaseOffset when the lhs is an Ident or DeclareStat and the
+        type matcs, (i.e it isn't a new variable declared in the inner scope with the
+        same name but a different type)*/
         if (lhs is IdentAST) {
             val ident = lookup(lhs.name)
             if (ident.isEmpty) {
@@ -222,12 +248,14 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     /**
-     * Find s t with identifier
+     * Helper for finding the symbol table containing the provided identifier
      *
-     * @param ident
-     * @param correctType
-     * @param offset
-     * @return
+     * @param ident The identifier string to search for
+     * @param correctType The type of the identifier string,
+     *                    to ignore re-declarations with a different type
+     * @param offset The total offset up until the current symbol table
+     * @return Pair of the symbol table with the identifier, and the
+     *         total offset up until that point
      */
 
     private fun findSTWithIdentifier(ident: String, correctType: TypeAST, offset: Int): Pair<SymbolTable, Int> {
@@ -249,9 +277,11 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     /**
      * Gets the symbol table containing the provided identifier which will then be used for scoping
      *
-     * @param ident
-     * @param correctType
-     * @return
+     * @param ident The identifier string to search for
+     * @param correctType The type of the identifier string,
+     *                    to ignore re-declarations with a different type
+     * @return Pair of the symbol table with the identifier, and the
+     *         total offset up until that point
      */
     fun getSTWithIdentifier(ident: String, correctType: TypeAST): Pair<SymbolTable, Int> {
         return findSTWithIdentifier(ident, correctType, 0)

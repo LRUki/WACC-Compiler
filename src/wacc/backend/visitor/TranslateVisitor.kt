@@ -149,8 +149,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         if ((lastStat is ActionStatAST)) {
             if (lastStat.action == Action.RETURN) {
                 hasReturn = true
-                val addOffset = table.getFuncStackOffset()
-                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(addOffset)))
+                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(table.getFuncStackOffset())))
                 instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
                 freeAllCalleeReg()
             }
@@ -851,34 +850,30 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val instrs = mutableListOf<Instruction>()
         val elemSize = SymbolTable.getBytesOfType((ast.arrayType as ArrayTypeAST).type)
 
-        // Loading the length of array elemSize size of INT
-        val sizeOfInt = SymbolTable.getBytesOfType(BaseTypeAST(BaseType.INT))
+        /** Loads the size to malloc, which is length + 4 for storing the size */
+        val sizeOfInt = 4
         instrs.add(LoadInstr(Condition.AL, null,
                 ImmediateIntMode(elemSize * ast.values.size + sizeOfInt), Register.R0))
-
         instrs.add(BranchInstr(Condition.AL, Label("malloc"), true))
         val stackReg = getNextFreeCalleeReg()
         instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
-        //add element to stack
+        /** Adds all the elements */
         var memType: MemoryType? = null
         for ((index, expr) in ast.values.withIndex()) {
             if (expr is IdentAST) {
                 expr.symTable = ast.symTable
             }
             instrs.addAll(visit(expr))
-
             if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
                 memType = MemoryType.B
             }
             instrs.add(StoreInstr(memType,
-                    RegisterAddrWithOffsetMode(stackReg,
-                            sizeOfInt + (index * elemSize),
-                            false), seeLastUsedCalleeReg()))
+                    RegisterAddrWithOffsetMode(stackReg, sizeOfInt + (index * elemSize), false), seeLastUsedCalleeReg()))
             freeCalleeReg()
         }
 
-        //add the length of the array to stack
+        /** Adds the size of the array*/
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(ast.values.size), getNextFreeCalleeReg()))
         instrs.add(StoreInstr(null,
                 RegisterMode(stackReg), seeLastUsedCalleeReg()))

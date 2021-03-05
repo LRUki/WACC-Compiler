@@ -66,45 +66,4 @@ class TranslateTest {
                     .contains(BranchInstr(Condition.AL, Label("exit"), true))
         }
     }
-//
-//    @Test
-//    fun TranslateOfScopedFilesContainsSOMETHIG() {
-//        val file = File("wacc_examples/valid/expressions/intExpr1.wacc")
-//        val program = compileAndGenerate(file)
-//        assertTrue(program.contains(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(4))))
-//    }
-
-
-//    @Test
-//    fun TranslateOfFilesWithFreeCallContainBranchToFree() {
-//        val file = File("wacc_examples/valid/pairs/free.wacc")
-//        val instrs = compileAndGenerate(file)
-//        assertTrue(instrs.contains(BranchInstr(Condition.AL, Label("p_free_pair"), true)))
-//    }
-
-//    fun TranslateOfExitFilesContainsExitBranch() { @Test
-//    fun TranslateOfExitFilesContainsExitBranch() { @Test
-//    fun TranslateOfExitFilesContainsExitBranch() { @Test
-//    fun TranslateOfExitFilesContainsExitBranch() { @Test
-//    fun TranslateOfExitFilesContainsExitBranch() { @Test
-//    fun TranslateOfExitFilesContainsExitBranch() { @Test
-//    fun TranslateOfExitFilesContainsExitBranch() { @Test
-//    fun TranslateOfExitFilesContainsExitBranch() { @Test
-//    fun TranslateOfExitFilesContainsExitBranch() {
-    /**
-     * begin
-
-     * print / ln
-     * free
-     * while
-     * if
-     * read
-     * fst
-     * snd
-     * pair
-     * newpair
-     * all binops/ unops
-     *
-     */
-
 }
