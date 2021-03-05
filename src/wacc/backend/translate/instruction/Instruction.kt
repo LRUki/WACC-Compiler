@@ -5,5 +5,5 @@ package wacc.backend.translate.instruction
  * Has a toAssembly function which all instructions override
  */
 interface Instruction {
-    fun toAssembly(): String
+    fun toArm(): String
 }

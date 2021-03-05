@@ -27,7 +27,7 @@ enum class ArithmeticInstrType {
  */
 abstract class AbstractArithmeticInstr(val type: ArithmeticInstrType,val condition: Condition, val reg1: Register,
                                        val reg2: Register, val operand: Operand, val updateFlag: Boolean) : ArithmeticInstr {
-    override fun toAssembly(): String {
+    override fun toArm(): String {
         return "${type.name}${if (updateFlag) "S" else ""}${condition.toAssembly()} ${reg1.toAssembly()}, ${reg2.toAssembly()}, ${operand.toAssembly()}"
     }
 }
@@ -56,7 +56,7 @@ class ReverseSubInstr(condition: Condition, reg1: Register,
  */
 class MultInstr(val condition: Condition, val rdLo: Register, val rdHi: Register,
                 val rn: Register, val rm: Register, val updateFlag: Boolean = false) : ArithmeticInstr {
-    override fun toAssembly(): String {
+    override fun toArm(): String {
         return "SMULL${if (updateFlag) "S" else ""}${condition.toAssembly()} ${rdLo.toAssembly()}, ${rdHi.toAssembly()}, ${rn.toAssembly()}, ${rm.toAssembly()}"
     }
 }

@@ -11,122 +11,122 @@ import wacc.backend.translate.instruction.instructionpart.*
 class PrintCodeTest {
 
     @Test
-    fun DirectiveInstrPrintsCode() {
+    fun directiveInstrPrintsCode() {
 
         assertEquals(".text",
-                DirectiveInstr("text").toAssembly())
+                DirectiveInstr("text").toArm())
         assertEquals(".word",
-                DirectiveInstr("word").toAssembly())
+                DirectiveInstr("word").toArm())
     }
 
     @Test
-    fun BranchInstrPrintsCode() {
+    fun branchInstrPrintsCode() {
         assertEquals("B label",
                 BranchInstr(Condition.AL,Label("label"),false)
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("BL label",
                 BranchInstr(Condition.AL,Label("label"),true)
-                        .toAssembly())
+                        .toArm())
         assertEquals("BLEQ label",
                 BranchInstr(Condition.EQ,Label("label"),true)
-                        .toAssembly())
+                        .toArm())
     }
 
     @Test
-    fun CompareInstrPrintsCode() {
+    fun compareInstrPrintsCode() {
         assertEquals("CMP r0, #1",
                 CompareInstr(Register.R0, ImmediateIntOperand(1))
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("CMP r0, #'a'",
                 CompareInstr(Register.R0, ImmediateCharOperand('a'))
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("CMP r0, r1, LSL #1",
                 CompareInstr(Register.R0, RegShiftOffsetOperand(Register.R1,ShiftType.LSL, 1))
-                        .toAssembly())
+                        .toArm())
     }
 
     @Test
-    fun ArithmeticInstrPrintsCode() {
+    fun arithmeticInstrPrintsCode() {
         assertEquals("ADD r0, r1, #1",
                 AddInstr(Condition.AL,Register.R0,Register.R1, ImmediateIntOperand(1),false)
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("SUBSGE r0, r1, #1",
                 SubInstr(Condition.GE ,Register.R0,Register.R1, ImmediateIntOperand(1),true)
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("SMULL r0, r1, r2, r3",
                 MultInstr(Condition.AL ,Register.R0,Register.R1, Register.R2,Register.R3,false)
-                        .toAssembly())
+                        .toArm())
     }
 
     @Test
-    fun LoadInstrPrintsCode() {
+    fun loadInstrPrintsCode() {
         assertEquals("LDR r0, =1",
                 LoadInstr(Condition.AL,null,ImmediateIntMode(1), Register.R0)
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("LDRB r0, =1",
                 LoadInstr(Condition.AL,MemoryType.B,ImmediateIntMode(1), Register.R0)
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("LDREQ r0, [r0, #3]!",
                 LoadInstr(Condition.EQ,null,RegisterAddrWithOffsetMode(Register.R0 ,3,true), Register.R0)
-                        .toAssembly())
+                        .toArm())
     }
 
     @Test
-    fun LogicInstrPrintsCode() {
+    fun logicInstrPrintsCode() {
         assertEquals("AND r0, r1, #1",
                 AndInstrType(Condition.AL,Register.R0,Register.R1,ImmediateIntOperand(1))
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("EORSEQ r0, r1, #1",
                 XorInstrType(Condition.EQ,Register.R0,Register.R1,ImmediateIntOperand(1), true)
-                        .toAssembly())
+                        .toArm())
 
 
         assertEquals("ORRS r0, r1, r2",
                 OrInstrType(Condition.AL,Register.R0,Register.R1,RegisterOperand(Register.R2), true)
-                        .toAssembly())
+                        .toArm())
     }
 
     @Test
-    fun MoveInstrPrintsCode() {
+    fun moveInstrPrintsCode() {
         assertEquals("MOV r0, #1",
                 MoveInstr(Condition.AL,Register.R0,ImmediateIntOperand(1))
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("MOVEQ r0, #1",
                 MoveInstr(Condition.EQ,Register.R0,ImmediateIntOperand(1))
-                        .toAssembly())
+                        .toArm())
 
     }
 
     @Test
-    fun PushAndPopInstrPrintsCode() {
+    fun pushAndPopInstrPrintsCode() {
         assertEquals("PUSH {r0}",
                 PushInstr(Register.R0)
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("POP {r0}",
                 PopInstr(Register.R0)
-                        .toAssembly())
+                        .toArm())
 
     }
 
     @Test
-    fun StoreInstrPrintsCode() {
+    fun storeInstrPrintsCode() {
         assertEquals("STR r0, =1",
                 StoreInstr(null, ImmediateIntMode(1),Register.R0)
-                        .toAssembly())
+                        .toArm())
 
         assertEquals("STRB r0, [r1, #4]",
                 StoreInstr(MemoryType.B, RegisterAddrWithOffsetMode(Register.R1,4,false),Register.R0)
-                        .toAssembly())
+                        .toArm())
 
     }
 
