@@ -11,10 +11,10 @@ import wacc.backend.translate.instruction.instructionpart.Condition
  */
 data class BranchInstr(val condition: Condition,
                   val label: LabelInstr, val link: Boolean) : Instruction {
-    override fun toAssembly(): String {
+    override fun toArm(): String {
         var instr = "B"
         if (link) { instr += "L" }
-        instr += condition.toAssembly()
+        instr += condition.toArm()
         return instr + " " + label.name
     }
 }

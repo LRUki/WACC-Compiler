@@ -13,8 +13,8 @@ import wacc.backend.translate.instruction.instructionpart.Operand
  */
 class CompareInstr(val register: Register,
                    val operand: Operand) : Instruction {
-    override fun toAssembly(): String {
-        return "CMP ${register.toAssembly()}, ${operand.toAssembly()}"
+    override fun toArm(): String {
+        return "CMP ${register.toArm()}, ${operand.toArm()}"
     }
 
 }

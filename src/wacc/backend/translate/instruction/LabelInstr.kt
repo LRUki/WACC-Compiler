@@ -6,8 +6,25 @@ package wacc.backend.translate.instruction
  * @property name String representing the label
  */
 abstract class LabelInstr(val name: String) : Instruction {
-    override fun toAssembly(): String {
+    override fun toArm(): String {
         return "$name:"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is LabelInstr) return false
+
+        if (name != other.name) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+
+    override fun toString(): String {
+        return toArm()
     }
 }
 

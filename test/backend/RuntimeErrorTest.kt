@@ -1,6 +1,7 @@
 package backend
 
 import frontend.actionOnFiles
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import wacc.backend.CodeGenerator
@@ -30,7 +31,7 @@ class RuntimeErrorTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeErrors.checkArrayBoundsLabel)
+            assertTrue(generateCode(ast as ProgramAST).contains(RuntimeErrors.checkArrayBoundsLabel))
         }
     }
 
@@ -42,7 +43,7 @@ class RuntimeErrorTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeErrors.divideZeroCheckLabel)
+            assertTrue(generateCode(ast as ProgramAST).contains(RuntimeErrors.divideZeroCheckLabel))
         }
     }
 
@@ -54,7 +55,7 @@ class RuntimeErrorTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeErrors.throwOverflowErrorLabel)
+            assertTrue(generateCode(ast as ProgramAST).contains(RuntimeErrors.throwOverflowErrorLabel))
         }
     }
 
@@ -66,7 +67,7 @@ class RuntimeErrorTest {
             checkSyntax(program)
             val ast = buildAST(program)
             checkSemantics(ast)
-            generateCode(ast as ProgramAST).contains(RuntimeErrors.nullReferenceLabel)
+            assertTrue(generateCode(ast as ProgramAST).contains(RuntimeErrors.throwRuntimeErrorLabel))
         }
     }
 

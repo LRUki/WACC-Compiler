@@ -11,11 +11,11 @@ const val DOT_GLOBAL_MAIN = ".global main"
  * to turn the intermediate code representation into an
  * assembly file
  *
- * @param List of Instructions in the intermediate code representation
+ * @param instrs List of Instructions in the intermediate code representation
  * @return ARM assembly instructions represented by all these instruction
  */
   fun printCode(instrs: List<Instruction>): String {
-    val lines = instrs.map { instr -> instr.toAssembly() }
+    val lines = instrs.map { instr -> instr.toArm() }
             .map { line -> if (shouldIndent(line)) "\t" + line else line }
     val builder = StringBuilder()
     lines.forEach {

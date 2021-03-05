@@ -8,8 +8,8 @@ import wacc.backend.translate.instruction.instructionpart.Register
  * @property register The register we are popping
  */
 class PopInstr(val register: Register) : Instruction {
-    override fun toAssembly(): String {
-        return "POP {${register.toAssembly()}}"
+    override fun toArm(): String {
+        return "POP {${register.toArm()}}"
     }
 }
 

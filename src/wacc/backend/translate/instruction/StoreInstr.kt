@@ -13,7 +13,7 @@ import wacc.backend.translate.instruction.instructionpart.AddressingMode
  */
 class StoreInstr( val memType: MemoryType?,
                  val mode: AddressingMode, val srcRegister: Register) : Instruction {
-    override fun toAssembly(): String {
-        return "STR${memType?.name ?: ""} ${srcRegister.toAssembly()}, ${mode.toAssembly()}"
+    override fun toArm(): String {
+        return "STR${memType?.name ?: ""} ${srcRegister.toArm()}, ${mode.toArm()}"
     }
 }
