@@ -33,14 +33,16 @@ import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.*
 
 /**
- * Translate visitor
- *
- * @constructor Create empty Translate visitor
+ * Visitor pattern for code generation.
+ * Takes the top level program AST built by
+ * the frontend and recursively generates code
+ * based on different AST visit methods
  */
 class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     private val pointerOffset = 4
 
+    /** Utility function that deal with scope translation */
     private fun translateScoped(table: SymbolTable, instrs: MutableList<Instruction>, stats: List<StatAST>) {
         val MAX_STACK_OFFSET = 1024
         val stackOffset = table.getStackOffset()
@@ -54,7 +56,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffsetLeft)))
         }
 
-        // Visit the statements and add to instruction list
+        /** Visit each of the statements and add to their instructions to instrs */
         stats.forEach { instrs.addAll(TranslateVisitor().visit(it)) }
 
         if (stackOffset > 0) {
@@ -67,24 +69,27 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         }
     }
 
+    /** Top level translation function which translates a Program AST */
     override fun visitProgramAST(ast: ProgramAST): List<Instruction> {
-//      Translate function definitions
         val instrs = mutableListOf<Instruction>()
 
+        /** Sets up directives found at the start of the assembly file*/
         instrs.add(DirectiveInstr("text"))
         instrs.add(DirectiveInstr("global main"))
+
+        /** Translates all of the function definitions */
         ast.funcList.forEach { instrs.addAll(visit(it)) }
 
+        /** Translates each statement in the program */
         instrs.add(Label("main"))
-        // AI: PUSH {lr}
         instrs.add(PushInstr(Register.LR))
         translateScoped(ast.symTable, instrs, ast.stats)
-        // AI: LDR r0, =0
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(0), Register.R0))
-        // AI: POP {pc}
         instrs.add(PopInstr(Register.PC))
         instrs.add(DirectiveInstr("ltorg"))
 
+        /** Translates all string labels, c library functions and runtime
+         * errors that have been recursively found and added */
         val data = dataDirective.translate()
         val cLib = cLib.translate()
         val runtime = runtimeErrors.translate()
@@ -92,17 +97,29 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return data + instrs + runtime + cLib
     }
 
+    /** Translates a Function AST */
     override fun visitFuncAST(ast: FuncAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         instrs.add(FunctionLabel(ast.ident.name))
         instrs.add(PushInstr(Register.LR))
         val stackOffset = ast.symTable.getStackOffset()
         ast.symTable.startingOffset = stackOffset
+        /** Moves stack pointer down when variables are declared in the function scope */
         if (stackOffset > 0) {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         ast.body.forEach { instrs.addAll(visit(it)) }
-        if (stackOffset > 0) {
+
+        /** Checks if the last statement is Exit of If with returns as the last in both branches */
+        var returnedOrExited = false
+        val lastStat = ast.body.last()
+        if ((lastStat is IfStatAST) && lastStat.thenHasReturn && lastStat.elseHasReturn) {
+            returnedOrExited = true
+        } else if ((lastStat is ActionStatAST) && lastStat.action == Action.EXIT) {
+            returnedOrExited = true
+        }
+        /** Returns stack pointer to value before the function */
+        if (stackOffset > 0 && !returnedOrExited) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
         instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
@@ -111,33 +128,45 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a Parameter AST. Requires no code generation */
     override fun visitParamAST(ast: ParamAST): List<Instruction> {
         return emptyList()
     }
 
+    /** Translates a Block Statement AST */
     override fun visitBlockStatAST(ast: BlockStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         translateScoped(ast.symTable, instrs, ast.body)
         return instrs
     }
 
-    private fun addExitCodeForReturnStatement(body: List<StatAST>, ast: IfStatAST): List<Instruction> {
+    /** Checks if the final statement is return or exit.
+     *  Returns stack pointer to original value when its a return */
+    private fun addExitCodeForReturnStatement(body: List<StatAST>, table: SymbolTable): Pair<List<Instruction>, Boolean> {
         val instrs = mutableListOf<Instruction>()
         val lastStat = body.last()
-        if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(ast.symTable.getFuncStackOffset())))
-            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-            freeAllCalleeReg()
+        var hasReturn = false
+        if ((lastStat is ActionStatAST)) {
+            if (lastStat.action == Action.RETURN) {
+                hasReturn = true
+                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(table.getFuncStackOffset())))
+                instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+                freeAllCalleeReg()
+            }
+            if (lastStat.action == Action.EXIT) {
+                hasReturn = true
+            }
         }
-        return instrs
+        return Pair(instrs, hasReturn)
     }
 
-
+    /** Translates an If Statement AST */
     override fun visitIfStatAST(ast: IfStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val elseLabel = getNextLabel()
         val afterElseLabel = getNextLabel()
 
+        /** Translates the condition of the If */
         instrs.addAll(visit(ast.cond))
         instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(0)))
         instrs.add(BranchInstr(Condition.EQ, elseLabel, false))
@@ -146,24 +175,31 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         if (stackOffset > 0) {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
+        /** Translates all statements in the then branch */
         ast.thenBody.forEach {
             instrs.addAll(visit(it))
         }
-        instrs.addAll(addExitCodeForReturnStatement(ast.thenBody, ast))
-
+        /** Checks if final statement in then branch is a return and sets variable for use by FuncAST */
+        val (thenInstr, thenHasReturn) = addExitCodeForReturnStatement(ast.thenBody, ast.thenST)
+        instrs.addAll(thenInstr)
+        ast.thenHasReturn = thenHasReturn
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
 
         instrs.add(BranchInstr(Condition.AL, afterElseLabel, false))
         instrs.add(elseLabel)
-
         stackOffset = ast.elseST.getStackOffset()
         if (stackOffset > 0) {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
+        /** Translates all statements in the else branch */
         ast.elseBody.forEach { instrs.addAll(visit(it)) }
-        instrs.addAll(addExitCodeForReturnStatement(ast.elseBody, ast))
+
+        /** Checks if final statement in else branch is a return and sets variable for use by FuncAST */
+        val (elseInstr, elseHasReturn) = addExitCodeForReturnStatement(ast.elseBody, ast.elseST)
+        instrs.addAll(elseInstr)
+        ast.elseHasReturn = elseHasReturn
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
@@ -171,6 +207,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a While Statement AST */
     override fun visitWhileStatAST(ast: WhileStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val condLabel = getNextLabel()
@@ -179,13 +216,16 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
         instrs.add(bodyLabel)
         val stackOffset = ast.blockST.getStackOffset()
+        ast.blockST.startingOffset = stackOffset
         if (stackOffset > 0) {
             instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
+        /** Translates all the statements within the while loop body */
         ast.body.forEach { instrs.addAll(visit(it)) }
         if (stackOffset > 0) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
+        /** Translates the condition after the loop body.*/
         instrs.add(condLabel)
         instrs.addAll(visit(ast.cond))
         instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
@@ -194,8 +234,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a Action Statment AST */
     override fun visitActionStatAST(ast: ActionStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
+        /** Translates the expression of the statment*/
         instrs.addAll(visit(ast.expr))
         val reg = seeLastUsedCalleeReg()
         val exprType = ast.expr.getRealType(ast.symTable)
@@ -213,6 +255,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 freeAllCalleeReg()
             }
             Action.PRINT, Action.PRINTLN -> {
+                /** Adds specific code for printing.*/
                 when (exprType) {
                     is BaseTypeAST -> {
                         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
@@ -270,8 +313,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     }
 
+    /** Translates a Assign Statement AST */
     override fun visitAssignStatAST(ast: AssignStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
+        /** Translates the right hand side of the assignment */
         instrs.addAll(visit(ast.rhs))
         val calleeReg = seeLastUsedCalleeReg()
         if (ast.rhs is StrLiterAST) {
@@ -286,17 +331,17 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
         }
 
+        /** Adds specific code for special RHS which require "setting up" */
         when (ast.rhs) {
-            // only other RHS which requires "setting up"
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
             }
         }
 
-        ast.symTable.decreaseOffset(ast.lhs, rhsType)
         when (ast.lhs) {
             is IdentAST -> {
-                val (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
+                var (correctSTScope, offset) = ast.symTable.getSTWithIdentifier(ast.lhs.name, rhsType)
+                offset += ast.symTable.checkParamInFuncSymbolTable(ast.lhs.name)
                 instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, correctSTScope.findOffsetInStack(ast.lhs.name) + offset, false), calleeReg))
             }
             is ArrayElemAST -> {
@@ -318,8 +363,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     }
 
+    /** Translates a Declare Statement AST */
     override fun visitDeclareStatAST(ast: DeclareStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
+        /** Translates the right hand side of the declare */
         instrs.addAll(visit(ast.rhs))
         if (ast.rhs is StrLiterAST) {
             ast.stringLabel = dataDirective.getStringLabel(ast.rhs.value)
@@ -336,12 +383,14 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 // Intentionally Left Blank
             }
             is PairTypeAST -> {
+                /** Adds a load instruction provided the RHS is not some specific type */
                 if (ast.rhs !is NewPairRhsAST && ast.rhs !is ArrayElemAST && ast.rhs !is IdentAST &&
                         ast.rhs !is NullPairLiterAST && ast.rhs !is CallRhsAST && ast.rhs !is PairElemAST) {
                     instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }
         }
+        var offset = ast.symTable.offsetSize
         when (ast.rhs) {
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
@@ -350,12 +399,13 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
         }
-        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.offsetSize, false), Register.R4))
+        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), Register.R4))
         freeCalleeReg()
 
         return instrs
     }
 
+    /** Translates a Read Statement AST */
     override fun visitReadStatAST(ast: ReadStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
 
@@ -368,11 +418,13 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 // Intentionally Left Blank
             }
             is PairElemAST -> {
+                /** Translates the expression */
                 instrs.addAll(visit(ast.expr))
             }
         }
         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(Register.R4)))
 
+        /** Adds specific calls to read library functions */
         when ((ast.exprType as BaseTypeAST).type) {
             BaseType.INT -> {
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.READ_INT.toString()), true))
@@ -387,27 +439,30 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a Skip Statement AST. Requires no code generation */
     override fun visitSkipStatAST(ast: SkipStatAST): List<Instruction> {
         return emptyList()
     }
 
+    /** Translates a Begin .. End block of statements */
     override fun visitMultiStatAST(ast: MultiStatAST): List<Instruction> {
         val instr = mutableListOf<Instruction>()
         ast.stats.forEach { instr.addAll(visit(it)) }
         return instr
     }
 
+    /** Translates a New Pair statement */
     override fun visitNewPairRhsAST(ast: NewPairRhsAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         var memtype: MemoryType? = null
         val spaceForTwoPointers = 2 * pointerOffset
-        //Malloc space for pair
+        /** Mallocs space for two pointers to the first and second elements */
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(spaceForTwoPointers), Register.R0))
         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
         val stackReg = getNextFreeCalleeReg()
         instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
-        //Malloc first element
+        /** Malloc first element */
         instrs.addAll(visit(ast.fst))
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(ast.firstType)), Register.R0))
         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
@@ -418,7 +473,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         freeCalleeReg()
         instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
 
-        //Malloc second element
+        /** Malloc second element */
         instrs.addAll(visit(ast.snd))
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(ast.secondType)), Register.R0))
         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
@@ -433,21 +488,27 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     }
 
+    /** Translates a Call RHS AST */
     override fun visitCallRhsAST(ast: CallRhsAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
+        /** Translates arguements in reverse order */
         var totalBytes = 0
         val argTypesReversed = ast.argTypes.reversed()
         val negativeCallStackOffset = -1
         for ((index, arg) in ast.argList.reversed().withIndex()) {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
+            val reg = seeLastUsedCalleeReg()
             val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
             totalBytes += bytes
             ast.symTable.callOffset = totalBytes
             if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), seeLastUsedCalleeReg()))
+            if (arg is ArrayElemAST) {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
+            }
+            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), reg))
             freeCalleeReg()
         }
         ast.symTable.callOffset = 0
@@ -459,6 +520,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Transaltes a Binary operator */
     override fun visitBinOpExprAST(ast: BinOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         instrs.addAll(visit(ast.expr1))
@@ -466,6 +528,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.addAll(visit(ast.expr2))
         var reg2 = seeLastUsedCalleeReg()
 
+        /** Decides whether to use accumulator and sets appropriate registers when required */
         var useAccumulator = false
         if (reg1 == Register.NONE || reg1 == Register.R10) {
             useAccumulator = true
@@ -473,6 +536,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             reg2 = Register.R11
         }
 
+        /** Add appropriate instructions depending on instruction typeAdd opUse different instructions for accumulator when required */
         when (ast.binOp) {
             BinOp.PLUS -> {
                 if (!useAccumulator) {
@@ -622,10 +686,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a Unary Operator AST */
     override fun visitUnOpExprAST(ast: UnOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         instrs.addAll(visit(ast.expr))
         val reg1 = seeLastUsedCalleeReg()
+        /** Add appropriate instructions depending on operation type */
         when (ast.unOp) {
             UnOp.NOT -> {
                 instrs.add(XorInstrType(Condition.AL, reg1, reg1, ImmediateIntOperand(1)))
@@ -649,25 +715,33 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates an Array element AST (i.e. array[0]) */
     override fun visitArrayElemAST(ast: ArrayElemAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val stackReg = getNextFreeCalleeReg()
-        val stackOffset = ast.symTable.findOffsetInStack(ast.ident.name)
+
+        /** Computes offset to push down the stack pointer */
+        var stackOffset = ast.symTable.findOffsetInStack(ast.ident.name)
+        stackOffset += ast.symTable.checkParamInFuncSymbolTable(ast.ident.name) + ast.symTable.callOffset
         instrs.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateIntOperand(stackOffset), false))
+
+        /** Translates each indices of the array element (multi-dimensional arrays) */
         ast.indices.forEach {
             instrs.addAll(visit(it))
+            /** Checks the access is in bounds of the array */
             instrs.add(LoadInstr(Condition.AL, null, RegisterMode(stackReg), stackReg))
             instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
             instrs.add(MoveInstr(Condition.AL, Register.R1, RegisterOperand(stackReg)))
             instrs.add(BranchInstr(Condition.AL, RuntimeErrors.checkArrayBoundsLabel, true))
             runtimeErrors.addArrayBoundsCheck()
+
             instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(pointerOffset), false))
             val identType = ast.ident.getRealType(ast.symTable)
-            if (identType is ArrayTypeAST &&
-                    ((identType.type == BaseTypeAST(BaseType.CHAR) || identType.type == BaseTypeAST(BaseType.BOOL)))) {
+            if ((identType is ArrayTypeAST) && identType.isBoolOrChar()) {
                 instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false))
             } else {
-                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, 2), false))
+                val multiplyByFour = 2
+                instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegShiftOffsetOperand(seeLastUsedCalleeReg(), ShiftType.LSL, multiplyByFour), false))
             }
             freeCalleeReg()
         }
@@ -675,9 +749,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     }
 
+    /** Translates a Pair Elem AST */
     override fun visitPairElemAST(ast: PairElemAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-
+        /** Translates the expression */
         instrs.addAll(visit(ast.expr))
         val reg = seeLastUsedCalleeReg()
         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
@@ -691,6 +766,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates an Identifier AST */
     override fun visitIdentAST(ast: IdentAST): List<Instruction> {
         var offset = ast.symTable.findOffsetInStack(ast.name)
         var memType: MemoryType? = null
@@ -703,10 +779,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     }
 
+    /** Translates a Boolean IntAST */
     override fun visitIntLiterAST(ast: IntLiterAST): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {
+            // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -714,10 +792,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a Boolean Literal AST */
     override fun visitBoolLiterAST(ast: BoolLiterAST): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {
+            // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -725,10 +805,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a String Literal AST */
     override fun visitStrLiterAST(ast: StrLiterAST): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {
+            // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -737,10 +819,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a Char Literal AST */
     override fun visitCharLiterAST(ast: CharLiterAST): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {
+            // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -748,10 +832,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a Null Literal AST used inside pairs */
     override fun visitNullPairLiterAST(ast: NullPairLiterAST): List<Instruction> {
         var reg = getNextFreeCalleeReg()
         val instrs = mutableListOf<Instruction>()
-        if (reg == Register.NONE) {  // Use accumulator mode if registers are used up
+        if (reg == Register.NONE) {
+            // Use accumulator mode if registers are used up
             reg = Register.R10
             instrs += PushInstr(reg)
         }
@@ -759,38 +845,35 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates an Array Literal AST */
     override fun visitArrayLiterAST(ast: ArrayLiterAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val elemSize = SymbolTable.getBytesOfType((ast.arrayType as ArrayTypeAST).type)
 
-        //loading the length of array * elemSize + size of INT
-        val sizeOfInt = SymbolTable.getBytesOfType(BaseTypeAST(BaseType.INT))
+        /** Loads the size to malloc, which is length + 4 for storing the size */
+        val sizeOfInt = 4
         instrs.add(LoadInstr(Condition.AL, null,
                 ImmediateIntMode(elemSize * ast.values.size + sizeOfInt), Register.R0))
-
         instrs.add(BranchInstr(Condition.AL, Label("malloc"), true))
         val stackReg = getNextFreeCalleeReg()
         instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
 
-        //add element to stack
+        /** Adds all the elements */
         var memType: MemoryType? = null
         for ((index, expr) in ast.values.withIndex()) {
             if (expr is IdentAST) {
                 expr.symTable = ast.symTable
             }
             instrs.addAll(visit(expr))
-
             if ((expr is CharLiterAST) || (expr is BoolLiterAST)) {
                 memType = MemoryType.B
             }
             instrs.add(StoreInstr(memType,
-                    RegisterAddrWithOffsetMode(stackReg,
-                            sizeOfInt + (index * elemSize),
-                            false), seeLastUsedCalleeReg()))
+                    RegisterAddrWithOffsetMode(stackReg, sizeOfInt + (index * elemSize), false), seeLastUsedCalleeReg()))
             freeCalleeReg()
         }
 
-        //add the length of the array to stack
+        /** Adds the size of the array*/
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(ast.values.size), getNextFreeCalleeReg()))
         instrs.add(StoreInstr(null,
                 RegisterMode(stackReg), seeLastUsedCalleeReg()))
@@ -798,6 +881,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    /** Translates a Type AST. Requires no code generation  */
     override fun visitTypeAST(ast: TypeAST): List<Instruction> {
         return emptyList()
     }

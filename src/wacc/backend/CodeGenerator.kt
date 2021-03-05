@@ -91,7 +91,6 @@ object CodeGenerator {
     fun seeLastUsedCalleeReg(): Register {
         if (useAccumulator) {
             useAccumulator = false
-
             return Register.NONE
         }
         return calleSavedRegsInUse.peek()

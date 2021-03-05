@@ -29,6 +29,8 @@ import wacc.frontend.exception.semanticError
 class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: List<StatAST>) : StatAST, AbstractAST() {
     lateinit var thenST: SymbolTable
     lateinit var elseST: SymbolTable
+    var thenHasReturn: Boolean = false
+    var elseHasReturn: Boolean = false
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
