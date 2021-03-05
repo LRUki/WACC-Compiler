@@ -130,12 +130,17 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val instrs = mutableListOf<Instruction>()
         val lastStat = body.last()
         var hasReturn = false
-        if ((lastStat is ActionStatAST) && lastStat.action == Action.RETURN) {
-            hasReturn = true
-            val addOffset = table.getFuncStackOffset()
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(addOffset)))
-            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-            freeAllCalleeReg()
+        if ((lastStat is ActionStatAST)) {
+            if (lastStat.action == Action.RETURN) {
+                hasReturn = true
+                val addOffset = table.getFuncStackOffset()
+                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(addOffset)))
+                instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+                freeAllCalleeReg()
+            }
+            if (lastStat.action == Action.EXIT) {
+                hasReturn = true
+            }
         }
         return Pair(instrs, hasReturn)
     }
@@ -453,13 +458,17 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         for ((index, arg) in ast.argList.reversed().withIndex()) {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
+            val reg = seeLastUsedCalleeReg()
             val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
             totalBytes += bytes
             ast.symTable.callOffset = totalBytes
             if (argTypesReversed[index].isBoolOrChar()) {
                 memType = MemoryType.B
             }
-            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), seeLastUsedCalleeReg()))
+            if (arg is ArrayElemAST) {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
+            }
+            instrs.add(StoreInstr(memType, RegisterAddrWithOffsetMode(Register.SP, negativeCallStackOffset * bytes, true), reg))
             freeCalleeReg()
         }
         ast.symTable.callOffset = 0
