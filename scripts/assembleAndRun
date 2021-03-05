@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#make
+make
 
 ./compile $1
 filename=$(basename -- "$1")
