@@ -737,7 +737,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
             instrs.add(AddInstr(Condition.AL, stackReg, stackReg, ImmediateIntOperand(pointerOffset), false))
             val identType = ast.ident.getRealType(ast.symTable)
-            if ((identType is ArrayTypeAST) && identType.isBoolOrChar()) {
+            if ((identType is ArrayTypeAST) && identType.type.isBoolOrChar()) {
                 instrs.add(AddInstr(Condition.AL, stackReg, stackReg, RegisterOperand(seeLastUsedCalleeReg()), false))
             } else {
                 val multiplyByFour = 2
