@@ -77,6 +77,11 @@ class OptimizeVisitor: AstVisitor<AST> {
 
         val ifStatAST = IfStatAST(cond, thenBody, elseBody)
         ifStatAST.symTable = ast.symTable
+        ifStatAST.thenST = ast.thenST
+        ifStatAST.elseST = ast.elseST
+        ifStatAST.thenHasReturn = ast.thenHasReturn
+        ifStatAST.elseHasReturn = ast.elseHasReturn
+
         return ifStatAST
     }
 
@@ -88,6 +93,7 @@ class OptimizeVisitor: AstVisitor<AST> {
         }
         val whileStatAST = WhileStatAST(cond ,body)
         whileStatAST.symTable = ast.symTable
+        whileStatAST.blockST = ast.blockST
         return whileStatAST
     }
 
@@ -113,6 +119,7 @@ class OptimizeVisitor: AstVisitor<AST> {
     override fun visitReadStatAST(ast: ReadStatAST): AST {
         val readStatAST = ReadStatAST(visit(ast.expr) as LhsAST)
         readStatAST.symTable = ast.symTable
+        readStatAST.exprType = ast.exprType
         return readStatAST
     }
 
@@ -142,9 +149,10 @@ class OptimizeVisitor: AstVisitor<AST> {
         ast.argList.forEach { argList.add(visit(it) as ExprAST) }
         val callRhsAST = CallRhsAST(ast.ident, argList)
         callRhsAST.symTable = ast.symTable
+        callRhsAST.argTypes = ast.argTypes
         return callRhsAST
     }
-    
+
 
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
         return  when (ast.binOp) {
