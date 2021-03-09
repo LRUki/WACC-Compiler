@@ -11,6 +11,10 @@ class PopInstr(val register: Register) : Instruction {
     override fun toArm(): String {
         return "POP {${register.toArm()}}"
     }
+
+    override fun toX86(): String {
+        return "popq ${register.toX86()}"
+    }
 }
 
 /* Makes a pop instruction for each register in a given list */

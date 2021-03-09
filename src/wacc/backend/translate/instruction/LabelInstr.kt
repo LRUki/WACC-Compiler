@@ -10,6 +10,10 @@ abstract class LabelInstr(val name: String) : Instruction {
         return "$name:"
     }
 
+    override fun toX86(): String {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is LabelInstr) return false

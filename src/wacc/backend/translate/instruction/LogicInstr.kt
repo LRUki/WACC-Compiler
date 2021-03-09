@@ -28,6 +28,10 @@ abstract class AbstractLogicInstr(val type: LogicInstrType, val condition: Condi
     override fun toArm(): String {
         return "${type.name}${if (updateFlag) "S" else ""}${condition.toArm()} ${reg1.toArm()}, ${reg2.toArm()}, ${operand.toArm()}"
     }
+
+    override fun toX86(): String {
+        TODO("Not yet implemented")
+    }
 }
 
 /* Represents an Add instruction */

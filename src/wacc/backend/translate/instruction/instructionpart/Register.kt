@@ -23,6 +23,6 @@ enum class Register(private val x86: String) {
     }
 
     fun toX86(): String {
-        return x86
+        return "%$x86"
     }
 }

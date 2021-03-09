@@ -16,4 +16,8 @@ class StoreInstr( val memType: MemoryType?,
     override fun toArm(): String {
         return "STR${memType?.name ?: ""} ${srcRegister.toArm()}, ${mode.toArm()}"
     }
+
+    override fun toX86(): String {
+        TODO("Not yet implemented")
+    }
 }

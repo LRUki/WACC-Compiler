@@ -18,4 +18,8 @@ class LoadInstr(val condition: Condition, val memType: MemoryType?,
     override fun toArm(): String {
         return "LDR${memType?.name ?: ""}${condition.toArm()} ${destRegister.toArm()}, ${mode.toArm()}"
     }
+
+    override fun toX86(): String {
+        TODO("Not yet implemented")
+    }
 }

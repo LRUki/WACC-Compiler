@@ -25,5 +25,25 @@ enum class Condition {
     fun toArm(): String {
         return if (this == AL) "" else name
     }
+
+    fun toX86(): String {
+        return when(this) {
+            EQ -> "e"
+            NE -> "ne"
+            CS -> "ae"
+            CC -> "b"
+            MI -> "TODO"
+            PL -> "TODO"
+            VS -> "o"
+            VC -> "no"
+            HI -> "a"
+            LS -> "be"
+            GE -> "ge"
+            LT -> "l"
+            GT -> "g"
+            LE -> "le"
+            AL -> ""
+        }
+    }
 }
 
