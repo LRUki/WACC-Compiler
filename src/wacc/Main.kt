@@ -48,16 +48,12 @@ suspend fun main(args: Array<String>) {
         }
     }
 
-    for (p in paths){
-        println(p + " paths")
-    }
-    for (f in flags){
-        println(f + " flag")
-    }
+    val optimize = flags.contains("-o")
 
     val inputFile = File(paths[0])
     createErrorChannels()
     ast = frontend(inputFile)
+
 
     val outputString = backend(ast)
     var outputFileName = inputFile.nameWithoutExtension + ".s"
