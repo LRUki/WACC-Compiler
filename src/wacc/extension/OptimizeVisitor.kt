@@ -23,6 +23,9 @@ import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.statement.nonblock.ReadStatAST
 import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.TypeInstance
+import wacc.frontend.exception.semanticError
+import java.lang.RuntimeException
 
 class OptimizeVisitor: AstVisitor<AST> {
     override fun visitProgramAST(ast: ProgramAST): AST {
@@ -34,7 +37,9 @@ class OptimizeVisitor: AstVisitor<AST> {
         ast.stats.forEach{
             stats.add(visit(it) as StatAST)
         }
-        return ProgramAST(funcList, stats)
+        val programAST = ProgramAST(funcList, stats)
+        programAST.symTable = ast.symTable
+        return programAST
     }
 
     override fun visitFuncAST(ast: FuncAST): AST {
@@ -55,7 +60,9 @@ class OptimizeVisitor: AstVisitor<AST> {
         ast.body.forEach{
             body.add(visit(it) as StatAST)
         }
-        return BlockStatAST(body)
+        val blockStatAST = BlockStatAST(body)
+        blockStatAST.symTable = ast.symTable
+        return blockStatAST
     }
 
     override fun visitIfStatAST(ast: IfStatAST): AST {
@@ -68,7 +75,9 @@ class OptimizeVisitor: AstVisitor<AST> {
         val elseBody = mutableListOf<StatAST>()
         ast.elseBody.forEach { elseBody.add(visit(it) as StatAST) }
 
-        return IfStatAST(cond, thenBody, elseBody)
+        val ifStatAST = IfStatAST(cond, thenBody, elseBody)
+        ifStatAST.symTable = ast.symTable
+        return ifStatAST
     }
 
     override fun visitWhileStatAST(ast: WhileStatAST): AST {
@@ -77,24 +86,34 @@ class OptimizeVisitor: AstVisitor<AST> {
         ast.body.forEach{
             body.add(visit(it) as StatAST)
         }
-        return WhileStatAST(cond ,body)
+        val whileStatAST = WhileStatAST(cond ,body)
+        whileStatAST.symTable = ast.symTable
+        return whileStatAST
     }
 
     override fun visitActionStatAST(ast: ActionStatAST): AST {
-        return ActionStatAST(ast.action, visit(ast.expr) as ExprAST)
+        val actionStatAST = ActionStatAST(ast.action, visit(ast.expr) as ExprAST)
+        actionStatAST.symTable = ast.symTable
+        return actionStatAST
     }
 
     override fun visitAssignStatAST(ast: AssignStatAST): AST {
         //todo just right hand side?
-        return AssignStatAST(ast.lhs, visit(ast.rhs) as RhsAST)
+        val assignStatAst = AssignStatAST(ast.lhs, visit(ast.rhs) as RhsAST)
+        assignStatAst.symTable = ast.symTable
+        return assignStatAst
     }
 
     override fun visitDeclareStatAST(ast: DeclareStatAST): AST {
-        return DeclareStatAST(ast.type,ast.ident,visit(ast.rhs) as ExprAST)
+        val declareStatAST = DeclareStatAST(ast.type,ast.ident,visit(ast.rhs) as ExprAST)
+        declareStatAST.symTable = ast.symTable
+        return declareStatAST
     }
 
     override fun visitReadStatAST(ast: ReadStatAST): AST {
-        return ReadStatAST(visit(ast.expr) as LhsAST)
+        val readStatAST = ReadStatAST(visit(ast.expr) as LhsAST)
+        readStatAST.symTable = ast.symTable
+        return readStatAST
     }
 
     override fun visitSkipStatAST(ast: SkipStatAST): AST {
@@ -118,54 +137,82 @@ class OptimizeVisitor: AstVisitor<AST> {
     }
 
     override fun visitCallRhsAST(ast: CallRhsAST): AST {
-        TODO("arglist could be constant?")
+        //TODO arglist could be constant?
+        val argList = mutableListOf<ExprAST>()
+        ast.argList.forEach { argList.add(visit(it) as ExprAST) }
+        val callRhsAST = CallRhsAST(ast.ident, argList)
+        callRhsAST.symTable = ast.symTable
+        return callRhsAST
     }
 
+//    //evaluate an int expression
+//    private fun evalInt(expr : ExprAST) : Int {
+//        if (expr is IntLiterAST){
+//            return
+//        }
+//    }
+
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
-        TODO("Not yet implemented")
+        return  when (ast.binOp) {
+            BinOp.MULT, BinOp.DIV, BinOp.MOD,
+            BinOp.PLUS, BinOp.MINUS -> {
+                //type is ensured to be int
+                val val1 = visit(ast.expr1) as IntLiterAST
+                val val2 = visit(ast.expr2) as IntLiterAST
+                when (ast.binOp){
+                    BinOp.PLUS -> IntLiterAST(val1.value + val2.value)
+                    BinOp.MINUS -> IntLiterAST(val1.value - val2.value)
+                    BinOp.MULT -> IntLiterAST(val1.value * val2.value)
+                    BinOp.DIV -> IntLiterAST(val1.value / val2.value)
+                    BinOp.MOD -> IntLiterAST(val1.value % val2.value)
+                    else -> throw RuntimeException("wrong operand")
+                }
+            }
+            else -> ast
+        }
     }
 
     override fun visitUnOpExprAST(ast: UnOpExprAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitArrayElemAST(ast: ArrayElemAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitPairElemAST(ast: PairElemAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitIdentAST(ast: IdentAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitIntLiterAST(ast: IntLiterAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitBoolLiterAST(ast: BoolLiterAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitStrLiterAST(ast: StrLiterAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitCharLiterAST(ast: CharLiterAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitNullPairLiterAST(ast: NullPairLiterAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitArrayLiterAST(ast: ArrayLiterAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitTypeAST(ast: TypeAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 }

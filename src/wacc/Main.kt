@@ -56,8 +56,7 @@ suspend fun main(args: Array<String>) {
     ast = frontend(inputFile)
 
     if(optimize){
-        println("optimize!")
-       // ast = OptimizeVisitor().visit(ast)
+       ast = OptimizeVisitor().visit(ast)
     }
 
     val outputString = backend(ast)
