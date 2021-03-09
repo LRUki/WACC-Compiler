@@ -144,13 +144,7 @@ class OptimizeVisitor: AstVisitor<AST> {
         callRhsAST.symTable = ast.symTable
         return callRhsAST
     }
-
-//    //evaluate an int expression
-//    private fun evalInt(expr : ExprAST) : Int {
-//        if (expr is IntLiterAST){
-//            return
-//        }
-//    }
+    
 
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
         return  when (ast.binOp) {
