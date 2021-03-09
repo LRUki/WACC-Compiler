@@ -12,6 +12,7 @@ import wacc.Main.semanticErrorChannel
 import wacc.Main.syntaxErrorChannel
 import wacc.backend.generateCode
 import wacc.backend.printCode
+import wacc.extension.OptimizeVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -32,7 +33,7 @@ object Main {
 }
 
 suspend fun main(args: Array<String>) {
-    val ast: AST
+    var ast: AST
     if (args.isEmpty()) {
         println("Missing argument!")
         exitProcess(1)
@@ -54,6 +55,10 @@ suspend fun main(args: Array<String>) {
     createErrorChannels()
     ast = frontend(inputFile)
 
+    if(optimize){
+        println("optimize!")
+       // ast = OptimizeVisitor().visit(ast)
+    }
 
     val outputString = backend(ast)
     var outputFileName = inputFile.nameWithoutExtension + ".s"
