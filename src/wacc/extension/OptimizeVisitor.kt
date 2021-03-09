@@ -4,7 +4,9 @@ import wacc.frontend.ast.AST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
+import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
+import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -79,35 +81,44 @@ class OptimizeVisitor: AstVisitor<AST> {
     }
 
     override fun visitActionStatAST(ast: ActionStatAST): AST {
-        TODO("Not yet implemented")
+        return ActionStatAST(ast.action, visit(ast.expr) as ExprAST)
     }
 
     override fun visitAssignStatAST(ast: AssignStatAST): AST {
-        TODO("Not yet implemented")
+        //todo just right hand side?
+        return AssignStatAST(ast.lhs, visit(ast.rhs) as RhsAST)
     }
 
     override fun visitDeclareStatAST(ast: DeclareStatAST): AST {
-        TODO("Not yet implemented")
+        return DeclareStatAST(ast.type,ast.ident,visit(ast.rhs) as ExprAST)
     }
 
     override fun visitReadStatAST(ast: ReadStatAST): AST {
-        TODO("Not yet implemented")
+        return ReadStatAST(visit(ast.expr) as LhsAST)
     }
 
     override fun visitSkipStatAST(ast: SkipStatAST): AST {
-        TODO("Not yet implemented")
+        return ast
     }
 
     override fun visitMultiStatAST(ast: MultiStatAST): AST {
-        TODO("Not yet implemented")
+        val stats = mutableListOf<StatAST>()
+        ast.stats.forEach{
+            stats.add(visit(it) as StatAST)
+        }
+        return MultiStatAST(stats)
     }
 
     override fun visitNewPairRhsAST(ast: NewPairRhsAST): AST {
-        TODO("Not yet implemented")
+        val newPairAst = NewPairRhsAST(visit(ast.fst) as ExprAST,
+                visit(ast.snd) as ExprAST)
+        newPairAst.firstType = ast.firstType
+        newPairAst.secondType = ast.secondType
+        return newPairAst
     }
 
     override fun visitCallRhsAST(ast: CallRhsAST): AST {
-        TODO("Not yet implemented")
+        TODO("arglist could be constant?")
     }
 
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
