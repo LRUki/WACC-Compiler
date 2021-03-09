@@ -22,7 +22,7 @@ do
   do
     FILENAME=${WACC_FILENAME#*/*/}
     mkdir -p out_test/"${FILENAME%/*}"
-    java -jar wacc-1.0-SNAPSHOT.jar wacc_examples/"$FILENAME".wacc out_test/"$FILENAME".s
+    java -jar wacc-1.0-SNAPSHOT.jar wacc_examples/"$FILENAME".wacc out_test/"$FILENAME".s $@
 
     if arm-linux-gnueabi-gcc -o out_test/"$FILENAME" -mcpu=arm1176jzf-s -mtune=arm1176jzf-s "out_test/${FILENAME}.s"
     then
