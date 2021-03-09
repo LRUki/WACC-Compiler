@@ -1,4 +1,4 @@
-package wacc.extension
+package wacc.extension.optimization
 
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AstVisitor
@@ -23,11 +23,9 @@ import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.statement.nonblock.ReadStatAST
 import wacc.frontend.ast.type.TypeAST
-import wacc.frontend.ast.type.TypeInstance
-import wacc.frontend.exception.semanticError
 import java.lang.RuntimeException
 
-class OptimizeVisitor: AstVisitor<AST> {
+class ConstantEvaluationVisitor: AstVisitor<AST> {
     override fun visitProgramAST(ast: ProgramAST): AST {
         val funcList = mutableListOf<FuncAST>()
         ast.funcList.forEach{

@@ -12,7 +12,7 @@ import wacc.Main.semanticErrorChannel
 import wacc.Main.syntaxErrorChannel
 import wacc.backend.generateCode
 import wacc.backend.printCode
-import wacc.extension.OptimizeVisitor
+import wacc.extension.optimization.ConstantEvaluationVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -56,7 +56,7 @@ suspend fun main(args: Array<String>) {
     ast = frontend(inputFile)
 
     if(optimize){
-       ast = OptimizeVisitor().visit(ast)
+       ast = ConstantEvaluationVisitor().visit(ast)
     }
 
     val outputString = backend(ast)
