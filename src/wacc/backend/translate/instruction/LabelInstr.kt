@@ -11,7 +11,7 @@ abstract class LabelInstr(val name: String) : Instruction {
     }
 
     override fun toX86(): String {
-        TODO("Not yet implemented")
+        return "$name:"
     }
 
     override fun equals(other: Any?): Boolean {
