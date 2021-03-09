@@ -58,11 +58,11 @@ test-runtime-error:
 test-backend-integration:
   stage: test-backend
   script:
-    - echo "Testing printing of code"
+    - echo "Testing backend integration"
     - ./testassemble
 
-test-constant-evaluation:
+test-optimization-integration:
   stage: test-extension
   script:
-    - echo "Testing constant evaluation"
-    - ./testoptimizedassemble 
+    - echo "Testing integrity with optimization"
+    - ./testassemble -o  
