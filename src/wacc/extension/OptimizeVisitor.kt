@@ -168,7 +168,7 @@ class OptimizeVisitor: AstVisitor<AST> {
                     BinOp.PLUS -> IntLiterAST(val1 + val2)
                     BinOp.MINUS -> IntLiterAST(val1 - val2)
                     BinOp.MULT -> IntLiterAST(val1 * val2)
-                    BinOp.DIV -> IntLiterAST(val1 / val2)
+                    BinOp.DIV -> if(val2 != 0) IntLiterAST(val1 / val2) else ast
                     BinOp.MOD -> if(val2 != 0) IntLiterAST(val1 % val2) else ast
                     else -> throw RuntimeException("wrong operand")
                 }
