@@ -105,7 +105,7 @@ class OptimizeVisitor: AstVisitor<AST> {
     }
 
     override fun visitDeclareStatAST(ast: DeclareStatAST): AST {
-        val declareStatAST = DeclareStatAST(ast.type,ast.ident,visit(ast.rhs) as ExprAST)
+        val declareStatAST = DeclareStatAST(ast.type,ast.ident,visit(ast.rhs) as RhsAST)
         declareStatAST.symTable = ast.symTable
         return declareStatAST
     }
@@ -156,15 +156,18 @@ class OptimizeVisitor: AstVisitor<AST> {
         return  when (ast.binOp) {
             BinOp.MULT, BinOp.DIV, BinOp.MOD,
             BinOp.PLUS, BinOp.MINUS -> {
-                //type is ensured to be int
-                val val1 = visit(ast.expr1) as IntLiterAST
-                val val2 = visit(ast.expr2) as IntLiterAST
+                if ((visit(ast.expr1) !is IntLiterAST)
+                        or (visit(ast.expr2) !is IntLiterAST)){
+                    return ast
+                }
+                val val1 = (visit(ast.expr1) as IntLiterAST).value
+                val val2 = (visit(ast.expr2) as IntLiterAST).value
                 when (ast.binOp){
-                    BinOp.PLUS -> IntLiterAST(val1.value + val2.value)
-                    BinOp.MINUS -> IntLiterAST(val1.value - val2.value)
-                    BinOp.MULT -> IntLiterAST(val1.value * val2.value)
-                    BinOp.DIV -> IntLiterAST(val1.value / val2.value)
-                    BinOp.MOD -> IntLiterAST(val1.value % val2.value)
+                    BinOp.PLUS -> IntLiterAST(val1 + val2)
+                    BinOp.MINUS -> IntLiterAST(val1 - val2)
+                    BinOp.MULT -> IntLiterAST(val1 * val2)
+                    BinOp.DIV -> IntLiterAST(val1 / val2)
+                    BinOp.MOD -> IntLiterAST(val1 % val2)
                     else -> throw RuntimeException("wrong operand")
                 }
             }
