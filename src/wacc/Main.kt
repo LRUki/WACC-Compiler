@@ -37,18 +37,36 @@ suspend fun main(args: Array<String>) {
         println("Missing argument!")
         exitProcess(1)
     }
-    val inputFile = File(args[0])
+
+    val paths = ArrayList<String>()
+    val flags = ArrayList<String>()
+    for (arg in args){
+        if (arg.startsWith("-")){
+            flags.add(arg)
+        }else{
+            paths.add(arg)
+        }
+    }
+
+    for (p in paths){
+        println(p + " paths")
+    }
+    for (f in flags){
+        println(f + " flag")
+    }
+
+    val inputFile = File(paths[0])
     createErrorChannels()
     ast = frontend(inputFile)
 
     val outputString = backend(ast)
     var outputFileName = inputFile.nameWithoutExtension + ".s"
-    if (args.size > 1) {
-        outputFileName = args[1]
+    if (paths.size > 1) {
+        outputFileName = paths[1]
     }
     val outputFile = File(outputFileName)
 
-    if (args.size > 1) {
+    if (paths.size > 1) {
         Files.createDirectories(outputFile.toPath().parent)
     }
     outputFile.writeText(outputString)
