@@ -37,7 +37,7 @@ argList: expr (COMMA expr)* ;
 pairElem: FST expr
         | SND expr ;
 
-type: baseType | pairType | arrayType ;
+type: baseType | pairType | arrayType | implicitType ;
 
 baseType: INT | BOOL | CHAR | STRING ;
 
@@ -49,7 +49,9 @@ pairElemType: baseType
             | arrayType
             | pairType
             | PAIR ;
-            
+
+implicitType: VAR ;
+
 expr: expr binop1 expr     #binopExpr
     | expr binop2 expr     #binopExpr
     | expr binop3 expr     #binopExpr
