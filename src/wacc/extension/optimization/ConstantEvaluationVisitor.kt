@@ -23,7 +23,6 @@ import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.statement.nonblock.ReadStatAST
 import wacc.frontend.ast.type.TypeAST
-import java.lang.RuntimeException
 
 class ConstantEvaluationVisitor: AstVisitor<AST> {
     override fun visitProgramAST(ast: ProgramAST): AST {
@@ -168,7 +167,7 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
                     BinOp.MULT -> IntLiterAST(val1 * val2)
                     BinOp.DIV -> if(val2 != 0) IntLiterAST(val1 / val2) else ast
                     BinOp.MOD -> if(val2 != 0) IntLiterAST(val1 % val2) else ast
-                    else -> throw RuntimeException("wrong operand")
+                    else -> throw Exception("wrong operand")
                 }
             }
             else -> ast
