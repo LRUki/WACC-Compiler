@@ -28,6 +28,10 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
         return "$type" + "[]".repeat(counter)
     }
 
+    override fun isConcreteType(): Boolean {
+        return type.isConcreteType()
+    }
+
     override fun hashCode(): Int {
         var result = type.hashCode()
         result = 31 * result + dimension
@@ -54,6 +58,10 @@ class AnyTypeAST : TypeAST {
 
     override fun toString(): String {
         return "any"
+    }
+
+    override fun isConcreteType(): Boolean {
+        return false
     }
 
     override fun hashCode(): Int {

@@ -13,7 +13,7 @@ paramList: param (COMMA param)*;
 param: type ident;
 
 stat: SKIP_TOKEN                                      #skipStat
-      | type ident ASSIGN assignRhs                   #declareStat
+      | (type | implicitType) ident ASSIGN assignRhs                   #declareStat
       | assignLhs ASSIGN assignRhs                    #assignStat
       | READ assignLhs                                #readStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
@@ -37,7 +37,7 @@ argList: expr (COMMA expr)* ;
 pairElem: FST expr
         | SND expr ;
 
-type: baseType | pairType | arrayType | implicitType ;
+type: baseType | pairType | arrayType ;
 
 baseType: INT | BOOL | CHAR | STRING ;
 
