@@ -22,7 +22,7 @@ class ConstantEvaluationTest {
     fun ArithmeticBinOpsAreOptimized() {
         val folder = File("wacc_examples/valid/expressions/")
         actionOnFiles(folder) { file ->
-            if(file.name.contains("longExpr")){
+            if(file.name.contains("longExpr") or file.name.contains(Regex("plus[a-zA-Z]+Expr"))){
                 val ast = buildAst(file)
                 val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
                 assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
