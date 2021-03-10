@@ -19,6 +19,8 @@ data class BranchInstr(val condition: Condition,
     }
 
     override fun toX86(): String {
-        TODO("Not yet implemented")
+        var instr = "j"
+        instr += condition.toX86()
+        return instr + " " + label.name
     }
 }
