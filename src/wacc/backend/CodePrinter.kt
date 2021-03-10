@@ -31,6 +31,17 @@ const val DOT_GLOBAL_MAIN = ".global main"
     return builder.toString()
 }
 
+fun printX86(instrs: List<Instruction>): String{
+    val lines = instrs.map { instr -> instr.toX86() }
+    val builder = StringBuilder()
+
+    lines.forEach {
+        builder.append(it)
+        builder.appendLine()
+    }
+    return builder.toString()
+}
+
 /** Specifies when we should indent a line in the assembly file */
 fun shouldIndent(line: String): Boolean {
     return when {

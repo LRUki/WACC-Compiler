@@ -12,6 +12,7 @@ import wacc.Main.semanticErrorChannel
 import wacc.Main.syntaxErrorChannel
 import wacc.backend.generateCode
 import wacc.backend.printCode
+import wacc.backend.printX86
 import wacc.extension.optimization.ConstantEvaluationVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
@@ -144,4 +145,5 @@ fun <T> startErrorListener(errorChannel: Channel<T>, file: File): Job {
 fun backend(ast: AST): String {
     val instrs = generateCode(ast as ProgramAST)
     return printCode(instrs)
+//    return printX86(instrs)
 }
