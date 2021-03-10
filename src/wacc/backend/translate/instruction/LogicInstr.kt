@@ -10,8 +10,8 @@ interface LogicInstr : Instruction {
 /**
  *  Represents the different types of logical instructions
  */
-enum class LogicInstrType {
-    AND, EOR, ORR, BIC
+enum class LogicInstrType(val x86: String) {
+    AND("and"), EOR("xor"), ORR("or"), BIC("")
 }
 
 /**
@@ -30,7 +30,7 @@ abstract class AbstractLogicInstr(val type: LogicInstrType, val condition: Condi
     }
 
     override fun toX86(): String {
-        TODO("Not yet implemented")
+        return "${type.x86}${condition.toX86()} ${reg1.toX86()}, ${reg2.toX86()}, ${operand.toX86()}"
     }
 }
 
