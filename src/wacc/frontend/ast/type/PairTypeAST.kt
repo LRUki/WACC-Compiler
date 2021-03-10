@@ -56,7 +56,7 @@ class AnyPairTypeAST : TypeAST {
     }
 
     override fun isConcreteType(): Boolean {
-        return true
+        return false
     }
 
     override fun hashCode(): Int {
