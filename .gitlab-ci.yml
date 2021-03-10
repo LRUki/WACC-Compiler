@@ -66,3 +66,9 @@ test-optimization-integration:
   script:
     - echo "Testing integrity with optimization"
     - ./testassemble -o  
+
+test-new-feature-integration:
+  stage: test-extension
+  script:
+    - echo "Testing integrity with optimization"
+    - ./testextension
