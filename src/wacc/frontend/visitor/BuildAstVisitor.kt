@@ -113,9 +113,15 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitDeclareStat(ctx: WaccParser.DeclareStatContext): AST {
-        val declareStatAST = DeclareStatAST(visit(ctx.type()) as TypeAST,
-                visit(ctx.ident()) as IdentAST,
-                visit(ctx.assignRhs()) as RhsAST)
+        val declareStatAST = when {
+            ctx.type() != null -> DeclareStatAST(visit(ctx.type()) as TypeAST,
+                    visit(ctx.ident()) as IdentAST,
+                    visit(ctx.assignRhs()) as RhsAST)
+            ctx.implicitType() != null -> DeclareStatAST(visit(ctx.implicitType()) as ImplicitTypeAST,
+                    visit(ctx.ident()) as IdentAST,
+                    visit(ctx.assignRhs()) as RhsAST)
+            else -> throw RuntimeException()
+        }
 
         declareStatAST.ctx = ctx
         return declareStatAST
@@ -203,6 +209,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         } else {
             visitChildren(ctx)
         }
+    }
+
+    override fun visitImplicitType(ctx: WaccParser.ImplicitTypeContext): AST {
+        return ImplicitTypeAST()
     }
 
     override fun visitUnopExpr(ctx: WaccParser.UnopExprContext): AST {

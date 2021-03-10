@@ -1,0 +1,10 @@
+# simple character variable declaration
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  var c = 'a'
+end
