@@ -21,10 +21,10 @@ do
   for WACC_FILENAME in `find $FOLDER -type f -iname "*.wacc" -exec sh -c 'printf "%s\n" "${0%.*}"' {} ';'`
   do
     FILENAME=${WACC_FILENAME#*/*/}
-    mkdir -p out_test/"${FILENAME%/*}"
+    mkdir -p extension_test/"${FILENAME%/*}"
     java -jar wacc-1.0-SNAPSHOT.jar extension_wacc/"$FILENAME".wacc extension_test/"$FILENAME".s $@
 
-    if arm-linux-gnueabi-gcc -o extension_test/"$FILENAME" -mcpu=arm1176jzf-s -mtune=arm1176jzf-s "out_test/${FILENAME}.s"
+    if arm-linux-gnueabi-gcc -o extension_test/"$FILENAME" -mcpu=arm1176jzf-s -mtune=arm1176jzf-s "extension_test/${FILENAME}.s"
     then
       ASSEMBLE_SUCCESSFUL=0
 
