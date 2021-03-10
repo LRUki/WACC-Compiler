@@ -47,6 +47,7 @@ pairType: PAIR L_PAREN pairElemType COMMA pairElemType R_PAREN ;
 
 pairElemType: baseType
             | arrayType
+            | pairType
             | PAIR ;
             
 expr: expr binop1 expr     #binopExpr
