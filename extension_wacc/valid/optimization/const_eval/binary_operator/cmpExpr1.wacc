@@ -1,0 +1,14 @@
+# tests whether the compiler can optimize simple comparison expressions
+
+# Output:
+# #empty#
+
+# Prints:
+# false
+
+begin
+
+  bool b = 1 > 2;
+  println b 
+
+end
