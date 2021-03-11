@@ -4,10 +4,7 @@ import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.ast.type.ArrayTypeAST
-import wacc.frontend.ast.type.BaseType
-import wacc.frontend.ast.type.BaseTypeAST
-import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.*
 import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
 import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 import wacc.frontend.ast.type.TypeInstance.intTypeInstance
@@ -198,4 +195,54 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
 enum class UnOp {
     NOT, MINUS, LEN, ORD, CHR
+}
+
+/**
+ * AST node to represent an expression with an Ident Operation
+ *
+ * @property identOp Operation to perform on the expression, chosen from the IdentOp Enum
+ * @property ident ident to operate on
+ */
+class IdentOpExprAST(val identOp: IdentOp, val ident: IdentAST) : ExprAST, RhsAST, AbstractAST() {
+    override fun check(table: SymbolTable): Boolean {
+        if (!ident.check(table)) {
+            return false
+        }
+        val identType = ident.getRealType(table)
+
+        return when (identOp) {
+            IdentOp.REF -> {
+                true
+            }
+            IdentOp.DEREF -> {
+                if (identType is PointerTypeAST) {
+                    true
+                } else {
+                    semanticError("Type $identType is not a pointer type", ctx)
+                    false
+                }
+            }
+        }
+    }
+
+    override fun getRealType(table: SymbolTable): TypeAST {
+        val identType = ident.getRealType(table)
+        return when (identOp) {
+            IdentOp.REF -> {
+                PointerTypeAST(identType)
+            }
+            IdentOp.DEREF -> {
+                (identType as PointerTypeAST).type
+            }
+        }
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitIdentOpExprAST(this)
+    }
+
+}
+
+enum class IdentOp {
+    REF, DEREF
 }

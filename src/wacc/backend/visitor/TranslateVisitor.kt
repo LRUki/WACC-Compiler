@@ -715,6 +715,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    override fun visitIdentOpExprAST(ast: IdentOpExprAST): List<Instruction> {
+        TODO("Not yet implemented")
+    }
+
     /** Translates an Array element AST (i.e. array[0]) */
     override fun visitArrayElemAST(ast: ArrayElemAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()

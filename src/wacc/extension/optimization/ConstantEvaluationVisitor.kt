@@ -150,6 +150,10 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         return callRhsAST
     }
 
+    override fun visitIdentOpExprAST(ast: IdentOpExprAST): AST {
+        return ast
+    }
+
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
         val e1 = visit(ast.expr1)
         val e2 = visit(ast.expr2)
@@ -238,4 +242,6 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
     override fun visitTypeAST(ast: TypeAST): AST {
         return ast
     }
+
+
 }

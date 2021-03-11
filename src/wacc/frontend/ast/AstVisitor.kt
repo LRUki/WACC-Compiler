@@ -58,6 +58,7 @@ interface AstVisitor<T> {
      */
     fun visitBinOpExprAST(ast: BinOpExprAST): T
     fun visitUnOpExprAST(ast: UnOpExprAST): T
+    fun visitIdentOpExprAST(ast: IdentOpExprAST): T
     fun visitArrayElemAST(ast: ArrayElemAST): T
     fun visitPairElemAST(ast: PairElemAST): T
 

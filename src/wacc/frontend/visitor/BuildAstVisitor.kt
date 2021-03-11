@@ -211,8 +211,24 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         }
     }
 
+    override fun visitPointerType(ctx: WaccParser.PointerTypeContext): AST {
+        return PointerTypeAST(visit(ctx.baseType()) as BaseTypeAST)
+    }
+
     override fun visitImplicitType(ctx: WaccParser.ImplicitTypeContext): AST {
         return ImplicitTypeAST()
+    }
+
+    override fun visitIdentopExpr(ctx: WaccParser.IdentopExprContext): AST {
+        val identopContext = ctx.identop()
+        val identOp = when {
+            identopContext.REF() != null -> IdentOp.REF
+            identopContext.MULT() != null -> IdentOp.DEREF
+            else -> throw RuntimeException()
+        }
+        val identOpExprAST = IdentOpExprAST(identOp, visit(ctx.ident()) as IdentAST)
+        identOpExprAST.ctx = ctx
+        return identOpExprAST
     }
 
     override fun visitUnopExpr(ctx: WaccParser.UnopExprContext): AST {

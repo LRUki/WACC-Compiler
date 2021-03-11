@@ -27,6 +27,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                     }
                 }
                 is ArrayTypeAST, is PairTypeAST, is AnyPairTypeAST -> 4
+                is PointerTypeAST -> 4
                 else -> 0
             }
         }
