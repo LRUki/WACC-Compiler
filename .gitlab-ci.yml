@@ -67,6 +67,13 @@ test-optimization-integration:
     - echo "Testing integrity with optimization"
     - ./testassemble -o  
 
+test-const-evaluation:
+  stage: test-extension
+  script:
+    - echo "Testing const evaluation"
+    - ./gradlew test --tests extension.ConstantEvaluationTest
+
+
 test-new-feature-integration:
   stage: test-extension
   script:

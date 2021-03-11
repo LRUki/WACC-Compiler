@@ -23,7 +23,6 @@ import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.statement.nonblock.ReadStatAST
 import wacc.frontend.ast.type.TypeAST
-import java.lang.RuntimeException
 
 class ConstantEvaluationVisitor: AstVisitor<AST> {
     override fun visitProgramAST(ast: ProgramAST): AST {
@@ -151,31 +150,52 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         return callRhsAST
     }
 
-
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
-        return  when (ast.binOp) {
-            BinOp.MULT, BinOp.DIV, BinOp.MOD,
-            BinOp.PLUS, BinOp.MINUS -> {
-                if ((visit(ast.expr1) !is IntLiterAST)
-                        or (visit(ast.expr2) !is IntLiterAST)){
-                    return ast
+        val e1 = visit(ast.expr1)
+        val e2 = visit(ast.expr2)
+
+        if (((e1 is IntLiterAST) and (e2 is IntLiterAST)) or
+                ((e1 is BoolLiterAST) and (e2 is BoolLiterAST))){
+
+            return when(ast.binOp){
+                is BoolBinOp ->
+                    BoolLiterAST((ast.binOp).apply((e1 as BoolLiterAST).value, (e2 as BoolLiterAST).value))
+                is IntBinOp -> {
+                    val v1 = (e1 as IntLiterAST).value
+                    val v2 = (e2 as IntLiterAST).value
+                    if ((ast.binOp == IntBinOp.DIV) or (ast.binOp == IntBinOp.MOD) and (v2 == 0)){
+                        return ast
+                    }
+                    return IntLiterAST(ast.binOp.apply(v1,v2))
                 }
-                val val1 = (visit(ast.expr1) as IntLiterAST).value
-                val val2 = (visit(ast.expr2) as IntLiterAST).value
-                when (ast.binOp){
-                    BinOp.PLUS -> IntLiterAST(val1 + val2)
-                    BinOp.MINUS -> IntLiterAST(val1 - val2)
-                    BinOp.MULT -> IntLiterAST(val1 * val2)
-                    BinOp.DIV -> if(val2 != 0) IntLiterAST(val1 / val2) else ast
-                    BinOp.MOD -> if(val2 != 0) IntLiterAST(val1 % val2) else ast
-                    else -> throw RuntimeException("wrong operand")
+                is CmpBinOp -> {
+                    val v1 = (e1 as IntLiterAST).value
+                    val v2 = (e2 as IntLiterAST).value
+                    when(ast.binOp) {
+                        CmpBinOp.EQ -> BoolLiterAST(v1 == v2)
+                        CmpBinOp.NEQ-> BoolLiterAST(v1 != v2)
+                        CmpBinOp.GT -> BoolLiterAST(v1 > v2)
+                        CmpBinOp.GTE -> BoolLiterAST(v1 >= v2)
+                        CmpBinOp.LT -> BoolLiterAST(v1 < v2)
+                        CmpBinOp.LTE -> BoolLiterAST(v1 <= v2)
+                    }
                 }
+                else -> ast
             }
-            else -> ast
+        }else{
+            return ast
         }
     }
 
     override fun visitUnOpExprAST(ast: UnOpExprAST): AST {
+        val e1 = visit(ast.expr)
+        if ((e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT)){
+            return BoolLiterAST(!(e1 as BoolLiterAST).value)
+        } else if ((e1 is IntLiterAST) and (ast.unOp == UnOp.CHR)){
+            return CharLiterAST((e1 as IntLiterAST).value.toChar())
+        } else if ((e1 is CharLiterAST) and (ast.unOp == UnOp.ORD)){
+            return IntLiterAST((e1 as CharLiterAST).value.toInt())
+        }
         return ast
     }
 

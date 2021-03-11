@@ -1,0 +1,13 @@
+# tests whether the compiler can optimize simple bool expressions
+
+# Output:
+# #empty#
+
+# Prints:
+# false
+
+begin
+
+bool b = ( ( true && false) || (true && false) || (true && false) || (true && false) );
+  println b
+end

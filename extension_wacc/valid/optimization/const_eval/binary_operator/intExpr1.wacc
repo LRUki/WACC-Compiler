@@ -1,0 +1,14 @@
+# tests whether the compiler can optimize simple expressions
+
+# Output:
+# #empty#
+
+# Exit:
+# 3
+
+begin
+
+  int x = 1 + 2;
+  exit x
+
+end
