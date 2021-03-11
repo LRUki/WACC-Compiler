@@ -13,7 +13,7 @@ paramList: param (COMMA param)*;
 param: type ident;
 
 stat: SKIP_TOKEN                                      #skipStat
-      | type ident ASSIGN assignRhs                   #declareStat
+      | (type | implicitType) ident ASSIGN assignRhs                   #declareStat
       | assignLhs ASSIGN assignRhs                    #assignStat
       | READ assignLhs                                #readStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
@@ -47,8 +47,11 @@ pairType: PAIR L_PAREN pairElemType COMMA pairElemType R_PAREN ;
 
 pairElemType: baseType
             | arrayType
+            | pairType
             | PAIR ;
-            
+
+implicitType: VAR ;
+
 expr: expr binop1 expr     #binopExpr
     | expr binop2 expr     #binopExpr
     | expr binop3 expr     #binopExpr

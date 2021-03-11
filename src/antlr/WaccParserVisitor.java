@@ -152,6 +152,12 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPairElemType(WaccParser.PairElemTypeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link WaccParser#implicitType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImplicitType(WaccParser.ImplicitTypeContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code unopExpr}
 	 * labeled alternative in {@link WaccParser#expr}.
 	 * @param ctx the parse tree

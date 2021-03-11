@@ -35,7 +35,7 @@ import wacc.frontend.exception.semanticError
  * @property ident Name of the variable
  * @property rhs Value to be stored in the variable
  */
-class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
+class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : StatAST, Identifiable, AbstractAST() {
     lateinit var stringLabel: String
 
     override fun check(table: SymbolTable): Boolean {
@@ -50,10 +50,20 @@ class DeclareStatAST(val type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
             return false
         }
 
-        if (!type.equals(rhsType)) {
-            semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
-            return false
+        if (type !is ImplicitTypeAST) {
+            if (!type.equals(rhsType)) {
+                semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
+                return false
+            }
+        } else {
+            if (rhsType.isConcreteType()) {
+                type = rhsType // Replace the type with the inferred type
+            } else {
+                semanticError("Type inference failed - $rhsType is not a concrete type", ctx)
+                return false
+            }
         }
+
         table.add(ident.name, this)
         return true
     }

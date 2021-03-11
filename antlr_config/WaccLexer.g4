@@ -38,6 +38,9 @@ BOOL: 'bool' ;
 CHAR: 'char' ;
 STRING: 'string' ;
 
+//implicit types
+VAR: 'var' ;
+
 //unary operators
 NOT: '!' ;
 LEN: 'len' ;
