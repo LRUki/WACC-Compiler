@@ -158,14 +158,15 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
                 ((e1 is BoolLiterAST) and (e2 is BoolLiterAST))){
 
             return when(ast.binOp){
-                is BoolBinOp -> BoolLiterAST((ast.binOp).apply((e1 as BoolLiterAST).value, (e2 as BoolLiterAST).value))
+                is BoolBinOp ->
+                    BoolLiterAST((ast.binOp).apply((e1 as BoolLiterAST).value, (e2 as BoolLiterAST).value))
                 is IntBinOp -> {
                     val v1 = (e1 as IntLiterAST).value
                     val v2 = (e2 as IntLiterAST).value
-                    return when(ast.binOp){
-                        IntBinOp.DIV,IntBinOp.MOD -> if(v2 != 0) IntLiterAST(ast.binOp.apply(v1,v2)) else ast
-                        else ->IntLiterAST(ast.binOp.apply(v1,v2))
+                    if ((ast.binOp == IntBinOp.DIV) or (ast.binOp == IntBinOp.MOD) and (v2 == 0)){
+                        return ast
                     }
+                    return IntLiterAST(ast.binOp.apply(v1,v2))
                 }
                 is CmpBinOp -> {
                     val v1 = (e1 as IntLiterAST).value
@@ -190,6 +191,10 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         val e1 = visit(ast.expr)
         if ((e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT)){
             return BoolLiterAST(!(e1 as BoolLiterAST).value)
+        } else if ((e1 is IntLiterAST) and (ast.unOp == UnOp.CHR)){
+            return CharLiterAST((e1 as IntLiterAST).value.toChar())
+        } else if ((e1 is CharLiterAST) and (ast.unOp == UnOp.ORD)){
+            return IntLiterAST((e1 as CharLiterAST).value.toInt())
         }
         return ast
     }
