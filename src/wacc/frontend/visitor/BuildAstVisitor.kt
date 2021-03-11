@@ -127,6 +127,21 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return declareStatAST
     }
 
+    override fun visitStructDeclare(ctx: WaccParser.StructDeclareContext?): AST {
+        return super.visitStructDeclare(ctx)
+    }
+
+    override fun visitStructAssign(ctx: WaccParser.StructAssignContext?): AST {
+
+        return super.visitStructAssign(ctx)
+    }
+
+
+    override fun visitStructType(ctx: WaccParser.StructTypeContext?): AST {
+        return super.visitStructType(ctx)
+    }
+
+
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
         val whileStatAst = WhileStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat()) as StatAST))

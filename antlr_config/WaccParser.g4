@@ -36,7 +36,7 @@ assignRhs: expr
 
 structDeclare: STRUCT ident L_CURLY (type ident SEMICOLON)* R_CURLY;
 
-structAssign: L_CURLY assignRhs* R_CURLY;
+structAssign: L_CURLY (assignRhs)* R_CURLY;
 
 argList: expr (COMMA expr)* ;
 
