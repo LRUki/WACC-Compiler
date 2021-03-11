@@ -19,7 +19,7 @@ import kotlin.test.assertTrue
 
 class ConstantEvaluationTest {
     @Test
-    fun IntBinOpsAreOptimized() {
+    fun intBinOpsAreOptimized() {
         val folder = File("extension_wacc/valid/optimization/const_eval/binary_operator")
         actionOnFiles(folder) { file ->
             if(file.name.contains("int")){
@@ -31,7 +31,7 @@ class ConstantEvaluationTest {
     }
 
     @Test
-    fun BoolBinOpsAreOptimized() {
+    fun boolBinOpsAreOptimized() {
         val folder = File("extension_wacc/valid/optimization/const_eval/binary_operator")
         actionOnFiles(folder) { file ->
             if(file.name.contains("bool")) {
@@ -43,7 +43,7 @@ class ConstantEvaluationTest {
     }
 
     @Test
-    fun CmpBinOpsAreOptimized() {
+    fun cmpBinOpsAreOptimized() {
         val folder = File("extension_wacc/valid/optimization/const_eval/binary_operator")
         actionOnFiles(folder) { file ->
             if(file.name.contains("cmp")) {
