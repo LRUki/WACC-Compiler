@@ -1,0 +1,13 @@
+# tests whether the compiler can optimize negative expressions
+
+# Output:
+# #empty#
+
+# Exit:
+# 3
+
+begin
+
+  int x = -(-3);
+  exit x
+end

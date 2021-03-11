@@ -1,0 +1,13 @@
+# tests whether the compiler can optimize negation
+
+# Output:
+# #empty#
+
+# Prints:
+# true
+
+begin
+
+  bool b = !!true;
+  println b
+end
