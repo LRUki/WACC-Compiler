@@ -3,6 +3,7 @@ package wacc.frontend.ast.expression
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
+import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
@@ -203,7 +204,7 @@ enum class UnOp {
  * @property identOp Operation to perform on the expression, chosen from the IdentOp Enum
  * @property ident ident to operate on
  */
-class IdentOpExprAST(val identOp: IdentOp, val ident: IdentAST) : ExprAST, RhsAST, AbstractAST() {
+class IdentOpExprAST(val identOp: IdentOp, val ident: IdentAST) : ExprAST, LhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
         if (!ident.check(table)) {
             return false

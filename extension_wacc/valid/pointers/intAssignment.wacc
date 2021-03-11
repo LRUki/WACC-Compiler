@@ -1,0 +1,16 @@
+# simple integer variable declaration and assignment
+
+# Output:
+# #empty#
+
+# Exit:
+# 20
+
+# Program:
+
+begin
+  int x = 10 ;
+  int* p = &x;
+  *p = 10 + *p ;
+  exit x
+end
