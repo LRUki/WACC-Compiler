@@ -23,6 +23,11 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
         return "pair(${type1}, ${type2})"
     }
 
+    override fun toLabel(): String {
+//        return "pair_${type1.toLabel()}_${type2.toLabel()}"
+        return "pair"
+    }
+
     override fun isConcreteType(parentType: TypeAST?): Boolean {
         return type1.isConcreteType(this) && type2.isConcreteType(this)
     }

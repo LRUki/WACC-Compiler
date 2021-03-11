@@ -1,17 +1,6 @@
 package wacc.frontend.ast.assign
 
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.CLibrary
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.MemoryType
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
-import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
@@ -59,10 +48,12 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
  * @property ident Identifier representing function name
  * @property argList List of expression as arguments for the function
  */
-class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, AbstractAST() {
+class CallRhsAST(var ident: IdentAST, val argList: List<ExprAST>) : RhsAST, AbstractAST() {
     lateinit var argTypes: MutableList<TypeAST>
     override fun check(table: SymbolTable): Boolean {
         symTable = table
+        // Use the full function signature name to allow function overriding
+        this.ident = IdentAST(toLabel())
         if (!ident.check(table)) {
             return false
         }
@@ -105,4 +96,10 @@ class CallRhsAST(val ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         return visitor.visitCallRhsAST(this)
     }
 
+    fun toLabel(): String {
+        val builder = StringBuilder()
+        builder.append(ident.toString())
+        argList.forEach { builder.append("_" + it.getRealType(symTable).toLabel()) }
+        return builder.toString()
+    }
 }

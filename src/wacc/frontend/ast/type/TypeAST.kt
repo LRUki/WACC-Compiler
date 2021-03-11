@@ -20,6 +20,10 @@ interface TypeAST : AST {
 
     override fun toString(): String
 
+    fun toLabel(): String {
+        return toString()
+    }
+
     fun isBoolOrChar(): Boolean {
         return false
     }

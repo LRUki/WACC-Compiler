@@ -28,7 +28,7 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
     }
 
     override fun toString(): String {
-        return type.name
+        return type.name.toLowerCase()
     }
 
     override fun hashCode(): Int {
