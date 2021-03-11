@@ -15,7 +15,7 @@ param: type ident;
 stat: SKIP_TOKEN                                      #skipStat
       | (type | implicitType) ident ASSIGN assignRhs  #declareStat
       | assignLhs ASSIGN assignRhs                    #assignStat
-      | structDeclare                                 #structDeclareStat
+      | STRUCT ident L_CURLY (structField)* R_CURLY #structDeclareStat
       | READ assignLhs                                #readStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
       | IF expr THEN stat ELSE stat FI                #ifStat
@@ -34,7 +34,7 @@ assignRhs: expr
          | CALL ident L_PAREN argList? R_PAREN
          | structAssign;
 
-structDeclare: STRUCT ident L_CURLY (type ident SEMICOLON)* R_CURLY;
+structField : type ident SEMICOLON;
 
 structAssign: L_CURLY (assignRhs)* R_CURLY;
 
