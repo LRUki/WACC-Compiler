@@ -99,7 +99,11 @@ class CallRhsAST(var ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
     fun toLabel(): String {
         val builder = StringBuilder()
         builder.append(ident.toString())
-        argList.forEach { builder.append("_" + it.getRealType(symTable).toLabel()) }
+        if (argList.isNotEmpty()) {
+            argList.forEach { builder.append("_" + it.getRealType(symTable).toLabel()) }
+        } else {
+            builder.append("_void")
+        }
         return builder.toString()
     }
 }

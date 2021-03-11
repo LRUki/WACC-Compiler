@@ -55,7 +55,11 @@ class FuncAST(val type: TypeAST, var ident: IdentAST,
     fun toLabel(): String {
         val builder = StringBuilder()
         builder.append(ident.toString())
-        paramList.forEach { builder.append("_" + it.type.toLabel()) }
+        if (paramList.isNotEmpty()) {
+            paramList.forEach { builder.append("_" + it.type.toLabel()) }
+        } else {
+            builder.append("_void")
+        }
         return builder.toString()
     }
 
