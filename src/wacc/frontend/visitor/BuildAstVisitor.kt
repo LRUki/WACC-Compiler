@@ -142,7 +142,18 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         }
     }
 
-    override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext?): AST {
+    override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext): AST {
+        if (ctx.identop() != null) {
+            val identopContext = ctx.identop()
+            val identOp = when {
+                identopContext.REF() != null -> IdentOp.REF
+                identopContext.MULT() != null -> IdentOp.DEREF
+                else -> throw RuntimeException()
+            }
+            val identOpExprAST = IdentOpExprAST(identOp, visit(ctx.ident()) as IdentAST)
+            identOpExprAST.ctx = ctx
+            return identOpExprAST
+        }
         return visitChildren(ctx)
     }
 
