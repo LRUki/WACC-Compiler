@@ -20,6 +20,10 @@ interface TypeAST : AST {
 
     override fun toString(): String
 
+    fun toLabel(): String {
+        return toString()
+    }
+
     fun isBoolOrChar(): Boolean {
         return false
     }
@@ -31,7 +35,7 @@ interface TypeAST : AST {
     /**
      * @return whether the type can be declared in a declare statement.
      */
-    fun isConcreteType(): Boolean
+    fun isConcreteType(parentType: TypeAST? = null): Boolean
 
 }
 
@@ -42,16 +46,26 @@ interface TypeAST : AST {
  * DeclareStatAST finishes.
  */
 class ImplicitTypeAST : TypeAST {
-    override fun equals(other: Any?): Boolean {
-        return false // equals() should never be called on an ImplicitTypeAST
-    }
 
     override fun toString(): String {
         return "var"
     }
 
-    override fun isConcreteType(): Boolean {
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
         return false
+    }
+
+    /**
+     * Technically, equals() should never be called on an ImplicitTypeAST
+     */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ImplicitTypeAST) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
     }
 
 }

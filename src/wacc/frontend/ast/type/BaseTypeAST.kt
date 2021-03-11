@@ -23,12 +23,12 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
         return (type == BaseType.BOOL) || (type == BaseType.CHAR)
     }
 
-    override fun isConcreteType(): Boolean {
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
         return true
     }
 
     override fun toString(): String {
-        return type.name
+        return type.name.toLowerCase()
     }
 
     override fun hashCode(): Int {
