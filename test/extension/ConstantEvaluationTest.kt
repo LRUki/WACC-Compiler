@@ -19,10 +19,22 @@ import kotlin.test.assertTrue
 
 class ConstantEvaluationTest {
     @Test
-    fun ArithmeticBinOpsAreOptimized() {
+    fun IntBinOpsAreOptimized() {
         val folder = File("wacc_examples/valid/expressions/")
         actionOnFiles(folder) { file ->
             if(file.name.contains("longExpr") or file.name.contains(Regex("plus[a-zA-Z]+Expr"))){
+                val ast = buildAst(file)
+                val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
+                assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
+            }
+        }
+    }
+
+    @Test
+    fun BoolBinOpsAreOptimized() {
+        val folder = File("wacc_examples/valid/expressions/")
+        actionOnFiles(folder) { file ->
+            if(file.name.contains("boolExpr1")) {
                 val ast = buildAst(file)
                 val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
                 assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
