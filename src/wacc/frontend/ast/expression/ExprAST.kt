@@ -145,26 +145,6 @@ enum class CmpBinOp:BinOp{
     NEQ,
 }
 
-//fun main(){
-//    val a = IntBinOp.DIV
-//    val b = BinOpExprAST(a,IntLiterAST(3),IntLiterAST(3))
-//    when (b.binOp){
-//        BoolBinOp.AND -> {println("bool fuck")}
-//        IntBinOp.PLUS -> {println("oh no")}
-//        IntBinOp.DIV -> {println("here")}
-//        else -> {
-//            println("funck")}
-//    }
-//}
-
-//enum class BinOp {
-//    MULT, DIV, MOD,
-//    PLUS, MINUS,
-//    LTE, LT, GTE, GT,
-//    EQ, NEQ,
-//    AND,
-//    OR
-//}
 
 /**
  * AST node to represent an expression with a Unary Operation
