@@ -43,13 +43,14 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         }
 
         when (binOp) {
-            is IntBinOp -> {
+            IntBinOp.MULT, IntBinOp.DIV, IntBinOp.MOD,
+            IntBinOp.PLUS, IntBinOp.MINUS -> {
                 if (type1 == intTypeInstance) {
                     return true
                 }
                 semanticError("Expected type INT, Actual type $type1", ctx)
             }
-            is CmpBinOp -> {
+            CmpBinOp.LTE, CmpBinOp.LT, CmpBinOp.GTE, CmpBinOp.GT -> {
                 if (type1 == intTypeInstance ||
                         type1 == charTypeInstance ||
                         type1 == stringTypeInstance) {
@@ -57,7 +58,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 }
                 semanticError("Expected type INT, CHAR or STRING, Actual type $type1", ctx)
             }
-            is BoolBinOp -> {
+            BoolBinOp.AND, BoolBinOp.OR -> {
                 if (type1 == boolTypeInstance) {
                     return true
                 }
@@ -70,10 +71,15 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
-        return if (binOp is IntBinOp)
-            BaseTypeAST(BaseType.INT)
-            else BaseTypeAST(BaseType.BOOL)
-
+        return when (binOp) {
+            IntBinOp.MULT, IntBinOp.DIV, IntBinOp.MOD,
+            IntBinOp.PLUS, IntBinOp.MINUS -> {
+                BaseTypeAST(BaseType.INT)
+            }
+            else -> {
+                BaseTypeAST(BaseType.BOOL)
+            }
+        }
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
