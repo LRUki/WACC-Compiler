@@ -127,17 +127,26 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return declareStatAST
     }
 
-    override fun visitStructDeclare(ctx: WaccParser.StructDeclareContext?): AST {
-        return super.visitStructDeclare(ctx)
+    override fun visitStructDeclare(ctx: WaccParser.StructDeclareContext): AST {
+
+        var fieldList = emptyList<StructFieldAST>()
+        for (field in ctx.children) {
+            fieldList += visit(field) as StructFieldAST
+        }
+
+        val structDeclare = StructDeclareAST(visit(ctx.ident(1)) as IdentAST, fieldList)
+
+        structDeclare.ctx = ctx
+        return structDeclare
     }
 
-    override fun visitStructAssign(ctx: WaccParser.StructAssignContext?): AST {
+    override fun visitStructAssign(ctx: WaccParser.StructAssignContext): AST {
 
         return super.visitStructAssign(ctx)
     }
 
 
-    override fun visitStructType(ctx: WaccParser.StructTypeContext?): AST {
+    override fun visitStructType(ctx: WaccParser.StructTypeContext): AST {
         return super.visitStructType(ctx)
     }
 
