@@ -41,6 +41,19 @@ class ConstantEvaluationTest {
             }
         }
     }
+
+    @Test
+    fun CmpBinOpsAreOptimized() {
+        val folder = File("extension_wacc/valid/optimization/const_eval/binary_operator")
+        actionOnFiles(folder) { file ->
+            if(file.name.contains("cmp")) {
+                val ast = buildAst(file)
+                val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
+                assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
+            }
+        }
+    }
+
     private fun buildAst(file: File): ProgramAST {
         val program = parse(file.inputStream())
         checkSyntax(program)
