@@ -227,19 +227,19 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitBinopExpr(ctx: WaccParser.BinopExprContext): AST {
         val binop = when (ctx.getChild(1).text) {
-            "+" -> BinOp.PLUS
-            "-" -> BinOp.MINUS
-            "*" -> BinOp.MULT
-            "/" -> BinOp.DIV
-            "%" -> BinOp.MOD
-            ">=" -> BinOp.GTE
-            ">" -> BinOp.GT
-            "<=" -> BinOp.LTE
-            "<" -> BinOp.LT
-            "==" -> BinOp.EQ
-            "!=" -> BinOp.NEQ
-            "&&" -> BinOp.AND
-            "||" -> BinOp.OR
+            "+" -> IntBinOp.PLUS
+            "-" -> IntBinOp.MINUS
+            "*" -> IntBinOp.MULT
+            "/" -> IntBinOp.DIV
+            "%" -> IntBinOp.MOD
+            ">=" -> CmpBinOp.GTE
+            ">" -> CmpBinOp.GT
+            "<=" -> CmpBinOp.LTE
+            "<" -> CmpBinOp.LT
+            "==" -> CmpBinOp.EQ
+            "!=" -> CmpBinOp.NEQ
+            "&&" -> BoolBinOp.AND
+            "||" -> BoolBinOp.OR
             else -> throw RuntimeException()
         }
         val binOpExprAST = BinOpExprAST(binop,
