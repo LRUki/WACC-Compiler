@@ -7,6 +7,7 @@ import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -58,9 +59,9 @@ interface AstVisitor<T> {
      */
     fun visitBinOpExprAST(ast: BinOpExprAST): T
     fun visitUnOpExprAST(ast: UnOpExprAST): T
-    fun visitIdentOpExprAST(ast: IdentOpExprAST): T
     fun visitArrayElemAST(ast: ArrayElemAST): T
     fun visitPairElemAST(ast: PairElemAST): T
+    fun visitPointerElemAST(ast: PointerElemAST): T
 
     /*
      * Visit ident and literal ASTs.

@@ -13,7 +13,7 @@ paramList: param (COMMA param)*;
 param: type ident;
 
 stat: SKIP_TOKEN                                      #skipStat
-      | (type | implicitType) ident ASSIGN assignRhs                   #declareStat
+      | (type | implicitType) ident ASSIGN assignRhs  #declareStat
       | assignLhs ASSIGN assignRhs                    #assignStat
       | READ assignLhs                                #readStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
@@ -25,7 +25,7 @@ stat: SKIP_TOKEN                                      #skipStat
 assignLhs: ident
          | arrayElem
          | pairElem
-         | identop ident ;
+         | pointerElem ;
 
 assignRhs: expr
          | arrayLiter
@@ -37,6 +37,8 @@ argList: expr (COMMA expr)* ;
 
 pairElem: FST expr
         | SND expr ;
+
+pointerElem: MULT ident ;
 
 type: baseType | pairType | arrayType | pointerType ;
 
@@ -69,12 +71,9 @@ expr: expr binop1 expr     #binopExpr
     | ident                #singletonExpr
     | arrayElem            #singletonExpr
     | unop expr            #unopExpr
-    | identop ident        #identopExpr
     | L_PAREN expr R_PAREN #parenExpr;
 
-identop: REF | MULT ;
-
-unop: NOT | MINUS | LEN | ORD | CHR ;
+unop: NOT | MINUS | LEN | ORD | CHR | REF | MULT ;
 
 binop1: MULT | DIV | MOD;
 binop2: PLUS | MINUS;

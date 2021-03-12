@@ -13,6 +13,7 @@ import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -143,17 +144,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext): AST {
-        if (ctx.identop() != null) {
-            val identopContext = ctx.identop()
-            val identOp = when {
-                identopContext.REF() != null -> IdentOp.REF
-                identopContext.MULT() != null -> IdentOp.DEREF
-                else -> throw RuntimeException()
-            }
-            val identOpExprAST = IdentOpExprAST(identOp, visit(ctx.ident()) as IdentAST)
-            identOpExprAST.ctx = ctx
-            return identOpExprAST
-        }
         return visitChildren(ctx)
     }
 
@@ -187,6 +177,12 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         val pariElemAST = PairElemAST(choice, visit(ctx.expr()) as ExprAST)
         pariElemAST.ctx = ctx
         return pariElemAST
+    }
+
+    override fun visitPointerElem(ctx: WaccParser.PointerElemContext): AST {
+        val pointerElemAST = PointerElemAST(visit(ctx.ident()) as IdentAST)
+        pointerElemAST.ctx = ctx
+        return pointerElemAST
     }
 
     override fun visitType(ctx: WaccParser.TypeContext?): AST {
@@ -230,18 +226,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return ImplicitTypeAST()
     }
 
-    override fun visitIdentopExpr(ctx: WaccParser.IdentopExprContext): AST {
-        val identopContext = ctx.identop()
-        val identOp = when {
-            identopContext.REF() != null -> IdentOp.REF
-            identopContext.MULT() != null -> IdentOp.DEREF
-            else -> throw RuntimeException()
-        }
-        val identOpExprAST = IdentOpExprAST(identOp, visit(ctx.ident()) as IdentAST)
-        identOpExprAST.ctx = ctx
-        return identOpExprAST
-    }
-
     override fun visitUnopExpr(ctx: WaccParser.UnopExprContext): AST {
         val unopContext = ctx.unop()
         val unOp = when {
@@ -250,6 +234,8 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             unopContext.LEN() != null -> UnOp.LEN
             unopContext.ORD() != null -> UnOp.ORD
             unopContext.CHR() != null -> UnOp.CHR
+            unopContext.REF() != null -> UnOp.REF
+            unopContext.MULT() != null -> UnOp.DEREF
             else -> throw RuntimeException()
         }
 

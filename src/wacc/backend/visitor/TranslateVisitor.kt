@@ -22,6 +22,7 @@ import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -711,12 +712,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             UnOp.CHR -> {
                 // Intentionally Left Blank
             }
+            UnOp.REF -> TODO()
+            UnOp.DEREF -> TODO()
         }
         return instrs
-    }
-
-    override fun visitIdentOpExprAST(ast: IdentOpExprAST): List<Instruction> {
-        TODO("Not yet implemented")
     }
 
     /** Translates an Array element AST (i.e. array[0]) */
@@ -768,6 +767,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(reg, pointerOffset, false), reg))
         }
         return instrs
+    }
+
+    override fun visitPointerElemAST(ast: PointerElemAST): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
     /** Translates an Identifier AST */

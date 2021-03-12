@@ -177,6 +177,22 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 }
                 semanticError("Expected type CHAR, Actual type $exprType", ctx)
             }
+            UnOp.REF -> {
+                if (exprType is BaseTypeAST) {
+                    if (expr is IdentAST) {
+                        return true
+                    }
+                    semanticError("Referencing is only supported for idents", ctx)
+                }
+                semanticError("Unable to reference non-base type $exprType", ctx)
+            }
+            UnOp.DEREF -> {
+                if (exprType is PointerTypeAST) {
+                    return true
+                }
+                semanticError("Unable to dereference non-pointer type $exprType", ctx)
+
+            }
         }
         return false
     }
@@ -186,6 +202,14 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
             UnOp.NOT -> BaseTypeAST(BaseType.BOOL)
             UnOp.CHR -> BaseTypeAST(BaseType.CHAR)
             UnOp.MINUS, UnOp.LEN, UnOp.ORD -> BaseTypeAST(BaseType.INT)
+            UnOp.REF -> {
+                val exprType = expr.getRealType(table)
+                PointerTypeAST(exprType)
+            }
+            UnOp.DEREF -> {
+                val exprType = expr.getRealType(table)
+                (exprType as PointerTypeAST).type
+            }
         }
     }
 
@@ -195,55 +219,5 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 }
 
 enum class UnOp {
-    NOT, MINUS, LEN, ORD, CHR
-}
-
-/**
- * AST node to represent an expression with an Ident Operation
- *
- * @property identOp Operation to perform on the expression, chosen from the IdentOp Enum
- * @property ident ident to operate on
- */
-class IdentOpExprAST(val identOp: IdentOp, val ident: IdentAST) : ExprAST, LhsAST, AbstractAST() {
-    override fun check(table: SymbolTable): Boolean {
-        if (!ident.check(table)) {
-            return false
-        }
-        val identType = ident.getRealType(table)
-
-        return when (identOp) {
-            IdentOp.REF -> {
-                true
-            }
-            IdentOp.DEREF -> {
-                if (identType is PointerTypeAST) {
-                    true
-                } else {
-                    semanticError("Type $identType is not a pointer type", ctx)
-                    false
-                }
-            }
-        }
-    }
-
-    override fun getRealType(table: SymbolTable): TypeAST {
-        val identType = ident.getRealType(table)
-        return when (identOp) {
-            IdentOp.REF -> {
-                PointerTypeAST(identType)
-            }
-            IdentOp.DEREF -> {
-                (identType as PointerTypeAST).type
-            }
-        }
-    }
-
-    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
-        return visitor.visitIdentOpExprAST(this)
-    }
-
-}
-
-enum class IdentOp {
-    REF, DEREF
+    NOT, MINUS, LEN, ORD, CHR, REF, DEREF
 }

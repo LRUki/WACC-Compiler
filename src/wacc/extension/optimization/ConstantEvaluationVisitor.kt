@@ -11,6 +11,7 @@ import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -150,10 +151,6 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         return callRhsAST
     }
 
-    override fun visitIdentOpExprAST(ast: IdentOpExprAST): AST {
-        return ast
-    }
-
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
         val e1 = visit(ast.expr1)
         val e2 = visit(ast.expr2)
@@ -211,6 +208,10 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         return ast
     }
 
+    override fun visitPointerElemAST(ast: PointerElemAST): AST {
+        return ast
+    }
+
     override fun visitIdentAST(ast: IdentAST): AST {
         return ast
     }
@@ -242,6 +243,8 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
     override fun visitTypeAST(ast: TypeAST): AST {
         return ast
     }
+
+
 
 
 }
