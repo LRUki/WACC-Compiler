@@ -17,6 +17,7 @@ import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
+import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -932,6 +933,14 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Translates a Type AST. Requires no code generation  */
     override fun visitTypeAST(ast: TypeAST): List<Instruction> {
         return emptyList()
+    }
+
+    override fun visitStructDeclare(ast: StructDeclareAST): List<Instruction> {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitStructAssign(ast: StructAssignAST): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
 }

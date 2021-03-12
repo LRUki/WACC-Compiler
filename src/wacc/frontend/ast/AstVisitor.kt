@@ -3,6 +3,7 @@ package wacc.frontend.ast
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
+import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -14,10 +15,8 @@ import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
-import wacc.frontend.ast.statement.nonblock.ActionStatAST
-import wacc.frontend.ast.statement.nonblock.AssignStatAST
-import wacc.frontend.ast.statement.nonblock.DeclareStatAST
-import wacc.frontend.ast.statement.nonblock.ReadStatAST
+import wacc.frontend.ast.statement.nonblock.*
+import wacc.frontend.ast.type.StructTypeAST
 import wacc.frontend.ast.type.TypeAST
 
 interface AstVisitor<T> {
@@ -79,5 +78,12 @@ interface AstVisitor<T> {
      * Visit type ASTs.
      */
     fun visitTypeAST(ast: TypeAST): T
+
+    /*
+    * Visit Struct ASTs.
+    */
+
+    fun visitStructDeclare(ast: StructDeclareAST): T
+    fun visitStructAssign(ast: StructAssignAST): T
 
 }
