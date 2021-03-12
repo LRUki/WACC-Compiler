@@ -1,0 +1,11 @@
+# assign members of incorrect type to a struct
+
+# Output:
+#
+
+# Program:
+
+begin
+  struct Person {int age; char grade;};
+  struct Person alice = {'k', 64}
+end
