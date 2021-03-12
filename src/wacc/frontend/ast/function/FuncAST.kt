@@ -25,7 +25,9 @@ class FuncAST(val type: TypeAST, var ident: IdentAST,
         //create a symbol table for the function and add all parameters to it
         symTable = FuncSymbolTable(table, this)
         // Use the full function signature name to allow function overriding
-        this.ident = IdentAST(toLabel())
+        val newIdent = IdentAST(toLabel())
+        newIdent.ctx = this.ident.ctx
+        this.ident = newIdent
         paramList.forEach { symTable.add(it.ident.name, it) }
         body.forEach {
             if (!it.check(symTable)) {

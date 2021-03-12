@@ -3,16 +3,15 @@ package wacc.frontend.ast.expression
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
+import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.ast.type.ArrayTypeAST
-import wacc.frontend.ast.type.BaseType
-import wacc.frontend.ast.type.BaseTypeAST
-import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.*
 import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
 import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 import wacc.frontend.ast.type.TypeInstance.intTypeInstance
 import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.exception.semanticError
+import wacc.frontend.exception.syntaxError
 import java.util.function.BiFunction
 import java.util.function.BinaryOperator
 import java.util.function.IntBinaryOperator
@@ -179,6 +178,22 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 }
                 semanticError("Expected type CHAR, Actual type $exprType", ctx)
             }
+            UnOp.REF -> {
+                if (exprType is BaseTypeAST) {
+                    if (expr is IdentAST) {
+                        return true
+                    }
+                    semanticError("Referencing is only supported for idents", ctx)
+                }
+                semanticError("Unable to reference non-base type $exprType", ctx)
+            }
+            UnOp.DEREF -> {
+                if (exprType is PointerTypeAST) {
+                    return true
+                }
+                semanticError("Unable to dereference non-pointer type $exprType", ctx)
+
+            }
         }
         return false
     }
@@ -188,6 +203,14 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
             UnOp.NOT -> BaseTypeAST(BaseType.BOOL)
             UnOp.CHR -> BaseTypeAST(BaseType.CHAR)
             UnOp.MINUS, UnOp.LEN, UnOp.ORD -> BaseTypeAST(BaseType.INT)
+            UnOp.REF -> {
+                val exprType = expr.getRealType(table)
+                PointerTypeAST(exprType)
+            }
+            UnOp.DEREF -> {
+                val exprType = expr.getRealType(table)
+                (exprType as PointerTypeAST).type
+            }
         }
     }
 
@@ -197,5 +220,5 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 }
 
 enum class UnOp {
-    NOT, MINUS, LEN, ORD, CHR
+    NOT, MINUS, LEN, ORD, CHR, REF, DEREF
 }

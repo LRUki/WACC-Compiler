@@ -22,6 +22,7 @@ import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -292,6 +293,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
                         cLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                     }
+                    is PointerTypeAST -> {
+                        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
+                        cLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                    }
                 }
                 if (ast.action == Action.PRINTLN) {
                     cLib.addCode(CLibrary.Call.PRINT_LN)
@@ -336,6 +342,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
             }
+            is PointerElemAST -> {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
+            }
         }
 
         when (ast.lhs) {
@@ -353,7 +362,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.addAll(visit(ast.lhs))
                 instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
-
+            }
+            is PointerElemAST-> {
+                instrs.addAll(visit(ast.lhs))
+                instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
+                freeCalleeReg()
             }
         }
 
@@ -711,6 +724,29 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             UnOp.CHR -> {
                 // Intentionally Left Blank
             }
+            UnOp.REF -> {
+                val ident = ast.expr as IdentAST
+
+                /** Computes offset to push down the stack pointer */
+                var stackOffset = ident.symTable.findOffsetInStack(ident.name)
+                stackOffset += ident.symTable.checkParamInFuncSymbolTable(ident.name) + ident.symTable.callOffset
+                instrs.add(AddInstr(Condition.AL, reg1, Register.SP, ImmediateIntOperand(stackOffset), false))
+
+                instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(reg1)))
+
+                freeCalleeReg()
+                return instrs
+            }
+            UnOp.DEREF -> {
+                /** Translates the expression */
+                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
+                instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
+                runtimeErrors.addNullReferenceCheck()
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
+                
+                return instrs
+
+            }
         }
         return instrs
     }
@@ -763,6 +799,19 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         } else {
             instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(reg, pointerOffset, false), reg))
         }
+        return instrs
+    }
+
+    override fun visitPointerElemAST(ast: PointerElemAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        /** Translates the expression */
+        instrs.addAll(visit(ast.ident))
+        val reg = seeLastUsedCalleeReg()
+        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+        instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
+        runtimeErrors.addNullReferenceCheck()
+//        instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
+
         return instrs
     }
 
