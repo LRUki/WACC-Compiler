@@ -34,8 +34,8 @@ assignRhs: expr
          | CALL ident L_PAREN argList? R_PAREN
          | structAssign;
 
-member: type ident;
-structDeclare: STRUCT ident L_CURLY (member SEMICOLON)* R_CURLY;
+//member: type ident;
+structDeclare: STRUCT ident L_CURLY (type ident SEMICOLON)* R_CURLY;
 
 structAssign: L_CURLY (assignRhs)* R_CURLY;
 

@@ -128,6 +128,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
         val fieldList = emptyList<StructFieldAST>().toMutableList()
         for (field in ctx.children) {
+            //TODO("use ctx.member once make works")
             fieldList += visit(field) as StructFieldAST
         }
 
