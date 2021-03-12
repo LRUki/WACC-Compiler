@@ -5,6 +5,7 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.type.*
+import wacc.frontend.ast.type.StructTypeAST.Companion.structIdent
 
 class StructAssignAST(val assignments: List<RhsAST>) : RhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
@@ -22,10 +23,7 @@ class StructAssignAST(val assignments: List<RhsAST>) : RhsAST, AbstractAST() {
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
-        return StructTypeAST(IdentAST(""))
-//        val fields = mutableListOf<TypeAST>()
-//        assignments.forEach { fields.add(it.getRealType(table)) }
-//        return StructMemberTypesAST(fields)
+        return StructTypeAST(structIdent)
     }
 
 }
