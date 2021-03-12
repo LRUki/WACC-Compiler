@@ -10,7 +10,7 @@ import java.time.temporal.IsoFields
 class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
 
     companion object {
-        val structIdent = IdentAST("")
+        val defStructIdent = IdentAST("")
     }
 
     override fun equals(other: Any?): Boolean {

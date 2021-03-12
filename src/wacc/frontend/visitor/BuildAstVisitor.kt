@@ -173,6 +173,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return visitChildren(ctx)
     }
 
+
     override fun visitAssignRhs(ctx: WaccParser.AssignRhsContext): AST {
         return when {
             ctx.NEWPAIR() != null -> NewPairRhsAST(
@@ -274,6 +275,17 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitSingletonExpr(ctx: WaccParser.SingletonExprContext?): AST {
+        return visitChildren(ctx)
+    }
+
+    override fun visitStructAccess(ctx: WaccParser.StructAccessContext): AST {
+        val structAccessAST = StructAccessAST(visit(ctx.ident(0)) as IdentAST,
+                visit(ctx.ident(1)) as IdentAST)
+        structAccessAST.ctx = ctx
+        return structAccessAST
+    }
+
+    override fun visitStructAccessExpr(ctx: WaccParser.StructAccessExprContext): AST {
         return visitChildren(ctx)
     }
 

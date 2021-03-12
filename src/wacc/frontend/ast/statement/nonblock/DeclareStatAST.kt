@@ -22,6 +22,7 @@ import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.expression.StrLiterAST
+import wacc.frontend.ast.expression.StructAccessAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
@@ -49,6 +50,13 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         if (identName.isPresent && identName.get() !is FuncAST) {
             semanticError("Variable $ident already exists", ctx)
             return false
+        }
+        if (rhs is StructAccessAST) {
+            val structInST = symTable.lookup(rhs.structIdent.name)
+            if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
+                semanticError("Attempting to assign to non-existing field of struct ${rhs.structIdent.name}", ctx)
+                return false
+            }
         }
 
         if (type !is ImplicitTypeAST) {
