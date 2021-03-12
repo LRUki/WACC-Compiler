@@ -3,11 +3,16 @@ package wacc.frontend.ast.assign
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.type.StructTypeAST
-import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.*
 
 class StructAssignAST(val assignments: List<RhsAST>) : RhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
+        assignments.forEach {
+            if (!it.check(table)) {
+                return false
+            }
+        }
         return true
     }
 
@@ -16,7 +21,9 @@ class StructAssignAST(val assignments: List<RhsAST>) : RhsAST, AbstractAST() {
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
-        return StructTypeAST()
+        val fields = mutableListOf<TypeAST>()
+        assignments.forEach { fields.add(it.getRealType(table)) }
+        return StructMemberTypesAST(fields)
     }
 
 }

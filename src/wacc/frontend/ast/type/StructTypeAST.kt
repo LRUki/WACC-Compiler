@@ -4,14 +4,21 @@ import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.statement.nonblock.StructDeclareAST
+import java.time.temporal.IsoFields
 
-class StructTypeAST() : TypeAST, AbstractAST() {
+class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
+    lateinit var fieldTypes: StructMemberTypesAST
+
     override fun check(table: SymbolTable): Boolean {
         return true
     }
 
     override fun equals(other: Any?): Boolean {
-        return other is StructTypeAST
+        if (other !is StructTypeAST) {
+            return false
+        }
+        return fieldTypes.equals(other.fieldTypes)
     }
 
     override fun toString(): String {
@@ -20,8 +27,7 @@ class StructTypeAST() : TypeAST, AbstractAST() {
     }
 
     override fun isConcreteType(parentType: TypeAST?): Boolean {
-        return true
-        TODO("Implement properly")
+        return fieldTypes.isConcreteType(parentType)
     }
 
     override fun hashCode(): Int {
@@ -33,7 +39,7 @@ class StructTypeAST() : TypeAST, AbstractAST() {
 
 class StructFieldAST(val type: TypeAST, val ident: IdentAST) : AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
-        return type.check(table) && ident.check(table)
+        return type.check(table)
 
     }
 

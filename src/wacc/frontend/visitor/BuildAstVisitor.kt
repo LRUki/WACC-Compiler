@@ -150,13 +150,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return structAssign
     }
 
-
-    override fun visitStructType(ctx: WaccParser.StructTypeContext): AST {
-        //TODO("Review, augment with list of types?")
-        return StructTypeAST()
-    }
-
-
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
         val whileStatAst = WhileStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat()) as StatAST))
@@ -170,6 +163,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         } else {
             listOf(stat)
         }
+    }
+
+    override fun visitStructType(ctx: WaccParser.StructTypeContext): AST {
+        return StructTypeAST(visit(ctx.capitalisedIdent()) as IdentAST)
     }
 
     override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext): AST {

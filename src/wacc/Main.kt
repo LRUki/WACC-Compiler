@@ -55,21 +55,21 @@ suspend fun main(args: Array<String>) {
     createErrorChannels()
     ast = frontend(inputFile)
 
-//    if (optimize) {
-//        ast = ConstantEvaluationVisitor().visit(ast)
-//    }
-//
-//    val outputString = backend(ast)
-//    var outputFileName = inputFile.nameWithoutExtension + ".s"
-//    if (paths.size > 1) {
-//        outputFileName = paths[1]
-//    }
-//    val outputFile = File(outputFileName)
-//
-//    if (paths.size > 1) {
-//        Files.createDirectories(outputFile.toPath().parent)
-//    }
-//    outputFile.writeText(outputString)
+    if (optimize) {
+        ast = ConstantEvaluationVisitor().visit(ast)
+    }
+
+    val outputString = backend(ast)
+    var outputFileName = inputFile.nameWithoutExtension + ".s"
+    if (paths.size > 1) {
+        outputFileName = paths[1]
+    }
+    val outputFile = File(outputFileName)
+
+    if (paths.size > 1) {
+        Files.createDirectories(outputFile.toPath().parent)
+    }
+    outputFile.writeText(outputString)
 }
 
 

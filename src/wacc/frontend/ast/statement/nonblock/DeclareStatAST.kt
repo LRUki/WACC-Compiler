@@ -64,6 +64,14 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
             }
         }
 
+        if (type is StructTypeAST) {
+            val fields = table.lookupAll((type as StructTypeAST).ident.name)
+
+
+//            if(fields){}
+
+        }
+
         table.add(ident.name, this)
         return true
     }
