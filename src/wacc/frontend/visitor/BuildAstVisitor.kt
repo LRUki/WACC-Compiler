@@ -140,7 +140,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitStructAssign(ctx: WaccParser.StructAssignContext): AST {
         var assignments = emptyList<RhsAST>()
-        for (rhs in ctx.assignRhs()){
+        for (rhs in ctx.assignRhs()) {
             assignments = assignments + visit(rhs) as RhsAST
         }
         return StructAssignAST(assignments)
