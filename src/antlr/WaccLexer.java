@@ -50,7 +50,6 @@ public class WaccLexer extends Lexer {
 				"COMMENT"
 		};
 	}
-
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
@@ -275,7 +274,6 @@ public class WaccLexer extends Lexer {
 					"\2\2\13\2\u0168\u016d\u0170\u0172\u0178\u0181\u0187\u0194\3\b\2\2";
 	public static final ATN _ATN =
 			new ATNDeserializer().deserialize(_serializedATN.toCharArray());
-
 	static {
 		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
 		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
