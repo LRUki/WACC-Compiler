@@ -45,18 +45,26 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         if (!rhs.check(table)) {
             return false
         }
+        if (rhs is StructAccessAST) {
+            val structFromIdent = table.lookup(rhs.structIdent.name)
+            if (structFromIdent.isEmpty) {
+                semanticError("Setting fields for a non-declared struct", ctx)
+                return false
+            }
+            val structDeclareInST = structFromIdent.get() as DeclareStatAST
+            val structName = (structDeclareInST.type as StructTypeAST).ident.name
+            val structInST = table.lookupAll(structName)
+            if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
+                semanticError("Declared instance of non-existing type struct $structName", ctx)
+                return false
+            }
+        }
+
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
         if (identName.isPresent && identName.get() !is FuncAST) {
             semanticError("Variable $ident already exists", ctx)
             return false
-        }
-        if (rhs is StructAccessAST) {
-            val structInST = symTable.lookup(rhs.structIdent.name)
-            if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
-                semanticError("Attempting to assign to non-existing field of struct ${rhs.structIdent.name}", ctx)
-                return false
-            }
         }
 
         if (type !is ImplicitTypeAST) {

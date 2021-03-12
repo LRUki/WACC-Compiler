@@ -34,6 +34,17 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         return true
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other !is IdentAST) {
+            return false
+        }
+        return name.equals(other.name)
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
+
     override fun toString(): String {
         return name
     }
