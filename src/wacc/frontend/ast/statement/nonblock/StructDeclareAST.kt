@@ -5,14 +5,29 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.Identifiable
 import wacc.frontend.ast.type.StructFieldAST
 import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.exception.semanticError
+import wacc.startErrorListener
 
 class StructDeclareAST(val ident: IdentAST, val fields: List<StructFieldAST>) : Identifiable, StatAST, AbstractAST(){
     override fun check(table: SymbolTable): Boolean {
-        //add to symbol table
+        symTable = table
+        if (!ident.check(table)) {
+            return false
+        }
+        val identName = table.lookup(ident.name)
+
+        if (identName.isPresent && identName.get() !is FuncAST) {
+            semanticError("Type $ident already exists", ctx)
+            return false
+        }
+
+        fields.forEach { it.check(table) }
+        table.add(ident.name, this)
         return true
     }
 

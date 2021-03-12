@@ -7,7 +7,7 @@ import wacc.frontend.ast.expression.IdentAST
 
 class StructTypeAST() : TypeAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
-        return false //TODO
+        return true
     }
 
     override fun equals(other: Any?): Boolean {
@@ -33,7 +33,8 @@ class StructTypeAST() : TypeAST, AbstractAST() {
 
 class StructFieldAST(val type: TypeAST, val ident: IdentAST) : AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
-        return super.check(table)
+        return type.check(table) && ident.check(table)
+
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
