@@ -35,7 +35,7 @@ assignRhs: expr
          | CALL ident L_PAREN argList? R_PAREN
          | structAssign;
 
-structDeclare: STRUCT ident L_CURLY (structMember SEMICOLON)* R_CURLY;
+structDeclare: structType L_CURLY (structMember SEMICOLON)* R_CURLY;
 
 structAssign: L_CURLY (assignRhs (COMMA assignRhs)*) R_CURLY;
 
@@ -65,7 +65,7 @@ pointerType: baseType MULT ;
 
 implicitType: VAR ;
 
-structType: STRUCT ident;
+structType: STRUCT capitalisedIdent;
 
 expr: expr binop1 expr     #binopExpr
     | expr binop2 expr     #binopExpr
@@ -106,5 +106,7 @@ arrayLiter: L_SQUARE (expr (COMMA expr)*)? R_SQUARE ;
 
 pairLiter: NULL ;
 
-ident: IDENT ;
+ident: IDENT | CAPTIALISED_IDENT;
+
+capitalisedIdent: CAPTIALISED_IDENT ;
 

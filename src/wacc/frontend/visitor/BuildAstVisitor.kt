@@ -135,7 +135,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             fieldList += StructFieldAST(visit(field.type()) as TypeAST,
                     visit(field.ident()) as IdentAST)
         }
-        val structDeclare = StructDeclareAST(visit(ctx.ident()) as IdentAST, fieldList)
+        val structDeclare = StructDeclareAST(visit(ctx.structType().capitalisedIdent()) as IdentAST, fieldList)
         structDeclare.ctx = ctx
         return structDeclare
     }
@@ -153,7 +153,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitStructType(ctx: WaccParser.StructTypeContext): AST {
         //TODO("Review, augment with list of types?")
-        return StructTypeAST(visit(ctx.ident()) as IdentAST)
+        return StructTypeAST(visit(ctx.capitalisedIdent()) as IdentAST)
     }
 
 
@@ -368,6 +368,12 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitIdent(ctx: WaccParser.IdentContext): AST {
+        val identAST = IdentAST(ctx.text)
+        identAST.ctx = ctx
+        return identAST
+    }
+
+    override fun visitCapitalisedIdent(ctx: WaccParser.CapitalisedIdentContext): AST {
         val identAST = IdentAST(ctx.text)
         identAST.ctx = ctx
         return identAST

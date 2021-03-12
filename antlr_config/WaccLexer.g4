@@ -77,6 +77,7 @@ NUMBER : DIGIT+ ;
 fragment DIGIT: [0-9] ; 
 
 //identifier
+CAPTIALISED_IDENT: ([A-Z] | '_')(([a-zA-Z0-9]) | '_')* ;
 IDENT: ([a-zA-Z] | '_')(([a-zA-Z0-9]) | '_')* ;
 
 WHITESPACE: [ \n\t\r]+ -> skip ;
