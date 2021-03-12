@@ -52,7 +52,7 @@ type: baseType | pairType | arrayType | structType | pointerType ;
 
 baseType: INT | BOOL | CHAR | STRING ;
 
-arrayType: (baseType | pairType | structType) (L_SQUARE R_SQUARE)+ ;
+arrayType: (baseType | pairType | structType | L_PAREN pointerType R_PAREN) (L_SQUARE R_SQUARE)+ ;
 
 pairType: PAIR L_PAREN pairElemType COMMA pairElemType R_PAREN ;
 

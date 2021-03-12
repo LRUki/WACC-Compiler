@@ -403,7 +403,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
             }
         }
-        var offset = ast.symTable.offsetSize
+        val offset = ast.symTable.offsetSize
         when (ast.rhs) {
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
@@ -734,16 +734,16 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(reg1)))
 
-                return instrs
             }
             UnOp.DEREF -> {
                 /** Translates the expression */
+                if (ast.expr is ArrayElemAST) {
+                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
+                }
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
                 instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
                 runtimeErrors.addNullReferenceCheck()
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
-
-                return instrs
 
             }
         }
