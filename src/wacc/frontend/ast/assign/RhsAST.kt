@@ -53,7 +53,9 @@ class CallRhsAST(var ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         // Use the full function signature name to allow function overriding
-        this.ident = IdentAST(toLabel())
+        val newIdent = IdentAST(toLabel())
+        newIdent.ctx = this.ident.ctx
+        this.ident = newIdent
         if (!ident.check(table)) {
             return false
         }

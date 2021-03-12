@@ -11,6 +11,7 @@ import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 import wacc.frontend.ast.type.TypeInstance.intTypeInstance
 import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.exception.semanticError
+import wacc.frontend.exception.syntaxError
 import java.util.function.BiFunction
 import java.util.function.BinaryOperator
 import java.util.function.IntBinaryOperator
