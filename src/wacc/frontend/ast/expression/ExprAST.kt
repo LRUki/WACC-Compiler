@@ -27,6 +27,9 @@ interface ExprAST : RhsAST
  */
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
 
+    var pointerOp = false
+    var shiftOffset = 0
+
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         if (!expr1.check(table) || !expr2.check(table)) {
@@ -35,6 +38,18 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
 
         val type1 = expr1.getRealType(table)
         val type2 = expr2.getRealType(table)
+
+        // Allow pointer arithmetic
+        if (type1 is PointerTypeAST && type2 == intTypeInstance
+                && (binOp == IntBinOp.PLUS || binOp == IntBinOp.MINUS)) {
+            pointerOp = true
+            shiftOffset = when (type1.type) {
+                charTypeInstance -> 0
+                boolTypeInstance -> 0
+                else -> 2
+            }
+            return true
+        }
 
         if (type1 != type2) {
             semanticError("Expected type $type1, Actual type $type2", ctx)
@@ -69,6 +84,11 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
+        // Allow pointer arithmetic
+        if (pointerOp) {
+            return expr1.getRealType(table)
+        }
+
         return if (binOp is IntBinOp)
             BaseTypeAST(BaseType.INT)
         else

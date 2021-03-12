@@ -553,20 +553,36 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         when (ast.binOp) {
             IntBinOp.PLUS -> {
                 if (!useAccumulator) {
-                    instrs.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    if (!ast.pointerOp) {
+                        instrs.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    } else {
+                        instrs.add(AddInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 } else {
                     instrs.add(PopInstr(Register.R11))
-                    instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    if (!ast.pointerOp) {
+                       instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    } else {
+                       instrs.add(AddInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
             IntBinOp.MINUS -> {
                 if (!useAccumulator) {
-                    instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    if (!ast.pointerOp) {
+                        instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    } else {
+                        instrs.add(SubInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 } else {
                     instrs.add(PopInstr(Register.R11))
-                    instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    if (!ast.pointerOp) {
+                        instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    } else {
+                        instrs.add(SubInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
