@@ -1,0 +1,11 @@
+# nested structures
+
+# Output:
+#
+
+# Program:
+
+begin
+  struct person {int age; char grade;}
+  struct record {struct person; string shortcode}
+end
