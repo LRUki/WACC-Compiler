@@ -85,8 +85,12 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                 semanticError("Invalid method of assigning to a struct", ctx)
                 return false
             }
-            if (structFieldTypes.size != rhs.assignments.size) {
+            if (structFieldTypes.size > rhs.assignments.size) {
                 semanticError("Some fields of the struct are not being assigned", ctx)
+                return false
+            }
+            if (structFieldTypes.size < rhs.assignments.size) {
+                semanticError("attempting to assign to more fields than the struct has", ctx)
                 return false
             }
             for (i in structFieldTypes.indices) {

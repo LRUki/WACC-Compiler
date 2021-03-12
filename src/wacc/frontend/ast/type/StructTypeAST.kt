@@ -5,7 +5,6 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.nonblock.StructDeclareAST
-import java.time.temporal.IsoFields
 
 class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
 
@@ -29,7 +28,6 @@ class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }
-
 
 }
 
