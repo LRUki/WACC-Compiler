@@ -5,14 +5,13 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
 
-class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
+class StructTypeAST() : TypeAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
         return false //TODO
     }
 
     override fun equals(other: Any?): Boolean {
-        return true
-        TODO("Not yet implemented")
+        return other is StructTypeAST
     }
 
     override fun toString(): String {
@@ -23,6 +22,10 @@ class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
     override fun isConcreteType(parentType: TypeAST?): Boolean {
         return true
         TODO("Implement properly")
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
     }
 
 

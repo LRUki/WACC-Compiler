@@ -153,7 +153,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitStructType(ctx: WaccParser.StructTypeContext): AST {
         //TODO("Review, augment with list of types?")
-        return StructTypeAST(visit(ctx.capitalisedIdent()) as IdentAST)
+        return StructTypeAST()
     }
 
 
