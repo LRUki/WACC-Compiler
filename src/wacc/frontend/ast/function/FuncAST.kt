@@ -1,11 +1,5 @@
 package wacc.frontend.ast.function
 
-import wacc.backend.CodeGenerator.freeAllCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
@@ -24,12 +18,16 @@ import wacc.frontend.exception.semanticError
  * @property paramList List of Parameter ASTs for the parameters of the function
  * @property body List of statements making up the function body
  */
-class FuncAST(val type: TypeAST, val ident: IdentAST,
+class FuncAST(val type: TypeAST, var ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {
 
     override fun check(table: SymbolTable): Boolean {
         //create a symbol table for the function and add all parameters to it
         symTable = FuncSymbolTable(table, this)
+        // Use the full function signature name to allow function overriding
+        val newIdent = IdentAST(toLabel())
+        newIdent.ctx = this.ident.ctx
+        this.ident = newIdent
         paramList.forEach { symTable.add(it.ident.name, it) }
         body.forEach {
             if (!it.check(symTable)) {
@@ -40,12 +38,12 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
     }
 
     fun checkNameAndAddToST(table: SymbolTable) {
-        val fName = table.lookup(ident.name)
+        val fName = table.lookup(toLabel())
         if (fName.isPresent) {
             semanticError("Function ${fName.get()} is already defined", ctx)
         }
         paramList.forEach { it.check(table) }
-        table.add(ident.name, this)
+        table.add(toLabel(), this)
     }
 
     override fun toString(): String {
@@ -54,6 +52,17 @@ class FuncAST(val type: TypeAST, val ident: IdentAST,
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitFuncAST(this)
+    }
+
+    fun toLabel(): String {
+        val builder = StringBuilder()
+        builder.append(ident.toString())
+        if (paramList.isNotEmpty()) {
+            paramList.forEach { builder.append("_" + it.type.toLabel()) }
+        } else {
+            builder.append("_void")
+        }
+        return builder.toString()
     }
 
 }

@@ -2,7 +2,7 @@
 
 echo 'Testing grun...'
 
-make
+make clean rules
 rm -f error.out
 touch error.out
 

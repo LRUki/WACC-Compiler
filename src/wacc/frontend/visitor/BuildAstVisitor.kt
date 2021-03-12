@@ -10,6 +10,7 @@ import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -168,7 +169,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         }
     }
 
-    override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext?): AST {
+    override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext): AST {
         return visitChildren(ctx)
     }
 
@@ -207,6 +208,12 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return pariElemAST
     }
 
+    override fun visitPointerElem(ctx: WaccParser.PointerElemContext): AST {
+        val pointerElemAST = PointerElemAST(visit(ctx.ident()) as IdentAST)
+        pointerElemAST.ctx = ctx
+        return pointerElemAST
+    }
+
     override fun visitType(ctx: WaccParser.TypeContext?): AST {
         return visitChildren(ctx)
     }
@@ -240,6 +247,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         }
     }
 
+    override fun visitPointerType(ctx: WaccParser.PointerTypeContext): AST {
+        return PointerTypeAST(visit(ctx.baseType()) as BaseTypeAST)
+    }
+
     override fun visitImplicitType(ctx: WaccParser.ImplicitTypeContext): AST {
         return ImplicitTypeAST()
     }
@@ -252,6 +263,8 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             unopContext.LEN() != null -> UnOp.LEN
             unopContext.ORD() != null -> UnOp.ORD
             unopContext.CHR() != null -> UnOp.CHR
+            unopContext.REF() != null -> UnOp.REF
+            unopContext.MULT() != null -> UnOp.DEREF
             else -> throw RuntimeException()
         }
 
@@ -266,19 +279,19 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitBinopExpr(ctx: WaccParser.BinopExprContext): AST {
         val binop = when (ctx.getChild(1).text) {
-            "+" -> BinOp.PLUS
-            "-" -> BinOp.MINUS
-            "*" -> BinOp.MULT
-            "/" -> BinOp.DIV
-            "%" -> BinOp.MOD
-            ">=" -> BinOp.GTE
-            ">" -> BinOp.GT
-            "<=" -> BinOp.LTE
-            "<" -> BinOp.LT
-            "==" -> BinOp.EQ
-            "!=" -> BinOp.NEQ
-            "&&" -> BinOp.AND
-            "||" -> BinOp.OR
+            "+" -> IntBinOp.PLUS
+            "-" -> IntBinOp.MINUS
+            "*" -> IntBinOp.MULT
+            "/" -> IntBinOp.DIV
+            "%" -> IntBinOp.MOD
+            ">=" -> CmpBinOp.GTE
+            ">" -> CmpBinOp.GT
+            "<=" -> CmpBinOp.LTE
+            "<" -> CmpBinOp.LT
+            "==" -> CmpBinOp.EQ
+            "!=" -> CmpBinOp.NEQ
+            "&&" -> BoolBinOp.AND
+            "||" -> BoolBinOp.OR
             else -> throw RuntimeException()
         }
         val binOpExprAST = BinOpExprAST(binop,

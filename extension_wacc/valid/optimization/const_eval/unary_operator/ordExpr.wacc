@@ -1,0 +1,12 @@
+# tests whether the compiler can optimize len 
+
+# Output:
+# #empty#
+
+# Exit:
+# 97
+
+begin
+  int x = ord 'a';
+  exit x
+end

@@ -1,0 +1,14 @@
+# tests whether the compiler can optimize simple comparison expressions
+
+# Output:
+# #empty#
+
+# Prints:
+# true
+
+begin
+
+  bool b = 345 > 435 && 32 <= 20 || 4 == 4;
+  println b 
+
+end

@@ -23,8 +23,13 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
         return "pair(${type1}, ${type2})"
     }
 
-    override fun isConcreteType(): Boolean {
-        return type1.isConcreteType() && type2.isConcreteType()
+    override fun toLabel(): String {
+//        return "pair_${type1.toLabel()}_${type2.toLabel()}"
+        return "pair"
+    }
+
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
+        return type1.isConcreteType(this) && type2.isConcreteType(this)
     }
 
     override fun hashCode(): Int {
@@ -48,15 +53,15 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
 class AnyPairTypeAST : TypeAST {
 
     override fun equals(other: Any?): Boolean {
-        return other is PairTypeAST || other is AnyPairTypeAST
+        return other is PairTypeAST || other is AnyPairTypeAST || other is PointerTypeAST
     }
 
     override fun toString(): String {
         return "pair"
     }
 
-    override fun isConcreteType(): Boolean {
-        return false
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
+        return parentType is PairTypeAST
     }
 
     override fun hashCode(): Int {

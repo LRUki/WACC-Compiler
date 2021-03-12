@@ -25,7 +25,8 @@ stat: SKIP_TOKEN                                      #skipStat
 
 assignLhs: ident
          | arrayElem
-         | pairElem ;
+         | pairElem
+         | pointerElem ;
 
 assignRhs: expr
          | arrayLiter
@@ -44,7 +45,9 @@ argList: expr (COMMA expr)* ;
 pairElem: FST expr
         | SND expr ;
 
-type: baseType | pairType | arrayType | structType;
+pointerElem: MULT ident ;
+
+type: baseType | pairType | arrayType | structType | pointerType ;
 
 baseType: INT | BOOL | CHAR | STRING ;
 
@@ -56,6 +59,8 @@ pairElemType: baseType
             | arrayType
             | pairType
             | PAIR ;
+
+pointerType: baseType MULT ;
 
 implicitType: VAR ;
 
@@ -77,7 +82,7 @@ expr: expr binop1 expr     #binopExpr
     | unop expr            #unopExpr
     | L_PAREN expr R_PAREN #parenExpr;
 
-unop: NOT | MINUS | LEN | ORD | CHR;
+unop: NOT | MINUS | LEN | ORD | CHR | REF | MULT ;
 
 binop1: MULT | DIV | MOD;
 binop2: PLUS | MINUS;

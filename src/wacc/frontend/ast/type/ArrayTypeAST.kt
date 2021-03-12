@@ -28,8 +28,18 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
         return "$type" + "[]".repeat(counter)
     }
 
-    override fun isConcreteType(): Boolean {
-        return type.isConcreteType()
+    override fun toLabel(): String {
+        var currentType = type
+        var counter = 0
+        while (currentType is ArrayTypeAST) {
+            counter++
+            currentType = currentType.type
+        }
+        return type.toLabel() + "_array".repeat(counter)
+    }
+
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
+        return type.isConcreteType(this)
     }
 
     override fun hashCode(): Int {
@@ -60,7 +70,7 @@ class AnyTypeAST : TypeAST {
         return "any"
     }
 
-    override fun isConcreteType(): Boolean {
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
         return false
     }
 
