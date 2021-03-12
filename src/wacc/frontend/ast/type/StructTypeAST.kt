@@ -11,15 +11,18 @@ class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
     }
 
     override fun equals(other: Any?): Boolean {
+        return true
         TODO("Not yet implemented")
     }
 
     override fun toString(): String {
+        return ""
         TODO("Not yet implemented")
     }
 
     override fun isConcreteType(parentType: TypeAST?): Boolean {
-        TODO("Not yet implemented")
+        return true
+        TODO("Implement properly")
     }
 
 

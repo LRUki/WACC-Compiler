@@ -125,26 +125,29 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return declareStatAST
     }
 
+    override fun visitStructDeclareStat(ctx: WaccParser.StructDeclareStatContext?): AST {
+        return visitChildren(ctx)
+    }
+
     override fun visitStructDeclare(ctx: WaccParser.StructDeclareContext): AST {
-
-        val fieldList = emptyList<StructFieldAST>().toMutableList()
-        for (field in ctx.children) {
-            //TODO("use ctx.member once make works")
-            fieldList += visit(field) as StructFieldAST
+        val fieldList = mutableListOf<StructFieldAST>()
+        for (field in ctx.structMember()) {
+            fieldList += StructFieldAST(visit(field.type()) as TypeAST,
+                    visit(field.ident()) as IdentAST)
         }
-
-        val structDeclare = StructDeclareAST(visit(ctx.ident(1)) as IdentAST, fieldList)
-
+        val structDeclare = StructDeclareAST(visit(ctx.ident()) as IdentAST, fieldList)
         structDeclare.ctx = ctx
         return structDeclare
     }
 
     override fun visitStructAssign(ctx: WaccParser.StructAssignContext): AST {
-        var assignments = emptyList<RhsAST>()
+        val assignments = mutableListOf<RhsAST>()
         for (rhs in ctx.assignRhs()) {
-            assignments = assignments + visit(rhs) as RhsAST
+            assignments += visit(rhs) as RhsAST
         }
-        return StructAssignAST(assignments)
+        val structAssign = StructAssignAST(assignments)
+        structAssign.ctx = ctx
+        return structAssign
     }
 
 
