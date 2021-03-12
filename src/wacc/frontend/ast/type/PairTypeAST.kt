@@ -53,7 +53,7 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
 class AnyPairTypeAST : TypeAST {
 
     override fun equals(other: Any?): Boolean {
-        return other is PairTypeAST || other is AnyPairTypeAST
+        return other is PairTypeAST || other is AnyPairTypeAST || other is PointerTypeAST
     }
 
     override fun toString(): String {
