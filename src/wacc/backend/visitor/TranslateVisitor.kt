@@ -734,7 +734,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(reg1)))
 
-                freeCalleeReg()
                 return instrs
             }
             UnOp.DEREF -> {
