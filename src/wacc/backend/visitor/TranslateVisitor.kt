@@ -727,15 +727,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             UnOp.REF -> {
                 val ident = ast.expr as IdentAST
 
-                val instrs = mutableListOf<Instruction>()
-                val stackReg = getNextFreeCalleeReg()
-
                 /** Computes offset to push down the stack pointer */
                 var stackOffset = ident.symTable.findOffsetInStack(ident.name)
                 stackOffset += ident.symTable.checkParamInFuncSymbolTable(ident.name) + ident.symTable.callOffset
-                instrs.add(AddInstr(Condition.AL, stackReg, Register.SP, ImmediateIntOperand(stackOffset), false))
+                instrs.add(AddInstr(Condition.AL, reg1, Register.SP, ImmediateIntOperand(stackOffset), false))
 
-                instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(stackReg)))
+                instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(reg1)))
 
                 freeCalleeReg()
                 return instrs
