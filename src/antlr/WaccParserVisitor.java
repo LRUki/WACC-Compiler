@@ -70,6 +70,13 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSkipStat(WaccParser.SkipStatContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code structDeclareStat}
+	 * labeled alternative in {@link WaccParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructDeclareStat(WaccParser.StructDeclareStatContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code actionStat}
 	 * labeled alternative in {@link WaccParser#stat}.
 	 * @param ctx the parse tree
@@ -109,6 +116,24 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAssignRhs(WaccParser.AssignRhsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link WaccParser#structDeclare}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructDeclare(WaccParser.StructDeclareContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link WaccParser#structAssign}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructAssign(WaccParser.StructAssignContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link WaccParser#structMember}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructMember(WaccParser.StructMemberContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link WaccParser#argList}.
 	 * @param ctx the parse tree
@@ -169,6 +194,12 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitImplicitType(WaccParser.ImplicitTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link WaccParser#structType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructType(WaccParser.StructTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code unopExpr}
 	 * labeled alternative in {@link WaccParser#expr}.

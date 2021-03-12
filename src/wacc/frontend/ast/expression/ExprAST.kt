@@ -70,9 +70,9 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
 
     override fun getRealType(table: SymbolTable): TypeAST {
         return if (binOp is IntBinOp)
-                BaseTypeAST(BaseType.INT)
-               else
-                BaseTypeAST(BaseType.BOOL)
+            BaseTypeAST(BaseType.INT)
+        else
+            BaseTypeAST(BaseType.BOOL)
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
@@ -85,7 +85,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
 interface BinOp {
 }
 
-enum class IntBinOp : BinOp, BiFunction<Int,Int,Int> {
+enum class IntBinOp : BinOp, BiFunction<Int, Int, Int> {
     PLUS {
         override fun apply(t: Int, u: Int): Int {
             return t + u
@@ -94,7 +94,7 @@ enum class IntBinOp : BinOp, BiFunction<Int,Int,Int> {
     },
     MINUS {
         override fun apply(t: Int, u: Int): Int {
-            return  t - u
+            return t - u
         }
     },
     MULT {
@@ -117,7 +117,7 @@ enum class IntBinOp : BinOp, BiFunction<Int,Int,Int> {
 }
 
 enum class BoolBinOp : BinOp, BiFunction<Boolean, Boolean, Boolean> {
-    AND{
+    AND {
         override fun apply(t: Boolean, u: Boolean): Boolean {
             return t and u
         }
@@ -129,7 +129,7 @@ enum class BoolBinOp : BinOp, BiFunction<Boolean, Boolean, Boolean> {
     }
 }
 
-enum class CmpBinOp:BinOp{
+enum class CmpBinOp : BinOp {
     LTE,
     LT,
     GTE,
@@ -179,13 +179,10 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 semanticError("Expected type CHAR, Actual type $exprType", ctx)
             }
             UnOp.REF -> {
-                if (exprType is BaseTypeAST) {
-                    if (expr is IdentAST) {
-                        return true
-                    }
-                    semanticError("Referencing is only supported for idents", ctx)
+                if (expr is IdentAST) {
+                    return true
                 }
-                semanticError("Unable to reference non-base type $exprType", ctx)
+                semanticError("Referencing is only supported for idents", ctx)
             }
             UnOp.DEREF -> {
                 if (exprType is PointerTypeAST) {

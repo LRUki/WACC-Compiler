@@ -55,8 +55,8 @@ suspend fun main(args: Array<String>) {
     createErrorChannels()
     ast = frontend(inputFile)
 
-    if(optimize){
-       ast = ConstantEvaluationVisitor().visit(ast)
+    if (optimize) {
+        ast = ConstantEvaluationVisitor().visit(ast)
     }
 
     val outputString = backend(ast)

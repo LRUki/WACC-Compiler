@@ -4,10 +4,7 @@ import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.array.ArrayElemAST
-import wacc.frontend.ast.assign.CallRhsAST
-import wacc.frontend.ast.assign.LhsAST
-import wacc.frontend.ast.assign.NewPairRhsAST
-import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.assign.*
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -128,6 +125,38 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return declareStatAST
     }
 
+    override fun visitStructDeclareStat(ctx: WaccParser.StructDeclareStatContext?): AST {
+        return visitChildren(ctx)
+    }
+
+    override fun visitStructDeclare(ctx: WaccParser.StructDeclareContext): AST {
+        val fieldList = mutableListOf<StructFieldAST>()
+        for (field in ctx.structMember()) {
+            fieldList += StructFieldAST(visit(field.type()) as TypeAST,
+                    visit(field.ident()) as IdentAST)
+        }
+        val structDeclare = StructDeclareAST(visit(ctx.ident()) as IdentAST, fieldList)
+        structDeclare.ctx = ctx
+        return structDeclare
+    }
+
+    override fun visitStructAssign(ctx: WaccParser.StructAssignContext): AST {
+        val assignments = mutableListOf<RhsAST>()
+        for (rhs in ctx.assignRhs()) {
+            assignments += visit(rhs) as RhsAST
+        }
+        val structAssign = StructAssignAST(assignments)
+        structAssign.ctx = ctx
+        return structAssign
+    }
+
+
+    override fun visitStructType(ctx: WaccParser.StructTypeContext): AST {
+        //TODO("Review, augment with list of types?")
+        return StructTypeAST(visit(ctx.ident()) as IdentAST)
+    }
+
+
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
         val whileStatAst = WhileStatAST(visit(ctx.expr()) as ExprAST,
                 statToList(visit(ctx.stat()) as StatAST))
@@ -163,6 +192,9 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                 val callRhsAST = CallRhsAST(visit(ctx.ident()) as IdentAST, argList)
                 callRhsAST.ctx = ctx
                 callRhsAST
+            }
+            ctx.structAssign() != null -> {
+                visit(ctx.structAssign()) as StructAssignAST
             }
             else -> visitChildren(ctx)
         }
@@ -219,7 +251,13 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitPointerType(ctx: WaccParser.PointerTypeContext): AST {
-        return PointerTypeAST(visit(ctx.baseType()) as BaseTypeAST)
+        val depth = ctx.childCount - 1
+        val innerType = visit(ctx.getChild(0)) as TypeAST
+        var output = innerType
+        for (i in 1..depth) {
+            output = PointerTypeAST(output)
+        }
+        return output
     }
 
     override fun visitImplicitType(ctx: WaccParser.ImplicitTypeContext): AST {

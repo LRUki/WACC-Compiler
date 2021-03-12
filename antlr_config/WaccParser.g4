@@ -15,6 +15,7 @@ param: type ident;
 stat: SKIP_TOKEN                                      #skipStat
       | (type | implicitType) ident ASSIGN assignRhs  #declareStat
       | assignLhs ASSIGN assignRhs                    #assignStat
+      | structDeclare                                 #structDeclareStat
       | READ assignLhs                                #readStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
       | IF expr THEN stat ELSE stat FI                #ifStat
@@ -31,7 +32,14 @@ assignRhs: expr
          | arrayLiter
          | NEWPAIR L_PAREN expr COMMA expr R_PAREN
          | pairElem
-         | CALL ident L_PAREN argList? R_PAREN;
+         | CALL ident L_PAREN argList? R_PAREN
+         | structAssign;
+
+structDeclare: STRUCT ident L_CURLY (structMember SEMICOLON)* R_CURLY;
+
+structAssign: L_CURLY (assignRhs (COMMA assignRhs)*) R_CURLY;
+
+structMember: type ident;
 
 argList: expr (COMMA expr)* ;
 
@@ -40,11 +48,11 @@ pairElem: FST expr
 
 pointerElem: MULT ident ;
 
-type: baseType | pairType | arrayType | pointerType ;
+type: baseType | pairType | arrayType | structType | pointerType ;
 
 baseType: INT | BOOL | CHAR | STRING ;
 
-arrayType: (baseType | pairType) (L_SQUARE R_SQUARE)+ ;
+arrayType: (baseType | pairType | structType) (L_SQUARE R_SQUARE)+ ;
 
 pairType: PAIR L_PAREN pairElemType COMMA pairElemType R_PAREN ;
 
@@ -53,9 +61,11 @@ pairElemType: baseType
             | pairType
             | PAIR ;
 
-pointerType: baseType MULT ;
+pointerType: (baseType | pairType | arrayType | structType) MULT+ ;
 
 implicitType: VAR ;
+
+structType: STRUCT ident;
 
 expr: expr binop1 expr     #binopExpr
     | expr binop2 expr     #binopExpr

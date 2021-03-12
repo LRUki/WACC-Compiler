@@ -17,11 +17,12 @@ import kotlin.test.assertTrue
 
 class ConstantEvaluationTest {
     val path = "extension_wacc/valid/optimization/const_eval"
+
     @Test
     fun intBinOpsAreOptimized() {
         val folder = File("$path/binary_operator")
         actionOnFiles(folder) { file ->
-            if(file.name.contains("int")){
+            if (file.name.contains("int")) {
                 val ast = buildAst(file)
                 val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
                 assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
@@ -33,7 +34,7 @@ class ConstantEvaluationTest {
     fun boolBinOpsAreOptimized() {
         val folder = File("$path/binary_operator")
         actionOnFiles(folder) { file ->
-            if(file.name.contains("bool")) {
+            if (file.name.contains("bool")) {
                 val ast = buildAst(file)
                 val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
                 assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
@@ -45,7 +46,7 @@ class ConstantEvaluationTest {
     fun cmpBinOpsAreOptimized() {
         val folder = File("$path/binary_operator")
         actionOnFiles(folder) { file ->
-            if(file.name.contains("cmp")) {
+            if (file.name.contains("cmp")) {
                 val ast = buildAst(file)
                 val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
                 assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
@@ -55,10 +56,10 @@ class ConstantEvaluationTest {
 
     @Test
     fun negationUnOpsAreOptimized() {
-                val ast = buildAst(
-                        File("$path/unary_operator/negationExpr.wacc"))
-                val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
-                assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
+        val ast = buildAst(
+                File("$path/unary_operator/negationExpr.wacc"))
+        val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
+        assertTrue { generateCode(ast).size > generateCode(optimizedAst).size }
     }
 
     @Test
@@ -69,11 +70,13 @@ class ConstantEvaluationTest {
         val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
         var chrEvaluated = false
         generateCode(optimizedAst).forEach {
-            if(it.toArm() == LoadInstr(Condition.AL,
+            if (it.toArm() == LoadInstr(Condition.AL,
                             null,
                             ImmediateIntMode(97),
-                            Register.R4).toArm()){ chrEvaluated = true }
+                            Register.R4).toArm()) {
+                chrEvaluated = true
             }
+        }
         assertTrue(chrEvaluated)
     }
 
@@ -85,9 +88,11 @@ class ConstantEvaluationTest {
         val optimizedAst = ConstantEvaluationVisitor().visit(ast) as ProgramAST
         var ordEvaluated = false
         generateCode(optimizedAst).forEach {
-        if(it.toArm() == MoveInstr(Condition.AL,
-                        Register.R4,
-                        ImmediateCharOperand('a')).toArm()){ ordEvaluated = true }
+            if (it.toArm() == MoveInstr(Condition.AL,
+                            Register.R4,
+                            ImmediateCharOperand('a')).toArm()) {
+                ordEvaluated = true
+            }
         }
         assertTrue(ordEvaluated)
     }

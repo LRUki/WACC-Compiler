@@ -156,25 +156,25 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         val e2 = visit(ast.expr2)
 
         if (((e1 is IntLiterAST) and (e2 is IntLiterAST)) or
-                ((e1 is BoolLiterAST) and (e2 is BoolLiterAST))){
+                ((e1 is BoolLiterAST) and (e2 is BoolLiterAST))) {
 
-            return when(ast.binOp){
+            return when (ast.binOp) {
                 is BoolBinOp ->
                     BoolLiterAST((ast.binOp).apply((e1 as BoolLiterAST).value, (e2 as BoolLiterAST).value))
                 is IntBinOp -> {
                     val v1 = (e1 as IntLiterAST).value
                     val v2 = (e2 as IntLiterAST).value
-                    if ((ast.binOp == IntBinOp.DIV) or (ast.binOp == IntBinOp.MOD) and (v2 == 0)){
+                    if ((ast.binOp == IntBinOp.DIV) or (ast.binOp == IntBinOp.MOD) and (v2 == 0)) {
                         return ast
                     }
-                    return IntLiterAST(ast.binOp.apply(v1,v2))
+                    return IntLiterAST(ast.binOp.apply(v1, v2))
                 }
                 is CmpBinOp -> {
                     val v1 = (e1 as IntLiterAST).value
                     val v2 = (e2 as IntLiterAST).value
-                    when(ast.binOp) {
+                    when (ast.binOp) {
                         CmpBinOp.EQ -> BoolLiterAST(v1 == v2)
-                        CmpBinOp.NEQ-> BoolLiterAST(v1 != v2)
+                        CmpBinOp.NEQ -> BoolLiterAST(v1 != v2)
                         CmpBinOp.GT -> BoolLiterAST(v1 > v2)
                         CmpBinOp.GTE -> BoolLiterAST(v1 >= v2)
                         CmpBinOp.LT -> BoolLiterAST(v1 < v2)
@@ -183,18 +183,18 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
                 }
                 else -> ast
             }
-        }else{
+        } else {
             return ast
         }
     }
 
     override fun visitUnOpExprAST(ast: UnOpExprAST): AST {
         val e1 = visit(ast.expr)
-        if ((e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT)){
+        if ((e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT)) {
             return BoolLiterAST(!(e1 as BoolLiterAST).value)
-        } else if ((e1 is IntLiterAST) and (ast.unOp == UnOp.CHR)){
+        } else if ((e1 is IntLiterAST) and (ast.unOp == UnOp.CHR)) {
             return CharLiterAST((e1 as IntLiterAST).value.toChar())
-        } else if ((e1 is CharLiterAST) and (ast.unOp == UnOp.ORD)){
+        } else if ((e1 is CharLiterAST) and (ast.unOp == UnOp.ORD)) {
             return IntLiterAST((e1 as CharLiterAST).value.toInt())
         }
         return ast
@@ -243,8 +243,6 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
     override fun visitTypeAST(ast: TypeAST): AST {
         return ast
     }
-
-
 
 
 }

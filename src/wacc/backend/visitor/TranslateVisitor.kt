@@ -363,7 +363,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
             }
-            is PointerElemAST-> {
+            is PointerElemAST -> {
                 instrs.addAll(visit(ast.lhs))
                 instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
@@ -742,7 +742,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
                 runtimeErrors.addNullReferenceCheck()
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
-                
+
                 return instrs
 
             }
