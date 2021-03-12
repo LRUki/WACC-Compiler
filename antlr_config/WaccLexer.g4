@@ -19,7 +19,9 @@ WHILE: 'while' ;
 DO: 'do' ;
 DONE: 'done' ;
 NULL: 'null' ;
+//struct
 STRUCT: 'struct' ;
+DOT: '.' ;
 
 ASSIGN: '=' ;
 SEMICOLON: ';' ;

@@ -1,0 +1,13 @@
+# simple struct declaration
+
+# Output:
+#
+
+# Program:
+
+begin
+  struct Person {int age; char grade;};
+  struct Person Bob = {25, 'B'};
+  struct Person Derek = {98, 'I'};
+  int x = Bob.age
+end

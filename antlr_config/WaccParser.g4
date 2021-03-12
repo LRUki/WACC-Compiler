@@ -41,6 +41,8 @@ structAssign: L_CURLY (assignRhs (COMMA assignRhs)*) R_CURLY;
 
 structMember: type ident;
 
+structAccess: ident DOT ident;
+
 argList: expr (COMMA expr)* ;
 
 pairElem: FST expr
@@ -81,6 +83,7 @@ expr: expr binop1 expr     #binopExpr
     | ident                #singletonExpr
     | arrayElem            #singletonExpr
     | unop expr            #unopExpr
+    | structAccess         #structAccessExpr
     | L_PAREN expr R_PAREN #parenExpr;
 
 unop: NOT | MINUS | LEN | ORD | CHR | REF | MULT ;
