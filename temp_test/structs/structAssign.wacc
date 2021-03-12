@@ -6,7 +6,6 @@
 # Program:
 
 begin
-  struct person {int age; char grade;}
-
+  struct person {int age; char grade;};
   struct person Bob = {42, 'A'}
 end
