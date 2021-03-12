@@ -741,15 +741,19 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 // Intentionally Left Blank
             }
             UnOp.REF -> {
-                val ident = ast.expr as IdentAST
-
-                /** Computes offset to push down the stack pointer */
-                var stackOffset = ident.symTable.findOffsetInStack(ident.name)
-                stackOffset += ident.symTable.checkParamInFuncSymbolTable(ident.name) + ident.symTable.callOffset
-                instrs.add(AddInstr(Condition.AL, reg1, Register.SP, ImmediateIntOperand(stackOffset), false))
-
+                when (ast.expr) {
+                    is IdentAST -> {
+                        val ident = ast.expr
+                        /** Computes offset to push down the stack pointer */
+                        var stackOffset = ident.symTable.findOffsetInStack(ident.name)
+                        stackOffset += ident.symTable.checkParamInFuncSymbolTable(ident.name) + ident.symTable.callOffset
+                        instrs.add(AddInstr(Condition.AL, reg1, Register.SP, ImmediateIntOperand(stackOffset), false))
+                    }
+                    is ArrayElemAST -> {
+                        // Intentionally leave blank
+                    }
+                }
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(reg1)))
-
             }
             UnOp.DEREF -> {
                 /** Translates the expression */
