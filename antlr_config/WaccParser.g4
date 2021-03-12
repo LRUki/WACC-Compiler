@@ -61,7 +61,7 @@ pairElemType: baseType
             | pairType
             | PAIR ;
 
-pointerType: baseType MULT ;
+pointerType: (baseType | pairType | arrayType | structType) MULT+ ;
 
 implicitType: VAR ;
 

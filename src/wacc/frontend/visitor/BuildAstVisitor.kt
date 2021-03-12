@@ -251,7 +251,13 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitPointerType(ctx: WaccParser.PointerTypeContext): AST {
-        return PointerTypeAST(visit(ctx.baseType()) as BaseTypeAST)
+        val depth = ctx.childCount - 1
+        val innerType = visit(ctx.getChild(0)) as TypeAST
+        var output = innerType
+        for (i in 1..depth) {
+            output = PointerTypeAST(output)
+        }
+        return output
     }
 
     override fun visitImplicitType(ctx: WaccParser.ImplicitTypeContext): AST {

@@ -9,7 +9,7 @@ class PointerTypeAST(val type: TypeAST) : TypeAST, Identifiable {
     }
 
     override fun toString(): String {
-        return "$type *"
+        return "$type*"
     }
 
     override fun toLabel(): String {

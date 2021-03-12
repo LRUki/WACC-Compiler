@@ -179,13 +179,10 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 semanticError("Expected type CHAR, Actual type $exprType", ctx)
             }
             UnOp.REF -> {
-                if (exprType is BaseTypeAST) {
-                    if (expr is IdentAST) {
-                        return true
-                    }
-                    semanticError("Referencing is only supported for idents", ctx)
+                if (expr is IdentAST) {
+                    return true
                 }
-                semanticError("Unable to reference non-base type $exprType", ctx)
+                semanticError("Referencing is only supported for idents", ctx)
             }
             UnOp.DEREF -> {
                 if (exprType is PointerTypeAST) {
