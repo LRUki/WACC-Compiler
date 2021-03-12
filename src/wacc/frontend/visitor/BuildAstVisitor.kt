@@ -234,7 +234,11 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitArrayType(ctx: WaccParser.ArrayTypeContext): AST {
         val dimension = ctx.L_SQUARE().size
-        val innerType = visit(ctx.getChild(0)) as TypeAST
+        val innerType = if (ctx.pointerType() == null) {
+            visit(ctx.getChild(0)) as TypeAST
+        } else {
+            visit(ctx.pointerType()) as PointerTypeAST
+        }
         return ArrayTypeAST(innerType, dimension)
     }
 
@@ -251,7 +255,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitPointerType(ctx: WaccParser.PointerTypeContext): AST {
-        val depth = ctx.childCount - 1
+        val depth = ctx.MULT().size
         val innerType = visit(ctx.getChild(0)) as TypeAST
         var output = innerType
         for (i in 1..depth) {

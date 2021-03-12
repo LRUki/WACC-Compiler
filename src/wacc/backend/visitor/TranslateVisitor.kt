@@ -403,7 +403,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
             }
         }
-        var offset = ast.symTable.offsetSize
+        val offset = ast.symTable.offsetSize
         when (ast.rhs) {
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
@@ -553,20 +553,36 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         when (ast.binOp) {
             IntBinOp.PLUS -> {
                 if (!useAccumulator) {
-                    instrs.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    if (!ast.pointerOp) {
+                        instrs.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    } else {
+                        instrs.add(AddInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 } else {
                     instrs.add(PopInstr(Register.R11))
-                    instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    if (!ast.pointerOp) {
+                       instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    } else {
+                       instrs.add(AddInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
             IntBinOp.MINUS -> {
                 if (!useAccumulator) {
-                    instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    if (!ast.pointerOp) {
+                        instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    } else {
+                        instrs.add(SubInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 } else {
                     instrs.add(PopInstr(Register.R11))
-                    instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    if (!ast.pointerOp) {
+                        instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    } else {
+                        instrs.add(SubInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
@@ -725,25 +741,29 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 // Intentionally Left Blank
             }
             UnOp.REF -> {
-                val ident = ast.expr as IdentAST
-
-                /** Computes offset to push down the stack pointer */
-                var stackOffset = ident.symTable.findOffsetInStack(ident.name)
-                stackOffset += ident.symTable.checkParamInFuncSymbolTable(ident.name) + ident.symTable.callOffset
-                instrs.add(AddInstr(Condition.AL, reg1, Register.SP, ImmediateIntOperand(stackOffset), false))
-
+                when (ast.expr) {
+                    is IdentAST -> {
+                        val ident = ast.expr
+                        /** Computes offset to push down the stack pointer */
+                        var stackOffset = ident.symTable.findOffsetInStack(ident.name)
+                        stackOffset += ident.symTable.checkParamInFuncSymbolTable(ident.name) + ident.symTable.callOffset
+                        instrs.add(AddInstr(Condition.AL, reg1, Register.SP, ImmediateIntOperand(stackOffset), false))
+                    }
+                    is ArrayElemAST -> {
+                        // Intentionally leave blank
+                    }
+                }
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(reg1)))
-
-                return instrs
             }
             UnOp.DEREF -> {
                 /** Translates the expression */
+                if (ast.expr is ArrayElemAST) {
+                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
+                }
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
                 instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
                 runtimeErrors.addNullReferenceCheck()
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
-
-                return instrs
 
             }
         }

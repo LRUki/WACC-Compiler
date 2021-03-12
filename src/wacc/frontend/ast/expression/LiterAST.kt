@@ -71,6 +71,16 @@ class NullPairLiterAST : LiterAST {
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     lateinit var arrayType: TypeAST
     lateinit var symTable: SymbolTable
+
+    override fun check(table: SymbolTable): Boolean {
+        for (value in values) {
+            if (!value.check(table)) {
+                return false
+            }
+        }
+        return true
+    }
+
     override fun getRealType(table: SymbolTable): TypeAST {
         symTable = table
         arrayType = if (values.isEmpty()) {
