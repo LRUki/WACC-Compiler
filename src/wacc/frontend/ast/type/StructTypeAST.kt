@@ -29,7 +29,6 @@ class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
         return javaClass.hashCode()
     }
 
-
 }
 
 class StructFieldAST(val type: TypeAST, val ident: IdentAST) : AbstractAST() {
