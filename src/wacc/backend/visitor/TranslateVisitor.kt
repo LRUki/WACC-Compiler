@@ -32,6 +32,8 @@ import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.*
+import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
+import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 
 /**
  * Visitor pattern for code generation.
@@ -763,7 +765,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
                 instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
                 runtimeErrors.addNullReferenceCheck()
-                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
+                var memType : MemoryType? = null
+                if ((ast.expr.getRealType(ast.symTable) as PointerTypeAST).type.isBoolOrChar()) {
+                    memType = MemoryType.SB
+                }
+                instrs.add(LoadInstr(Condition.AL, memType, RegisterMode(reg1), reg1))
 
             }
         }

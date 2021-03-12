@@ -169,6 +169,7 @@ enum class CmpBinOp : BinOp {
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         if (!expr.check(table)) {
             return false
         }
