@@ -8,17 +8,26 @@ import wacc.frontend.ast.statement.nonblock.StructDeclareAST
 import java.time.temporal.IsoFields
 
 class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
-    lateinit var fieldTypes: StructMemberTypesAST
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         return true
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is StructTypeAST) {
-            return false
-        }
-        return fieldTypes.equals(other.fieldTypes)
+        return other is StructTypeAST
+//        if (other is StructMemberTypesAST) {
+//            val struct = symTable.lookupAll(ident.name)
+//            if (struct.isEmpty || struct.get() !is StructDeclareAST) {
+//                throw RuntimeException("Struct not present in the symbol table")
+//            }
+//            val listOfStructMemberTypes = (struct.get() as StructDeclareAST).fields.map { it.type }
+//            return other.equals(StructMemberTypesAST(listOfStructMemberTypes))
+//        }
+//        if (other !is StructTypeAST) {
+//            return false
+//        }
+//        return fieldTypes.equals(other.fieldTypes)
     }
 
     override fun toString(): String {
@@ -27,7 +36,8 @@ class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
     }
 
     override fun isConcreteType(parentType: TypeAST?): Boolean {
-        return fieldTypes.isConcreteType(parentType)
+        return true
+//        return fieldTypes.isConcreteType(parentType)
     }
 
     override fun hashCode(): Int {

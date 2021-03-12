@@ -1,7 +1,10 @@
 package wacc.frontend.ast.type
 
+import wacc.frontend.ast.statement.nonblock.StructDeclareAST
+
 class StructMemberTypesAST(val fields: List<TypeAST>) : TypeAST {
     override fun equals(other: Any?): Boolean {
+
         if (other !is StructMemberTypesAST) {
             return false
         }
