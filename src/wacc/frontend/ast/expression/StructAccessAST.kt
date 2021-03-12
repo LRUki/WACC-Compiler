@@ -30,7 +30,7 @@ class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : Exp
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
-        TODO("Not yet implemented")
+        return visitor.visitStructAccess(this)
     }
 
     /** Looks up the identifier in the symbol table to get the struct name

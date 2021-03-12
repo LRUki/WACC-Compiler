@@ -370,11 +370,8 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 freeCalleeReg()
             }
         }
-
         freeCalleeReg()
-
         return instrs
-
     }
 
     /** Translates a Declare Statement AST */
@@ -943,4 +940,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         TODO("Not yet implemented")
     }
 
+    override fun visitStructAccess(ast: StructAccessAST): List<Instruction> {
+        TODO("Not yet implemented")
+    }
 }
