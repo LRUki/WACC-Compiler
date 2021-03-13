@@ -15,6 +15,7 @@ import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
+import kotlin.properties.Delegates
 
 interface LiterAST : ExprAST
 
@@ -33,6 +34,7 @@ class IntLiterAST(val value: Int) : LiterAST {
 }
 
 class BoolLiterAST(val value: Boolean) : LiterAST {
+    var size = 0
     override fun getRealType(table: SymbolTable): TypeAST {
         return BaseTypeAST(BaseType.BOOL)
     }
@@ -42,11 +44,12 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
     }
 
     override fun weight() {
-        TODO("Not yet implemented")
+        size = 1
     }
 }
 
 class StrLiterAST(val value: String) : LiterAST {
+    var size = 0
     override fun getRealType(table: SymbolTable): TypeAST {
         return BaseTypeAST(BaseType.STRING)
     }
@@ -56,11 +59,12 @@ class StrLiterAST(val value: String) : LiterAST {
     }
 
     override fun weight() {
-        TODO("Not yet implemented")
+        size = 1
     }
 }
 
 class CharLiterAST(val value: Char) : LiterAST {
+    var size = 0
     override fun getRealType(table: SymbolTable): TypeAST {
         return BaseTypeAST(BaseType.CHAR)
     }
@@ -70,11 +74,12 @@ class CharLiterAST(val value: Char) : LiterAST {
     }
 
     override fun weight() {
-        TODO("Not yet implemented")
+        size = 1
     }
 }
 
 class NullPairLiterAST : LiterAST {
+    var size = 0
     override fun getRealType(table: SymbolTable): TypeAST {
         return AnyPairTypeAST()
     }
@@ -84,14 +89,14 @@ class NullPairLiterAST : LiterAST {
     }
 
     override fun weight() {
-        TODO("Not yet implemented")
+       size = 1
     }
 }
 
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     lateinit var arrayType: TypeAST
     lateinit var symTable: SymbolTable
-
+    var size = 0
     override fun check(table: SymbolTable): Boolean {
         for (value in values) {
             if (!value.check(table)) {
@@ -121,6 +126,6 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     }
 
     override fun weight() {
-        TODO("Not yet implemented")
+        size = 1
     }
 }
