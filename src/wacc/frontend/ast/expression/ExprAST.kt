@@ -23,7 +23,7 @@ interface ExprAST : RhsAST
  * @property expr2 Second Expression
  */
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
-
+    var size = 0
     var pointerOp = false
     var shiftOffset = 0
 
@@ -97,7 +97,12 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
     }
 
     override fun weight(): Int {
-        TODO("Not yet implemented")
+        if(size != 0){
+            return size
+        }
+        size += expr1.weight()
+        size += expr2.weight()
+        return size
     }
 
 }
@@ -167,7 +172,7 @@ enum class CmpBinOp : BinOp {
  * @property expr Expression to operate on
  */
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
-
+    var size = 0
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         if (!expr.check(table)) {
@@ -238,7 +243,11 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
     }
 
     override fun weight(): Int {
-        TODO("Not yet implemented")
+        if (size != 0){
+            return size
+        }
+        size += expr.weight()
+        return size 
     }
 }
 
