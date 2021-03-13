@@ -55,7 +55,7 @@ class ArrayElemAST(val ident: IdentAST, val indices: List<ExprAST>) : ExprAST, L
         return visitor.visitArrayElemAST(this)
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("Not yet implemented")
     }
 

@@ -1,9 +1,7 @@
 package wacc.frontend.ast
 
 import org.antlr.v4.runtime.ParserRuleContext
-import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
-import kotlin.properties.Delegates
 
 /**
  * Implemented by all AST nodes
@@ -24,7 +22,7 @@ interface AST {
 
     fun <S : T, T> accept(visitor: AstVisitor<S>): T
 
-    fun weight()
+    fun weight(): Int
 
 }
 

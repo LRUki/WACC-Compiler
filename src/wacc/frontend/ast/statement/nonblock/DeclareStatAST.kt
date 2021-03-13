@@ -1,28 +1,11 @@
 package wacc.frontend.ast.statement.nonblock
 
-import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.MemoryType
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.LoadInstr
-import wacc.backend.translate.instruction.StoreInstr
-import wacc.backend.translate.instruction.instructionpart.RegisterMode
-import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.array.ArrayElemAST
-import wacc.frontend.ast.assign.CallRhsAST
-import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
-import wacc.frontend.ast.expression.NullPairLiterAST
-import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
-import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.exception.semanticError
@@ -72,7 +55,7 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         return visitor.visitDeclareStatAST(this)
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("Not yet implemented")
     }
 

@@ -1,21 +1,9 @@
 package wacc.frontend.ast.expression
 
-import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.MemoryType
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
-import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
-import kotlin.properties.Delegates
 
 interface LiterAST : ExprAST
 
@@ -28,13 +16,12 @@ class IntLiterAST(val value: Int) : LiterAST {
         return visitor.visitIntLiterAST(this)
     }
 
-    override fun weight() {
-        TODO("Not yet implemented")
+    override fun weight(): Int {
+        return 1
     }
 }
 
 class BoolLiterAST(val value: Boolean) : LiterAST {
-    var size = 0
     override fun getRealType(table: SymbolTable): TypeAST {
         return BaseTypeAST(BaseType.BOOL)
     }
@@ -43,13 +30,12 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
         return visitor.visitBoolLiterAST(this)
     }
 
-    override fun weight() {
-        size = 1
+    override fun weight(): Int {
+        return 1
     }
 }
 
 class StrLiterAST(val value: String) : LiterAST {
-    var size = 0
     override fun getRealType(table: SymbolTable): TypeAST {
         return BaseTypeAST(BaseType.STRING)
     }
@@ -58,13 +44,12 @@ class StrLiterAST(val value: String) : LiterAST {
         return visitor.visitStrLiterAST(this)
     }
 
-    override fun weight() {
-        size = 1
+    override fun weight(): Int {
+        return 1
     }
 }
 
 class CharLiterAST(val value: Char) : LiterAST {
-    var size = 0
     override fun getRealType(table: SymbolTable): TypeAST {
         return BaseTypeAST(BaseType.CHAR)
     }
@@ -73,8 +58,8 @@ class CharLiterAST(val value: Char) : LiterAST {
         return visitor.visitCharLiterAST(this)
     }
 
-    override fun weight() {
-        size = 1
+    override fun weight(): Int {
+        return 1
     }
 }
 
@@ -88,15 +73,14 @@ class NullPairLiterAST : LiterAST {
         return visitor.visitNullPairLiterAST(this)
     }
 
-    override fun weight() {
-       size = 1
+    override fun weight(): Int {
+        return 1
     }
 }
 
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     lateinit var arrayType: TypeAST
     lateinit var symTable: SymbolTable
-    var size = 0
     override fun check(table: SymbolTable): Boolean {
         for (value in values) {
             if (!value.check(table)) {
@@ -125,7 +109,7 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
         return visitor.visitArrayLiterAST(this)
     }
 
-    override fun weight() {
-        size = 1
+    override fun weight(): Int {
+        return 1
     }
 }

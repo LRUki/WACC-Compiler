@@ -34,7 +34,7 @@ class PointerElemAST(val ident: IdentAST) : ExprAST, LhsAST, AbstractAST() {
         return visitor.visitPointerElemAST(this)
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("Not yet implemented")
     }
 }

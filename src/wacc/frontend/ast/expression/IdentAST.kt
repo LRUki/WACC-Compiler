@@ -1,12 +1,5 @@
 package wacc.frontend.ast.expression
 
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.MemoryType
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.LoadInstr
-import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
@@ -23,7 +16,6 @@ import wacc.frontend.exception.semanticError
  * @property name Name of the identifier
  */
 class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
-    var size = 0
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         val stEntry = table.lookupAll(name)
@@ -59,8 +51,8 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         return visitor.visitIdentAST(this)
     }
 
-    override fun weight() {
-        size = 1
+    override fun weight(): Int {
+        return 1
     }
 
 }

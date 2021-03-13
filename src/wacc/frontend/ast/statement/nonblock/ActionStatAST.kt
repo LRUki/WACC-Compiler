@@ -59,9 +59,8 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         return visitor.visitActionStatAST(this)
     }
 
-    override fun weight() {
-        expr.weight()
-        //TODO size = expr.size
+    override fun weight(): Int {
+        TODO("not impolented")
     }
 
 }

@@ -42,7 +42,7 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
         return type1.check(table) && type2.check(table)
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("Not yet implemented")
     }
 }
@@ -68,7 +68,7 @@ class AnyPairTypeAST : TypeAST {
         return parentType is PairTypeAST
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("Not yet implemented")
     }
 

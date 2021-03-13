@@ -13,7 +13,7 @@ import wacc.frontend.ast.statement.StatAST
  * @property stats List of all the statements in the program
  */
 class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST() {
-
+    var size = 0
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         funcList.forEach { it.checkNameAndAddToST(table) }
@@ -31,8 +31,17 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         return visitor.visitProgramAST(this)
     }
 
-    override fun weight() {
-        TODO("Not yet implemented")
+    override fun weight(): Int {
+        TODO("not implmented")
+//        funcList.forEach {
+//            it.weight()
+//            size += it.size
+//        }
+//        stats.forEach {
+//            it.weight()
+//            size += it.size
+//        }
+
     }
 
 }

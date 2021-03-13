@@ -1,6 +1,5 @@
 package wacc.frontend.ast.function
 
-import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
@@ -14,11 +13,13 @@ import wacc.frontend.ast.type.TypeAST
  * @property ident Name of the parameter
  */
 class ParamAST(val type: TypeAST, val ident: IdentAST) : AST, Identifiable {
+//    var size = 0
       override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitParamAST(this)
     }
 
-    override fun weight() {
-        TODO("Not yet implemented")
+    override fun weight(): Int {
+        TODO("not implmented")
+
     }
 }

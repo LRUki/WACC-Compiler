@@ -4,7 +4,6 @@ import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
-import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
@@ -12,10 +11,7 @@ import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 import wacc.frontend.ast.type.TypeInstance.intTypeInstance
 import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.exception.semanticError
-import wacc.frontend.exception.syntaxError
 import java.util.function.BiFunction
-import java.util.function.BinaryOperator
-import java.util.function.IntBinaryOperator
 
 interface ExprAST : RhsAST
 
@@ -100,7 +96,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         return visitor.visitBinOpExprAST(this)
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("Not yet implemented")
     }
 
@@ -241,7 +237,7 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
         return visitor.visitUnOpExprAST(this)
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("Not yet implemented")
     }
 }

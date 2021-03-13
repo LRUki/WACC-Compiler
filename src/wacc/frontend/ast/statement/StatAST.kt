@@ -1,9 +1,7 @@
 package wacc.frontend.ast.statement
 
-import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
-import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 
 /**
@@ -13,12 +11,12 @@ import wacc.frontend.ast.AstVisitor
 interface StatAST : AST
 
 class SkipStatAST : StatAST {
-
+    val size = 0
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitSkipStatAST(this)
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("not yet implmeted")
     }
 }
@@ -31,6 +29,7 @@ class SkipStatAST : StatAST {
  * @property stats List of statements
  */
 class MultiStatAST(val stats: List<StatAST>) : StatAST {
+    val size = 0
     override fun check(table: SymbolTable): Boolean {
         val blockST = SymbolTable(table)
         stats.forEach {
@@ -45,7 +44,7 @@ class MultiStatAST(val stats: List<StatAST>) : StatAST {
         return visitor.visitMultiStatAST(this)
     }
 
-    override fun weight() {
+    override fun weight(): Int {
         TODO("not yet implmeted")
     }
 }
