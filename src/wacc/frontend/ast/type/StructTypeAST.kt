@@ -7,7 +7,6 @@ import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.nonblock.StructDeclareAST
 
 class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
-
     companion object {
         val defStructIdent = IdentAST("")
     }

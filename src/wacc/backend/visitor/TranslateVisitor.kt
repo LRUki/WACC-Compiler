@@ -401,19 +401,21 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
             }
             is StructTypeAST -> {
-                val structType = ast.type as StructTypeAST
-                val structInST = structType.symTable.lookupAll(structType.ident.name)
 
                 /** Checks that the struct we are looking for is in the symbol table*/
+                val structType = ast.type as StructTypeAST
+                val structInST = ast.symTable.lookupAll(structType.ident.name)
                 if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
                     throw RuntimeException("Struct not in symbol table during Code gen")
                 }
+
                 /** Logic for working out the overall struct size*/
                 val structDeclare = structInST.get() as StructDeclareAST
-                var spaceForStruct = 0
-                for (field in structDeclare.fields) {
-                    spaceForStruct += SymbolTable.getBytesOfType(field.type)
-                }
+                var spaceForStruct = pointerOffset * (structDeclare.fields.size)
+//                for (field in structDeclare.fields) {
+//                    spaceForStruct += SymbolTable.getBytesOfType(field.type)
+//
+//                }
                 /** Mallocs space for all elements in the struct*/
                 instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(spaceForStruct), Register.R0))
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
@@ -963,17 +965,19 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val symbolTable = ast.symTable
         var memtype: MemoryType? = null
 
+
         for (assign in ast.assignments) {
+            val stackReg = getNextFreeCalleeReg()
             instrs.addAll(visit(assign))
             val assignType = assign.getRealType(symbolTable)
             instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(assignType)), Register.R0))
-//            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
             if (assignType.isBoolOrChar()) {
                 memtype = MemoryType.B
             }
             instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
             freeCalleeReg()
-//            instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
+            instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
 
         }
         return instrs
