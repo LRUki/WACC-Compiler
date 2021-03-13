@@ -412,11 +412,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 val structDeclare = structInST.get() as StructDeclareAST
                 var spaceForStruct = 0
                 for (field in structDeclare.fields) {
-                    if (field.type.isBoolOrChar()) {
-                        spaceForStruct += 1
-                    } else {
-                        spaceForStruct += 4
-                    }
+                    spaceForStruct += SymbolTable.getBytesOfType(field.type)
                 }
                 /** Mallocs space for all elements in the struct*/
                 instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(spaceForStruct), Register.R0))
