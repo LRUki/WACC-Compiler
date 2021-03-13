@@ -100,6 +100,10 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         return visitor.visitBinOpExprAST(this)
     }
 
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
+
 }
 
 
@@ -235,6 +239,10 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitUnOpExprAST(this)
+    }
+
+    override fun weight() {
+        TODO("Not yet implemented")
     }
 }
 

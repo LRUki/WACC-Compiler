@@ -10,7 +10,7 @@ class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
         return false //TODO
     }
 
-    override fun weight(): Void {
+    override fun weight() {
         TODO("Not yet implemented")
     }
 
@@ -41,7 +41,7 @@ class StructFieldAST(val type: TypeAST, val ident: IdentAST) : AbstractAST() {
         TODO("Not yet implemented")
     }
 
-    override fun weight(): Void {
+    override fun weight() {
         TODO("Not yet implemented")
     }
 

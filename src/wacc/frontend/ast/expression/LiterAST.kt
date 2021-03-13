@@ -26,6 +26,10 @@ class IntLiterAST(val value: Int) : LiterAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitIntLiterAST(this)
     }
+
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
 }
 
 class BoolLiterAST(val value: Boolean) : LiterAST {
@@ -35,6 +39,10 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitBoolLiterAST(this)
+    }
+
+    override fun weight() {
+        TODO("Not yet implemented")
     }
 }
 
@@ -46,6 +54,10 @@ class StrLiterAST(val value: String) : LiterAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitStrLiterAST(this)
     }
+
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
 }
 
 class CharLiterAST(val value: Char) : LiterAST {
@@ -56,6 +68,10 @@ class CharLiterAST(val value: Char) : LiterAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitCharLiterAST(this)
     }
+
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
 }
 
 class NullPairLiterAST : LiterAST {
@@ -65,6 +81,10 @@ class NullPairLiterAST : LiterAST {
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitNullPairLiterAST(this)
+    }
+
+    override fun weight() {
+        TODO("Not yet implemented")
     }
 }
 
@@ -98,5 +118,9 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitArrayLiterAST(this)
+    }
+
+    override fun weight() {
+        TODO("Not yet implemented")
     }
 }

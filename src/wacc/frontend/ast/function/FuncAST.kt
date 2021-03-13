@@ -54,6 +54,10 @@ class FuncAST(val type: TypeAST, var ident: IdentAST,
         return visitor.visitFuncAST(this)
     }
 
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
+
     fun toLabel(): String {
         val builder = StringBuilder()
         builder.append(ident.toString())

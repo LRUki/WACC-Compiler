@@ -62,4 +62,8 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
         return visitor.visitIfStatAST(this)
     }
 
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
+
 }

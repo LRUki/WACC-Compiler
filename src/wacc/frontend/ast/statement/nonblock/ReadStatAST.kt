@@ -50,4 +50,8 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         return visitor.visitReadStatAST(this)
     }
 
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
+
 }

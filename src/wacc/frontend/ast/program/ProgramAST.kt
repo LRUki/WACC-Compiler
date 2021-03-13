@@ -31,4 +31,8 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
         return visitor.visitProgramAST(this)
     }
 
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
+
 }

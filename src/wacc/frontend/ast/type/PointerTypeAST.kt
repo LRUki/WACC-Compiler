@@ -20,7 +20,7 @@ class PointerTypeAST(val type: TypeAST) : TypeAST, Identifiable {
         return true
     }
 
-    override fun weight(): Void {
+    override fun weight() {
         TODO("Not yet implemented")
     }
 

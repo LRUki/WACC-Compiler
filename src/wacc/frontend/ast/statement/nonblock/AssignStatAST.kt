@@ -73,4 +73,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         return visitor.visitAssignStatAST(this)
     }
 
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
+
+
 }

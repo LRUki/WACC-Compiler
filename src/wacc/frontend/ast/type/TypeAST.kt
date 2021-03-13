@@ -55,7 +55,7 @@ class ImplicitTypeAST : TypeAST {
         return false
     }
 
-    override fun weight(): Void {
+    override fun weight() {
         TODO("Not yet implemented")
     }
 

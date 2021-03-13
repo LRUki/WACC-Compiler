@@ -17,4 +17,8 @@ class ParamAST(val type: TypeAST, val ident: IdentAST) : AST, Identifiable {
       override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitParamAST(this)
     }
+
+    override fun weight() {
+        TODO("Not yet implemented")
+    }
 }
