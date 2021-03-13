@@ -53,9 +53,7 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
         return type.check(table)
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
+
 }
 
 /**
@@ -78,9 +76,7 @@ class AnyTypeAST : TypeAST {
         return false
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
+
 
     override fun hashCode(): Int {
         return javaClass.hashCode()

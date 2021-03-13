@@ -22,8 +22,6 @@ interface AST {
 
     fun <S : T, T> accept(visitor: AstVisitor<S>): T
 
-    fun weight(): Int
-
 }
 
 /**

@@ -10,10 +10,6 @@ class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
         return false //TODO
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
-
     override fun equals(other: Any?): Boolean {
         return true
         TODO("Not yet implemented")
@@ -38,10 +34,6 @@ class StructFieldAST(val type: TypeAST, val ident: IdentAST) : AbstractAST() {
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
-        TODO("Not yet implemented")
-    }
-
-    override fun weight(): Int {
         TODO("Not yet implemented")
     }
 

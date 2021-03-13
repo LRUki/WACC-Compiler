@@ -25,8 +25,4 @@ class BlockStatAST(val body: List<StatAST>) : StatAST {
         return visitor.visitBlockStatAST(this)
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
-
 }

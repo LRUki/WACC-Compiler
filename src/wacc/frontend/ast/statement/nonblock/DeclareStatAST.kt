@@ -55,8 +55,6 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         return visitor.visitDeclareStatAST(this)
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
+
 
 }

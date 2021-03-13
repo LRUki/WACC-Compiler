@@ -55,10 +55,6 @@ class ImplicitTypeAST : TypeAST {
         return false
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
-
     /**
      * Technically, equals() should never be called on an ImplicitTypeAST
      */

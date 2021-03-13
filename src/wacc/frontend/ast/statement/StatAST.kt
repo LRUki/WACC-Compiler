@@ -15,9 +15,7 @@ class SkipStatAST : StatAST {
         return visitor.visitSkipStatAST(this)
     }
 
-    override fun weight(): Int {
-        return 1
-    }
+
 }
 
 /**
@@ -28,7 +26,6 @@ class SkipStatAST : StatAST {
  * @property stats List of statements
  */
 class MultiStatAST(val stats: List<StatAST>) : StatAST {
-    var size = 0
     override fun check(table: SymbolTable): Boolean {
         val blockST = SymbolTable(table)
         stats.forEach {
@@ -43,11 +40,4 @@ class MultiStatAST(val stats: List<StatAST>) : StatAST {
         return visitor.visitMultiStatAST(this)
     }
 
-    override fun weight(): Int {
-        if(size != 0){
-            return size
-        }
-        stats.forEach { size += it.weight() }
-        return size
-    }
 }

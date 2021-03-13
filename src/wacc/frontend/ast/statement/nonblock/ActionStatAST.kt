@@ -59,10 +59,6 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         return visitor.visitActionStatAST(this)
     }
 
-    override fun weight(): Int {
-        TODO("not impolented")
-    }
-
 }
 
 enum class Action {

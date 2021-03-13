@@ -12,8 +12,5 @@ class StructDeclareAST(val ident: IdentAST, val fields: List<StructFieldAST>) : 
         TODO("Not yet implemented")
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
 }
 

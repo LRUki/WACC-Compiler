@@ -15,10 +15,6 @@ class IntLiterAST(val value: Int) : LiterAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitIntLiterAST(this)
     }
-
-    override fun weight(): Int {
-        return 1
-    }
 }
 
 class BoolLiterAST(val value: Boolean) : LiterAST {
@@ -29,10 +25,6 @@ class BoolLiterAST(val value: Boolean) : LiterAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitBoolLiterAST(this)
     }
-
-    override fun weight(): Int {
-        return 1
-    }
 }
 
 class StrLiterAST(val value: String) : LiterAST {
@@ -42,10 +34,6 @@ class StrLiterAST(val value: String) : LiterAST {
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitStrLiterAST(this)
-    }
-
-    override fun weight(): Int {
-        return 1
     }
 }
 
@@ -58,13 +46,9 @@ class CharLiterAST(val value: Char) : LiterAST {
         return visitor.visitCharLiterAST(this)
     }
 
-    override fun weight(): Int {
-        return 1
-    }
 }
 
 class NullPairLiterAST : LiterAST {
-    var size = 0
     override fun getRealType(table: SymbolTable): TypeAST {
         return AnyPairTypeAST()
     }
@@ -73,9 +57,6 @@ class NullPairLiterAST : LiterAST {
         return visitor.visitNullPairLiterAST(this)
     }
 
-    override fun weight(): Int {
-        return 1
-    }
 }
 
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
@@ -109,7 +90,4 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
         return visitor.visitArrayLiterAST(this)
     }
 
-    override fun weight(): Int {
-        return 1
-    }
 }

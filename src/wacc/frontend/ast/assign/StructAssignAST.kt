@@ -10,7 +10,7 @@ class StructAssignAST(val assignments: List<RhsAST>) : RhsAST, AbstractAST() {
         TODO("Not yet implemented")
     }
 
-    override fun weight(): Int {
+    fun weight(): Int {
         TODO("Not yet implemented")
     }
 

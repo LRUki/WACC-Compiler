@@ -40,8 +40,5 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
         return visitor.visitWhileStatAST(this)
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
 
 }

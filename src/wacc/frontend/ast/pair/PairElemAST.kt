@@ -47,10 +47,6 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
         return visitor.visitPairElemAST(this)
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
-
 }
 
 enum class PairChoice {

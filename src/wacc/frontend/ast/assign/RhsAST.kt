@@ -40,10 +40,6 @@ class NewPairRhsAST(val fst: ExprAST, val snd: ExprAST) : RhsAST {
         return visitor.visitNewPairRhsAST(this)
     }
 
-    override fun weight(): Int {
-        TODO("Not yet implemented")
-    }
-
 }
 
 /**
@@ -100,10 +96,6 @@ class CallRhsAST(var ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitCallRhsAST(this)
-    }
-
-    override fun weight(): Int {
-        TODO("Not yet implemented")
     }
 
     fun toLabel(): String {

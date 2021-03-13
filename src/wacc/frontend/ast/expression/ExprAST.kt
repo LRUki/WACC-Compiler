@@ -13,7 +13,11 @@ import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.exception.semanticError
 import java.util.function.BiFunction
 
-interface ExprAST : RhsAST
+interface ExprAST : RhsAST {
+    fun weight(): Int{
+        return 1
+    }
+}
 
 /**
  * AST node to represent an expression with a Binary Operation

@@ -51,8 +51,4 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
         return visitor.visitIdentAST(this)
     }
 
-    override fun weight(): Int {
-        return 1
-    }
-
 }
