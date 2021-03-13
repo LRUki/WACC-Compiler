@@ -23,7 +23,7 @@ import wacc.frontend.exception.semanticError
  * @property name Name of the identifier
  */
 class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
-
+    var size = 0
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         val stEntry = table.lookupAll(name)
@@ -60,7 +60,7 @@ class IdentAST(val name: String) : ExprAST, LhsAST, AbstractAST() {
     }
 
     override fun weight() {
-        TODO("Not yet implemented")
+        size = 1
     }
 
 }
