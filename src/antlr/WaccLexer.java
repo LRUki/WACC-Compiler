@@ -65,8 +65,10 @@ public class WaccLexer extends Lexer {
         "'}'"
     };
   }
-	private static final String[] _LITERAL_NAMES = makeLiteralNames();
-	private static String[] makeSymbolicNames() {
+
+  private static final String[] _LITERAL_NAMES = makeLiteralNames();
+
+  private static String[] makeSymbolicNames() {
     return new String[]{
         null, "BEGIN", "END", "IS", "SKIP_TOKEN", "READ", "FREE", "RETURN", "EXIT",
         "PRINT", "PRINTLN", "IF", "THEN", "ELSE", "FI", "WHILE", "DO", "DONE",
@@ -109,15 +111,15 @@ public class WaccLexer extends Lexer {
 
 	@Override
 
-	public Vocabulary getVocabulary() {
-		return VOCABULARY;
-	}
+  public Vocabulary getVocabulary() {
+    return VOCABULARY;
+  }
 
 
-	public WaccLexer(CharStream input) {
-		super(input);
-		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
-	}
+  public WaccLexer(CharStream input) {
+    super(input);
+    _interp = new LexerATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
+  }
 
   @Override
   public String getGrammarFileName() {

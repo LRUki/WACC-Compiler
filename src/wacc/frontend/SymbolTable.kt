@@ -123,7 +123,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             if (type.first is DeclareStatAST) {
                 offset += type.second
             } else if (type.first is StructDeclareAST) {
-                offset += type.second
+                offset += 4
             }
         }
         offsetSize = offset
@@ -293,6 +293,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun getSTWithIdentifier(ident: String, correctType: TypeAST): Pair<SymbolTable, Int> {
         return findSTWithIdentifier(ident, correctType, 0)
     }
+
 
 }
 

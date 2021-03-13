@@ -418,6 +418,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 val stackReg = getNextFreeCalleeReg()
                 instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
                 instrs.addAll(visit(ast.rhs))
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, 0, false), seeLastUsedCalleeReg()))
+                freeCalleeReg()
+                return instrs
+
             }
         }
         var offset = ast.symTable.offsetSize
