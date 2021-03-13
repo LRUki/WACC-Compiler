@@ -403,18 +403,26 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             is StructTypeAST -> {
                 val structType = ast.type as StructTypeAST
                 val structInST = structType.symTable.lookupAll(structType.ident.name)
+
+                /** Checks that the struct we are looking for is in the symbol table*/
                 if (structInST.isEmpty || structInST.get() !is StructDeclareAST){
-                    RuntimeException("Struct not in symbol table during Code gen")
+                    throw RuntimeException("Struct not in symbol table during Code gen")
                 }
-                var memtype: MemoryType? = null
-                val spaceForStruct = 0
+                /** Logic for figuring out the size overall struct size*/
+                val structDeclare = structInST.get() as StructDeclareAST
+                var spaceForStruct = 0
+                for (field in structDeclare.fields){
+                    if (field.type.isBoolOrChar()){
+                        spaceForStruct += 1
+                    }else{
+                        spaceForStruct += 4
+                    }
+                }
                 /** Mallocs space for all elements in the struct*/
                 instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(spaceForStruct), Register.R0))
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
                 val stackReg = getNextFreeCalleeReg()
                 instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
-                //
-                // malloc size of struct
             }
         }
         var offset = ast.symTable.offsetSize
