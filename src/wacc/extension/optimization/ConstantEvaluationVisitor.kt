@@ -250,5 +250,9 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         TODO("Not yet implemented")
     }
 
+    override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): AST {
+        TODO("Not yet implemented")
+    }
+
 
 }
