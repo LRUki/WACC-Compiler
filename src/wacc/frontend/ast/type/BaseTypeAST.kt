@@ -9,6 +9,9 @@ import wacc.frontend.ast.AbstractAST
  * @property type Type declared by BaseType enum
  */
 class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
+    override fun weight(): Void {
+        TODO("Not yet implemented")
+    }
 
     override fun equals(other: Any?): Boolean {
         return when (other) {

@@ -23,6 +23,7 @@ interface AST {
 
     fun <S : T, T> accept(visitor: AstVisitor<S>): T
 
+    fun weight():Void
 }
 
 /**
@@ -31,5 +32,6 @@ interface AST {
 abstract class AbstractAST : AST {
     lateinit var ctx: ParserRuleContext
     lateinit var symTable: SymbolTable
+    var size = 0
 }
 

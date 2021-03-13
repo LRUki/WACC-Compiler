@@ -52,6 +52,10 @@ class ArrayTypeAST(val type: TypeAST, val dimension: Int) : TypeAST, Identifiabl
     override fun check(table: SymbolTable): Boolean {
         return type.check(table)
     }
+
+    override fun weight(): Void {
+        TODO("Not yet implemented")
+    }
 }
 
 /**
@@ -72,6 +76,10 @@ class AnyTypeAST : TypeAST {
 
     override fun isConcreteType(parentType: TypeAST?): Boolean {
         return false
+    }
+
+    override fun weight(): Void {
+        TODO("Not yet implemented")
     }
 
     override fun hashCode(): Int {

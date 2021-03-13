@@ -20,6 +20,10 @@ class PointerTypeAST(val type: TypeAST) : TypeAST, Identifiable {
         return true
     }
 
+    override fun weight(): Void {
+        TODO("Not yet implemented")
+    }
+
     override fun hashCode(): Int {
         return type.hashCode()
     }
