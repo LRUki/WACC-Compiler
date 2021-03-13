@@ -7,5 +7,5 @@
 
 begin
   struct Person {int age; char grade;};
-  struct Person Bob = {42}
+  struct Person Bob = {42, 'A'}
 end

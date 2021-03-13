@@ -405,16 +405,16 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 val structInST = structType.symTable.lookupAll(structType.ident.name)
 
                 /** Checks that the struct we are looking for is in the symbol table*/
-                if (structInST.isEmpty || structInST.get() !is StructDeclareAST){
+                if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
                     throw RuntimeException("Struct not in symbol table during Code gen")
                 }
-                /** Logic for figuring out the size overall struct size*/
+                /** Logic for working out the overall struct size*/
                 val structDeclare = structInST.get() as StructDeclareAST
                 var spaceForStruct = 0
-                for (field in structDeclare.fields){
-                    if (field.type.isBoolOrChar()){
+                for (field in structDeclare.fields) {
+                    if (field.type.isBoolOrChar()) {
                         spaceForStruct += 1
-                    }else{
+                    } else {
                         spaceForStruct += 4
                     }
                 }
@@ -432,9 +432,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             is ArrayElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-            }
-            is StructAssignAST -> {
-                //
             }
         }
         instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), Register.R4))
@@ -529,6 +526,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Translates a Call RHS AST */
     override fun visitCallRhsAST(ast: CallRhsAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
+
         /** Translates arguements in reverse order */
         var totalBytes = 0
         val argTypesReversed = ast.argTypes.reversed()
@@ -965,7 +963,24 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     }
 
     override fun visitStructAssignAST(ast: StructAssignAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        val symbolTable = ast.symTable
+        var memtype: MemoryType? = null
+
+        for (assign in ast.assignments) {
+            instrs.addAll(visit(assign))
+            val assignType = assign.getRealType(symbolTable)
+            instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(assignType)), Register.R0))
+//            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+            if (assignType.isBoolOrChar()) {
+                memtype = MemoryType.B
+            }
+            instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
+            freeCalleeReg()
+//            instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
+
+        }
+        return instrs
     }
 
     override fun visitStructAccessAST(ast: StructAccessAST): List<Instruction> {
