@@ -11,7 +11,7 @@ import wacc.frontend.ast.type.StructTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
-class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : ExprAST, AbstractAST() {
+class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : LhsAST, ExprAST, AbstractAST() {
     lateinit var structDeclare: StructDeclareAST
     lateinit var structIdentDeclareInST: DeclareStatAST
 

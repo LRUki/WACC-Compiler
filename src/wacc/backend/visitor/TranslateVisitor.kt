@@ -13,6 +13,7 @@ import wacc.backend.translate.RuntimeErrors
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
+import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
@@ -378,7 +379,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitDeclareStatAST(ast: DeclareStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         /** Translates the right hand side of the declare */
-        instrs.addAll(visit(ast.rhs))
+        if (ast.rhs !is StructAssignAST) {
+            instrs.addAll(visit(ast.rhs))
+        }
         if (ast.rhs is StrLiterAST) {
             ast.stringLabel = dataDirective.getStringLabel(ast.rhs.value)
         }
@@ -402,27 +405,19 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             is StructTypeAST -> {
                 val structType = ast.type as StructTypeAST
-                val structInST = structType.symTable.lookupAll(structType.ident.name)
+                val structInST = ast.symTable.lookupAll(structType.ident.name)
 
                 /** Checks that the struct we are looking for is in the symbol table*/
                 if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
                     throw RuntimeException("Struct not in symbol table during Code gen")
                 }
-                /** Logic for working out the overall struct size*/
-                val structDeclare = structInST.get() as StructDeclareAST
-                var spaceForStruct = 0
-                for (field in structDeclare.fields) {
-                    if (field.type.isBoolOrChar()) {
-                        spaceForStruct += 1
-                    } else {
-                        spaceForStruct += 4
-                    }
-                }
+                val structDeclareAST = structInST.get() as StructDeclareAST
                 /** Mallocs space for all elements in the struct*/
-                instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(spaceForStruct), Register.R0))
+                instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(structDeclareAST.totalSizeOfFields), Register.R0))
                 instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
                 val stackReg = getNextFreeCalleeReg()
                 instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
+                instrs.addAll(visit(ast.rhs))
             }
         }
         var offset = ast.symTable.offsetSize
@@ -434,7 +429,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
         }
-        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), Register.R4))
+        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), seeLastUsedCalleeReg()))
         freeCalleeReg()
 
         return instrs
@@ -966,17 +961,19 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val instrs = mutableListOf<Instruction>()
         val symbolTable = ast.symTable
         var memtype: MemoryType? = null
-
+        val stackReg = seeLastUsedCalleeReg()
+        var fieldOffset = 0
         for (assign in ast.assignments) {
             instrs.addAll(visit(assign))
             val assignType = assign.getRealType(symbolTable)
-            instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(assignType)), Register.R0))
+//            instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(assignType)), Register.R0))
 //            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
             if (assignType.isBoolOrChar()) {
                 memtype = MemoryType.B
             }
-            instrs.add(StoreInstr(memtype, RegisterMode(Register.R0), seeLastUsedCalleeReg()))
+            instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(stackReg, fieldOffset, false), seeLastUsedCalleeReg()))
             freeCalleeReg()
+            fieldOffset += getBytesOfType(assign.getRealType(symbolTable))
 //            instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
 
         }

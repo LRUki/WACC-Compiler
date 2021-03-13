@@ -5,6 +5,7 @@ import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
+import wacc.frontend.ast.statement.nonblock.StructDeclareAST
 import wacc.frontend.ast.type.*
 import java.util.*
 import kotlin.collections.LinkedHashMap
@@ -102,6 +103,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             is ParamAST -> {
                 getBytesOfType(obj.type)
             }
+            is StructDeclareAST -> {
+                obj.totalSizeOfFields
+            }
             else -> 0
         }
         currSymbolTable[name] = Pair(obj, size)
@@ -117,6 +121,8 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         var offset = 0
         currSymbolTable.forEach { (name, type) ->
             if (type.first is DeclareStatAST) {
+                offset += type.second
+            } else if (type.first is StructDeclareAST) {
                 offset += type.second
             }
         }

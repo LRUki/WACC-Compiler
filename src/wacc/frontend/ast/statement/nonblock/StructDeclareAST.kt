@@ -11,6 +11,7 @@ import wacc.frontend.ast.type.StructFieldAST
 import wacc.frontend.exception.semanticError
 
 class StructDeclareAST(val ident: IdentAST, val fields: List<StructFieldAST>) : Identifiable, StatAST, AbstractAST() {
+    var totalSizeOfFields: Int = 0
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         val identName = table.lookup(ident.name)
@@ -25,6 +26,16 @@ class StructDeclareAST(val ident: IdentAST, val fields: List<StructFieldAST>) : 
                 return false
             }
         }
+
+        /** Logic for working out the overall struct size*/
+        for (field in fields) {
+            if (field.type.isBoolOrChar()) {
+                totalSizeOfFields += 1
+            } else {
+                totalSizeOfFields += 4
+            }
+        }
+
         table.add(ident.name, this)
         return true
     }

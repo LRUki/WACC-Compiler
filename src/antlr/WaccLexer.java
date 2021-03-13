@@ -49,11 +49,12 @@ public class WaccLexer extends Lexer {
         "CAPTIALISED_IDENT", "IDENT", "WHITESPACE", "ESCAPE_CHARACTER", "CHARACTER",
         "STR_LITER", "CHAR_LITER", "COMMENT"
     };
-	}
-	public static final String[] ruleNames = makeRuleNames();
+  }
 
-	private static String[] makeLiteralNames() {
-		return new String[]{
+  public static final String[] ruleNames = makeRuleNames();
+
+  private static String[] makeLiteralNames() {
+    return new String[]{
         null, "'begin'", "'end'", "'is'", "'skip'", "'read'", "'free'", "'return'",
         "'exit'", "'print'", "'println'", "'if'", "'then'", "'else'", "'fi'",
         "'while'", "'do'", "'done'", "'null'", "'struct'", "'.'", "'='", "';'",
@@ -63,10 +64,10 @@ public class WaccLexer extends Lexer {
         "'<'", "'=='", "'!='", "'&&'", "'||'", "'('", "')'", "'['", "']'", "'{'",
         "'}'"
     };
-	}
+  }
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
-		return new String[]{
+    return new String[]{
         null, "BEGIN", "END", "IS", "SKIP_TOKEN", "READ", "FREE", "RETURN", "EXIT",
         "PRINT", "PRINTLN", "IF", "THEN", "ELSE", "FI", "WHILE", "DO", "DONE",
         "NULL", "STRUCT", "DOT", "ASSIGN", "SEMICOLON", "COMMA", "NEWPAIR", "CALL",
@@ -77,7 +78,7 @@ public class WaccLexer extends Lexer {
         "IDENT", "WHITESPACE", "ESCAPE_CHARACTER", "CHARACTER", "STR_LITER",
         "CHAR_LITER", "COMMENT"
     };
-	}
+  }
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -118,23 +119,35 @@ public class WaccLexer extends Lexer {
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
-	@Override
-	public String getGrammarFileName() { return "WaccLexer.g4"; }
+  @Override
+  public String getGrammarFileName() {
+    return "WaccLexer.g4";
+  }
 
-	@Override
-	public String[] getRuleNames() { return ruleNames; }
+  @Override
+  public String[] getRuleNames() {
+    return ruleNames;
+  }
 
-	@Override
-	public String getSerializedATN() { return _serializedATN; }
+  @Override
+  public String getSerializedATN() {
+    return _serializedATN;
+  }
 
-	@Override
-	public String[] getChannelNames() { return channelNames; }
+  @Override
+  public String[] getChannelNames() {
+    return channelNames;
+  }
 
-	@Override
-	public String[] getModeNames() { return modeNames; }
+  @Override
+  public String[] getModeNames() {
+    return modeNames;
+  }
 
-	@Override
-	public ATN getATN() { return _ATN; }
+  @Override
+  public ATN getATN() {
+    return _ATN;
+  }
 
   public static final String _serializedATN =
       "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\2F\u01ae\b\1\4\2\t" +
@@ -278,10 +291,11 @@ public class WaccLexer extends Lexer {
           "\u01a7\3\b\2\2";
   public static final ATN _ATN =
       new ATNDeserializer().deserialize(_serializedATN.toCharArray());
-	static {
-		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
-		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
-			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
-		}
-	}
+
+  static {
+    _decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
+    for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
+      _decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
+    }
+  }
 }

@@ -26,8 +26,8 @@ stat: SKIP_TOKEN                                      #skipStat
 assignLhs: ident
          | arrayElem
          | pairElem
-         | pointerElem;
-//         | structAccess;
+         | pointerElem
+         | structAccess;
 
 assignRhs: expr
          | arrayLiter
