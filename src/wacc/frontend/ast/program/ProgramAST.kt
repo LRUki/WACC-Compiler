@@ -32,16 +32,17 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
     }
 
     override fun weight(): Int {
-        TODO("not implmented")
-//        funcList.forEach {
-//            it.weight()
-//            size += it.size
-//        }
-//        stats.forEach {
-//            it.weight()
-//            size += it.size
-//        }
+        if(size != 0){
+            return size
+        }
+        funcList.forEach {
+            size += it.weight()
+        }
+        stats.forEach {
+            size += it.weight()
+        }
 
+        return size
     }
 
 }

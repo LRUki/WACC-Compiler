@@ -247,7 +247,7 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
             return size
         }
         size += expr.weight()
-        return size 
+        return size
     }
 }
 
