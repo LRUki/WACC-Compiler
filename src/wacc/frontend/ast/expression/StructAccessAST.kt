@@ -3,6 +3,7 @@ package wacc.frontend.ast.expression
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
+import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.statement.nonblock.StructDeclareAST
@@ -30,7 +31,7 @@ class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : Exp
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
-        return visitor.visitStructAccess(this)
+        return visitor.visitStructAccessAST(this)
     }
 
     /** Looks up the identifier in the symbol table to get the struct name

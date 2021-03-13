@@ -30,7 +30,7 @@ class StructDeclareAST(val ident: IdentAST, val fields: List<StructFieldAST>) : 
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
-        return visitor.visitStructDeclare(this)
+        return visitor.visitStructDeclareAST(this)
     }
 }
 

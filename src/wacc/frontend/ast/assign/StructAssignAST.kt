@@ -18,7 +18,7 @@ class StructAssignAST(val assignments: List<RhsAST>) : RhsAST, AbstractAST() {
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
-       return visitor.visitStructAssign(this)
+       return visitor.visitStructAssignAST(this)
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {

@@ -400,6 +400,22 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }
+            is StructTypeAST -> {
+                val structType = ast.type as StructTypeAST
+                val structInST = structType.symTable.lookupAll(structType.ident.name)
+                if (structInST.isEmpty || structInST.get() !is StructDeclareAST){
+                    RuntimeException("Struct not in symbol table during Code gen")
+                }
+                var memtype: MemoryType? = null
+                val spaceForStruct = 0
+                /** Mallocs space for all elements in the struct*/
+                instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(spaceForStruct), Register.R0))
+                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+                val stackReg = getNextFreeCalleeReg()
+                instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
+                //
+                // malloc size of struct
+            }
         }
         var offset = ast.symTable.offsetSize
         when (ast.rhs) {
@@ -408,6 +424,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             is ArrayElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+            }
+            is StructAssignAST -> {
+                //
             }
         }
         instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), Register.R4))
@@ -932,15 +951,16 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return emptyList()
     }
 
-    override fun visitStructDeclare(ast: StructDeclareAST): List<Instruction> {
+    /** Translates a Struct Declare AST. Requires no code generation */
+    override fun visitStructDeclareAST(ast: StructDeclareAST): List<Instruction> {
+        return emptyList()
+    }
+
+    override fun visitStructAssignAST(ast: StructAssignAST): List<Instruction> {
         TODO("Not yet implemented")
     }
 
-    override fun visitStructAssign(ast: StructAssignAST): List<Instruction> {
-        TODO("Not yet implemented")
-    }
-
-    override fun visitStructAccess(ast: StructAccessAST): List<Instruction> {
+    override fun visitStructAccessAST(ast: StructAccessAST): List<Instruction> {
         TODO("Not yet implemented")
     }
 }

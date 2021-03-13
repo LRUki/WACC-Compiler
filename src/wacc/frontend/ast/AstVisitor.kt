@@ -82,8 +82,8 @@ interface AstVisitor<T> {
     /*
     * Visit Struct ASTs.
     */
-    fun visitStructAccess(ast: StructAccessAST): T
-    fun visitStructDeclare(ast: StructDeclareAST): T
-    fun visitStructAssign(ast: StructAssignAST): T
+    fun visitStructAccessAST(ast: StructAccessAST): T
+    fun visitStructDeclareAST(ast: StructDeclareAST): T
+    fun visitStructAssignAST(ast: StructAssignAST): T
 
 }

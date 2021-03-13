@@ -238,15 +238,15 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         return ast
     }
 
-    override fun visitStructDeclare(ast: StructDeclareAST): AST {
+    override fun visitStructDeclareAST(ast: StructDeclareAST): AST {
         TODO("Not yet implemented")
     }
 
-    override fun visitStructAssign(ast: StructAssignAST): AST {
+    override fun visitStructAssignAST(ast: StructAssignAST): AST {
         TODO("Not yet implemented")
     }
 
-    override fun visitStructAccess(ast: StructAccessAST): AST {
+    override fun visitStructAccessAST(ast: StructAccessAST): AST {
         TODO("Not yet implemented")
     }
 
