@@ -20,7 +20,7 @@ import wacc.frontend.exception.semanticError
  */
 class FuncAST(val type: TypeAST, var ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {
-//    var size = 0
+    var size = 0
     override fun check(table: SymbolTable): Boolean {
         //create a symbol table for the function and add all parameters to it
         symTable = FuncSymbolTable(table, this)
@@ -55,7 +55,14 @@ class FuncAST(val type: TypeAST, var ident: IdentAST,
     }
 
     override fun weight(): Int {
-        TODO("not yet implmeted")
+        if(size != 0){
+            return size
+        }
+        size += type.weight()
+        size += ident.weight()
+        paramList.forEach { size += it.weight() }
+        body.forEach { size += it.weight() }
+        return size
     }
 
     fun toLabel(): String {

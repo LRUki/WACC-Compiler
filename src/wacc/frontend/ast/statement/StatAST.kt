@@ -11,13 +11,12 @@ import wacc.frontend.ast.AstVisitor
 interface StatAST : AST
 
 class SkipStatAST : StatAST {
-    val size = 0
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitSkipStatAST(this)
     }
 
     override fun weight(): Int {
-        TODO("not yet implmeted")
+        return 1
     }
 }
 
@@ -29,7 +28,7 @@ class SkipStatAST : StatAST {
  * @property stats List of statements
  */
 class MultiStatAST(val stats: List<StatAST>) : StatAST {
-    val size = 0
+    var size = 0
     override fun check(table: SymbolTable): Boolean {
         val blockST = SymbolTable(table)
         stats.forEach {
@@ -45,6 +44,10 @@ class MultiStatAST(val stats: List<StatAST>) : StatAST {
     }
 
     override fun weight(): Int {
-        TODO("not yet implmeted")
+        if(size != 0){
+            return size
+        }
+        stats.forEach { size += it.weight() }
+        return size
     }
 }
