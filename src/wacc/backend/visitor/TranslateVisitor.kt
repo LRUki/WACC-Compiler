@@ -244,7 +244,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         /** Translates the expression of the statment*/
         instrs.addAll(visit(ast.expr))
         val reg = seeLastUsedCalleeReg()
-        val exprType = ast.expr.getRealType(ast.symTable)
+        val exprType: TypeAST = ast.expr.getRealType(ast.symTable)
         if (ast.expr is ArrayElemAST) {
             var memType: MemoryType? = null
             if (exprType.isBoolOrChar()) {
@@ -310,8 +310,22 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             Action.FREE -> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
-                cLib.addCode(CLibrary.Call.FREE_PAIR)
+                val methodName = when (exprType) {
+                    is ArrayTypeAST -> {
+                        CLibrary.Call.FREE_ARRAY
+                    }
+                    is PairTypeAST -> {
+                        CLibrary.Call.FREE_PAIR
+                    }
+                    is StructTypeAST -> {
+                        CLibrary.Call.FREE_STRUCT
+                    }
+                    else -> {
+                        CLibrary.Call.FREE_ARRAY
+                    } // Should never reach here since the semantic check only allows the above
+                }
+                instrs.add(BranchInstr(Condition.AL, Label(methodName.toString()), true))
+                cLib.addCode(methodName)
                 freeCalleeReg()
             }
             Action.RETURN -> {

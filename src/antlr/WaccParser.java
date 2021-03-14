@@ -105,11 +105,11 @@ public class WaccParser extends Parser {
         tokenNames[i] = "<INVALID>";
       }
     }
-	}
+  }
 
-	@Override
-	@Deprecated
-	public String[] getTokenNames() {
+  @Override
+  @Deprecated
+  public String[] getTokenNames() {
 		return tokenNames;
 	}
 
@@ -848,16 +848,33 @@ public class WaccParser extends Parser {
 
     public ArrayLiterContext arrayLiter() {
       return getRuleContext(ArrayLiterContext.class, 0);
-		}
-		public TerminalNode NEWPAIR() { return getToken(WaccParser.NEWPAIR, 0); }
-		public TerminalNode L_PAREN() { return getToken(WaccParser.L_PAREN, 0); }
-		public TerminalNode COMMA() { return getToken(WaccParser.COMMA, 0); }
-		public TerminalNode R_PAREN() { return getToken(WaccParser.R_PAREN, 0); }
-		public PairElemContext pairElem() {
-			return getRuleContext(PairElemContext.class,0);
-		}
-		public TerminalNode CALL() { return getToken(WaccParser.CALL, 0); }
-		public IdentContext ident() {
+    }
+
+    public TerminalNode NEWPAIR() {
+      return getToken(WaccParser.NEWPAIR, 0);
+    }
+
+    public TerminalNode L_PAREN() {
+      return getToken(WaccParser.L_PAREN, 0);
+    }
+
+    public TerminalNode COMMA() {
+      return getToken(WaccParser.COMMA, 0);
+    }
+
+    public TerminalNode R_PAREN() {
+      return getToken(WaccParser.R_PAREN, 0);
+    }
+
+    public PairElemContext pairElem() {
+      return getRuleContext(PairElemContext.class, 0);
+    }
+
+    public TerminalNode CALL() {
+      return getToken(WaccParser.CALL, 0);
+    }
+
+    public IdentContext ident() {
 			return getRuleContext(IdentContext.class,0);
 		}
 		public ArgListContext argList() {
@@ -1394,15 +1411,20 @@ public class WaccParser extends Parser {
 
     @Override
     public int getRuleIndex() {
-      return RULE_pointerElem; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitPointerElem(this);
-			else return visitor.visitChildren(this);
-		}
-	}
+      return RULE_pointerElem;
+    }
 
-	public final PointerElemContext pointerElem() throws RecognitionException {
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor) {
+        return ((WaccParserVisitor<? extends T>) visitor).visitPointerElem(this);
+      } else {
+        return visitor.visitChildren(this);
+      }
+    }
+  }
+
+  public final PointerElemContext pointerElem() throws RecognitionException {
     PointerElemContext _localctx = new PointerElemContext(_ctx, getState());
     enterRule(_localctx, 26, RULE_pointerElem);
     try {
