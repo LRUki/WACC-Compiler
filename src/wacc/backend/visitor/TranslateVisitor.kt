@@ -422,7 +422,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 val stackReg = getNextFreeCalleeReg()
                 instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
                 instrs.addAll(visit(ast.rhs))
-                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, 0, false), seeLastUsedCalleeReg()))
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.findOffsetInStack(ast.ident.name), false), seeLastUsedCalleeReg()))
                 freeCalleeReg()
                 return instrs
 
@@ -435,6 +435,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             is ArrayElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
+            }
+            is StructAccessAST -> {
+
             }
         }
         instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), seeLastUsedCalleeReg()))
@@ -993,15 +996,18 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val memtype: MemoryType? = null
         var accessOffset = 0
         val stackOffset = ast.symTable.findOffsetInStack(ast.structIdent.name)
-
+        val resultReg = getNextFreeCalleeReg()
+        val structReg = getNextFreeCalleeReg()
+        instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, stackOffset, false), structReg))
         for (field in ast.structDeclare.fields) {
             if ((ast.fieldIdent).equals(field.ident)) {
                 instrs.add(LoadInstr(Condition.AL, memtype,
-                        RegisterAddrWithOffsetMode(Register.SP, stackOffset + accessOffset, false), Register.R0))
-                return instrs
+                        RegisterAddrWithOffsetMode(structReg, stackOffset + accessOffset, false), resultReg))
+                break
             }
             accessOffset += getBytesOfType(field.type)
         }
+        freeCalleeReg()
         return instrs
     }
 

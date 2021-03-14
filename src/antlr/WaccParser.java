@@ -52,9 +52,10 @@ public class WaccParser extends Parser {
         "ident", "capitalisedIdent"
     };
   }
-	public static final String[] ruleNames = makeRuleNames();
 
-	private static String[] makeLiteralNames() {
+  public static final String[] ruleNames = makeRuleNames();
+
+  private static String[] makeLiteralNames() {
     return new String[]{
         null, "'begin'", "'end'", "'is'", "'skip'", "'read'", "'free'", "'return'",
         "'exit'", "'print'", "'println'", "'if'", "'then'", "'else'", "'fi'",
@@ -159,8 +160,8 @@ public class WaccParser extends Parser {
 		ProgramContext _localctx = new ProgramContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_program);
 		try {
-			int _alt;
-			enterOuterAlt(_localctx, 1);
+      int _alt;
+      enterOuterAlt(_localctx, 1);
       {
         setState(78);
         match(BEGIN);
@@ -187,7 +188,7 @@ public class WaccParser extends Parser {
         setState(87);
         match(EOF);
       }
-		}
+    }
 		catch (RecognitionException re) {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
@@ -549,8 +550,8 @@ public class WaccParser extends Parser {
 		enterRecursionRule(_localctx, 8, RULE_stat, _p);
 		int _la;
 		try {
-			int _alt;
-			enterOuterAlt(_localctx, 1);
+      int _alt;
+      enterOuterAlt(_localctx, 1);
       {
         setState(148);
         _errHandler.sync(this);
@@ -739,14 +740,17 @@ public class WaccParser extends Parser {
 		return _localctx;
 	}
 
-	public static class AssignLhsContext extends ParserRuleContext {
-		public IdentContext ident() {
+  public static class AssignLhsContext extends ParserRuleContext {
+
+    public IdentContext ident() {
       return getRuleContext(IdentContext.class, 0);
     }
-		public ArrayElemContext arrayElem() {
+
+    public ArrayElemContext arrayElem() {
       return getRuleContext(ArrayElemContext.class, 0);
     }
-		public PairElemContext pairElem() {
+
+    public PairElemContext pairElem() {
       return getRuleContext(PairElemContext.class, 0);
     }
 
@@ -820,7 +824,7 @@ public class WaccParser extends Parser {
         }
         break;
       }
-		}
+    }
 		catch (RecognitionException re) {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
@@ -1016,7 +1020,7 @@ public class WaccParser extends Parser {
 		enterRule(_localctx, 14, RULE_structDeclare);
 		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
+      enterOuterAlt(_localctx, 1);
       {
         setState(186);
         structType();
@@ -1043,7 +1047,7 @@ public class WaccParser extends Parser {
         setState(196);
         match(R_CURLY);
       }
-		}
+    }
 		catch (RecognitionException re) {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
@@ -1084,7 +1088,7 @@ public class WaccParser extends Parser {
 		enterRule(_localctx, 16, RULE_structAssign);
 		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
+      enterOuterAlt(_localctx, 1);
       {
         setState(198);
         match(L_CURLY);
@@ -1111,17 +1115,16 @@ public class WaccParser extends Parser {
         setState(207);
         match(R_CURLY);
       }
-		}
+    }
 		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
   public static class StructMemberContext extends ParserRuleContext {
 
@@ -1226,8 +1229,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
   public static class ArgListContext extends ParserRuleContext {
 
@@ -1266,7 +1269,7 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final ArgListContext argList() throws RecognitionException {
+  public final ArgListContext argList() throws RecognitionException {
     ArgListContext _localctx = new ArgListContext(_ctx, getState());
     enterRule(_localctx, 22, RULE_argList);
     int _la;
@@ -1299,8 +1302,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class PairElemContext extends ParserRuleContext {
 		public TerminalNode FST() { return getToken(WaccParser.FST, 0); }
@@ -1347,16 +1350,14 @@ public class WaccParser extends Parser {
         default:
           throw new NoViableAltException(this);
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class PointerElemContext extends ParserRuleContext {
@@ -1393,8 +1394,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class TypeContext extends ParserRuleContext {
 		public BaseTypeContext baseType() {
@@ -1466,16 +1467,14 @@ public class WaccParser extends Parser {
         }
         break;
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class BaseTypeContext extends ParserRuleContext {
@@ -1522,8 +1521,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class ArrayTypeContext extends ParserRuleContext {
 		public BaseTypeContext baseType() {
@@ -1609,8 +1608,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class PairTypeContext extends ParserRuleContext {
 		public TerminalNode PAIR() { return getToken(WaccParser.PAIR, 0); }
@@ -1660,8 +1659,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class PairElemTypeContext extends ParserRuleContext {
 		public BaseTypeContext baseType() {
@@ -1721,16 +1720,14 @@ public class WaccParser extends Parser {
         }
         break;
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class PointerTypeContext extends ParserRuleContext {
@@ -1767,8 +1764,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class ImplicitTypeContext extends ParserRuleContext {
 		public TerminalNode VAR() { return getToken(WaccParser.VAR, 0); }
@@ -1799,8 +1796,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class StructTypeContext extends ParserRuleContext {
 		public TerminalNode STRUCT() { return getToken(WaccParser.STRUCT, 0); }
@@ -1836,8 +1833,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class ExprContext extends ParserRuleContext {
 		public ExprContext(ParserRuleContext parent, int invokingState) {
@@ -1865,16 +1862,20 @@ public class WaccParser extends Parser {
 		}
 	}
 	public static class SingletonExprContext extends ExprContext {
-		public IntLiterContext intLiter() {
+
+    public IntLiterContext intLiter() {
       return getRuleContext(IntLiterContext.class, 0);
     }
-		public BoolLiterContext boolLiter() {
+
+    public BoolLiterContext boolLiter() {
       return getRuleContext(BoolLiterContext.class, 0);
     }
-		public CharLiterContext charLiter() {
+
+    public CharLiterContext charLiter() {
       return getRuleContext(CharLiterContext.class, 0);
     }
-		public StrLiterContext strLiter() {
+
+    public StrLiterContext strLiter() {
       return getRuleContext(StrLiterContext.class, 0);
     }
 
@@ -1941,7 +1942,8 @@ public class WaccParser extends Parser {
     public Binop2Context binop2() {
       return getRuleContext(Binop2Context.class, 0);
     }
-		public Binop3Context binop3() {
+
+    public Binop3Context binop3() {
       return getRuleContext(Binop3Context.class, 0);
     }
 
@@ -1979,15 +1981,25 @@ public class WaccParser extends Parser {
 
     public ExprContext expr() {
       return getRuleContext(ExprContext.class, 0);
-		}
-		public TerminalNode R_PAREN() { return getToken(WaccParser.R_PAREN, 0); }
-		public ParenExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitParenExpr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
+    }
+
+    public TerminalNode R_PAREN() {
+      return getToken(WaccParser.R_PAREN, 0);
+    }
+
+    public ParenExprContext(ExprContext ctx) {
+      copyFrom(ctx);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor) {
+        return ((WaccParserVisitor<? extends T>) visitor).visitParenExpr(this);
+      } else {
+        return visitor.visitChildren(this);
+      }
+    }
+  }
 
 	public final ExprContext expr() throws RecognitionException {
 		return expr(0);
@@ -2254,8 +2266,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class Binop1Context extends ParserRuleContext {
 		public TerminalNode MULT() { return getToken(WaccParser.MULT, 0); }
@@ -2299,8 +2311,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class Binop2Context extends ParserRuleContext {
 		public TerminalNode PLUS() { return getToken(WaccParser.PLUS, 0); }
@@ -2342,8 +2354,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class Binop3Context extends ParserRuleContext {
 		public TerminalNode LTE() { return getToken(WaccParser.LTE, 0); }
@@ -2388,8 +2400,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class Binop4Context extends ParserRuleContext {
 		public TerminalNode EQ() { return getToken(WaccParser.EQ, 0); }
@@ -2431,8 +2443,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class Binop5Context extends ParserRuleContext {
 		public TerminalNode AND() { return getToken(WaccParser.AND, 0); }
@@ -2463,8 +2475,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class Binop6Context extends ParserRuleContext {
 		public TerminalNode OR() { return getToken(WaccParser.OR, 0); }
@@ -2495,8 +2507,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class ArrayElemContext extends ParserRuleContext {
 		public IdentContext ident() {
@@ -2567,8 +2579,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class IntLiterContext extends ParserRuleContext {
 		public TerminalNode NUMBER() { return getToken(WaccParser.NUMBER, 0); }
@@ -2664,8 +2676,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class StrLiterContext extends ParserRuleContext {
 		public TerminalNode STR_LITER() { return getToken(WaccParser.STR_LITER, 0); }
@@ -2696,8 +2708,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class CharLiterContext extends ParserRuleContext {
 		public TerminalNode CHAR_LITER() { return getToken(WaccParser.CHAR_LITER, 0); }
@@ -2728,8 +2740,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class ArrayLiterContext extends ParserRuleContext {
 		public TerminalNode L_SQUARE() { return getToken(WaccParser.L_SQUARE, 0); }
@@ -2838,8 +2850,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class IdentContext extends ParserRuleContext {
 		public TerminalNode IDENT() { return getToken(WaccParser.IDENT, 0); }
@@ -2881,8 +2893,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class CapitalisedIdentContext extends ParserRuleContext {
 		public TerminalNode CAPTIALISED_IDENT() { return getToken(WaccParser.CAPTIALISED_IDENT, 0); }
@@ -2913,8 +2925,8 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
@@ -2933,7 +2945,7 @@ public class WaccParser extends Parser {
 		return true;
 	}
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
-		switch (predIndex) {
+    switch (predIndex) {
       case 1:
         return precpred(_ctx, 16);
       case 2:

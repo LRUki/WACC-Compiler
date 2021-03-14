@@ -7,5 +7,11 @@
 
 begin
   struct Person {int age; char grade;};
-  struct Person bob = {20, 'A'}
+  struct Person bob = {20, 'A'};
+  int x = 5;
+    struct Person b = {20, 'A'};
+
+  println x
+
+
 end

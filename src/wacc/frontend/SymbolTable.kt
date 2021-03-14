@@ -29,6 +29,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                 }
                 is ArrayTypeAST, is PairTypeAST, is AnyPairTypeAST -> 4
                 is PointerTypeAST -> 4
+                is StructTypeAST -> 4
                 else -> 0
             }
         }
@@ -104,7 +105,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                 getBytesOfType(obj.type)
             }
             is StructDeclareAST -> {
-                obj.totalSizeOfFields
+                0
             }
             else -> 0
         }
@@ -122,8 +123,6 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         currSymbolTable.forEach { (name, type) ->
             if (type.first is DeclareStatAST) {
                 offset += type.second
-            } else if (type.first is StructDeclareAST) {
-                offset += 4
             }
         }
         offsetSize = offset
@@ -209,6 +208,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         /** Computes offset being the summed offset of remaining symbol table entries
          * For parameters it is the sum of entries up till that point */
         for ((k, v) in currSymbolTable) {
+            if (v.first is StructDeclareAST) {
+                continue
+            }
             if (k == ident && v.first is ParamAST) {
                 return paramOffset + pointerOffset
             }
