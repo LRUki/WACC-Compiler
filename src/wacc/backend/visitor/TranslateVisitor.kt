@@ -348,6 +348,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             is PointerElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
             }
+            is StructAccessAST -> {
+                instrs.addAll(visit(ast.rhs))
+            }
         }
 
         when (ast.lhs) {
@@ -986,7 +989,20 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     }
 
     override fun visitStructAccessAST(ast: StructAccessAST): List<Instruction> {
-        TODO("Not yet implemented")
+        val instrs = mutableListOf<Instruction>()
+        val memtype: MemoryType? = null
+        var accessOffset = 0
+        val stackOffset = ast.symTable.findOffsetInStack(ast.structIdent.name)
+
+        for (field in ast.structDeclare.fields) {
+            if ((ast.fieldIdent).equals(field)) {
+                instrs.add(LoadInstr(Condition.AL, memtype,
+                        RegisterAddrWithOffsetMode(Register.SP, stackOffset + accessOffset, false), Register.R0))
+                return instrs
+            }
+            accessOffset += getBytesOfType(field.type)
+        }
+        return instrs
     }
 
     override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): List<Instruction> {
