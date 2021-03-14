@@ -85,16 +85,23 @@ public class WaccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitActionStat(WaccParser.ActionStatContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitAssignStat(WaccParser.AssignStatContext ctx) { return visitChildren(ctx); }
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitActionStat(WaccParser.ActionStatContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitAssignStat(WaccParser.AssignStatContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}
@@ -400,17 +407,24 @@ public class WaccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
    * {@link #visitChildren} on {@code ctx}.</p>
    */
   @Override
-  public T visitBinop3(WaccParser.Binop3Context ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitBinop4(WaccParser.Binop4Context ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
+  public T visitBinop3(WaccParser.Binop3Context ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitBinop4(WaccParser.Binop4Context ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */

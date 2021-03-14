@@ -67,8 +67,10 @@ public class WaccParser extends Parser {
         "'}'"
     };
   }
-	private static final String[] _LITERAL_NAMES = makeLiteralNames();
-	private static String[] makeSymbolicNames() {
+
+  private static final String[] _LITERAL_NAMES = makeLiteralNames();
+
+  private static String[] makeSymbolicNames() {
     return new String[]{
         null, "BEGIN", "END", "IS", "SKIP_TOKEN", "READ", "FREE", "RETURN", "EXIT",
         "PRINT", "PRINTLN", "IF", "THEN", "ELSE", "FI", "WHILE", "DO", "DONE",
@@ -730,15 +732,14 @@ public class WaccParser extends Parser {
       }
 		}
 		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			unrollRecursionContexts(_parentctx);
-		}
-		return _localctx;
-	}
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      unrollRecursionContexts(_parentctx);
+    }
+    return _localctx;
+  }
 
   public static class AssignLhsContext extends ParserRuleContext {
 
@@ -781,10 +782,10 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final AssignLhsContext assignLhs() throws RecognitionException {
-		AssignLhsContext _localctx = new AssignLhsContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_assignLhs);
-		try {
+  public final AssignLhsContext assignLhs() throws RecognitionException {
+    AssignLhsContext _localctx = new AssignLhsContext(_ctx, getState());
+    enterRule(_localctx, 10, RULE_assignLhs);
+    try {
       setState(163);
       _errHandler.sync(this);
       switch (getInterpreter().adaptivePredict(_input, 6, _ctx)) {
@@ -1115,8 +1116,7 @@ public class WaccParser extends Parser {
         setState(207);
         match(R_CURLY);
       }
-    }
-		catch (RecognitionException re) {
+    } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
       _errHandler.recover(this, re);
@@ -1305,15 +1305,23 @@ public class WaccParser extends Parser {
     return _localctx;
   }
 
-	public static class PairElemContext extends ParserRuleContext {
-		public TerminalNode FST() { return getToken(WaccParser.FST, 0); }
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public TerminalNode SND() { return getToken(WaccParser.SND, 0); }
-		public PairElemContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
+  public static class PairElemContext extends ParserRuleContext {
+
+    public TerminalNode FST() {
+      return getToken(WaccParser.FST, 0);
+    }
+
+    public ExprContext expr() {
+      return getRuleContext(ExprContext.class, 0);
+    }
+
+    public TerminalNode SND() {
+      return getToken(WaccParser.SND, 0);
+    }
+
+    public PairElemContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
+    }
 		@Override public int getRuleIndex() { return RULE_pairElem; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
@@ -1358,7 +1366,7 @@ public class WaccParser extends Parser {
       exitRule();
     }
     return _localctx;
-	}
+  }
 
 	public static class PointerElemContext extends ParserRuleContext {
 		public TerminalNode MULT() { return getToken(WaccParser.MULT, 0); }
@@ -1475,7 +1483,7 @@ public class WaccParser extends Parser {
       exitRule();
     }
     return _localctx;
-	}
+  }
 
 	public static class BaseTypeContext extends ParserRuleContext {
 		public TerminalNode INT() { return getToken(WaccParser.INT, 0); }
@@ -1728,7 +1736,7 @@ public class WaccParser extends Parser {
       exitRule();
     }
     return _localctx;
-	}
+  }
 
 	public static class PointerTypeContext extends ParserRuleContext {
 		public BaseTypeContext baseType() {
@@ -1852,16 +1860,24 @@ public class WaccParser extends Parser {
 			return getRuleContext(UnopContext.class,0);
 		}
 		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public UnopExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitUnopExpr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class SingletonExprContext extends ExprContext {
+      return getRuleContext(ExprContext.class, 0);
+    }
+
+    public UnopExprContext(ExprContext ctx) {
+      copyFrom(ctx);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor) {
+        return ((WaccParserVisitor<? extends T>) visitor).visitUnopExpr(this);
+      } else {
+        return visitor.visitChildren(this);
+      }
+    }
+  }
+
+  public static class SingletonExprContext extends ExprContext {
 
     public IntLiterContext intLiter() {
       return getRuleContext(IntLiterContext.class, 0);
@@ -2001,11 +2017,11 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final ExprContext expr() throws RecognitionException {
-		return expr(0);
-	}
+  public final ExprContext expr() throws RecognitionException {
+    return expr(0);
+  }
 
-	private ExprContext expr(int _p) throws RecognitionException {
+  private ExprContext expr(int _p) throws RecognitionException {
     ParserRuleContext _parentctx = _ctx;
     int _parentState = getState();
     ExprContext _localctx = new ExprContext(_ctx, _parentState);

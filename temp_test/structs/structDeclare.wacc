@@ -8,10 +8,20 @@
 begin
   struct Person {int age; char grade;};
   struct Person bob = {20, 'A'};
-  int x = 5;
-    struct Person b = {20, 'A'};
+  int y = 4;
+  struct Person bella = {60, 'r'};
 
-  println x
+  println "Bob";
+  int x = bob.age;
+  char g = bob.grade;
+  println x;
+  println g;
+
+  println "Bella";
+  x = bella.age;
+  g = bella.grade;
+  println x;
+  println g
 
 
 end

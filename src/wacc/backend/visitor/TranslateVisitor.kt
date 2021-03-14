@@ -1002,7 +1002,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         for (field in ast.structDeclare.fields) {
             if ((ast.fieldIdent).equals(field.ident)) {
                 instrs.add(LoadInstr(Condition.AL, memtype,
-                        RegisterAddrWithOffsetMode(structReg, stackOffset + accessOffset, false), resultReg))
+                        RegisterAddrWithOffsetMode(structReg, accessOffset, false), resultReg))
                 break
             }
             accessOffset += getBytesOfType(field.type)

@@ -93,21 +93,21 @@ public class WaccLexer extends Lexer {
 
   static {
     tokenNames = new String[_SYMBOLIC_NAMES.length];
-		for (int i = 0; i < tokenNames.length; i++) {
-			tokenNames[i] = VOCABULARY.getLiteralName(i);
-			if (tokenNames[i] == null) {
-				tokenNames[i] = VOCABULARY.getSymbolicName(i);
-			}
+    for (int i = 0; i < tokenNames.length; i++) {
+      tokenNames[i] = VOCABULARY.getLiteralName(i);
+      if (tokenNames[i] == null) {
+        tokenNames[i] = VOCABULARY.getSymbolicName(i);
+      }
 
-			if (tokenNames[i] == null) {
-				tokenNames[i] = "<INVALID>";
-			}
-		}
-	}
+      if (tokenNames[i] == null) {
+        tokenNames[i] = "<INVALID>";
+      }
+    }
+  }
 
-	@Override
-	@Deprecated
-	public String[] getTokenNames() {
+  @Override
+  @Deprecated
+  public String[] getTokenNames() {
     return tokenNames;
   }
 
