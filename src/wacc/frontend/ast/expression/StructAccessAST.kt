@@ -16,6 +16,7 @@ class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : Lhs
     lateinit var structIdentDeclareInST: DeclareStatAST
 
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         val structFromIdent = table.lookup(structIdent.name)
         structIdentDeclareInST = structFromIdent.get() as DeclareStatAST
         val structName = (structIdentDeclareInST.type as StructTypeAST).ident.name

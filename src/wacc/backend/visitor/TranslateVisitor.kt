@@ -348,9 +348,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             is PointerElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
             }
-            is StructAccessAST -> {
-                instrs.addAll(visit(ast.rhs))
-            }
         }
 
         when (ast.lhs) {
@@ -373,6 +370,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.addAll(visit(ast.lhs))
                 instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
+            }
+            is StructAccessAST -> {
+                instrs.addAll(visit(ast.lhs))
             }
         }
         freeCalleeReg()
@@ -995,7 +995,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val stackOffset = ast.symTable.findOffsetInStack(ast.structIdent.name)
 
         for (field in ast.structDeclare.fields) {
-            if ((ast.fieldIdent).equals(field)) {
+            if ((ast.fieldIdent).equals(field.ident)) {
                 instrs.add(LoadInstr(Condition.AL, memtype,
                         RegisterAddrWithOffsetMode(Register.SP, stackOffset + accessOffset, false), Register.R0))
                 return instrs
