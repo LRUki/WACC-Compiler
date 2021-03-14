@@ -83,16 +83,18 @@ public class WaccParser extends Parser {
         "CHAR_LITER", "COMMENT"
     };
   }
-	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
-	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
-	/**
-	 * @deprecated Use {@link #VOCABULARY} instead.
-	 */
-	@Deprecated
-	public static final String[] tokenNames;
-	static {
-		tokenNames = new String[_SYMBOLIC_NAMES.length];
+  private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+  public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+
+  /**
+   * @deprecated Use {@link #VOCABULARY} instead.
+   */
+  @Deprecated
+  public static final String[] tokenNames;
+
+  static {
+    tokenNames = new String[_SYMBOLIC_NAMES.length];
 		for (int i = 0; i < tokenNames.length; i++) {
 			tokenNames[i] = VOCABULARY.getLiteralName(i);
 			if (tokenNames[i] == null) {
@@ -730,8 +732,7 @@ public class WaccParser extends Parser {
           _alt = getInterpreter().adaptivePredict(_input, 5, _ctx);
         }
       }
-		}
-		catch (RecognitionException re) {
+    } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
       _errHandler.recover(this, re);
@@ -825,17 +826,15 @@ public class WaccParser extends Parser {
         }
         break;
       }
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
     }
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class AssignRhsContext extends ParserRuleContext {
 		public List<ExprContext> expr() {
@@ -1085,10 +1084,10 @@ public class WaccParser extends Parser {
 	}
 
 	public final StructAssignContext structAssign() throws RecognitionException {
-		StructAssignContext _localctx = new StructAssignContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_structAssign);
-		int _la;
-		try {
+    StructAssignContext _localctx = new StructAssignContext(_ctx, getState());
+    enterRule(_localctx, 16, RULE_structAssign);
+    int _la;
+    try {
       enterOuterAlt(_localctx, 1);
       {
         setState(198);
@@ -1322,15 +1321,23 @@ public class WaccParser extends Parser {
     public PairElemContext(ParserRuleContext parent, int invokingState) {
       super(parent, invokingState);
     }
-		@Override public int getRuleIndex() { return RULE_pairElem; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitPairElem(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 
-	public final PairElemContext pairElem() throws RecognitionException {
+    @Override
+    public int getRuleIndex() {
+      return RULE_pairElem;
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor) {
+        return ((WaccParserVisitor<? extends T>) visitor).visitPairElem(this);
+      } else {
+        return visitor.visitChildren(this);
+      }
+    }
+  }
+
+  public final PairElemContext pairElem() throws RecognitionException {
     PairElemContext _localctx = new PairElemContext(_ctx, getState());
     enterRule(_localctx, 24, RULE_pairElem);
     try {
@@ -1849,17 +1856,22 @@ public class WaccParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expr; }
-	 
-		public ExprContext() { }
-		public void copyFrom(ExprContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class UnopExprContext extends ExprContext {
-		public UnopContext unop() {
-			return getRuleContext(UnopContext.class,0);
-		}
-		public ExprContext expr() {
+
+    public ExprContext() {
+    }
+
+    public void copyFrom(ExprContext ctx) {
+      super.copyFrom(ctx);
+    }
+  }
+
+  public static class UnopExprContext extends ExprContext {
+
+    public UnopContext unop() {
+      return getRuleContext(UnopContext.class, 0);
+    }
+
+    public ExprContext expr() {
       return getRuleContext(ExprContext.class, 0);
     }
 

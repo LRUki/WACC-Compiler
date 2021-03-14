@@ -372,7 +372,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 freeCalleeReg()
             }
             is StructAccessAST -> {
-                instrs.addAll(visit(ast.lhs))
+                val stackOffset = ast.symTable.findOffsetInStack(ast.lhs.structIdent.name)
+                val structReg = getNextFreeCalleeReg()
+                instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, stackOffset, false), structReg))
+                val accessOffset = ast.lhs.structDeclare.getOffsetInStruct(ast.lhs.fieldIdent)
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(structReg, accessOffset, false), calleeReg))
+                freeCalleeReg()
             }
         }
         freeCalleeReg()
@@ -435,9 +440,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             is ArrayElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
-            }
-            is StructAccessAST -> {
-
             }
         }
         instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), seeLastUsedCalleeReg()))
@@ -994,19 +996,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitStructAccessAST(ast: StructAccessAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val memtype: MemoryType? = null
-        var accessOffset = 0
         val stackOffset = ast.symTable.findOffsetInStack(ast.structIdent.name)
         val resultReg = getNextFreeCalleeReg()
         val structReg = getNextFreeCalleeReg()
         instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, stackOffset, false), structReg))
-        for (field in ast.structDeclare.fields) {
-            if ((ast.fieldIdent).equals(field.ident)) {
-                instrs.add(LoadInstr(Condition.AL, memtype,
-                        RegisterAddrWithOffsetMode(structReg, accessOffset, false), resultReg))
-                break
-            }
-            accessOffset += getBytesOfType(field.type)
-        }
+        val accessOffset = ast.structDeclare.getOffsetInStruct(ast.fieldIdent)
+        instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(structReg, accessOffset, false), resultReg))
         freeCalleeReg()
         return instrs
     }

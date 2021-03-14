@@ -11,4 +11,6 @@ begin
   struct Person Derek = {98, 'I'};
   int x = Bob.age;
   char d = Derek.grade;
+  println x;
+  println d
 end

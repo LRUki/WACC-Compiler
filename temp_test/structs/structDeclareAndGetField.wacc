@@ -1,7 +1,13 @@
 # simple struct declaration
 
 # Output:
-#
+# Bob
+# 20
+# A
+# Bella
+# 60
+# r
+
 
 # Program:
 
@@ -22,6 +28,4 @@ begin
   g = bella.grade;
   println x;
   println g
-
-
 end

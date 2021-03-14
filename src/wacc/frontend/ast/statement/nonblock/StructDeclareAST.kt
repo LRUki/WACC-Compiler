@@ -1,5 +1,8 @@
 package wacc.frontend.ast.statement.nonblock
 
+import wacc.backend.translate.instruction.LoadInstr
+import wacc.backend.translate.instruction.instructionpart.Condition
+import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
@@ -38,6 +41,18 @@ class StructDeclareAST(val ident: IdentAST, val fields: List<StructFieldAST>) : 
 
         table.add(ident.name, this)
         return true
+    }
+
+    /** Returns the offset of the provided field in the struct */
+    fun getOffsetInStruct(fieldIdent: IdentAST): Int {
+        var accessOffset = 0
+        for (field in fields) {
+            if (fieldIdent.equals(field.ident)) {
+                break
+            }
+            accessOffset += SymbolTable.getBytesOfType(field.type)
+        }
+        return accessOffset
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {

@@ -8,6 +8,10 @@
 begin
   struct Person {int age; char grade;};
   struct Person Bob = {25, 'B'};
-  struct Person Derek = {98, 'I'};
-  Bob.age = 14
+  #struct Person Derek = {98, 'I'};
+  println Bob.age;
+  Bob.age = 14;
+  println Bob.age;
+  int x = 5;
+  println x + 8 + Bob.age
 end
