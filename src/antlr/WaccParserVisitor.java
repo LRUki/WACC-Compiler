@@ -98,6 +98,13 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDeclareStat(WaccParser.DeclareStatContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code forStat}
+	 * labeled alternative in {@link WaccParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForStat(WaccParser.ForStatContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code whileStat}
 	 * labeled alternative in {@link WaccParser#stat}.
 	 * @param ctx the parse tree

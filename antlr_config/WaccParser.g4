@@ -20,6 +20,7 @@ stat: SKIP_TOKEN                                      #skipStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
       | IF expr THEN stat ELSE stat FI                #ifStat
       | WHILE expr DO stat DONE                       #whileStat
+      | FOR stat SEMICOLON expr SEMICOLON stat DO stat DONE #forStat
       | BEGIN stat END                                #blockStat
       | stat SEMICOLON stat                           #multiStat;
 

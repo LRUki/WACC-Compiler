@@ -28,6 +28,7 @@ import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
@@ -958,6 +959,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Translates a Type AST. Requires no code generation  */
     override fun visitTypeAST(ast: TypeAST): List<Instruction> {
         return emptyList()
+    }
+
+    override fun visitForStatAST(ast: ForStatAST): List<Instruction> {
+        TODO("Not yet implemented")
     }
 
 }

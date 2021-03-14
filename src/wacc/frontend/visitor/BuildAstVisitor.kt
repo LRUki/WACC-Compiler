@@ -16,6 +16,7 @@ import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
@@ -162,6 +163,13 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                 statToList(visit(ctx.stat()) as StatAST))
         whileStatAst.ctx = ctx
         return whileStatAst
+    }
+
+    override fun visitForStat(ctx: WaccParser.ForStatContext): AST {
+        val forStatAst = ForStatAST(visit(ctx.expr()) as ExprAST,
+                statToList(visit(ctx.stat(2)) as StatAST))
+        forStatAst.ctx = ctx
+        return forStatAst
     }
 
     private fun statToList(stat: StatAST): List<StatAST> {
