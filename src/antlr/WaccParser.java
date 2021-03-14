@@ -110,16 +110,16 @@ public class WaccParser extends Parser {
   @Override
   @Deprecated
   public String[] getTokenNames() {
-		return tokenNames;
-	}
+    return tokenNames;
+  }
 
-	@Override
+  @Override
 
-	public Vocabulary getVocabulary() {
-		return VOCABULARY;
-	}
+  public Vocabulary getVocabulary() {
+    return VOCABULARY;
+  }
 
-	@Override
+  @Override
 	public String getGrammarFileName() { return "WaccParser.g4"; }
 
 	@Override
@@ -875,16 +875,19 @@ public class WaccParser extends Parser {
     }
 
     public IdentContext ident() {
-			return getRuleContext(IdentContext.class,0);
-		}
-		public ArgListContext argList() {
-			return getRuleContext(ArgListContext.class,0);
-		}
-		public StructAssignContext structAssign() {
-			return getRuleContext(StructAssignContext.class,0);
-		}
-		public AssignRhsContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
+      return getRuleContext(IdentContext.class, 0);
+    }
+
+    public ArgListContext argList() {
+      return getRuleContext(ArgListContext.class, 0);
+    }
+
+    public StructAssignContext structAssign() {
+      return getRuleContext(StructAssignContext.class, 0);
+    }
+
+    public AssignRhsContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assignRhs; }
 		@Override
@@ -1445,15 +1448,18 @@ public class WaccParser extends Parser {
     return _localctx;
   }
 
-	public static class TypeContext extends ParserRuleContext {
-		public BaseTypeContext baseType() {
-			return getRuleContext(BaseTypeContext.class,0);
-		}
-		public PairTypeContext pairType() {
-			return getRuleContext(PairTypeContext.class,0);
-		}
-		public ArrayTypeContext arrayType() {
-			return getRuleContext(ArrayTypeContext.class,0);
+  public static class TypeContext extends ParserRuleContext {
+
+    public BaseTypeContext baseType() {
+      return getRuleContext(BaseTypeContext.class, 0);
+    }
+
+    public PairTypeContext pairType() {
+      return getRuleContext(PairTypeContext.class, 0);
+    }
+
+    public ArrayTypeContext arrayType() {
+      return getRuleContext(ArrayTypeContext.class, 0);
 		}
 		public StructTypeContext structType() {
 			return getRuleContext(StructTypeContext.class,0);

@@ -5,21 +5,27 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.StructAssignAST
+import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.statement.nonblock.StructDeclareAST
+import wacc.frontend.ast.type.AnyTypeAST
 import wacc.frontend.ast.type.StructTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
 class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : LhsAST, ExprAST, AbstractAST() {
     lateinit var structDeclare: StructDeclareAST
-    lateinit var structIdentDeclareInST: DeclareStatAST
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
-        val structFromIdent = table.lookup(structIdent.name)
-        structIdentDeclareInST = structFromIdent.get() as DeclareStatAST
-        val structName = (structIdentDeclareInST.type as StructTypeAST).ident.name
+        var structFromIdent = table.lookup(structIdent.name)
+        val structName =
+                if (structFromIdent.get() is ParamAST) {
+                    ((structFromIdent.get() as ParamAST).type as StructTypeAST).ident.name
+                } else {
+                    val structIdentDeclareInST = structFromIdent.get() as DeclareStatAST
+                    (structIdentDeclareInST.type as StructTypeAST).ident.name
+                }
         val structInST = table.lookupAll(structName)
         structDeclare = structInST.get() as StructDeclareAST
         for (i in structDeclare.fields.indices) {
@@ -39,15 +45,14 @@ class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : Lhs
      *  Then looks up the struct name and gets list of fields
      *  Looks through list of fields to find correct index */
     override fun getRealType(table: SymbolTable): TypeAST {
-        var indexInStruct = 0
+        var typeOfField: TypeAST = AnyTypeAST()
         for (i in structDeclare.fields.indices) {
             if (structDeclare.fields[i].ident.equals(fieldIdent)) {
-                indexInStruct = i
+                typeOfField = structDeclare.fields[i].type
                 break
             }
         }
-        val structAssignments = (structIdentDeclareInST.rhs as StructAssignAST).assignments
-        return structAssignments[indexInStruct].getRealType(table)
+        return typeOfField
     }
 
 }

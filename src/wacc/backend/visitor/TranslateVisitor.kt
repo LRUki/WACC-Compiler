@@ -557,7 +557,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
             val reg = seeLastUsedCalleeReg()
-            val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
+            val bytes = getBytesOfType(argTypesReversed[index])
             totalBytes += bytes
             ast.symTable.callOffset = totalBytes
             if (argTypesReversed[index].isBoolOrChar()) {

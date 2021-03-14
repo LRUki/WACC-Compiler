@@ -63,16 +63,18 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMultiStat(WaccParser.MultiStatContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code skipStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSkipStat(WaccParser.SkipStatContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code structDeclareStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
+   * Visit a parse tree produced by the {@code skipStat}
+   * labeled alternative in {@link WaccParser#stat}.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitSkipStat(WaccParser.SkipStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code structDeclareStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
+   * @param ctx the parse tree
    * @return the visitor result
    */
   T visitStructDeclareStat(WaccParser.StructDeclareStatContext ctx);
@@ -349,16 +351,19 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitBinop6(WaccParser.Binop6Context ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#arrayElem}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayElem(WaccParser.ArrayElemContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#intLiter}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#arrayElem}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArrayElem(WaccParser.ArrayElemContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#intLiter}.
+   * @param ctx the parse tree
+   * @return the visitor result
 	 */
 	T visitIntLiter(WaccParser.IntLiterContext ctx);
 	/**

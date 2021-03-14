@@ -28,6 +28,9 @@ class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
         return javaClass.hashCode()
     }
 
+    override fun toLabel(): String {
+        return "struct_$ident"
+    }
 }
 
 class StructFieldAST(val type: TypeAST, val ident: IdentAST) : AbstractAST() {

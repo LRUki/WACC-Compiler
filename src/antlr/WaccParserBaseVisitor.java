@@ -45,16 +45,24 @@ public class WaccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitReadStat(WaccParser.ReadStatContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitIfStat(WaccParser.IfStatContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
+  @Override
+  public T visitReadStat(WaccParser.ReadStatContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitIfStat(WaccParser.IfStatContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
    *
    * <p>The default implementation returns the result of calling
    * {@link #visitChildren} on {@code ctx}.</p>
@@ -487,16 +495,24 @@ public class WaccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
    *
    * <p>The default implementation returns the result of calling
    * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitBoolLiter(WaccParser.BoolLiterContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitStrLiter(WaccParser.StrLiterContext ctx) { return visitChildren(ctx); }
-	/**
+   */
+  @Override
+  public T visitBoolLiter(WaccParser.BoolLiterContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitStrLiter(WaccParser.StrLiterContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
