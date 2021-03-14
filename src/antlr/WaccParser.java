@@ -95,16 +95,16 @@ public class WaccParser extends Parser {
 
   static {
     tokenNames = new String[_SYMBOLIC_NAMES.length];
-		for (int i = 0; i < tokenNames.length; i++) {
-			tokenNames[i] = VOCABULARY.getLiteralName(i);
-			if (tokenNames[i] == null) {
-				tokenNames[i] = VOCABULARY.getSymbolicName(i);
-			}
+    for (int i = 0; i < tokenNames.length; i++) {
+      tokenNames[i] = VOCABULARY.getLiteralName(i);
+      if (tokenNames[i] == null) {
+        tokenNames[i] = VOCABULARY.getSymbolicName(i);
+      }
 
-			if (tokenNames[i] == null) {
-				tokenNames[i] = "<INVALID>";
-			}
-		}
+      if (tokenNames[i] == null) {
+        tokenNames[i] = "<INVALID>";
+      }
+    }
 	}
 
 	@Override
@@ -836,15 +836,18 @@ public class WaccParser extends Parser {
     return _localctx;
   }
 
-	public static class AssignRhsContext extends ParserRuleContext {
-		public List<ExprContext> expr() {
-			return getRuleContexts(ExprContext.class);
-		}
-		public ExprContext expr(int i) {
-			return getRuleContext(ExprContext.class,i);
-		}
-		public ArrayLiterContext arrayLiter() {
-			return getRuleContext(ArrayLiterContext.class,0);
+  public static class AssignRhsContext extends ParserRuleContext {
+
+    public List<ExprContext> expr() {
+      return getRuleContexts(ExprContext.class);
+    }
+
+    public ExprContext expr(int i) {
+      return getRuleContext(ExprContext.class, i);
+    }
+
+    public ArrayLiterContext arrayLiter() {
+      return getRuleContext(ArrayLiterContext.class, 0);
 		}
 		public TerminalNode NEWPAIR() { return getToken(WaccParser.NEWPAIR, 0); }
 		public TerminalNode L_PAREN() { return getToken(WaccParser.L_PAREN, 0); }
@@ -1375,15 +1378,23 @@ public class WaccParser extends Parser {
     return _localctx;
   }
 
-	public static class PointerElemContext extends ParserRuleContext {
-		public TerminalNode MULT() { return getToken(WaccParser.MULT, 0); }
-		public IdentContext ident() {
-			return getRuleContext(IdentContext.class,0);
-		}
-		public PointerElemContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_pointerElem; }
+  public static class PointerElemContext extends ParserRuleContext {
+
+    public TerminalNode MULT() {
+      return getToken(WaccParser.MULT, 0);
+    }
+
+    public IdentContext ident() {
+      return getRuleContext(IdentContext.class, 0);
+    }
+
+    public PointerElemContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
+    }
+
+    @Override
+    public int getRuleIndex() {
+      return RULE_pointerElem; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitPointerElem(this);
@@ -1851,11 +1862,16 @@ public class WaccParser extends Parser {
     return _localctx;
   }
 
-	public static class ExprContext extends ParserRuleContext {
-		public ExprContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_expr; }
+  public static class ExprContext extends ParserRuleContext {
+
+    public ExprContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
+    }
+
+    @Override
+    public int getRuleIndex() {
+      return RULE_expr;
+    }
 
     public ExprContext() {
     }

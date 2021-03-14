@@ -65,16 +65,24 @@ public class WaccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitMultiStat(WaccParser.MultiStatContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitSkipStat(WaccParser.SkipStatContext ctx) { return visitChildren(ctx); }
-	/**
+   */
+  @Override
+  public T visitMultiStat(WaccParser.MultiStatContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitSkipStat(WaccParser.SkipStatContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
    * {@inheritDoc}
    *
    * <p>The default implementation returns the result of calling
@@ -443,16 +451,24 @@ public class WaccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
    * <p>The default implementation returns the result of calling
    * {@link #visitChildren} on {@code ctx}.</p>
    */
-	@Override public T visitBinop6(WaccParser.Binop6Context ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitArrayElem(WaccParser.ArrayElemContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
+  @Override
+  public T visitBinop6(WaccParser.Binop6Context ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitArrayElem(WaccParser.ArrayElemContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>

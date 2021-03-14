@@ -83,16 +83,20 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitActionStat(WaccParser.ActionStatContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code assignStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssignStat(WaccParser.AssignStatContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code declareStat}
-	 * labeled alternative in {@link WaccParser#stat}.
+
+  /**
+   * Visit a parse tree produced by the {@code assignStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitAssignStat(WaccParser.AssignStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code declareStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
    * @param ctx the parse tree
    * @return the visitor result
    */
@@ -314,18 +318,22 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 
   /**
    * Visit a parse tree produced by {@link WaccParser#binop3}.
+   *
    * @param ctx the parse tree
    * @return the visitor result
-	 */
-	T visitBinop3(WaccParser.Binop3Context ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#binop4}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBinop4(WaccParser.Binop4Context ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#binop5}.
+   */
+  T visitBinop3(WaccParser.Binop3Context ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#binop4}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitBinop4(WaccParser.Binop4Context ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#binop5}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
