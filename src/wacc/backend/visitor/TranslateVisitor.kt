@@ -243,20 +243,20 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         val condLabel = getNextLabel()
         val bodyLabel = getNextLabel()
        /**Translates the first statement in the loop before jumping to condition*/
+        val stackOffset = ast.blockST.getStackOffset()
+        ast.blockST.startingOffset = stackOffset
         instrs.addAll(visit(ast.stat))
         instrs.add(BranchInstr(Condition.AL, condLabel, false))
 
         instrs.add(bodyLabel)
-        val stackOffset = ast.blockST.getStackOffset()
-        ast.blockST.startingOffset = stackOffset
-        if (stackOffset > 0) {
-            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
+//        if (stackOffset > 0) {
+//            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+//        }
         /** Translates all the statements within the for loop body */
         ast.body.forEach { instrs.addAll(visit(it)) }
-        if (stackOffset > 0) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-        }
+//        if (stackOffset > 0) {
+//            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+//        }
         /**Translates the change in loop variable as defined in the loop*/
         instrs.addAll(visit(ast.inc))
         /** Translates the condition after the loop body.*/

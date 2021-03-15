@@ -17,19 +17,19 @@ class ForStatAST(val stat: StatAST, val cond: ExprAST, val inc: StatAST, val bod
     lateinit var blockST: SymbolTable
 
     override fun check(table: SymbolTable): Boolean {
+        blockST = SymbolTable(table)
         symTable = table
-        if(!stat.check(table) || !inc.check(table)){
+        if(!stat.check(blockST) || !inc.check(blockST)){
             return false
         }
-        if (!cond.check(table)) {
+        if (!cond.check(blockST)) {
             return false
         }
-        val condType = cond.getRealType(table)
+        val condType = cond.getRealType(blockST)
         if (condType != TypeInstance.boolTypeInstance) {
             semanticError("For condition must evaluate to a BOOL, but was actually $condType", ctx)
             return false
         }
-        blockST = SymbolTable(table)
         body.forEach {
             if (!it.check(blockST)) {
                 return false

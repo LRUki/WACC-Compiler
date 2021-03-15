@@ -1,0 +1,7 @@
+begin
+int i = 20;
+for int i = 1; i <=10; i = i + 1 do
+    println i
+done;
+println i
+end
