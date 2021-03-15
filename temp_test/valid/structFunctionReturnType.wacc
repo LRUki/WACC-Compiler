@@ -1,7 +1,9 @@
 # struct as function return type
 
 # Output:
-# 5
+# 23
+# 98
+# e
 
 # Program:
 
@@ -14,5 +16,6 @@ begin
   struct Person bob = {23, 'o'};
   println bob.age;
   bob = call f(98);
-  println bob.age
+  println bob.age;
+  println bob.grade
 end

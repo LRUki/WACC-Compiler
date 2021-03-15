@@ -53,18 +53,22 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * labeled alternative in {@link WaccParser#stat}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
-	 */
-	T visitBlockStat(WaccParser.BlockStatContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code multiStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMultiStat(WaccParser.MultiStatContext ctx);
-	/**
-   * Visit a parse tree produced by the {@code skipStat}
-   * labeled alternative in {@link WaccParser#stat}.
+   */
+  T visitBlockStat(WaccParser.BlockStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code multiStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitMultiStat(WaccParser.MultiStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code skipStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
    * @param ctx the parse tree
    * @return the visitor result
    */
@@ -362,18 +366,22 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 
   /**
    * Visit a parse tree produced by {@link WaccParser#intLiter}.
+   *
    * @param ctx the parse tree
    * @return the visitor result
-	 */
-	T visitIntLiter(WaccParser.IntLiterContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#boolLiter}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBoolLiter(WaccParser.BoolLiterContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#strLiter}.
+   */
+  T visitIntLiter(WaccParser.IntLiterContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#boolLiter}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitBoolLiter(WaccParser.BoolLiterContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#strLiter}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */

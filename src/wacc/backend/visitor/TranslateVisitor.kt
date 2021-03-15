@@ -1010,7 +1010,8 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitStructAccessAST(ast: StructAccessAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         val memtype: MemoryType? = null
-        val stackOffset = ast.symTable.findOffsetInStack(ast.structIdent.name)
+        var stackOffset = ast.symTable.findOffsetInStack(ast.structIdent.name)
+        stackOffset += ast.symTable.checkParamInFuncSymbolTable(ast.structIdent.name)
         val resultReg = getNextFreeCalleeReg()
         val structReg = getNextFreeCalleeReg()
         instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, stackOffset, false), structReg))

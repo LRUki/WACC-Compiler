@@ -120,16 +120,24 @@ public class WaccParser extends Parser {
   }
 
   @Override
-	public String getGrammarFileName() { return "WaccParser.g4"; }
+  public String getGrammarFileName() {
+    return "WaccParser.g4";
+  }
 
-	@Override
-	public String[] getRuleNames() { return ruleNames; }
+  @Override
+  public String[] getRuleNames() {
+    return ruleNames;
+  }
 
-	@Override
-	public String getSerializedATN() { return _serializedATN; }
+  @Override
+  public String getSerializedATN() {
+    return _serializedATN;
+  }
 
-	@Override
-	public ATN getATN() { return _ATN; }
+  @Override
+  public ATN getATN() {
+    return _ATN;
+  }
 
 	public WaccParser(TokenStream input) {
 		super(input);
@@ -888,16 +896,24 @@ public class WaccParser extends Parser {
 
     public AssignRhsContext(ParserRuleContext parent, int invokingState) {
       super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_assignRhs; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitAssignRhs(this);
-			else return visitor.visitChildren(this);
-		}
-	}
+    }
 
-	public final AssignRhsContext assignRhs() throws RecognitionException {
+    @Override
+    public int getRuleIndex() {
+      return RULE_assignRhs;
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor) {
+        return ((WaccParserVisitor<? extends T>) visitor).visitAssignRhs(this);
+      } else {
+        return visitor.visitChildren(this);
+      }
+    }
+  }
+
+  public final AssignRhsContext assignRhs() throws RecognitionException {
 		AssignRhsContext _localctx = new AssignRhsContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_assignRhs);
 		int _la;
@@ -1460,16 +1476,19 @@ public class WaccParser extends Parser {
 
     public ArrayTypeContext arrayType() {
       return getRuleContext(ArrayTypeContext.class, 0);
-		}
-		public StructTypeContext structType() {
-			return getRuleContext(StructTypeContext.class,0);
-		}
-		public PointerTypeContext pointerType() {
-			return getRuleContext(PointerTypeContext.class,0);
-		}
-		public TypeContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
+    }
+
+    public StructTypeContext structType() {
+      return getRuleContext(StructTypeContext.class, 0);
+    }
+
+    public PointerTypeContext pointerType() {
+      return getRuleContext(PointerTypeContext.class, 0);
+    }
+
+    public TypeContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
+    }
 		@Override public int getRuleIndex() { return RULE_type; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {

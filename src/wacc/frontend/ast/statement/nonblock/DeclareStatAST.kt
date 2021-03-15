@@ -24,6 +24,7 @@ import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.expression.StructAccessAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*
@@ -51,8 +52,14 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                 semanticError("Setting fields for a non-declared struct", ctx)
                 return false
             }
-            val structDeclareInST = structFromIdent.get() as DeclareStatAST
-            val structName = (structDeclareInST.type as StructTypeAST).ident.name
+            val structUsageInST = structFromIdent.get()
+            val structName =
+                    if (structUsageInST is ParamAST) {
+                        (structUsageInST.type as StructTypeAST).ident.name
+                    } else {
+                        val structDeclareInST = structFromIdent.get() as DeclareStatAST
+                        (structDeclareInST.type as StructTypeAST).ident.name
+                    }
             val structInST = table.lookupAll(structName)
             if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
                 semanticError("Declared instance of non-existing type struct $structName", ctx)
