@@ -550,6 +550,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             reg2 = seeLastUsedCalleeReg()
             instrs.addAll(visit(ast.expr1))
             reg1 = seeLastUsedCalleeReg()
+            val temp = reg1
+            reg1 = reg2
+            reg2 = temp
         }
 //        instrs.addAll(visit(ast.expr1))
 //        reg1 = seeLastUsedCalleeReg()
