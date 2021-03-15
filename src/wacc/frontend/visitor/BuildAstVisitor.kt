@@ -2,6 +2,7 @@ package wacc.frontend.visitor
 
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.*
@@ -64,7 +65,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitImportStat(ctx: WaccParser.ImportStatContext): AST {
-        val importAst = ImportAST(visit(ctx.ident()) as IdentAST)
+        val importAst = ImportAST(visit(ctx.filename()) as IdentAST)
         importAst.ctx = ctx
         return importAst
     }
@@ -399,16 +400,21 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return NullPairLiterAST()
     }
 
-    override fun visitIdent(ctx: WaccParser.IdentContext): AST {
+    private fun generateIdentAST(ctx: ParserRuleContext): IdentAST {
         val identAST = IdentAST(ctx.text)
         identAST.ctx = ctx
         return identAST
+    }
+
+    override fun visitIdent(ctx: WaccParser.IdentContext): AST {
+        return generateIdentAST(ctx)
     }
 
     override fun visitCapitalisedIdent(ctx: WaccParser.CapitalisedIdentContext): AST {
-        val identAST = IdentAST(ctx.text)
-        identAST.ctx = ctx
-        return identAST
+        return generateIdentAST(ctx)
     }
 
+    override fun visitFilename(ctx: WaccParser.FilenameContext): AST {
+        return generateIdentAST(ctx)
+    }
 }

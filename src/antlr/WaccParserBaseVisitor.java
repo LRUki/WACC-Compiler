@@ -594,4 +594,15 @@ public class WaccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
   public T visitCapitalisedIdent(WaccParser.CapitalisedIdentContext ctx) {
     return visitChildren(ctx);
   }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitFilename(WaccParser.FilenameContext ctx) {
+    return visitChildren(ctx);
+  }
 }

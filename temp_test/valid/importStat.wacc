@@ -1,0 +1,17 @@
+# importing another wacc file
+
+# Output:
+#
+
+# Program:
+
+import importStat2.wacc
+
+begin
+  char fileOne(bool t) is
+    println t;
+    return 'a'
+  end
+  char x = call fileOne(true);
+  println x
+end
