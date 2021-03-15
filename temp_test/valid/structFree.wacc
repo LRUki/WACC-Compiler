@@ -1,0 +1,14 @@
+# freeing an instantiated struct
+
+# Output:
+
+#Exitcode:
+#* 0
+
+# Program:
+
+begin
+  struct Person {int age; char grade;};
+  struct Person bob = {20, 'a'};
+  free bob
+end

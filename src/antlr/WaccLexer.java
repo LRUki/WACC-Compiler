@@ -50,7 +50,6 @@ public class WaccLexer extends Lexer {
 				"STR_LITER", "CHAR_LITER", "COMMENT"
 		};
 	}
-
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
@@ -65,9 +64,7 @@ public class WaccLexer extends Lexer {
 				"'}'"
 		};
 	}
-
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
-
 	private static String[] makeSymbolicNames() {
 		return new String[]{
 				null, "BEGIN", "END", "IS", "SKIP_TOKEN", "READ", "FREE", "RETURN", "EXIT",
@@ -81,7 +78,6 @@ public class WaccLexer extends Lexer {
 				"CHAR_LITER", "COMMENT"
 		};
 	}
-
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -90,7 +86,6 @@ public class WaccLexer extends Lexer {
 	 */
 	@Deprecated
 	public static final String[] tokenNames;
-
 	static {
 		tokenNames = new String[_SYMBOLIC_NAMES.length];
 		for (int i = 0; i < tokenNames.length; i++) {
@@ -295,7 +290,6 @@ public class WaccLexer extends Lexer {
 					"\u01a7\3\b\2\2";
 	public static final ATN _ATN =
 			new ATNDeserializer().deserialize(_serializedATN.toCharArray());
-
 	static {
 		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
 		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {

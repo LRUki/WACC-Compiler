@@ -162,22 +162,30 @@ public class WaccParser extends Parser {
       return getToken(WaccParser.EOF, 0);
     }
 
-    public List<FuncContext> func() {
-      return getRuleContexts(FuncContext.class);
-    }
+		public List<FuncContext> func() {
+			return getRuleContexts(FuncContext.class);
+		}
 
-    public FuncContext func(int i) {
-      return getRuleContext(FuncContext.class, i);
-    }
+		public FuncContext func(int i) {
+			return getRuleContext(FuncContext.class, i);
+		}
 
-    public ProgramContext(ParserRuleContext parent, int invokingState) {
+		public ProgramContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_program; }
+
+		@Override
+		public int getRuleIndex() {
+			return RULE_program;
+		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitProgram(this);
-			else return visitor.visitChildren(this);
+			if (visitor instanceof WaccParserVisitor) {
+				return ((WaccParserVisitor<? extends T>) visitor).visitProgram(this);
+			} else {
+				return visitor.visitChildren(this);
+			}
 		}
 	}
 
@@ -401,20 +409,32 @@ public class WaccParser extends Parser {
 	}
 
 	public static class StatContext extends ParserRuleContext {
+
 		public StatContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_stat; }
 
-		public StatContext() { }
+		@Override
+		public int getRuleIndex() {
+			return RULE_stat;
+		}
+
+		public StatContext() {
+		}
+
 		public void copyFrom(StatContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
+
 	public static class ReadStatContext extends StatContext {
-		public TerminalNode READ() { return getToken(WaccParser.READ, 0); }
+
+		public TerminalNode READ() {
+			return getToken(WaccParser.READ, 0);
+		}
+
 		public AssignLhsContext assignLhs() {
-			return getRuleContext(AssignLhsContext.class,0);
+			return getRuleContext(AssignLhsContext.class, 0);
 		}
 		public ReadStatContext(StatContext ctx) { copyFrom(ctx); }
 		@Override
@@ -1019,24 +1039,23 @@ public class WaccParser extends Parser {
           match(R_PAREN);
         }
         break;
-        case L_CURLY:
-          enterOuterAlt(_localctx, 6);
-        {
-          setState(183);
-          structAssign();
-        }
-        break;
-        default:
-          throw new NoViableAltException(this);
-      }
+				case L_CURLY:
+					enterOuterAlt(_localctx, 6);
+				{
+					setState(183);
+					structAssign();
+				}
+				break;
+				default:
+					throw new NoViableAltException(this);
+			}
+		} catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		} finally {
+			exitRule();
 		}
-		catch (RecognitionException re) {
-      _localctx.exception = re;
-      _errHandler.reportError(this, re);
-      _errHandler.recover(this, re);
-    } finally {
-      exitRule();
-    }
     return _localctx;
   }
 
@@ -1074,16 +1093,18 @@ public class WaccParser extends Parser {
       super(parent, invokingState);
     }
 
-    @Override
-    public int getRuleIndex() {
-      return RULE_structDeclare;
-    }
+		@Override
+		public int getRuleIndex() {
+			return RULE_structDeclare;
+		}
 
-    @Override
-    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor)
-        return ((WaccParserVisitor<? extends T>) visitor).visitStructDeclare(this);
-			else return visitor.visitChildren(this);
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof WaccParserVisitor) {
+				return ((WaccParserVisitor<? extends T>) visitor).visitStructDeclare(this);
+			} else {
+				return visitor.visitChildren(this);
+			}
 		}
 	}
 
@@ -1092,16 +1113,16 @@ public class WaccParser extends Parser {
 		enterRule(_localctx, 14, RULE_structDeclare);
 		int _la;
 		try {
-      enterOuterAlt(_localctx, 1);
-      {
-        setState(186);
-        structType();
-        setState(187);
-        match(L_CURLY);
-        setState(193);
-        _errHandler.sync(this);
-        _la = _input.LA(1);
-        while ((((_la) & ~0x3f) == 0 &&
+			enterOuterAlt(_localctx, 1);
+			{
+				setState(186);
+				structType();
+				setState(187);
+				match(L_CURLY);
+				setState(193);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while ((((_la) & ~0x3f) == 0 &&
             ((1L << _la) & ((1L << STRUCT) | (1L << PAIR) | (1L << INT) | (1L << BOOL) | (1L
                 << CHAR) | (1L << STRING) | (1L << L_PAREN))) != 0)) {
           {
@@ -1605,40 +1626,46 @@ public class WaccParser extends Parser {
       return getToken(WaccParser.CHAR, 0);
     }
 
-    public TerminalNode STRING() {
-      return getToken(WaccParser.STRING, 0);
-    }
+		public TerminalNode STRING() {
+			return getToken(WaccParser.STRING, 0);
+		}
 
-    public BaseTypeContext(ParserRuleContext parent, int invokingState) {
-      super(parent, invokingState);
-    }
+		public BaseTypeContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
 
-    @Override
-    public int getRuleIndex() {
-      return RULE_baseType; }
+		@Override
+		public int getRuleIndex() {
+			return RULE_baseType;
+		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitBaseType(this);
-			else return visitor.visitChildren(this);
+			if (visitor instanceof WaccParserVisitor) {
+				return ((WaccParserVisitor<? extends T>) visitor).visitBaseType(this);
+			} else {
+				return visitor.visitChildren(this);
+			}
 		}
 	}
 
 	public final BaseTypeContext baseType() throws RecognitionException {
-    BaseTypeContext _localctx = new BaseTypeContext(_ctx, getState());
-    enterRule(_localctx, 30, RULE_baseType);
-    int _la;
-    try {
-      enterOuterAlt(_localctx, 1);
-      {
-        setState(240);
-        _la = _input.LA(1);
-        if (!((((_la) & ~0x3f) == 0
-            && ((1L << _la) & ((1L << INT) | (1L << BOOL) | (1L << CHAR) | (1L << STRING)))
+		BaseTypeContext _localctx = new BaseTypeContext(_ctx, getState());
+		enterRule(_localctx, 30, RULE_baseType);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+				setState(240);
+				_la = _input.LA(1);
+				if (!((((_la) & ~0x3f) == 0
+						&& ((1L << _la) & ((1L << INT) | (1L << BOOL) | (1L << CHAR) | (1L << STRING)))
             != 0))) {
           _errHandler.recoverInline(this);
         } else {
-          if (_input.LA(1) == Token.EOF)
-            matchedEOF = true;
+					if (_input.LA(1) == Token.EOF) {
+						matchedEOF = true;
+					}
           _errHandler.reportMatch(this);
           consume();
         }
@@ -1687,36 +1714,44 @@ public class WaccParser extends Parser {
       return getToken(WaccParser.L_SQUARE, i);
     }
 
-    public List<TerminalNode> R_SQUARE() {
-      return getTokens(WaccParser.R_SQUARE);
-    }
-
-    public TerminalNode R_SQUARE(int i) {
-      return getToken(WaccParser.R_SQUARE, i);
-    }
-
-    public ArrayTypeContext(ParserRuleContext parent, int invokingState) {
-      super(parent, invokingState);
+		public List<TerminalNode> R_SQUARE() {
+			return getTokens(WaccParser.R_SQUARE);
 		}
-		@Override public int getRuleIndex() { return RULE_arrayType; }
+
+		public TerminalNode R_SQUARE(int i) {
+			return getToken(WaccParser.R_SQUARE, i);
+		}
+
+		public ArrayTypeContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+
+		@Override
+		public int getRuleIndex() {
+			return RULE_arrayType;
+		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitArrayType(this);
-			else return visitor.visitChildren(this);
+			if (visitor instanceof WaccParserVisitor) {
+				return ((WaccParserVisitor<? extends T>) visitor).visitArrayType(this);
+			} else {
+				return visitor.visitChildren(this);
+			}
 		}
 	}
 
 	public final ArrayTypeContext arrayType() throws RecognitionException {
-    ArrayTypeContext _localctx = new ArrayTypeContext(_ctx, getState());
-    enterRule(_localctx, 32, RULE_arrayType);
-    int _la;
-    try {
-      enterOuterAlt(_localctx, 1);
-      {
-        setState(249);
-        _errHandler.sync(this);
-        switch (_input.LA(1)) {
-          case INT:
+		ArrayTypeContext _localctx = new ArrayTypeContext(_ctx, getState());
+		enterRule(_localctx, 32, RULE_arrayType);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+				setState(249);
+				_errHandler.sync(this);
+				switch (_input.LA(1)) {
+					case INT:
           case BOOL:
           case CHAR:
           case STRING: {
@@ -1983,36 +2018,48 @@ public class WaccParser extends Parser {
           _la = _input.LA(1);
         } while (_la == MULT);
       }
-    } catch (RecognitionException re) {
-      _localctx.exception = re;
-      _errHandler.reportError(this, re);
-      _errHandler.recover(this, re);
-    } finally {
-      exitRule();
-    }
-    return _localctx;
-  }
+		} catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		} finally {
+			exitRule();
+		}
+		return _localctx;
+	}
 
 	public static class ImplicitTypeContext extends ParserRuleContext {
-		public TerminalNode VAR() { return getToken(WaccParser.VAR, 0); }
+
+		public TerminalNode VAR() {
+			return getToken(WaccParser.VAR, 0);
+		}
+
 		public ImplicitTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_implicitType; }
+
+		@Override
+		public int getRuleIndex() {
+			return RULE_implicitType;
+		}
+
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitImplicitType(this);
-			else return visitor.visitChildren(this);
+			if (visitor instanceof WaccParserVisitor) {
+				return ((WaccParserVisitor<? extends T>) visitor).visitImplicitType(this);
+			} else {
+				return visitor.visitChildren(this);
+			}
 		}
 	}
 
 	public final ImplicitTypeContext implicitType() throws RecognitionException {
-    ImplicitTypeContext _localctx = new ImplicitTypeContext(_ctx, getState());
-    enterRule(_localctx, 40, RULE_implicitType);
-    try {
-      enterOuterAlt(_localctx, 1);
-      {
-        setState(281);
+		ImplicitTypeContext _localctx = new ImplicitTypeContext(_ctx, getState());
+		enterRule(_localctx, 40, RULE_implicitType);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+				setState(281);
         match(VAR);
       }
     } catch (RecognitionException re) {

@@ -13,26 +13,32 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	/**
 	 * Visit a parse tree produced by {@link WaccParser#program}.
 	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProgram(WaccParser.ProgramContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#func}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunc(WaccParser.FuncContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#paramList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParamList(WaccParser.ParamListContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#param}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
+   * @return the visitor result
+   */
+  T visitProgram(WaccParser.ProgramContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#func}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitFunc(WaccParser.FuncContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#paramList}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitParamList(WaccParser.ParamListContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#param}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
   T visitParam(WaccParser.ParamContext ctx);
 
   /**
