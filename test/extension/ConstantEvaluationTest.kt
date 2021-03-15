@@ -1,15 +1,12 @@
 package extension
 
 import frontend.actionOnFiles
+import wacc.WaccFile
 import wacc.backend.generateCode
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
-import wacc.buildAST
-import wacc.checkSemantics
-import wacc.checkSyntax
 import wacc.extension.optimization.ConstantEvaluationVisitor
 import wacc.frontend.ast.program.ProgramAST
-import wacc.parse
 import java.io.File
 import java.util.function.IntBinaryOperator
 import kotlin.test.Test
@@ -98,10 +95,11 @@ class ConstantEvaluationTest {
     }
 
     private fun buildAst(file: File): ProgramAST {
-        val program = parse(file.inputStream())
-        checkSyntax(program)
-        val ast = buildAST(program)
-        checkSemantics(ast)
+        val waccFile = WaccFile(file)
+        val program = waccFile.parse(file.inputStream())
+        waccFile.checkSyntax(program)
+        val ast = waccFile.buildAST(program)
+        waccFile.checkSemantics(ast)
         return ast as ProgramAST
     }
 }

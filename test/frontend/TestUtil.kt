@@ -4,8 +4,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import wacc.frontend
 import frontend.Utils.exitCode
+import wacc.WaccFile
 import wacc.frontend.exception.SemanticException
 import wacc.frontend.exception.SyntaxException
 import java.io.File
@@ -19,12 +19,12 @@ object Utils {
 
 class CompilerResult(val exitCode: Int, val exception: Exception?)
 
-suspend fun emulate(fileName: String): CompilerResult? {
+fun emulate(fileName: String): CompilerResult? {
     var exitCode = 0
     var exception: Exception? = null
-    val file = File(fileName)
+    val waccFile = WaccFile(File(fileName))
     try {
-        val ast = frontend(file)
+        val ast = waccFile.frontend()
     } catch (e: SyntaxException) {
         System.err.println("Syntax Error in file: $fileName")
         exception = e

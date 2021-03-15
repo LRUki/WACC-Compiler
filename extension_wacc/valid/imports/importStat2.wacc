@@ -1,0 +1,19 @@
+# file being imported
+
+# Output:
+## 5
+## 7
+
+#Exitcode:
+#* 0
+
+# Program:
+
+begin
+  int fileTwo(int x) is
+    println x;
+    return x + 2
+  end
+  int x = call fileTwo(5);
+  println x
+end

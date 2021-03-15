@@ -4,7 +4,7 @@ options {
   tokenVocab=WaccLexer;
 }
 
-program: BEGIN func* stat END EOF;
+program: importStat* BEGIN func* stat END EOF;
 
 func: type ident L_PAREN paramList? R_PAREN IS stat END;
 
@@ -35,6 +35,8 @@ assignRhs: expr
          | pairElem
          | CALL ident L_PAREN argList? R_PAREN
          | structAssign;
+
+importStat: IMPORT ident DOT ident ;
 
 structDeclare: structType L_CURLY (structMember SEMICOLON)* R_CURLY;
 
@@ -113,4 +115,3 @@ pairLiter: NULL ;
 ident: IDENT | CAPTIALISED_IDENT;
 
 capitalisedIdent: CAPTIALISED_IDENT ;
-

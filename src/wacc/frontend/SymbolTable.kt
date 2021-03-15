@@ -306,6 +306,13 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return findSTWithIdentifier(ident, correctType, 0)
     }
 
+    fun mergeFuncsWithTable(importedST: SymbolTable) {
+        for (entry in importedST.currSymbolTable) {
+            if (entry.value.first is FuncAST && !currSymbolTable.containsKey(entry.key)) {
+                add(entry.key, entry.value.first)
+            }
+        }
+    }
 
 }
 

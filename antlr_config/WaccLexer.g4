@@ -22,6 +22,8 @@ NULL: 'null' ;
 //struct
 STRUCT: 'struct' ;
 DOT: '.' ;
+//imports
+IMPORT: 'import' ;
 
 ASSIGN: '=' ;
 SEMICOLON: ';' ;
@@ -85,6 +87,7 @@ IDENT: ([a-zA-Z] | '_')(([a-zA-Z0-9]) | '_')* ;
 WHITESPACE: [ \n\t\r]+ -> skip ;
 ESCAPE_CHARACTER: [0btnfr"'\\] ;
 CHARACTER: ~[\\'"] | '\\' ESCAPE_CHARACTER ;
+
 
 //string literal
 STR_LITER: '"' (CHARACTER)* '"' ;
