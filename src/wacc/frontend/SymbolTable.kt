@@ -308,7 +308,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
     fun mergeFuncsWithTable(importedST: SymbolTable) {
         for (entry in importedST.currSymbolTable) {
-            if (entry.value.first is FuncAST) {
+            if (entry.value.first is FuncAST && !currSymbolTable.containsKey(entry.key)) {
                 add(entry.key, entry.value.first)
             }
         }
