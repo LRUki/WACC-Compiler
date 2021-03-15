@@ -20,15 +20,20 @@ class SemanticTest {
     @Test
     fun semanticCheckingDoesNotThrowErrorForValidPrograms() {
         actionOnFiles(File(PATH_TO_EXT_TESTS + "valid/")) { file ->
-            val input = CharStreams.fromStream(file.inputStream())
-            val lexer = WaccLexer(input)
-            val tokens = CommonTokenStream(lexer)
-            val parser = WaccParser(tokens)
-            val program = parser.program()
-            try {
+            runBlocking {
+                val input = CharStreams.fromStream(file.inputStream())
+                val lexer = WaccLexer(input)
+                val tokens = CommonTokenStream(lexer)
+                val parser = WaccParser(tokens)
+                val program = parser.program()
+                createErrorChannels()
+                val job = startErrorListenerWithoutExit(Main.semanticErrorChannel)
                 checkSemantics(buildAST(program))
-            } catch (e: SemanticException) {
-                throw Error("Semantic error on valid file: " + file.path)
+                Main.semanticErrorChannel.close()
+                job.join()
+                if (exitCode != 0) {
+                    throw Error("detected error in valid file: " + file.path)
+                }
             }
         }
     }

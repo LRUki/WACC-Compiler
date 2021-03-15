@@ -73,6 +73,16 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return value
     }
 
+    fun lookupAllInFunc(name: String): Optional<Identifiable> {
+        val value = lookup(name)
+        if (value.isEmpty) {
+            if (encSymbolTable != null) {
+                return encSymbolTable.lookupAll(name)
+            }
+        }
+        return value
+    }
+
     fun lookupFirstFunc(): Optional<FuncAST> {
         if (this is FuncSymbolTable) {
             return Optional.of(funcAST)
