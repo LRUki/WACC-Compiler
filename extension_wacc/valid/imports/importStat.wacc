@@ -1,8 +1,13 @@
 # importing another wacc file
 
 # Output:
+## true
+## 6
 ## a
 ## 8
+
+#Exitcode:
+#* 0
 
 # Program:
 
@@ -14,7 +19,7 @@ begin
     return 'a'
   end
   char x = call fileOne(true);
-  int y = call fileTwo('a');
+  int y = call fileTwo(6);
   println x;
   println y
 end
