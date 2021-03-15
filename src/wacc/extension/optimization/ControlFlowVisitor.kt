@@ -18,11 +18,11 @@ class ControlFlowVisitor : OptimisationVisitor {
 
     override fun visitProgramAST(ast: ProgramAST): AST {
         val funcList = mutableListOf<FuncAST>()
-        ast.funcList.forEach{
-            funcList.add( visit(it) as FuncAST)
+        ast.funcList.forEach {
+            funcList.add(visit(it) as FuncAST)
         }
         val stats = mutableListOf<StatAST>()
-        ast.stats.forEach{
+        ast.stats.forEach {
             stats.add(visit(it) as StatAST)
         }
         val programAST = ProgramAST(funcList, stats)
@@ -32,7 +32,7 @@ class ControlFlowVisitor : OptimisationVisitor {
 
     override fun visitFuncAST(ast: FuncAST): AST {
         val body = mutableListOf<StatAST>()
-        ast.body.forEach{
+        ast.body.forEach {
             body.add(visit(it) as StatAST)
         }
         return ast
@@ -45,7 +45,7 @@ class ControlFlowVisitor : OptimisationVisitor {
 
     override fun visitBlockStatAST(ast: BlockStatAST): AST {
         val body = mutableListOf<StatAST>()
-        ast.body.forEach{
+        ast.body.forEach {
             body.add(visit(it) as StatAST)
         }
         val blockStatAST = BlockStatAST(body)
@@ -56,7 +56,7 @@ class ControlFlowVisitor : OptimisationVisitor {
     override fun visitIfStatAST(ast: IfStatAST): AST {
         val cond = visit(ast.cond) as ExprAST
 
-        if(cond !is BoolLiterAST){
+        if (cond !is BoolLiterAST) {
             throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
         }
 
@@ -67,7 +67,7 @@ class ControlFlowVisitor : OptimisationVisitor {
 
         }
         /** Condition is false, else branch only */
-        if (!cond.value) {
+        else if (!cond.value) {
             ast.elseBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
 
         } else {
@@ -79,7 +79,7 @@ class ControlFlowVisitor : OptimisationVisitor {
     override fun visitWhileStatAST(ast: WhileStatAST): AST {
         val cond = visit(ast.cond) as ExprAST
 
-        if(cond !is BoolLiterAST){
+        if (cond !is BoolLiterAST) {
             throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
         }
         /** Condition is true, proceed as normal */
