@@ -4,33 +4,39 @@ import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.statement.nonblock.StructDeclareAST
 
 class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
-    override fun check(table: SymbolTable): Boolean {
-        return false //TODO
+    companion object {
+        val defStructIdent = IdentAST("")
     }
 
     override fun equals(other: Any?): Boolean {
-        return true
-        TODO("Not yet implemented")
+        return other is StructTypeAST
     }
 
     override fun toString(): String {
-        return ""
-        TODO("Not yet implemented")
+        return "struct ${ident.name}"
+
     }
 
     override fun isConcreteType(parentType: TypeAST?): Boolean {
         return true
-        TODO("Implement properly")
     }
 
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 
+    override fun toLabel(): String {
+        return "struct_$ident"
+    }
 }
 
 class StructFieldAST(val type: TypeAST, val ident: IdentAST) : AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
-        return super.check(table)
+        return type.check(table)
+
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {

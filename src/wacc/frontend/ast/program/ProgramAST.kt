@@ -17,12 +17,12 @@ class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : Abstra
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         funcList.forEach { it.checkNameAndAddToST(table) }
-        funcList.forEach { it.check(table) }
         stats.forEach {
             if (!it.check(table)) {
                 return false
             }
         }
+        funcList.forEach { it.check(table) }
         return true
     }
 
