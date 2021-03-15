@@ -166,8 +166,8 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     }
 
     override fun visitForStat(ctx: WaccParser.ForStatContext): AST {
-        val forStatAst = ForStatAST(visit(ctx.expr()) as ExprAST,
-                statToList(visit(ctx.stat(2)) as StatAST))
+        val forStatAst = ForStatAST(visit(ctx.stat(0)) as StatAST,visit(ctx.expr()) as ExprAST,
+                visit(ctx.stat(1)) as StatAST, statToList(visit(ctx.stat(2)) as StatAST))
         forStatAst.ctx = ctx
         return forStatAst
     }

@@ -238,6 +238,36 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return instrs
     }
 
+    override fun visitForStatAST(ast: ForStatAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        val condLabel = getNextLabel()
+        val bodyLabel = getNextLabel()
+       /**Translates the first statement in the loop before jumping to condition*/
+        instrs.addAll(visit(ast.stat))
+        instrs.add(BranchInstr(Condition.AL, condLabel, false))
+
+        instrs.add(bodyLabel)
+        val stackOffset = ast.blockST.getStackOffset()
+        ast.blockST.startingOffset = stackOffset
+        if (stackOffset > 0) {
+            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+        }
+        /** Translates all the statements within the for loop body */
+        ast.body.forEach { instrs.addAll(visit(it)) }
+        if (stackOffset > 0) {
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+        }
+        /**Translates the change in loop variable as defined in the loop*/
+        instrs.addAll(visit(ast.inc))
+        /** Translates the condition after the loop body.*/
+        instrs.add(condLabel)
+        instrs.addAll(visit(ast.cond))
+        instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
+        instrs.add(BranchInstr(Condition.EQ, bodyLabel, false))
+        freeCalleeReg()
+        return instrs
+    }
+
     /** Translates a Action Statment AST */
     override fun visitActionStatAST(ast: ActionStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
@@ -959,10 +989,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Translates a Type AST. Requires no code generation  */
     override fun visitTypeAST(ast: TypeAST): List<Instruction> {
         return emptyList()
-    }
-
-    override fun visitForStatAST(ast: ForStatAST): List<Instruction> {
-        TODO("Not yet implemented")
     }
 
 }

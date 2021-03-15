@@ -13,7 +13,7 @@ import wacc.frontend.exception.semanticError
  * @property cond Boolean expression for the condition
  * @property body List of statements to be executed when cond == true
  */
-class ForStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, AbstractAST() {
+class ForStatAST(val stat: StatAST, val cond: ExprAST, val inc: StatAST, val body: List<StatAST>) : StatAST, AbstractAST() {
     lateinit var blockST: SymbolTable
 
     override fun check(table: SymbolTable): Boolean {
