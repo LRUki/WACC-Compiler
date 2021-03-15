@@ -26,6 +26,9 @@ class ForStatAST(val stat: StatAST, val cond: ExprAST, val inc: StatAST, val bod
             semanticError("For condition must evaluate to a BOOL, but was actually $condType", ctx)
             return false
         }
+        if(!stat.check(table) || !inc.check(table)){
+            return false
+        }
         blockST = SymbolTable(table)
         body.forEach {
             if (!it.check(blockST)) {
