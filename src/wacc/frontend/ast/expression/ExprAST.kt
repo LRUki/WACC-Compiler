@@ -104,8 +104,9 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         if(size != 0){
             return size
         }
-        size += expr1.weight()
-        size += expr2.weight()
+        val c1 = Math.max(expr1.weight(), expr2.weight() + 1) //if we select e1 first
+        val c2 = Math.max(expr1.weight() + 1, expr2.weight()) //if we select e2 first
+        size = Math.min(c1, c2)
         return size
     }
 
