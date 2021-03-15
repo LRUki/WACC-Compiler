@@ -221,17 +221,15 @@ public class WaccParser extends Parser {
         setState(87);
         match(EOF);
       }
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
     }
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class FuncContext extends ParserRuleContext {
 		public TypeContext type() {
@@ -388,7 +386,7 @@ public class WaccParser extends Parser {
 	public final ParamContext param() throws RecognitionException {
 		ParamContext _localctx = new ParamContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_param);
-		try {
+    try {
       enterOuterAlt(_localctx, 1);
       {
         setState(108);
@@ -396,8 +394,7 @@ public class WaccParser extends Parser {
         setState(109);
         ident();
       }
-    }
-		catch (RecognitionException re) {
+    } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
       _errHandler.recover(this, re);
@@ -468,16 +465,28 @@ public class WaccParser extends Parser {
     }
 
     public StatContext stat(int i) {
-			return getRuleContext(StatContext.class,i);
-		}
-		public TerminalNode ELSE() { return getToken(WaccParser.ELSE, 0); }
-		public TerminalNode FI() { return getToken(WaccParser.FI, 0); }
-		public IfStatContext(StatContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitIfStat(this);
-			else return visitor.visitChildren(this);
-		}
+      return getRuleContext(StatContext.class, i);
+    }
+
+    public TerminalNode ELSE() {
+      return getToken(WaccParser.ELSE, 0);
+    }
+
+    public TerminalNode FI() {
+      return getToken(WaccParser.FI, 0);
+    }
+
+    public IfStatContext(StatContext ctx) {
+      copyFrom(ctx);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor)
+        return ((WaccParserVisitor<? extends T>) visitor).visitIfStat(this);
+      else
+        return visitor.visitChildren(this);
+    }
 	}
 	public static class BlockStatContext extends StatContext {
 		public TerminalNode BEGIN() { return getToken(WaccParser.BEGIN, 0); }
@@ -1155,17 +1164,15 @@ public class WaccParser extends Parser {
         setState(196);
         match(R_CURLY);
       }
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
     }
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+    return _localctx;
+  }
 
 	public static class StructAssignContext extends ParserRuleContext {
 		public TerminalNode L_CURLY() { return getToken(WaccParser.L_CURLY, 0); }
@@ -1823,15 +1830,23 @@ public class WaccParser extends Parser {
     return _localctx;
   }
 
-	public static class PairTypeContext extends ParserRuleContext {
-		public TerminalNode PAIR() { return getToken(WaccParser.PAIR, 0); }
-		public TerminalNode L_PAREN() { return getToken(WaccParser.L_PAREN, 0); }
-		public List<PairElemTypeContext> pairElemType() {
-			return getRuleContexts(PairElemTypeContext.class);
-		}
-		public PairElemTypeContext pairElemType(int i) {
-			return getRuleContext(PairElemTypeContext.class,i);
-		}
+  public static class PairTypeContext extends ParserRuleContext {
+
+    public TerminalNode PAIR() {
+      return getToken(WaccParser.PAIR, 0);
+    }
+
+    public TerminalNode L_PAREN() {
+      return getToken(WaccParser.L_PAREN, 0);
+    }
+
+    public List<PairElemTypeContext> pairElemType() {
+      return getRuleContexts(PairElemTypeContext.class);
+    }
+
+    public PairElemTypeContext pairElemType(int i) {
+      return getRuleContext(PairElemTypeContext.class, i);
+    }
 		public TerminalNode COMMA() { return getToken(WaccParser.COMMA, 0); }
 		public TerminalNode R_PAREN() { return getToken(WaccParser.R_PAREN, 0); }
 		public PairTypeContext(ParserRuleContext parent, int invokingState) {
