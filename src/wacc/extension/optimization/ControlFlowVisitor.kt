@@ -45,9 +45,19 @@ class ControlFlowVisitor : AstVisitor<AST> {
     }
 
     override fun visitWhileStatAST(ast: WhileStatAST): AST {
-        TODO("Not yet implemented")
-        //cond true just normal
-        //cond false nothing
+        val cond = visit(ast.cond) as ExprAST
+        val trueLiter = BoolLiterAST(true)
+        val falseLiter = BoolLiterAST(false)
+        /** Condition is true, proceed as normal */
+        if (cond == trueLiter) {
+            return ast
+        }
+        /** Condition is false, skip over loop */
+        if (cond == falseLiter) {
+            return SkipStatAST()
+        } else {
+            throw RuntimeException("If condition was neither true or false. Semantic check failed")
+        }
     }
 
 
