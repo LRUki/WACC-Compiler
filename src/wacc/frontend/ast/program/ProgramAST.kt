@@ -17,13 +17,14 @@ class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val fun
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
+        funcList.forEach { it.checkNameAndAddToST(table) }
+
         imports.forEach {
             if (!it.check(table)) {
                 return false
             }
             symTable.mergeFuncsWithTable(it.progAST.symTable)
         }
-        funcList.forEach { it.checkNameAndAddToST(table) }
         /* Checks all the struct declarations so they can used inside functions */
         stats.filterIsInstance<StructDeclareAST>().forEach {
             if (!it.check(table)) {

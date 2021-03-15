@@ -29,12 +29,18 @@ class ImportAST(val ident: IdentAST) : AbstractAST() {
             return false
         }
         //check that the file exists in the provided place
-        val path = Main.waccFile.currentFilePath
+        val path = Main.waccFile.currentFilePath.substringBeforeLast(File.separator)
         inputFile = File(path, filename)
         if (!inputFile.exists()) {
             semanticError("Importing file that does not exist", ctx)
             return false
         }
+        //check not importing current file
+        if (Main.waccFile.currentFilePath.substringAfterLast(File.separator).equals(filename)) {
+            semanticError("Trying to import the current file", ctx)
+            return false
+        }
+
         //load the imported files functions into this symbol table
         val oldWaccFile = Main.waccFile
         val newWaccFile = WaccFile(inputFile)

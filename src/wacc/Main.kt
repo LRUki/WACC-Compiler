@@ -70,7 +70,7 @@ fun main(args: Array<String>) {
 class WaccFile(val file: File) {
     lateinit var syntaxErrorChannel: Channel<SyntaxException>
     lateinit var semanticErrorChannel: Channel<SemanticException>
-    var currentFilePath: String = file.absolutePath.substringBeforeLast(File.separator)
+    var currentFilePath: String = file.absolutePath
     lateinit var ast: AST
 
     init {
