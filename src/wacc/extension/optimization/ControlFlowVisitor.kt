@@ -4,26 +4,73 @@ import wacc.frontend.ast.AST
 import wacc.frontend.ast.OptimisationVisitor
 import wacc.frontend.ast.expression.BoolLiterAST
 import wacc.frontend.ast.expression.ExprAST
+import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.function.ParamAST
+import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.StatAST
+import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 
 class ControlFlowVisitor : OptimisationVisitor {
+
+    override fun visitProgramAST(ast: ProgramAST): AST {
+        val funcList = mutableListOf<FuncAST>()
+        ast.funcList.forEach{
+            funcList.add( visit(it) as FuncAST)
+        }
+        val stats = mutableListOf<StatAST>()
+        ast.stats.forEach{
+            stats.add(visit(it) as StatAST)
+        }
+        val programAST = ProgramAST(funcList, stats)
+        programAST.symTable = ast.symTable
+        return programAST
+    }
+
+    override fun visitFuncAST(ast: FuncAST): AST {
+        val body = mutableListOf<StatAST>()
+        ast.body.forEach{
+            body.add(visit(it) as StatAST)
+        }
+        return ast
+    }
+
+    override fun visitParamAST(ast: ParamAST): AST {
+        //todo
+        return ast
+    }
+
+    override fun visitBlockStatAST(ast: BlockStatAST): AST {
+        val body = mutableListOf<StatAST>()
+        ast.body.forEach{
+            body.add(visit(it) as StatAST)
+        }
+        val blockStatAST = BlockStatAST(body)
+        blockStatAST.symTable = ast.symTable
+        return blockStatAST
+    }
+
     override fun visitIfStatAST(ast: IfStatAST): AST {
         val cond = visit(ast.cond) as ExprAST
+
+        if(cond !is BoolLiterAST){
+            throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
+        }
+        val condBool = cond as BoolLiterAST
         val trueLiter = BoolLiterAST(true)
         val falseLiter = BoolLiterAST(false)
 
         val branchOfChoice = mutableListOf<StatAST>()
         /** Condition is true, then branch only */
-        if (cond == trueLiter) {
+        if (condBool.value) {
             ast.thenBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
 
         }
         /** Condition is false, else branch only */
-        if (cond == falseLiter) {
+        if (!condBool.value) {
             ast.elseBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
 
         } else {

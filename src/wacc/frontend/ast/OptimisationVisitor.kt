@@ -28,7 +28,7 @@ interface OptimisationVisitor: AstVisitor<AST> {
     override fun visitFuncAST(ast: FuncAST): AST {return ast}
     override fun visitParamAST(ast: ParamAST): AST {return ast}
 
-    /* {return ast}
+    /*
      * Visit statement ASTs.
      */
     override fun visitBlockStatAST(ast: BlockStatAST): AST {return ast}
