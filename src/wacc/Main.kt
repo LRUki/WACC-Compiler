@@ -2,10 +2,8 @@ package wacc
 
 import antlr.WaccLexer
 import antlr.WaccParser
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.Main.semanticErrorChannel
@@ -32,7 +30,7 @@ object Main {
     lateinit var semanticErrorChannel: Channel<SemanticException>
 }
 
-suspend fun main(args: Array<String>) {
+fun main(args: Array<String>) {
     var ast: AST
     if (args.isEmpty()) {
         println("Missing argument!")
@@ -41,8 +39,8 @@ suspend fun main(args: Array<String>) {
 
     val paths = ArrayList<String>()
     val flags = ArrayList<String>()
-    for (arg in args){
-        if (arg.startsWith("-")){
+    for (arg in args) {
+        if (arg.startsWith("-")) {
             flags.add(arg)
         }else{
             paths.add(arg)
@@ -73,18 +71,21 @@ suspend fun main(args: Array<String>) {
 }
 
 
-suspend fun frontend(file: File): AST {
-    var job = startErrorListener(syntaxErrorChannel, file)
-    val program = parse(file.inputStream())
-    checkSyntax(program)
-    syntaxErrorChannel.close()
-    job.join()
+fun frontend(file: File): AST {
+    var ast: AST
+    runBlocking {
+        var job = startErrorListener(syntaxErrorChannel, file)
+        val program = parse(file.inputStream())
+        checkSyntax(program)
+        syntaxErrorChannel.close()
+        job.join()
 
-    val ast = buildAST(program)
-    job = startErrorListener(semanticErrorChannel, file)
-    checkSemantics(ast)
-    semanticErrorChannel.close()
-    job.join()
+        ast = buildAST(program)
+        job = startErrorListener(semanticErrorChannel, file)
+        checkSemantics(ast)
+        semanticErrorChannel.close()
+        job.join()
+    }
     return ast
 }
 

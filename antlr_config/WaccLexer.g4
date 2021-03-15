@@ -88,7 +88,6 @@ WHITESPACE: [ \n\t\r]+ -> skip ;
 ESCAPE_CHARACTER: [0btnfr"'\\] ;
 CHARACTER: ~[\\'"] | '\\' ESCAPE_CHARACTER ;
 
-FILENAME: ([a-zA-Z] | '_')(([a-zA-Z0-9.]) | '_')* ;
 
 //string literal
 STR_LITER: '"' (CHARACTER)* '"' ;

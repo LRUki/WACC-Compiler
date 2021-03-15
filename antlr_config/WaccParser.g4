@@ -36,7 +36,7 @@ assignRhs: expr
          | CALL ident L_PAREN argList? R_PAREN
          | structAssign;
 
-importStat: IMPORT filename ;
+importStat: IMPORT ident DOT ident ;
 
 structDeclare: structType L_CURLY (structMember SEMICOLON)* R_CURLY;
 
@@ -115,5 +115,3 @@ pairLiter: NULL ;
 ident: IDENT | CAPTIALISED_IDENT;
 
 capitalisedIdent: CAPTIALISED_IDENT ;
-
-filename: FILENAME ;
