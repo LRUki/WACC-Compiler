@@ -13,6 +13,7 @@ import wacc.Main.syntaxErrorChannel
 import wacc.backend.generateCode
 import wacc.backend.printCode
 import wacc.extension.optimization.ConstantEvaluationVisitor
+import wacc.extension.optimization.ControlFlowVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -50,6 +51,7 @@ suspend fun main(args: Array<String>) {
     }
 
     val optimize = flags.contains("-o")
+    val controlFlow = flags.contains("-cf")
 
     val inputFile = File(paths[0])
     createErrorChannels()
@@ -57,6 +59,9 @@ suspend fun main(args: Array<String>) {
 
     if (optimize) {
         ast = ConstantEvaluationVisitor().visit(ast)
+    }
+    if(controlFlow){
+        ast = ControlFlowVisitor().visit(ast)
     }
 
     val outputString = backend(ast)

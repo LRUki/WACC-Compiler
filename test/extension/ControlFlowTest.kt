@@ -6,6 +6,7 @@ import wacc.backend.generateCode
 import wacc.buildAST
 import wacc.checkSemantics
 import wacc.checkSyntax
+import wacc.extension.optimization.ConstantEvaluationVisitor
 import wacc.extension.optimization.ControlFlowVisitor
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -80,11 +81,24 @@ class ControlFlowTest {
             assertTrue { instrs.size > optimisedInstrs.size }
         }
     }
+
+    @Test
+    fun ifControlFlowWorksWithConstantEval() {
+
+        val file = File("$path/if/constantEvalIf.wacc")
+
+        val ast = simpleFrontend(file)
+        val optimizedAst = ConstantEvaluationVisitor().visit(ast)
+        val evenMoreOptimizedAst = ControlFlowVisitor().visit(optimizedAst)
+
+        val instrs = generateCode(ast as ProgramAST)
+        val optimisedInstrs = generateCode(evenMoreOptimizedAst as ProgramAST)
+
+        assertTrue { instrs.size > optimisedInstrs.size }
+    }
 }
 
-//if+whiles
 
 //maintains integrity
 
 
-//control flow + constant eval.

@@ -1,0 +1,6 @@
+begin
+  int i = 0;
+  while true&&true do
+    i = i + 1
+  done;
+end
