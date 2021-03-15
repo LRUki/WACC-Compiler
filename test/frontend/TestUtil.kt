@@ -12,6 +12,7 @@ import java.io.File
 
 object Utils {
     val PATH_TO_EXAMPLES = "wacc_examples/"
+    val PATH_TO_EXT_TESTS = "extension_wacc/"
     var exitCode: Int = 0
 }
 
