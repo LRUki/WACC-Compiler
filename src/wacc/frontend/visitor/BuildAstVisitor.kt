@@ -67,7 +67,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
     override fun visitImportStat(ctx: WaccParser.ImportStatContext): AST {
         val filename = visit(ctx.ident(0)) as IdentAST
         val extension = visit(ctx.ident(1)) as IdentAST
-        val importAst = ImportAST(IdentAST("${filename.name}.${extension.name})"))
+        val importAst = ImportAST(IdentAST("${filename.name}.${extension.name}"))
         importAst.ctx = ctx
         return importAst
     }

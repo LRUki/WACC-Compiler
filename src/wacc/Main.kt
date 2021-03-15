@@ -6,6 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
+import wacc.Main.currentFilePath
 import wacc.Main.semanticErrorChannel
 import wacc.Main.syntaxErrorChannel
 import wacc.backend.generateCode
@@ -28,6 +29,7 @@ import kotlin.system.exitProcess
 object Main {
     lateinit var syntaxErrorChannel: Channel<SyntaxException>
     lateinit var semanticErrorChannel: Channel<SemanticException>
+    lateinit var currentFilePath: String
 }
 
 fun main(args: Array<String>) {
@@ -50,6 +52,7 @@ fun main(args: Array<String>) {
     val optimize = flags.contains("-o")
 
     val inputFile = File(paths[0])
+    currentFilePath = inputFile.absolutePath.substringBeforeLast(File.separator)
     createErrorChannels()
     ast = frontend(inputFile)
 
