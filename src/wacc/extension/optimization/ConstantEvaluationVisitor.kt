@@ -9,6 +9,7 @@ import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.pointer.PointerElemAST
+import wacc.frontend.ast.program.ImportAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -21,15 +22,19 @@ import wacc.frontend.ast.type.TypeAST
 
 class ConstantEvaluationVisitor: AstVisitor<AST> {
     override fun visitProgramAST(ast: ProgramAST): AST {
+        val importList = mutableListOf<ImportAST>()
+        ast.imports.forEach {
+            importList.add(visit(it) as ImportAST)
+        }
         val funcList = mutableListOf<FuncAST>()
-        ast.funcList.forEach{
-            funcList.add( visit(it) as FuncAST)
+        ast.funcList.forEach {
+            funcList.add(visit(it) as FuncAST)
         }
         val stats = mutableListOf<StatAST>()
-        ast.stats.forEach{
+        ast.stats.forEach {
             stats.add(visit(it) as StatAST)
         }
-        val programAST = ProgramAST(funcList, stats)
+        val programAST = ProgramAST(importList, stats, funcList)
         programAST.symTable = ast.symTable
         return programAST
     }

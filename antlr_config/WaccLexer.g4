@@ -22,6 +22,8 @@ NULL: 'null' ;
 //struct
 STRUCT: 'struct' ;
 DOT: '.' ;
+//imports
+IMPORT: 'import' ;
 
 ASSIGN: '=' ;
 SEMICOLON: ';' ;

@@ -13,7 +13,7 @@ import wacc.frontend.ast.statement.nonblock.StructDeclareAST
  * @property funcList List of Function ASTs defined in the program
  * @property stats List of all the statements in the program
  */
-class ProgramAST(val funcList: List<FuncAST>, val stats: List<StatAST>) : AbstractAST() {
+class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val funcList: List<FuncAST>) : AbstractAST() {
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
