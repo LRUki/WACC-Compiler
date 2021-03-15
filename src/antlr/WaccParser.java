@@ -189,10 +189,10 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final ProgramContext program() throws RecognitionException {
-		ProgramContext _localctx = new ProgramContext(_ctx, getState());
-		enterRule(_localctx, 0, RULE_program);
-		try {
+  public final ProgramContext program() throws RecognitionException {
+    ProgramContext _localctx = new ProgramContext(_ctx, getState());
+    enterRule(_localctx, 0, RULE_program);
+    try {
       int _alt;
       enterOuterAlt(_localctx, 1);
       {
@@ -398,15 +398,14 @@ public class WaccParser extends Parser {
       }
     }
 		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
   public static class StatContext extends ParserRuleContext {
 
@@ -443,23 +442,32 @@ public class WaccParser extends Parser {
 
     @Override
     public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor) {
+      if (visitor instanceof WaccParserVisitor)
         return ((WaccParserVisitor<? extends T>) visitor).visitReadStat(this);
-      } else {
+      else
         return visitor.visitChildren(this);
-      }
     }
   }
-	public static class IfStatContext extends StatContext {
-		public TerminalNode IF() { return getToken(WaccParser.IF, 0); }
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public TerminalNode THEN() { return getToken(WaccParser.THEN, 0); }
-		public List<StatContext> stat() {
-			return getRuleContexts(StatContext.class);
-		}
-		public StatContext stat(int i) {
+
+  public static class IfStatContext extends StatContext {
+
+    public TerminalNode IF() {
+      return getToken(WaccParser.IF, 0);
+    }
+
+    public ExprContext expr() {
+      return getRuleContext(ExprContext.class, 0);
+    }
+
+    public TerminalNode THEN() {
+      return getToken(WaccParser.THEN, 0);
+    }
+
+    public List<StatContext> stat() {
+      return getRuleContexts(StatContext.class);
+    }
+
+    public StatContext stat(int i) {
 			return getRuleContext(StatContext.class,i);
 		}
 		public TerminalNode ELSE() { return getToken(WaccParser.ELSE, 0); }
@@ -1118,8 +1126,8 @@ public class WaccParser extends Parser {
   public final StructDeclareContext structDeclare() throws RecognitionException {
     StructDeclareContext _localctx = new StructDeclareContext(_ctx, getState());
     enterRule(_localctx, 14, RULE_structDeclare);
-		int _la;
-		try {
+    int _la;
+    try {
       enterOuterAlt(_localctx, 1);
       {
         setState(186);
@@ -1656,7 +1664,7 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final BaseTypeContext baseType() throws RecognitionException {
+  public final BaseTypeContext baseType() throws RecognitionException {
     BaseTypeContext _localctx = new BaseTypeContext(_ctx, getState());
     enterRule(_localctx, 30, RULE_baseType);
     int _la;
@@ -1748,7 +1756,7 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final ArrayTypeContext arrayType() throws RecognitionException {
+  public final ArrayTypeContext arrayType() throws RecognitionException {
     ArrayTypeContext _localctx = new ArrayTypeContext(_ctx, getState());
     enterRule(_localctx, 32, RULE_arrayType);
     int _la;
@@ -1971,10 +1979,11 @@ public class WaccParser extends Parser {
 
     @Override
     public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor)
+      if (visitor instanceof WaccParserVisitor) {
         return ((WaccParserVisitor<? extends T>) visitor).visitPointerType(this);
-      else
+      } else {
         return visitor.visitChildren(this);
+      }
     }
   }
 
@@ -2059,7 +2068,7 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final ImplicitTypeContext implicitType() throws RecognitionException {
+  public final ImplicitTypeContext implicitType() throws RecognitionException {
     ImplicitTypeContext _localctx = new ImplicitTypeContext(_ctx, getState());
     enterRule(_localctx, 40, RULE_implicitType);
     try {

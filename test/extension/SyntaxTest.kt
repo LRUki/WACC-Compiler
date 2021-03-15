@@ -23,16 +23,21 @@ class SyntaxTest {
     @Test
     fun antlrParsesValidPrograms() {
         actionOnFiles(File(PATH_TO_EXT_TESTS + "valid/")) { file ->
-            val input = CharStreams.fromStream(file.inputStream())
-            val lexer = WaccLexer(input)
-            val tokens = CommonTokenStream(lexer)
-            val parser = WaccParser(tokens)
-            parser.removeErrorListeners()
-            parser.addErrorListener(SyntaxErrorListener())
-            try {
+            runBlocking {
+                val input = CharStreams.fromStream(file.inputStream())
+                val lexer = WaccLexer(input)
+                val tokens = CommonTokenStream(lexer)
+                val parser = WaccParser(tokens)
+                parser.removeErrorListeners()
+                parser.addErrorListener(SyntaxErrorListener())
+                createErrorChannels()
+                val job = startErrorListenerWithoutExit(Main.syntaxErrorChannel)
                 parser.program()
-            } catch (e: SyntaxException) {
-                throw Error("antlr fails to parse valid file: " + file.path)
+                Main.syntaxErrorChannel.close()
+                job.join()
+                if (exitCode != 0) {
+                    throw Error("Detected antlr error for valid file " + file.path)
+                }
             }
         }
     }
@@ -40,18 +45,23 @@ class SyntaxTest {
     @Test
     fun syntaxCheckingDoesNotThrowErrorForValidPrograms() {
         actionOnFiles(File(PATH_TO_EXT_TESTS + "valid/")) { file ->
-            val input = CharStreams.fromStream(file.inputStream())
-            val lexer = WaccLexer(input)
-            val tokens = CommonTokenStream(lexer)
-            val parser = WaccParser(tokens)
-            parser.removeErrorListeners()
-            parser.addErrorListener(SyntaxErrorListener())
-            val tree = parser.program()
-            try {
+            runBlocking {
+                val input = CharStreams.fromStream(file.inputStream())
+                val lexer = WaccLexer(input)
+                val tokens = CommonTokenStream(lexer)
+                val parser = WaccParser(tokens)
+                parser.removeErrorListeners()
+                parser.addErrorListener(SyntaxErrorListener())
+                val tree = parser.program()
+                createErrorChannels()
+                val job = startErrorListenerWithoutExit(Main.syntaxErrorChannel)
                 val checkSyntaxVisitor = CheckSyntaxVisitor()
                 checkSyntaxVisitor.visit(tree)
-            } catch (e: SyntaxException) {
-                throw Error("syntax error on valid file: " + file.path)
+                Main.syntaxErrorChannel.close()
+                job.join()
+                if (exitCode != 0) {
+                    throw Error("Detected error for valid file " + file.path)
+                }
             }
         }
     }
