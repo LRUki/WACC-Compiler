@@ -33,17 +33,21 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParam(WaccParser.ParamContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code readStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitReadStat(WaccParser.ReadStatContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ifStat}
-   * labeled alternative in {@link WaccParser#stat}.
+  T visitParam(WaccParser.ParamContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code readStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitReadStat(WaccParser.ReadStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code ifStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
    * @param ctx the parse tree
    * @return the visitor result
    */
@@ -397,14 +401,18 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitCharLiter(WaccParser.CharLiterContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#arrayLiter}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayLiter(WaccParser.ArrayLiterContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link WaccParser#pairLiter}.
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#arrayLiter}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArrayLiter(WaccParser.ArrayLiterContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link WaccParser#pairLiter}.
+   *
    * @param ctx the parse tree
    * @return the visitor result
    */

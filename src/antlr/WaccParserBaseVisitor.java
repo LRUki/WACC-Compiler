@@ -15,16 +15,23 @@ public class WaccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitProgram(WaccParser.ProgramContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitFunc(WaccParser.FuncContext ctx) { return visitChildren(ctx); }
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitProgram(WaccParser.ProgramContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitFunc(WaccParser.FuncContext ctx) {
+    return visitChildren(ctx);
+  }
 
   /**
    * {@inheritDoc}

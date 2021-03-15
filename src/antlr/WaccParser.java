@@ -152,16 +152,25 @@ public class WaccParser extends Parser {
 
     public StatContext stat() {
       return getRuleContext(StatContext.class, 0);
-		}
-		public TerminalNode END() { return getToken(WaccParser.END, 0); }
-		public TerminalNode EOF() { return getToken(WaccParser.EOF, 0); }
-		public List<FuncContext> func() {
-			return getRuleContexts(FuncContext.class);
-		}
-		public FuncContext func(int i) {
-			return getRuleContext(FuncContext.class,i);
-		}
-		public ProgramContext(ParserRuleContext parent, int invokingState) {
+    }
+
+    public TerminalNode END() {
+      return getToken(WaccParser.END, 0);
+    }
+
+    public TerminalNode EOF() {
+      return getToken(WaccParser.EOF, 0);
+    }
+
+    public List<FuncContext> func() {
+      return getRuleContexts(FuncContext.class);
+    }
+
+    public FuncContext func(int i) {
+      return getRuleContext(FuncContext.class, i);
+    }
+
+    public ProgramContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_program; }
@@ -262,7 +271,7 @@ public class WaccParser extends Parser {
         _la = _input.LA(1);
         if ((((_la) & ~0x3f) == 0 &&
             ((1L << _la) & ((1L << STRUCT) | (1L << PAIR) | (1L << INT) | (1L << BOOL) | (1L
-                << CHAR) | (1L << STRING))) != 0)) {
+                << CHAR) | (1L << STRING) | (1L << L_PAREN))) != 0)) {
           {
             setState(92);
             paramList();
@@ -396,7 +405,7 @@ public class WaccParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_stat; }
-	 
+
 		public StatContext() { }
 		public void copyFrom(StatContext ctx) {
 			super.copyFrom(ctx);
@@ -593,7 +602,8 @@ public class WaccParser extends Parser {
               case INT:
               case BOOL:
               case CHAR:
-              case STRING: {
+              case STRING:
+              case L_PAREN: {
                 setState(113);
                 type();
               }
@@ -1021,15 +1031,14 @@ public class WaccParser extends Parser {
       }
 		}
 		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
   public static class StructDeclareContext extends ParserRuleContext {
 
@@ -1056,16 +1065,24 @@ public class WaccParser extends Parser {
     public List<TerminalNode> SEMICOLON() {
       return getTokens(WaccParser.SEMICOLON);
     }
-		public TerminalNode SEMICOLON(int i) {
-			return getToken(WaccParser.SEMICOLON, i);
-		}
-		public StructDeclareContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_structDeclare; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitStructDeclare(this);
+
+    public TerminalNode SEMICOLON(int i) {
+      return getToken(WaccParser.SEMICOLON, i);
+    }
+
+    public StructDeclareContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
+    }
+
+    @Override
+    public int getRuleIndex() {
+      return RULE_structDeclare;
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor)
+        return ((WaccParserVisitor<? extends T>) visitor).visitStructDeclare(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1086,7 +1103,7 @@ public class WaccParser extends Parser {
         _la = _input.LA(1);
         while ((((_la) & ~0x3f) == 0 &&
             ((1L << _la) & ((1L << STRUCT) | (1L << PAIR) | (1L << INT) | (1L << BOOL) | (1L
-                << CHAR) | (1L << STRING))) != 0)) {
+                << CHAR) | (1L << STRING) | (1L << L_PAREN))) != 0)) {
           {
             {
               setState(188);
@@ -1574,15 +1591,31 @@ public class WaccParser extends Parser {
     return _localctx;
   }
 
-	public static class BaseTypeContext extends ParserRuleContext {
-		public TerminalNode INT() { return getToken(WaccParser.INT, 0); }
-		public TerminalNode BOOL() { return getToken(WaccParser.BOOL, 0); }
-		public TerminalNode CHAR() { return getToken(WaccParser.CHAR, 0); }
-		public TerminalNode STRING() { return getToken(WaccParser.STRING, 0); }
-		public BaseTypeContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_baseType; }
+  public static class BaseTypeContext extends ParserRuleContext {
+
+    public TerminalNode INT() {
+      return getToken(WaccParser.INT, 0);
+    }
+
+    public TerminalNode BOOL() {
+      return getToken(WaccParser.BOOL, 0);
+    }
+
+    public TerminalNode CHAR() {
+      return getToken(WaccParser.CHAR, 0);
+    }
+
+    public TerminalNode STRING() {
+      return getToken(WaccParser.STRING, 0);
+    }
+
+    public BaseTypeContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
+    }
+
+    @Override
+    public int getRuleIndex() {
+      return RULE_baseType; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitBaseType(this);
@@ -1604,9 +1637,8 @@ public class WaccParser extends Parser {
             != 0))) {
           _errHandler.recoverInline(this);
         } else {
-          if (_input.LA(1) == Token.EOF) {
+          if (_input.LA(1) == Token.EOF)
             matchedEOF = true;
-          }
           _errHandler.reportMatch(this);
           consume();
         }
@@ -1621,26 +1653,50 @@ public class WaccParser extends Parser {
     return _localctx;
   }
 
-	public static class ArrayTypeContext extends ParserRuleContext {
-		public BaseTypeContext baseType() {
-			return getRuleContext(BaseTypeContext.class,0);
-		}
-		public PairTypeContext pairType() {
-			return getRuleContext(PairTypeContext.class,0);
-		}
-		public StructTypeContext structType() {
-			return getRuleContext(StructTypeContext.class,0);
-		}
-		public List<TerminalNode> L_SQUARE() { return getTokens(WaccParser.L_SQUARE); }
-		public TerminalNode L_SQUARE(int i) {
-			return getToken(WaccParser.L_SQUARE, i);
-		}
-		public List<TerminalNode> R_SQUARE() { return getTokens(WaccParser.R_SQUARE); }
-		public TerminalNode R_SQUARE(int i) {
-			return getToken(WaccParser.R_SQUARE, i);
-		}
-		public ArrayTypeContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
+  public static class ArrayTypeContext extends ParserRuleContext {
+
+    public BaseTypeContext baseType() {
+      return getRuleContext(BaseTypeContext.class, 0);
+    }
+
+    public PairTypeContext pairType() {
+      return getRuleContext(PairTypeContext.class, 0);
+    }
+
+    public StructTypeContext structType() {
+      return getRuleContext(StructTypeContext.class, 0);
+    }
+
+    public TerminalNode L_PAREN() {
+      return getToken(WaccParser.L_PAREN, 0);
+    }
+
+    public PointerTypeContext pointerType() {
+      return getRuleContext(PointerTypeContext.class, 0);
+    }
+
+    public TerminalNode R_PAREN() {
+      return getToken(WaccParser.R_PAREN, 0);
+    }
+
+    public List<TerminalNode> L_SQUARE() {
+      return getTokens(WaccParser.L_SQUARE);
+    }
+
+    public TerminalNode L_SQUARE(int i) {
+      return getToken(WaccParser.L_SQUARE, i);
+    }
+
+    public List<TerminalNode> R_SQUARE() {
+      return getTokens(WaccParser.R_SQUARE);
+    }
+
+    public TerminalNode R_SQUARE(int i) {
+      return getToken(WaccParser.R_SQUARE, i);
+    }
+
+    public ArrayTypeContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arrayType; }
 		@Override
@@ -1657,7 +1713,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(245);
+        setState(249);
         _errHandler.sync(this);
         switch (_input.LA(1)) {
           case INT:
@@ -1678,22 +1734,31 @@ public class WaccParser extends Parser {
             structType();
           }
           break;
+          case L_PAREN: {
+            setState(245);
+            match(L_PAREN);
+            setState(246);
+            pointerType();
+            setState(247);
+            match(R_PAREN);
+          }
+          break;
           default:
             throw new NoViableAltException(this);
         }
-        setState(249);
+        setState(253);
         _errHandler.sync(this);
         _la = _input.LA(1);
         do {
           {
             {
-              setState(247);
+              setState(251);
               match(L_SQUARE);
-              setState(248);
+              setState(252);
               match(R_SQUARE);
             }
           }
-          setState(251);
+          setState(255);
           _errHandler.sync(this);
           _la = _input.LA(1);
         } while (_la == L_SQUARE);
@@ -1736,17 +1801,17 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(253);
-        match(PAIR);
-        setState(254);
-        match(L_PAREN);
-        setState(255);
-        pairElemType();
-        setState(256);
-        match(COMMA);
         setState(257);
-        pairElemType();
+        match(PAIR);
         setState(258);
+        match(L_PAREN);
+        setState(259);
+        pairElemType();
+        setState(260);
+        match(COMMA);
+        setState(261);
+        pairElemType();
+        setState(262);
         match(R_PAREN);
       }
     } catch (RecognitionException re) {
@@ -1785,34 +1850,34 @@ public class WaccParser extends Parser {
     PairElemTypeContext _localctx = new PairElemTypeContext(_ctx, getState());
     enterRule(_localctx, 36, RULE_pairElemType);
     try {
-      setState(264);
+      setState(268);
       _errHandler.sync(this);
       switch (getInterpreter().adaptivePredict(_input, 16, _ctx)) {
         case 1:
           enterOuterAlt(_localctx, 1);
         {
-          setState(260);
+          setState(264);
           baseType();
         }
         break;
         case 2:
           enterOuterAlt(_localctx, 2);
         {
-          setState(261);
+          setState(265);
           arrayType();
         }
         break;
         case 3:
           enterOuterAlt(_localctx, 3);
         {
-          setState(262);
+          setState(266);
           pairType();
         }
         break;
         case 4:
           enterOuterAlt(_localctx, 4);
         {
-          setState(263);
+          setState(267);
           match(PAIR);
         }
         break;
@@ -1833,8 +1898,24 @@ public class WaccParser extends Parser {
       return getRuleContext(BaseTypeContext.class, 0);
     }
 
-    public TerminalNode MULT() {
-      return getToken(WaccParser.MULT, 0);
+    public PairTypeContext pairType() {
+      return getRuleContext(PairTypeContext.class, 0);
+    }
+
+    public ArrayTypeContext arrayType() {
+      return getRuleContext(ArrayTypeContext.class, 0);
+    }
+
+    public StructTypeContext structType() {
+      return getRuleContext(StructTypeContext.class, 0);
+    }
+
+    public List<TerminalNode> MULT() {
+      return getTokens(WaccParser.MULT);
+    }
+
+    public TerminalNode MULT(int i) {
+      return getToken(WaccParser.MULT, i);
     }
 
     public PointerTypeContext(ParserRuleContext parent, int invokingState) {
@@ -1856,16 +1937,51 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final PointerTypeContext pointerType() throws RecognitionException {
+  public final PointerTypeContext pointerType() throws RecognitionException {
     PointerTypeContext _localctx = new PointerTypeContext(_ctx, getState());
     enterRule(_localctx, 38, RULE_pointerType);
+    int _la;
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(266);
-        baseType();
-        setState(267);
-        match(MULT);
+        setState(274);
+        _errHandler.sync(this);
+        switch (getInterpreter().adaptivePredict(_input, 17, _ctx)) {
+          case 1: {
+            setState(270);
+            baseType();
+          }
+          break;
+          case 2: {
+            setState(271);
+            pairType();
+          }
+          break;
+          case 3: {
+            setState(272);
+            arrayType();
+          }
+          break;
+          case 4: {
+            setState(273);
+            structType();
+          }
+          break;
+        }
+        setState(277);
+        _errHandler.sync(this);
+        _la = _input.LA(1);
+        do {
+          {
+            {
+              setState(276);
+              match(MULT);
+            }
+          }
+          setState(279);
+          _errHandler.sync(this);
+          _la = _input.LA(1);
+        } while (_la == MULT);
       }
     } catch (RecognitionException re) {
       _localctx.exception = re;
@@ -1896,7 +2012,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(269);
+        setState(281);
         match(VAR);
       }
     } catch (RecognitionException re) {
@@ -1936,17 +2052,17 @@ public class WaccParser extends Parser {
         return visitor.visitChildren(this);
       }
     }
-	}
+  }
 
-	public final StructTypeContext structType() throws RecognitionException {
+  public final StructTypeContext structType() throws RecognitionException {
     StructTypeContext _localctx = new StructTypeContext(_ctx, getState());
     enterRule(_localctx, 42, RULE_structType);
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(271);
+        setState(283);
         match(STRUCT);
-        setState(272);
+        setState(284);
         capitalisedIdent();
       }
     } catch (RecognitionException re) {
@@ -2157,15 +2273,15 @@ public class WaccParser extends Parser {
       int _alt;
       enterOuterAlt(_localctx, 1);
       {
-        setState(290);
+        setState(302);
         _errHandler.sync(this);
-        switch (getInterpreter().adaptivePredict(_input, 17, _ctx)) {
+        switch (getInterpreter().adaptivePredict(_input, 19, _ctx)) {
           case 1: {
             _localctx = new SingletonExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
 
-            setState(275);
+            setState(287);
             intLiter();
           }
           break;
@@ -2173,7 +2289,7 @@ public class WaccParser extends Parser {
             _localctx = new SingletonExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(276);
+            setState(288);
             boolLiter();
           }
           break;
@@ -2181,7 +2297,7 @@ public class WaccParser extends Parser {
             _localctx = new SingletonExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(277);
+            setState(289);
             charLiter();
           }
           break;
@@ -2189,7 +2305,7 @@ public class WaccParser extends Parser {
             _localctx = new SingletonExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(278);
+            setState(290);
             strLiter();
           }
           break;
@@ -2197,7 +2313,7 @@ public class WaccParser extends Parser {
             _localctx = new SingletonExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(279);
+            setState(291);
             pairLiter();
           }
           break;
@@ -2205,7 +2321,7 @@ public class WaccParser extends Parser {
             _localctx = new SingletonExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(280);
+            setState(292);
             ident();
           }
           break;
@@ -2213,7 +2329,7 @@ public class WaccParser extends Parser {
             _localctx = new SingletonExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(281);
+            setState(293);
             arrayElem();
           }
           break;
@@ -2221,9 +2337,9 @@ public class WaccParser extends Parser {
             _localctx = new UnopExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(282);
+            setState(294);
             unop();
-            setState(283);
+            setState(295);
             expr(3);
           }
           break;
@@ -2231,7 +2347,7 @@ public class WaccParser extends Parser {
             _localctx = new StructAccessExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(285);
+            setState(297);
             structAccess();
           }
           break;
@@ -2239,19 +2355,19 @@ public class WaccParser extends Parser {
             _localctx = new ParenExprContext(_localctx);
             _ctx = _localctx;
             _prevctx = _localctx;
-            setState(286);
+            setState(298);
             match(L_PAREN);
-            setState(287);
+            setState(299);
             expr(0);
-            setState(288);
+            setState(300);
             match(R_PAREN);
           }
           break;
         }
         _ctx.stop = _input.LT(-1);
-        setState(318);
+        setState(330);
         _errHandler.sync(this);
-        _alt = getInterpreter().adaptivePredict(_input, 19, _ctx);
+        _alt = getInterpreter().adaptivePredict(_input, 21, _ctx);
         while (_alt != 2 && _alt != org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER) {
           if (_alt == 1) {
             if (_parseListeners != null) {
@@ -2259,93 +2375,93 @@ public class WaccParser extends Parser {
             }
             _prevctx = _localctx;
             {
-              setState(316);
+              setState(328);
               _errHandler.sync(this);
-              switch (getInterpreter().adaptivePredict(_input, 18, _ctx)) {
+              switch (getInterpreter().adaptivePredict(_input, 20, _ctx)) {
                 case 1: {
                   _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
                   pushNewRecursionContext(_localctx, _startState, RULE_expr);
-                  setState(292);
+                  setState(304);
                   if (!(precpred(_ctx, 16))) {
                     throw new FailedPredicateException(this, "precpred(_ctx, 16)");
                   }
-                  setState(293);
+                  setState(305);
                   binop1();
-                  setState(294);
+                  setState(306);
                   expr(17);
                 }
                 break;
                 case 2: {
                   _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
                   pushNewRecursionContext(_localctx, _startState, RULE_expr);
-                  setState(296);
+                  setState(308);
                   if (!(precpred(_ctx, 15))) {
                     throw new FailedPredicateException(this, "precpred(_ctx, 15)");
                   }
-                  setState(297);
+                  setState(309);
                   binop2();
-                  setState(298);
+                  setState(310);
                   expr(16);
                 }
                 break;
                 case 3: {
                   _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
                   pushNewRecursionContext(_localctx, _startState, RULE_expr);
-                  setState(300);
+                  setState(312);
                   if (!(precpred(_ctx, 14))) {
                     throw new FailedPredicateException(this, "precpred(_ctx, 14)");
                   }
-                  setState(301);
+                  setState(313);
                   binop3();
-                  setState(302);
+                  setState(314);
                   expr(15);
                 }
                 break;
                 case 4: {
                   _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
                   pushNewRecursionContext(_localctx, _startState, RULE_expr);
-                  setState(304);
+                  setState(316);
                   if (!(precpred(_ctx, 13))) {
                     throw new FailedPredicateException(this, "precpred(_ctx, 13)");
                   }
-                  setState(305);
+                  setState(317);
                   binop4();
-                  setState(306);
+                  setState(318);
                   expr(14);
                 }
                 break;
                 case 5: {
                   _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
                   pushNewRecursionContext(_localctx, _startState, RULE_expr);
-                  setState(308);
+                  setState(320);
                   if (!(precpred(_ctx, 12))) {
                     throw new FailedPredicateException(this, "precpred(_ctx, 12)");
                   }
-                  setState(309);
+                  setState(321);
                   binop5();
-                  setState(310);
+                  setState(322);
                   expr(13);
                 }
                 break;
                 case 6: {
                   _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
                   pushNewRecursionContext(_localctx, _startState, RULE_expr);
-                  setState(312);
+                  setState(324);
                   if (!(precpred(_ctx, 11))) {
                     throw new FailedPredicateException(this, "precpred(_ctx, 11)");
                   }
-                  setState(313);
+                  setState(325);
                   binop6();
-                  setState(314);
+                  setState(326);
                   expr(12);
                 }
                 break;
               }
             }
           }
-          setState(320);
+          setState(332);
           _errHandler.sync(this);
-          _alt = getInterpreter().adaptivePredict(_input, 19, _ctx);
+          _alt = getInterpreter().adaptivePredict(_input, 21, _ctx);
         }
       }
 		}
@@ -2386,7 +2502,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(321);
+        setState(333);
         _la = _input.LA(1);
         if (!((((_la) & ~0x3f) == 0 &&
             ((1L << _la) & ((1L << NOT) | (1L << LEN) | (1L << ORD) | (1L << CHR) | (1L << REF) | (
@@ -2432,7 +2548,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(323);
+        setState(335);
         _la = _input.LA(1);
         if (!((((_la) & ~0x3f) == 0
             && ((1L << _la) & ((1L << MULT) | (1L << DIV) | (1L << MOD))) != 0))) {
@@ -2476,7 +2592,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(325);
+        setState(337);
         _la = _input.LA(1);
         if (!(_la == PLUS || _la == MINUS)) {
           _errHandler.recoverInline(this);
@@ -2521,7 +2637,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(327);
+        setState(339);
         _la = _input.LA(1);
         if (!((((_la) & ~0x3f) == 0
             && ((1L << _la) & ((1L << GTE) | (1L << GT) | (1L << LTE) | (1L << LT))) != 0))) {
@@ -2565,7 +2681,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(329);
+        setState(341);
         _la = _input.LA(1);
         if (!(_la == EQ || _la == NEQ)) {
           _errHandler.recoverInline(this);
@@ -2606,7 +2722,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(331);
+        setState(343);
         match(AND);
       }
     } catch (RecognitionException re) {
@@ -2638,7 +2754,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(333);
+        setState(345);
         match(OR);
       }
     } catch (RecognitionException re) {
@@ -2687,20 +2803,20 @@ public class WaccParser extends Parser {
       int _alt;
       enterOuterAlt(_localctx, 1);
       {
-        setState(335);
+        setState(347);
         ident();
-        setState(340);
+        setState(352);
         _errHandler.sync(this);
         _alt = 1;
         do {
           switch (_alt) {
             case 1: {
               {
-                setState(336);
+                setState(348);
                 match(L_SQUARE);
-                setState(337);
+                setState(349);
                 expr(0);
-                setState(338);
+                setState(350);
                 match(R_SQUARE);
               }
             }
@@ -2708,9 +2824,9 @@ public class WaccParser extends Parser {
             default:
               throw new NoViableAltException(this);
           }
-          setState(342);
+          setState(354);
           _errHandler.sync(this);
-          _alt = getInterpreter().adaptivePredict(_input, 20, _ctx);
+          _alt = getInterpreter().adaptivePredict(_input, 22, _ctx);
         } while (_alt != 2 && _alt != org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER);
       }
     } catch (RecognitionException re) {
@@ -2745,12 +2861,12 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(345);
+        setState(357);
         _errHandler.sync(this);
         _la = _input.LA(1);
         if (_la == PLUS || _la == MINUS) {
           {
-            setState(344);
+            setState(356);
             _la = _input.LA(1);
             if (!(_la == PLUS || _la == MINUS)) {
               _errHandler.recoverInline(this);
@@ -2764,7 +2880,7 @@ public class WaccParser extends Parser {
           }
         }
 
-        setState(347);
+        setState(359);
         match(NUMBER);
       }
     } catch (RecognitionException re) {
@@ -2798,7 +2914,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(349);
+        setState(361);
         _la = _input.LA(1);
         if (!(_la == TRUE || _la == FALSE)) {
           _errHandler.recoverInline(this);
@@ -2839,7 +2955,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(351);
+        setState(363);
         match(STR_LITER);
       }
     } catch (RecognitionException re) {
@@ -2871,7 +2987,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(353);
+        setState(365);
         match(CHAR_LITER);
       }
     } catch (RecognitionException re) {
@@ -2915,9 +3031,9 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(355);
+        setState(367);
         match(L_SQUARE);
-        setState(364);
+        setState(376);
         _errHandler.sync(this);
         _la = _input.LA(1);
         if (((((_la - 18)) & ~0x3f) == 0 &&
@@ -2928,28 +3044,28 @@ public class WaccParser extends Parser {
                 - 18)) | (1L << (IDENT - 18)) | (1L << (STR_LITER - 18)) | (1L << (CHAR_LITER
                 - 18)))) != 0)) {
           {
-            setState(356);
+            setState(368);
             expr(0);
-            setState(361);
+            setState(373);
             _errHandler.sync(this);
             _la = _input.LA(1);
             while (_la == COMMA) {
               {
                 {
-                  setState(357);
+                  setState(369);
                   match(COMMA);
-                  setState(358);
+                  setState(370);
                   expr(0);
                 }
               }
-              setState(363);
+              setState(375);
               _errHandler.sync(this);
               _la = _input.LA(1);
             }
           }
         }
 
-        setState(366);
+        setState(378);
         match(R_SQUARE);
       }
     } catch (RecognitionException re) {
@@ -2981,7 +3097,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(368);
+        setState(380);
         match(NULL);
       }
     } catch (RecognitionException re) {
@@ -3030,7 +3146,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(370);
+        setState(382);
         _la = _input.LA(1);
         if (!(_la == CAPTIALISED_IDENT || _la == IDENT)) {
           _errHandler.recoverInline(this);
@@ -3083,7 +3199,7 @@ public class WaccParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(372);
+        setState(384);
         match(CAPTIALISED_IDENT);
       }
     } catch (RecognitionException re) {
@@ -3105,14 +3221,16 @@ public class WaccParser extends Parser {
     }
     return true;
   }
-	private boolean stat_sempred(StatContext _localctx, int predIndex) {
-		switch (predIndex) {
-		case 0:
-			return precpred(_ctx, 1);
-		}
-		return true;
-	}
-	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
+
+  private boolean stat_sempred(StatContext _localctx, int predIndex) {
+    switch (predIndex) {
+      case 0:
+        return precpred(_ctx, 1);
+    }
+    return true;
+  }
+
+  private boolean expr_sempred(ExprContext _localctx, int predIndex) {
     switch (predIndex) {
       case 1:
         return precpred(_ctx, 16);
@@ -3131,7 +3249,7 @@ public class WaccParser extends Parser {
   }
 
   public static final String _serializedATN =
-      "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3F\u0179\4\2\t\2\4" +
+      "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3F\u0185\4\2\t\2\4" +
           "\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t" +
           "\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22" +
           "\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31" +
@@ -3148,27 +3266,28 @@ public class WaccParser extends Parser {
           "\n\u00d0\13\n\3\n\3\n\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\r\3\r\3\r\7\r\u00de" +
           "\n\r\f\r\16\r\u00e1\13\r\3\16\3\16\3\16\3\16\5\16\u00e7\n\16\3\17\3\17" +
           "\3\17\3\20\3\20\3\20\3\20\3\20\5\20\u00f1\n\20\3\21\3\21\3\22\3\22\3\22" +
-          "\5\22\u00f8\n\22\3\22\3\22\6\22\u00fc\n\22\r\22\16\22\u00fd\3\23\3\23" +
-          "\3\23\3\23\3\23\3\23\3\23\3\24\3\24\3\24\3\24\5\24\u010b\n\24\3\25\3\25" +
-          "\3\25\3\26\3\26\3\27\3\27\3\27\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30" +
-          "\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\5\30\u0125\n\30\3\30\3\30\3\30" +
+          "\3\22\3\22\3\22\3\22\5\22\u00fc\n\22\3\22\3\22\6\22\u0100\n\22\r\22\16" +
+          "\22\u0101\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\24\3\24\3\24\3\24\5\24" +
+          "\u010f\n\24\3\25\3\25\3\25\3\25\5\25\u0115\n\25\3\25\6\25\u0118\n\25\r" +
+          "\25\16\25\u0119\3\26\3\26\3\27\3\27\3\27\3\30\3\30\3\30\3\30\3\30\3\30" +
+          "\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\5\30\u0131\n\30\3\30" +
           "\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30" +
-          "\3\30\3\30\3\30\3\30\3\30\3\30\3\30\7\30\u013f\n\30\f\30\16\30\u0142\13" +
-          "\30\3\31\3\31\3\32\3\32\3\33\3\33\3\34\3\34\3\35\3\35\3\36\3\36\3\37\3" +
-          "\37\3 \3 \3 \3 \3 \6 \u0157\n \r \16 \u0158\3!\5!\u015c\n!\3!\3!\3\"\3" +
-          "\"\3#\3#\3$\3$\3%\3%\3%\3%\7%\u016a\n%\f%\16%\u016d\13%\5%\u016f\n%\3" +
-          "%\3%\3&\3&\3\'\3\'\3(\3(\3(\2\4\n.)\2\4\6\b\n\f\16\20\22\24\26\30\32\34" +
-          "\36 \"$&(*,.\60\62\64\668:<>@BDFHJLN\2\13\3\2\b\f\3\2!$\4\2&*,-\3\2-/" +
-          "\3\2+,\3\2\60\63\3\2\64\65\3\2\37 \3\2?@\2\u0189\2P\3\2\2\2\4[\3\2\2\2" +
-          "\6f\3\2\2\2\bn\3\2\2\2\n\u0096\3\2\2\2\f\u00a5\3\2\2\2\16\u00ba\3\2\2" +
-          "\2\20\u00bc\3\2\2\2\22\u00c8\3\2\2\2\24\u00d3\3\2\2\2\26\u00d6\3\2\2\2" +
-          "\30\u00da\3\2\2\2\32\u00e6\3\2\2\2\34\u00e8\3\2\2\2\36\u00f0\3\2\2\2 " +
-          "\u00f2\3\2\2\2\"\u00f7\3\2\2\2$\u00ff\3\2\2\2&\u010a\3\2\2\2(\u010c\3" +
-          "\2\2\2*\u010f\3\2\2\2,\u0111\3\2\2\2.\u0124\3\2\2\2\60\u0143\3\2\2\2\62" +
-          "\u0145\3\2\2\2\64\u0147\3\2\2\2\66\u0149\3\2\2\28\u014b\3\2\2\2:\u014d" +
-          "\3\2\2\2<\u014f\3\2\2\2>\u0151\3\2\2\2@\u015b\3\2\2\2B\u015f\3\2\2\2D" +
-          "\u0161\3\2\2\2F\u0163\3\2\2\2H\u0165\3\2\2\2J\u0172\3\2\2\2L\u0174\3\2" +
-          "\2\2N\u0176\3\2\2\2PT\7\3\2\2QS\5\4\3\2RQ\3\2\2\2SV\3\2\2\2TR\3\2\2\2" +
+          "\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\30\7\30\u014b\n\30\f\30\16" +
+          "\30\u014e\13\30\3\31\3\31\3\32\3\32\3\33\3\33\3\34\3\34\3\35\3\35\3\36" +
+          "\3\36\3\37\3\37\3 \3 \3 \3 \3 \6 \u0163\n \r \16 \u0164\3!\5!\u0168\n" +
+          "!\3!\3!\3\"\3\"\3#\3#\3$\3$\3%\3%\3%\3%\7%\u0176\n%\f%\16%\u0179\13%\5" +
+          "%\u017b\n%\3%\3%\3&\3&\3\'\3\'\3(\3(\3(\2\4\n.)\2\4\6\b\n\f\16\20\22\24" +
+          "\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDFHJLN\2\13\3\2\b\f\3\2!$\4" +
+          "\2&*,-\3\2-/\3\2+,\3\2\60\63\3\2\64\65\3\2\37 \3\2?@\2\u019a\2P\3\2\2" +
+          "\2\4[\3\2\2\2\6f\3\2\2\2\bn\3\2\2\2\n\u0096\3\2\2\2\f\u00a5\3\2\2\2\16" +
+          "\u00ba\3\2\2\2\20\u00bc\3\2\2\2\22\u00c8\3\2\2\2\24\u00d3\3\2\2\2\26\u00d6" +
+          "\3\2\2\2\30\u00da\3\2\2\2\32\u00e6\3\2\2\2\34\u00e8\3\2\2\2\36\u00f0\3" +
+          "\2\2\2 \u00f2\3\2\2\2\"\u00fb\3\2\2\2$\u0103\3\2\2\2&\u010e\3\2\2\2(\u0114" +
+          "\3\2\2\2*\u011b\3\2\2\2,\u011d\3\2\2\2.\u0130\3\2\2\2\60\u014f\3\2\2\2" +
+          "\62\u0151\3\2\2\2\64\u0153\3\2\2\2\66\u0155\3\2\2\28\u0157\3\2\2\2:\u0159" +
+          "\3\2\2\2<\u015b\3\2\2\2>\u015d\3\2\2\2@\u0167\3\2\2\2B\u016b\3\2\2\2D" +
+          "\u016d\3\2\2\2F\u016f\3\2\2\2H\u0171\3\2\2\2J\u017e\3\2\2\2L\u0180\3\2" +
+          "\2\2N\u0182\3\2\2\2PT\7\3\2\2QS\5\4\3\2RQ\3\2\2\2SV\3\2\2\2TR\3\2\2\2" +
           "TU\3\2\2\2UW\3\2\2\2VT\3\2\2\2WX\5\n\6\2XY\7\4\2\2YZ\7\2\2\3Z\3\3\2\2" +
           "\2[\\\5\36\20\2\\]\5L\'\2]_\78\2\2^`\5\6\4\2_^\3\2\2\2_`\3\2\2\2`a\3\2" +
           "\2\2ab\79\2\2bc\7\5\2\2cd\5\n\6\2de\7\4\2\2e\5\3\2\2\2fk\5\b\5\2gh\7\31" +
@@ -3215,52 +3334,57 @@ public class WaccParser extends Parser {
           "L\'\2\u00ea\35\3\2\2\2\u00eb\u00f1\5 \21\2\u00ec\u00f1\5$\23\2\u00ed\u00f1" +
           "\5\"\22\2\u00ee\u00f1\5,\27\2\u00ef\u00f1\5(\25\2\u00f0\u00eb\3\2\2\2" +
           "\u00f0\u00ec\3\2\2\2\u00f0\u00ed\3\2\2\2\u00f0\u00ee\3\2\2\2\u00f0\u00ef" +
-          "\3\2\2\2\u00f1\37\3\2\2\2\u00f2\u00f3\t\3\2\2\u00f3!\3\2\2\2\u00f4\u00f8" +
-          "\5 \21\2\u00f5\u00f8\5$\23\2\u00f6\u00f8\5,\27\2\u00f7\u00f4\3\2\2\2\u00f7" +
-          "\u00f5\3\2\2\2\u00f7\u00f6\3\2\2\2\u00f8\u00fb\3\2\2\2\u00f9\u00fa\7:" +
-          "\2\2\u00fa\u00fc\7;\2\2\u00fb\u00f9\3\2\2\2\u00fc\u00fd\3\2\2\2\u00fd" +
-          "\u00fb\3\2\2\2\u00fd\u00fe\3\2\2\2\u00fe#\3\2\2\2\u00ff\u0100\7\36\2\2" +
-          "\u0100\u0101\78\2\2\u0101\u0102\5&\24\2\u0102\u0103\7\31\2\2\u0103\u0104" +
-          "\5&\24\2\u0104\u0105\79\2\2\u0105%\3\2\2\2\u0106\u010b\5 \21\2\u0107\u010b" +
-          "\5\"\22\2\u0108\u010b\5$\23\2\u0109\u010b\7\36\2\2\u010a\u0106\3\2\2\2" +
-          "\u010a\u0107\3\2\2\2\u010a\u0108\3\2\2\2\u010a\u0109\3\2\2\2\u010b\'\3" +
-          "\2\2\2\u010c\u010d\5 \21\2\u010d\u010e\7-\2\2\u010e)\3\2\2\2\u010f\u0110" +
-          "\7%\2\2\u0110+\3\2\2\2\u0111\u0112\7\25\2\2\u0112\u0113\5N(\2\u0113-\3" +
-          "\2\2\2\u0114\u0115\b\30\1\2\u0115\u0125\5@!\2\u0116\u0125\5B\"\2\u0117" +
-          "\u0125\5F$\2\u0118\u0125\5D#\2\u0119\u0125\5J&\2\u011a\u0125\5L\'\2\u011b" +
-          "\u0125\5> \2\u011c\u011d\5\60\31\2\u011d\u011e\5.\30\5\u011e\u0125\3\2" +
-          "\2\2\u011f\u0125\5\26\f\2\u0120\u0121\78\2\2\u0121\u0122\5.\30\2\u0122" +
-          "\u0123\79\2\2\u0123\u0125\3\2\2\2\u0124\u0114\3\2\2\2\u0124\u0116\3\2" +
-          "\2\2\u0124\u0117\3\2\2\2\u0124\u0118\3\2\2\2\u0124\u0119\3\2\2\2\u0124" +
-          "\u011a\3\2\2\2\u0124\u011b\3\2\2\2\u0124\u011c\3\2\2\2\u0124\u011f\3\2" +
-          "\2\2\u0124\u0120\3\2\2\2\u0125\u0140\3\2\2\2\u0126\u0127\f\22\2\2\u0127" +
-          "\u0128\5\62\32\2\u0128\u0129\5.\30\23\u0129\u013f\3\2\2\2\u012a\u012b" +
-          "\f\21\2\2\u012b\u012c\5\64\33\2\u012c\u012d\5.\30\22\u012d\u013f\3\2\2" +
-          "\2\u012e\u012f\f\20\2\2\u012f\u0130\5\66\34\2\u0130\u0131\5.\30\21\u0131" +
-          "\u013f\3\2\2\2\u0132\u0133\f\17\2\2\u0133\u0134\58\35\2\u0134\u0135\5" +
-          ".\30\20\u0135\u013f\3\2\2\2\u0136\u0137\f\16\2\2\u0137\u0138\5:\36\2\u0138" +
-          "\u0139\5.\30\17\u0139\u013f\3\2\2\2\u013a\u013b\f\r\2\2\u013b\u013c\5" +
-          "<\37\2\u013c\u013d\5.\30\16\u013d\u013f\3\2\2\2\u013e\u0126\3\2\2\2\u013e" +
-          "\u012a\3\2\2\2\u013e\u012e\3\2\2\2\u013e\u0132\3\2\2\2\u013e\u0136\3\2" +
-          "\2\2\u013e\u013a\3\2\2\2\u013f\u0142\3\2\2\2\u0140\u013e\3\2\2\2\u0140" +
-          "\u0141\3\2\2\2\u0141/\3\2\2\2\u0142\u0140\3\2\2\2\u0143\u0144\t\4\2\2" +
-          "\u0144\61\3\2\2\2\u0145\u0146\t\5\2\2\u0146\63\3\2\2\2\u0147\u0148\t\6" +
-          "\2\2\u0148\65\3\2\2\2\u0149\u014a\t\7\2\2\u014a\67\3\2\2\2\u014b\u014c" +
-          "\t\b\2\2\u014c9\3\2\2\2\u014d\u014e\7\66\2\2\u014e;\3\2\2\2\u014f\u0150" +
-          "\7\67\2\2\u0150=\3\2\2\2\u0151\u0156\5L\'\2\u0152\u0153\7:\2\2\u0153\u0154" +
-          "\5.\30\2\u0154\u0155\7;\2\2\u0155\u0157\3\2\2\2\u0156\u0152\3\2\2\2\u0157" +
-          "\u0158\3\2\2\2\u0158\u0156\3\2\2\2\u0158\u0159\3\2\2\2\u0159?\3\2\2\2" +
-          "\u015a\u015c\t\6\2\2\u015b\u015a\3\2\2\2\u015b\u015c\3\2\2\2\u015c\u015d" +
-          "\3\2\2\2\u015d\u015e\7>\2\2\u015eA\3\2\2\2\u015f\u0160\t\t\2\2\u0160C" +
-          "\3\2\2\2\u0161\u0162\7D\2\2\u0162E\3\2\2\2\u0163\u0164\7E\2\2\u0164G\3" +
-          "\2\2\2\u0165\u016e\7:\2\2\u0166\u016b\5.\30\2\u0167\u0168\7\31\2\2\u0168" +
-          "\u016a\5.\30\2\u0169\u0167\3\2\2\2\u016a\u016d\3\2\2\2\u016b\u0169\3\2" +
-          "\2\2\u016b\u016c\3\2\2\2\u016c\u016f\3\2\2\2\u016d\u016b\3\2\2\2\u016e" +
-          "\u0166\3\2\2\2\u016e\u016f\3\2\2\2\u016f\u0170\3\2\2\2\u0170\u0171\7;" +
-          "\2\2\u0171I\3\2\2\2\u0172\u0173\7\24\2\2\u0173K\3\2\2\2\u0174\u0175\t" +
-          "\n\2\2\u0175M\3\2\2\2\u0176\u0177\7?\2\2\u0177O\3\2\2\2\32T_ku\u0096\u009d" +
-          "\u00a5\u00b5\u00ba\u00c3\u00ce\u00df\u00e6\u00f0\u00f7\u00fd\u010a\u0124" +
-          "\u013e\u0140\u0158\u015b\u016b\u016e";
+          "\3\2\2\2\u00f1\37\3\2\2\2\u00f2\u00f3\t\3\2\2\u00f3!\3\2\2\2\u00f4\u00fc" +
+          "\5 \21\2\u00f5\u00fc\5$\23\2\u00f6\u00fc\5,\27\2\u00f7\u00f8\78\2\2\u00f8" +
+          "\u00f9\5(\25\2\u00f9\u00fa\79\2\2\u00fa\u00fc\3\2\2\2\u00fb\u00f4\3\2" +
+          "\2\2\u00fb\u00f5\3\2\2\2\u00fb\u00f6\3\2\2\2\u00fb\u00f7\3\2\2\2\u00fc" +
+          "\u00ff\3\2\2\2\u00fd\u00fe\7:\2\2\u00fe\u0100\7;\2\2\u00ff\u00fd\3\2\2" +
+          "\2\u0100\u0101\3\2\2\2\u0101\u00ff\3\2\2\2\u0101\u0102\3\2\2\2\u0102#" +
+          "\3\2\2\2\u0103\u0104\7\36\2\2\u0104\u0105\78\2\2\u0105\u0106\5&\24\2\u0106" +
+          "\u0107\7\31\2\2\u0107\u0108\5&\24\2\u0108\u0109\79\2\2\u0109%\3\2\2\2" +
+          "\u010a\u010f\5 \21\2\u010b\u010f\5\"\22\2\u010c\u010f\5$\23\2\u010d\u010f" +
+          "\7\36\2\2\u010e\u010a\3\2\2\2\u010e\u010b\3\2\2\2\u010e\u010c\3\2\2\2" +
+          "\u010e\u010d\3\2\2\2\u010f\'\3\2\2\2\u0110\u0115\5 \21\2\u0111\u0115\5" +
+          "$\23\2\u0112\u0115\5\"\22\2\u0113\u0115\5,\27\2\u0114\u0110\3\2\2\2\u0114" +
+          "\u0111\3\2\2\2\u0114\u0112\3\2\2\2\u0114\u0113\3\2\2\2\u0115\u0117\3\2" +
+          "\2\2\u0116\u0118\7-\2\2\u0117\u0116\3\2\2\2\u0118\u0119\3\2\2\2\u0119" +
+          "\u0117\3\2\2\2\u0119\u011a\3\2\2\2\u011a)\3\2\2\2\u011b\u011c\7%\2\2\u011c" +
+          "+\3\2\2\2\u011d\u011e\7\25\2\2\u011e\u011f\5N(\2\u011f-\3\2\2\2\u0120" +
+          "\u0121\b\30\1\2\u0121\u0131\5@!\2\u0122\u0131\5B\"\2\u0123\u0131\5F$\2" +
+          "\u0124\u0131\5D#\2\u0125\u0131\5J&\2\u0126\u0131\5L\'\2\u0127\u0131\5" +
+          "> \2\u0128\u0129\5\60\31\2\u0129\u012a\5.\30\5\u012a\u0131\3\2\2\2\u012b" +
+          "\u0131\5\26\f\2\u012c\u012d\78\2\2\u012d\u012e\5.\30\2\u012e\u012f\79" +
+          "\2\2\u012f\u0131\3\2\2\2\u0130\u0120\3\2\2\2\u0130\u0122\3\2\2\2\u0130" +
+          "\u0123\3\2\2\2\u0130\u0124\3\2\2\2\u0130\u0125\3\2\2\2\u0130\u0126\3\2" +
+          "\2\2\u0130\u0127\3\2\2\2\u0130\u0128\3\2\2\2\u0130\u012b\3\2\2\2\u0130" +
+          "\u012c\3\2\2\2\u0131\u014c\3\2\2\2\u0132\u0133\f\22\2\2\u0133\u0134\5" +
+          "\62\32\2\u0134\u0135\5.\30\23\u0135\u014b\3\2\2\2\u0136\u0137\f\21\2\2" +
+          "\u0137\u0138\5\64\33\2\u0138\u0139\5.\30\22\u0139\u014b\3\2\2\2\u013a" +
+          "\u013b\f\20\2\2\u013b\u013c\5\66\34\2\u013c\u013d\5.\30\21\u013d\u014b" +
+          "\3\2\2\2\u013e\u013f\f\17\2\2\u013f\u0140\58\35\2\u0140\u0141\5.\30\20" +
+          "\u0141\u014b\3\2\2\2\u0142\u0143\f\16\2\2\u0143\u0144\5:\36\2\u0144\u0145" +
+          "\5.\30\17\u0145\u014b\3\2\2\2\u0146\u0147\f\r\2\2\u0147\u0148\5<\37\2" +
+          "\u0148\u0149\5.\30\16\u0149\u014b\3\2\2\2\u014a\u0132\3\2\2\2\u014a\u0136" +
+          "\3\2\2\2\u014a\u013a\3\2\2\2\u014a\u013e\3\2\2\2\u014a\u0142\3\2\2\2\u014a" +
+          "\u0146\3\2\2\2\u014b\u014e\3\2\2\2\u014c\u014a\3\2\2\2\u014c\u014d\3\2" +
+          "\2\2\u014d/\3\2\2\2\u014e\u014c\3\2\2\2\u014f\u0150\t\4\2\2\u0150\61\3" +
+          "\2\2\2\u0151\u0152\t\5\2\2\u0152\63\3\2\2\2\u0153\u0154\t\6\2\2\u0154" +
+          "\65\3\2\2\2\u0155\u0156\t\7\2\2\u0156\67\3\2\2\2\u0157\u0158\t\b\2\2\u0158" +
+          "9\3\2\2\2\u0159\u015a\7\66\2\2\u015a;\3\2\2\2\u015b\u015c\7\67\2\2\u015c" +
+          "=\3\2\2\2\u015d\u0162\5L\'\2\u015e\u015f\7:\2\2\u015f\u0160\5.\30\2\u0160" +
+          "\u0161\7;\2\2\u0161\u0163\3\2\2\2\u0162\u015e\3\2\2\2\u0163\u0164\3\2" +
+          "\2\2\u0164\u0162\3\2\2\2\u0164\u0165\3\2\2\2\u0165?\3\2\2\2\u0166\u0168" +
+          "\t\6\2\2\u0167\u0166\3\2\2\2\u0167\u0168\3\2\2\2\u0168\u0169\3\2\2\2\u0169" +
+          "\u016a\7>\2\2\u016aA\3\2\2\2\u016b\u016c\t\t\2\2\u016cC\3\2\2\2\u016d" +
+          "\u016e\7D\2\2\u016eE\3\2\2\2\u016f\u0170\7E\2\2\u0170G\3\2\2\2\u0171\u017a" +
+          "\7:\2\2\u0172\u0177\5.\30\2\u0173\u0174\7\31\2\2\u0174\u0176\5.\30\2\u0175" +
+          "\u0173\3\2\2\2\u0176\u0179\3\2\2\2\u0177\u0175\3\2\2\2\u0177\u0178\3\2" +
+          "\2\2\u0178\u017b\3\2\2\2\u0179\u0177\3\2\2\2\u017a\u0172\3\2\2\2\u017a" +
+          "\u017b\3\2\2\2\u017b\u017c\3\2\2\2\u017c\u017d\7;\2\2\u017dI\3\2\2\2\u017e" +
+          "\u017f\7\24\2\2\u017fK\3\2\2\2\u0180\u0181\t\n\2\2\u0181M\3\2\2\2\u0182" +
+          "\u0183\7?\2\2\u0183O\3\2\2\2\34T_ku\u0096\u009d\u00a5\u00b5\u00ba\u00c3" +
+          "\u00ce\u00df\u00e6\u00f0\u00fb\u0101\u010e\u0114\u0119\u0130\u014a\u014c" +
+          "\u0164\u0167\u0177\u017a";
   public static final ATN _ATN =
       new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 
