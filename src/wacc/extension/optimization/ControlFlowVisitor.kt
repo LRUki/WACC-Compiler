@@ -28,23 +28,20 @@ class ControlFlowVisitor : AstVisitor<AST> {
         val trueLiter = BoolLiterAST(true)
         val falseLiter = BoolLiterAST(false)
 
-//        val branchOfChoice =
+        val branchOfChoice = mutableListOf<StatAST>()
         /** Condition is true, then branch only */
         if (cond == trueLiter) {
-            val thenBody = mutableListOf<StatAST>()
-            ast.thenBody.forEach { thenBody.add(visit(it) as StatAST) }
+            ast.thenBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
 
-            return MultiStatAST(thenBody)
         }
         /** Condition is false, else branch only */
         if (cond == falseLiter) {
-            val elseBody = mutableListOf<StatAST>()
-            ast.elseBody.forEach { elseBody.add(visit(it) as StatAST) }
+            ast.elseBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
 
-            return MultiStatAST(elseBody)
         } else {
-            throw RuntimeException("Bool liter is neither true or false. This should not happen")
+            throw RuntimeException("If condition was neither true or false. Semantic check failed")
         }
+        return MultiStatAST(branchOfChoice)
     }
 
     override fun visitWhileStatAST(ast: WhileStatAST): AST {
