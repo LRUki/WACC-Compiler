@@ -17,18 +17,24 @@ class SemanticTest {
     @Test
     fun semanticCheckingDoesNotThrowErrorForValidPrograms() {
         actionOnFiles(File(PATH_TO_EXAMPLES + "valid/")) { file ->
-            val input = CharStreams.fromStream(file.inputStream())
-            val lexer = WaccLexer(input)
-            val tokens = CommonTokenStream(lexer)
-            val parser = WaccParser(tokens)
-            val program = parser.program()
-            try {
-                checkSemantics(buildAST(program))
-            } catch (e: SemanticException) {
-                throw Error("Semantic error on valid file: " + file.path)
+            runBlocking {
+                val input = CharStreams.fromStream(file.inputStream())
+                val lexer = WaccLexer(input)
+                val tokens = CommonTokenStream(lexer)
+                val parser = WaccParser(tokens)
+                val program = parser.program()
+                val waccFile = WaccFile(file)
+                val job = startErrorListenerWithoutExit(waccFile.syntaxErrorChannel)
+                waccFile.checkSemantics(waccFile.buildAST(program))
+                waccFile.syntaxErrorChannel.close()
+                job.join()
+                if (exitCode != 0) {
+                    throw Error("Detected error in valid file: " + file.path)
+                }
             }
         }
     }
+
 
     @Test
     fun semanticCheckingThrowsErrorForInvalidPrograms() {
@@ -40,10 +46,10 @@ class SemanticTest {
                     val tokens = CommonTokenStream(lexer)
                     val parser = WaccParser(tokens)
                     val program = parser.program()
-                    createErrorChannels()
-                    val job = startErrorListenerWithoutExit(Main.semanticErrorChannel)
-                    checkSemantics(buildAST(program))
-                    Main.semanticErrorChannel.close()
+                    val waccFile = WaccFile(file)
+                    val job = startErrorListenerWithoutExit(waccFile.semanticErrorChannel)
+                    waccFile.checkSemantics(waccFile.buildAST(program))
+                    waccFile.semanticErrorChannel.close()
                     job.join()
                     if (exitCode != 200) {
                         throw Error("failed to detect invalid file: " + file.path)
@@ -53,5 +59,6 @@ class SemanticTest {
         }
     }
 }
+
 
 

@@ -7,12 +7,12 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.junit.Test
 import wacc.Main
-import wacc.createErrorChannels
 import frontend.Utils.PATH_TO_EXAMPLES
 import frontend.Utils.PATH_TO_EXT_TESTS
 import frontend.Utils.exitCode
 import frontend.actionOnFiles
 import frontend.startErrorListenerWithoutExit
+import wacc.WaccFile
 import wacc.frontend.exception.SyntaxErrorListener
 import wacc.frontend.exception.SyntaxException
 import wacc.frontend.visitor.CheckSyntaxVisitor
@@ -30,10 +30,10 @@ class SyntaxTest {
                 val parser = WaccParser(tokens)
                 parser.removeErrorListeners()
                 parser.addErrorListener(SyntaxErrorListener())
-                createErrorChannels()
-                val job = startErrorListenerWithoutExit(Main.syntaxErrorChannel)
+                val waccFile = WaccFile(file)
+                val job = startErrorListenerWithoutExit(waccFile.syntaxErrorChannel)
                 parser.program()
-                Main.syntaxErrorChannel.close()
+                waccFile.syntaxErrorChannel.close()
                 job.join()
                 if (exitCode != 0) {
                     throw Error("Detected antlr error for valid file " + file.path)
@@ -53,11 +53,11 @@ class SyntaxTest {
                 parser.removeErrorListeners()
                 parser.addErrorListener(SyntaxErrorListener())
                 val tree = parser.program()
-                createErrorChannels()
-                val job = startErrorListenerWithoutExit(Main.syntaxErrorChannel)
+                val waccFile = WaccFile(file)
+                val job = startErrorListenerWithoutExit(waccFile.syntaxErrorChannel)
                 val checkSyntaxVisitor = CheckSyntaxVisitor()
                 checkSyntaxVisitor.visit(tree)
-                Main.syntaxErrorChannel.close()
+                waccFile.syntaxErrorChannel.close()
                 job.join()
                 if (exitCode != 0) {
                     throw Error("Detected error for valid file " + file.path)
@@ -77,12 +77,12 @@ class SyntaxTest {
                 val parser = WaccParser(tokens)
                 parser.removeErrorListeners()
                 parser.addErrorListener(SyntaxErrorListener())
-                createErrorChannels()
-                val job = startErrorListenerWithoutExit(Main.syntaxErrorChannel)
+                val waccFile = WaccFile(file)
+                val job = startErrorListenerWithoutExit(waccFile.syntaxErrorChannel)
                 val tree = parser.program()
                 val checkSyntaxVisitor = CheckSyntaxVisitor()
                 checkSyntaxVisitor.visit(tree)
-                Main.syntaxErrorChannel.close()
+                waccFile.syntaxErrorChannel.close()
                 job.join()
                 if (exitCode != 100) {
                     throw Error("failed to detect invalid file: " + file.path)

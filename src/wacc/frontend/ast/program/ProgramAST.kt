@@ -21,6 +21,7 @@ class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val fun
             if (!it.check(table)) {
                 return false
             }
+            symTable.mergeFuncsWithTable(it.progAST.symTable)
         }
         funcList.forEach { it.checkNameAndAddToST(table) }
         /* Checks all the struct declarations so they can used inside functions */

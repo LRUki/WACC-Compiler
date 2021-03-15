@@ -1,7 +1,7 @@
 package wacc.frontend.ast.program
 
 import wacc.Main
-import wacc.frontend
+import wacc.WaccFile
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
@@ -29,14 +29,19 @@ class ImportAST(val ident: IdentAST) : AbstractAST() {
             return false
         }
         //check that the file exists in the provided place
-        val path = Main.currentFilePath
+        val path = Main.waccFile.currentFilePath
         inputFile = File(path, filename)
         if (!inputFile.exists()) {
             semanticError("Importing file that does not exist", ctx)
             return false
         }
         //load the imported files functions into this symbol table
-        progAST = frontend(inputFile) as ProgramAST
+        val oldWaccFile = Main.waccFile
+        val newWaccFile = WaccFile(inputFile)
+        Main.waccFile = newWaccFile
+        newWaccFile.frontend()
+        progAST = newWaccFile.ast as ProgramAST
+        Main.waccFile = oldWaccFile
         return true
     }
 
