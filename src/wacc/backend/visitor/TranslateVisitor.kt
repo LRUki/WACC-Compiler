@@ -538,10 +538,23 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Transaltes a Binary operator */
     override fun visitBinOpExprAST(ast: BinOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-        instrs.addAll(visit(ast.expr1))
-        var reg1 = seeLastUsedCalleeReg()
-        instrs.addAll(visit(ast.expr2))
-        var reg2 = seeLastUsedCalleeReg()
+        var reg1:Register
+        var reg2:Register
+        if(ast.expr1.weight() > ast.expr2.weight()){
+            instrs.addAll(visit(ast.expr1))
+            reg1 = seeLastUsedCalleeReg()
+            instrs.addAll(visit(ast.expr2))
+            reg2 = seeLastUsedCalleeReg()
+        }else{
+            instrs.addAll(visit(ast.expr2))
+            reg2 = seeLastUsedCalleeReg()
+            instrs.addAll(visit(ast.expr1))
+            reg1 = seeLastUsedCalleeReg()
+        }
+//        instrs.addAll(visit(ast.expr1))
+//        reg1 = seeLastUsedCalleeReg()
+//        instrs.addAll(visit(ast.expr2))
+//        reg2 = seeLastUsedCalleeReg()
 
         /** Decides whether to use accumulator and sets appropriate registers when required */
         var useAccumulator = false
