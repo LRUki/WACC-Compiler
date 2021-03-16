@@ -14,3 +14,13 @@ data class DirectiveInstr(val directive: String) : Instruction {
         return ".$directive".trim()
     }
 }
+
+class LTORGDirective(): Instruction {
+    override fun toArm(): String {
+        return ".ltorg"
+    }
+
+    override fun toX86(): String {
+        return ""
+    }
+}

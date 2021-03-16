@@ -93,7 +93,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         translateScoped(ast.symTable, instrs, ast.stats)
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(0), Register.R0))
         instrs.add(PopInstr(Register.PC))
-        instrs.add(DirectiveInstr("ltorg"))
+        instrs.add(LTORGDirective())
 
         /** Translates all string labels, c library functions and runtime
          * errors that have been recursively found and added */

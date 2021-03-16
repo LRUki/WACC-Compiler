@@ -10,6 +10,7 @@ import wacc.Main.waccFile
 import wacc.backend.Language
 import wacc.backend.generateCode
 import wacc.backend.printCode
+import wacc.backend.translate.instruction.Instruction
 import wacc.extension.optimization.ConstantEvaluationVisitor
 import wacc.extension.optimization.ControlFlowVisitor
 import wacc.frontend.SymbolTable

@@ -1,5 +1,6 @@
 package wacc.backend
 
+import wacc.backend.translate.instruction.DirectiveInstr
 import wacc.backend.translate.instruction.Instruction
 
 const val DOT_DATA = ".data"
