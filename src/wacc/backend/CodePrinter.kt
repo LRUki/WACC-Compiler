@@ -6,6 +6,7 @@ import wacc.backend.translate.instruction.Instruction
 const val DOT_DATA = ".data"
 const val DOT_TEXT = ".text"
 const val DOT_GLOBAL_MAIN = ".global main"
+const val MESSAGE = "msg"
 
 /**
  * Function that is called by backend function in main
@@ -53,7 +54,8 @@ fun shouldIndent(line: String): Boolean {
                 line[line.lastIndex] == ':' ||
                 line.startsWith(DOT_DATA) ||
                 line.startsWith(DOT_TEXT) ||
-                line.startsWith(DOT_GLOBAL_MAIN) -> false
+                line.startsWith(DOT_GLOBAL_MAIN) ||
+                line.startsWith(MESSAGE) -> false
         else -> true
     }
 }

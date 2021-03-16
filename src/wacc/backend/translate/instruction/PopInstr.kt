@@ -21,3 +21,16 @@ class PopInstr(val register: Register) : Instruction {
 fun regsToPopInstrs(list: List<Register>): List<PopInstr> {
     return list.map { reg -> PopInstr(reg) }
 }
+
+class EndInstr(): Instruction{
+    override fun toArm(): String {
+        return "POP {${Register.PC.toArm()}}"
+    }
+
+    override fun toX86(): String {
+        return """
+            leave
+              ret
+        """.trimIndent()
+    }
+}

@@ -36,3 +36,24 @@ class Label(label: String) : LabelInstr(label)
 
 class FunctionLabel(functionName: String) : LabelInstr("f_$functionName")
 
+class MessageLabel(val index: Int, val message: String) : LabelInstr(message) {
+    override fun toArm(): String {
+        val instrs = mutableListOf<String>()
+        instrs.add(Label("msg_$index").toArm())
+        instrs.add("\t${DirectiveInstr("word ${
+            message.length - message.filter { c -> c == '\\' }.count()
+        }").toArm()}")
+
+        instrs.add("\t${DirectiveInstr("ascii \"${message}\"").toArm()}")
+        return instrs.joinToString(separator = "\n")
+    }
+
+    override fun toX86(): String {
+        val instrs = mutableListOf<String>()
+        instrs.add(Label("msg_$index").toX86())
+        instrs.add("\t ${DirectiveInstr("string \"${message}\"").toX86()}")
+        return instrs.joinToString(separator = "\n")
+    }
+
+}
+
