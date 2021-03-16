@@ -1,5 +1,5 @@
 begin
-  for int i = 100; i <= 0; i = i - 10  do
+  for int i = 100; i >= 0; i = i - 10  do
     println i
   done
 end

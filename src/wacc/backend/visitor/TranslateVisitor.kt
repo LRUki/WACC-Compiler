@@ -245,18 +245,15 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
        /**Translates the first statement in the loop before jumping to condition*/
         val stackOffset = ast.blockST.getStackOffset()
         ast.blockST.startingOffset = stackOffset
+        if (stackOffset > 0) {
+            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+        }
         instrs.addAll(visit(ast.stat))
         instrs.add(BranchInstr(Condition.AL, condLabel, false))
 
         instrs.add(bodyLabel)
-//        if (stackOffset > 0) {
-//            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-//        }
         /** Translates all the statements within the for loop body */
         ast.body.forEach { instrs.addAll(visit(it)) }
-//        if (stackOffset > 0) {
-//            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
-//        }
         /**Translates the change in loop variable as defined in the loop*/
         instrs.addAll(visit(ast.inc))
         /** Translates the condition after the loop body.*/
@@ -264,6 +261,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.addAll(visit(ast.cond))
         instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
         instrs.add(BranchInstr(Condition.EQ, bodyLabel, false))
+        if (stackOffset > 0) {
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+        }
         freeCalleeReg()
         return instrs
     }
