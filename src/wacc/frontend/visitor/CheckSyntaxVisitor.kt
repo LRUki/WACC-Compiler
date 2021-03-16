@@ -17,10 +17,10 @@ import wacc.frontend.exception.syntaxError
  */
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
-//        if (ctx.VOID() != null) {
-//            // No need to check for return statement for void functions
-//            return null
-//        }
+        if (ctx.VOID() != null) {
+            // No need to check for return statement for void functions
+            return null
+        }
 
         //check if function ends with return or exit
         val lastStat: WaccParser.StatContext = getLastStat(ctx.stat())
