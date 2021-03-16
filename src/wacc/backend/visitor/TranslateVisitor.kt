@@ -123,10 +123,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             returnedOrExited = true
         }
         /** Returns stack pointer to value before the function */
-        if (stackOffset > 0 && !returnedOrExited) {
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+        if (!returnedOrExited) {
+            if (stackOffset > 0) {
+                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+            }
+            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
         }
-//        instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
         instrs.add(DirectiveInstr("ltorg"))
         freeAllCalleeReg()
         return instrs

@@ -110,8 +110,7 @@ begin
       print "-" ;
       i = i + 1
     done ;
-    println "" ;
-    return
+    println ""
   end
 
   void printMap(int n) is
@@ -124,8 +123,7 @@ begin
     print n ;
     print " = " ;
     print chr n ;
-    println "  |" ; 
-    return
+    println "  |"
   end
 
   println "Asci character lookup table:" ;
