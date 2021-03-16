@@ -41,6 +41,7 @@ class PairTypeAST(val type1: TypeAST, val type2: TypeAST) : TypeAST, Identifiabl
     override fun check(table: SymbolTable): Boolean {
         return type1.check(table) && type2.check(table)
     }
+
 }
 
 /**
@@ -63,6 +64,8 @@ class AnyPairTypeAST : TypeAST {
     override fun isConcreteType(parentType: TypeAST?): Boolean {
         return parentType is PairTypeAST
     }
+
+
 
     override fun hashCode(): Int {
         return javaClass.hashCode()

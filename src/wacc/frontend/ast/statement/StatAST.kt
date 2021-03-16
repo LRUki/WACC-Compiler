@@ -1,6 +1,5 @@
 package wacc.frontend.ast.statement
 
-import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AstVisitor
@@ -12,10 +11,11 @@ import wacc.frontend.ast.AstVisitor
 interface StatAST : AST
 
 class SkipStatAST : StatAST {
-
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitSkipStatAST(this)
     }
+
+
 }
 
 /**
@@ -39,4 +39,5 @@ class MultiStatAST(val stats: List<StatAST>) : StatAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitMultiStatAST(this)
     }
+
 }

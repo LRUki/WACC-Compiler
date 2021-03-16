@@ -4,7 +4,6 @@ import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
-import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
@@ -12,12 +11,13 @@ import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 import wacc.frontend.ast.type.TypeInstance.intTypeInstance
 import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.exception.semanticError
-import wacc.frontend.exception.syntaxError
 import java.util.function.BiFunction
-import java.util.function.BinaryOperator
-import java.util.function.IntBinaryOperator
 
-interface ExprAST : RhsAST
+interface ExprAST : RhsAST {
+    fun weight(): Int{
+        return 1
+    }
+}
 
 /**
  * AST node to represent an expression with a Binary Operation
@@ -27,7 +27,7 @@ interface ExprAST : RhsAST
  * @property expr2 Second Expression
  */
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
-
+    var weight = -1
     var pointerOp = false
     var shiftOffset = 0
 
@@ -100,11 +100,19 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         return visitor.visitBinOpExprAST(this)
     }
 
+    override fun weight(): Int {
+        if (weight < 0) {
+            val c1 = Math.max(expr1.weight(), expr2.weight() + 1) //if we select e1 first
+            val c2 = Math.max(expr1.weight() + 1, expr2.weight()) //if we select e2 first
+            weight = Math.min(c1, c2)
+        }
+        return weight
+    }
+
 }
 
 
-interface BinOp {
-}
+interface BinOp
 
 enum class IntBinOp : BinOp, BiFunction<Int, Int, Int> {
     PLUS {
@@ -167,7 +175,7 @@ enum class CmpBinOp : BinOp {
  * @property expr Expression to operate on
  */
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
-
+    var weight = -1
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         if (!expr.check(table)) {
@@ -235,6 +243,13 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitUnOpExprAST(this)
+    }
+
+    override fun weight(): Int {
+        if (weight < 0) {
+            weight = expr.weight()
+        }
+        return weight
     }
 }
 

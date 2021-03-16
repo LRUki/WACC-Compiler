@@ -1,5 +1,6 @@
 package wacc.backend.visitor
 
+import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.cLib
 import wacc.backend.CodeGenerator.dataDirective
 import wacc.backend.CodeGenerator.freeAllCalleeReg
@@ -583,10 +584,25 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Transaltes a Binary operator */
     override fun visitBinOpExprAST(ast: BinOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-        instrs.addAll(visit(ast.expr1))
-        var reg1 = seeLastUsedCalleeReg()
-        instrs.addAll(visit(ast.expr2))
-        var reg2 = seeLastUsedCalleeReg()
+        var reg1:Register
+        var reg2:Register
+
+        val flip = ast.expr1.weight() <= ast.expr2.weight()
+                && ast.binOp != IntBinOp.DIV && ast.binOp != IntBinOp.MOD
+        if (!flip) {
+            instrs.addAll(visit(ast.expr1))
+            reg1 = seeLastUsedCalleeReg()
+            instrs.addAll(visit(ast.expr2))
+            reg2 = seeLastUsedCalleeReg()
+        } else {
+//            if (ast.binOp == IntBinOp.DIV || ast.binOp == IntBinOp.MOD) {
+//                CodeGenerator.swapFirstTwoReg()
+//            }
+            instrs.addAll(visit(ast.expr2))
+            reg1 = seeLastUsedCalleeReg()
+            instrs.addAll(visit(ast.expr1))
+            reg2 = seeLastUsedCalleeReg()
+        }
 
         /** Decides whether to use accumulator and sets appropriate registers when required */
         var useAccumulator = false
@@ -617,19 +633,37 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 runtimeErrors.addOverflowError()
             }
             IntBinOp.MINUS -> {
-                if (!useAccumulator) {
-                    if (!ast.pointerOp) {
-                        instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                if (!flip) {
+                    if (!useAccumulator) {
+                        if (!ast.pointerOp) {
+                            instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                        } else {
+                            instrs.add(SubInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                        }
                     } else {
-                        instrs.add(SubInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                        instrs.add(PopInstr(Register.R11))
+                        if (!ast.pointerOp) {
+                            instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                        } else {
+                            instrs.add(SubInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                        }
                     }
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    if (!ast.pointerOp) {
-                        instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    if (!useAccumulator) {
+                        if (!ast.pointerOp) {
+                            instrs.add(ReverseSubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                        } else {
+                            instrs.add(ReverseSubInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                        }
                     } else {
-                        instrs.add(SubInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                        instrs.add(PopInstr(Register.R11))
+                        if (!ast.pointerOp) {
+                            instrs.add(ReverseSubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                        } else {
+                            instrs.add(ReverseSubInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                        }
                     }
+
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
@@ -698,44 +732,90 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(MoveInstr(Condition.EQ, reg1, ImmediateBoolOperand(false)))
             }
             CmpBinOp.LTE -> {
-                if (!useAccumulator) {
-                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!flip) {
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(false)))
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(false)))
                 }
-                instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(true)))
-                instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(false)))
+
             }
             CmpBinOp.LT -> {
-                if (!useAccumulator) {
-                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!flip) {
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(false)))
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(false)))
                 }
-                instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(true)))
-                instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(false)))
             }
             CmpBinOp.GTE -> {
-                if (!useAccumulator) {
-                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!flip) {
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(false)))
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(false)))
                 }
-                instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(true)))
-                instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(false)))
             }
             CmpBinOp.GT -> {
-                if (!useAccumulator) {
-                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                if (!flip) {
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(false)))
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(false)))
                 }
-                instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(true)))
-                instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(false)))
+
             }
 
             BoolBinOp.AND -> {

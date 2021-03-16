@@ -33,4 +33,5 @@ class PointerElemAST(val ident: IdentAST) : ExprAST, LhsAST, AbstractAST() {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitPointerElemAST(this)
     }
+
 }
