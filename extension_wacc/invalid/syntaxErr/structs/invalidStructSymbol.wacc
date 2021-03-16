@@ -1,0 +1,10 @@
+# Invalid struct symbol used
+
+# Output:
+# #syntax_error#
+
+# Program:
+
+begin
+  strut Person {int age; char grade;}
+end

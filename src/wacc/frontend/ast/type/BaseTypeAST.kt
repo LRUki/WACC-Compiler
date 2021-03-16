@@ -4,7 +4,7 @@ import wacc.frontend.ast.AbstractAST
 
 /**
  * AST node representing a Base Type
- * INT, CHAR, STRING, BOOL
+ * INT, CHAR, STRING, BOOLvi
  *
  * @property type Type declared by BaseType enum
  */

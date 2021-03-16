@@ -5,6 +5,7 @@ import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
+import wacc.frontend.ast.statement.nonblock.StructDeclareAST
 import wacc.frontend.ast.type.*
 import java.util.*
 import kotlin.collections.LinkedHashMap
@@ -28,6 +29,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                 }
                 is ArrayTypeAST, is PairTypeAST, is AnyPairTypeAST -> 4
                 is PointerTypeAST -> 4
+                is StructTypeAST -> 4
                 else -> 0
             }
         }
@@ -71,6 +73,16 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return value
     }
 
+    fun lookupAllInFunc(name: String): Optional<Identifiable> {
+        val value = lookup(name)
+        if (value.isEmpty) {
+            if (encSymbolTable != null) {
+                return encSymbolTable.lookupAll(name)
+            }
+        }
+        return value
+    }
+
     fun lookupFirstFunc(): Optional<FuncAST> {
         if (this is FuncSymbolTable) {
             return Optional.of(funcAST)
@@ -101,6 +113,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             }
             is ParamAST -> {
                 getBytesOfType(obj.type)
+            }
+            is StructDeclareAST -> {
+                0
             }
             else -> 0
         }
@@ -203,6 +218,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         /** Computes offset being the summed offset of remaining symbol table entries
          * For parameters it is the sum of entries up till that point */
         for ((k, v) in currSymbolTable) {
+            if (v.first is StructDeclareAST) {
+                continue
+            }
             if (k == ident && v.first is ParamAST) {
                 return paramOffset + pointerOffset
             }
@@ -286,6 +304,14 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
      */
     fun getSTWithIdentifier(ident: String, correctType: TypeAST): Pair<SymbolTable, Int> {
         return findSTWithIdentifier(ident, correctType, 0)
+    }
+
+    fun mergeFuncsWithTable(importedST: SymbolTable) {
+        for (entry in importedST.currSymbolTable) {
+            if (entry.value.first is FuncAST && !currSymbolTable.containsKey(entry.key)) {
+                add(entry.key, entry.value.first)
+            }
+        }
     }
 
 }

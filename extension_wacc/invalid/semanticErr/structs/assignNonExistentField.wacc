@@ -1,0 +1,12 @@
+# attempt to assign a non existent struct field
+
+# Output:
+#
+
+# Program:
+
+begin
+  struct Person {int age; char grade;};
+  struct Person mary = {20, 'a'};
+  mary.height = 160
+end

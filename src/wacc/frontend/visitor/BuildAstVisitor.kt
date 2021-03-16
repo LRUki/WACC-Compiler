@@ -2,6 +2,7 @@ package wacc.frontend.visitor
 
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
+import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.*
@@ -11,6 +12,7 @@ import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.pointer.PointerElemAST
+import wacc.frontend.ast.program.ImportAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -24,17 +26,23 @@ import wacc.frontend.ast.type.*
 class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitProgram(ctx: WaccParser.ProgramContext): AST {
-        var funcList = emptyList<FuncAST>()
+        val funcList = mutableListOf<FuncAST>()
         for (func in ctx.func()) { // Read all func, skip "begin", "end" and EOF
-            funcList = funcList + visit(func) as FuncAST
+            funcList += visit(func) as FuncAST
         }
 
         val stat = visit(ctx.stat()) as StatAST
 
-        val programAST = ProgramAST(funcList, statToList(stat))
+        val importList = mutableListOf<ImportAST>()
+        for (import in ctx.importStat()) {
+            importList += visit(import) as ImportAST
+        }
+
+        val programAST = ProgramAST(importList, statToList(stat), funcList)
         programAST.ctx = ctx
         return programAST
     }
+
 
     override fun visitFunc(ctx: WaccParser.FuncContext): AST {
         val paramList = emptyList<ParamAST>().toMutableList()
@@ -54,6 +62,14 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitParam(ctx: WaccParser.ParamContext): AST {
         return ParamAST(visit(ctx.type()) as TypeAST, visit(ctx.ident()) as IdentAST)
+    }
+
+    override fun visitImportStat(ctx: WaccParser.ImportStatContext): AST {
+        val filename = visit(ctx.ident(0)) as IdentAST
+        val extension = visit(ctx.ident(1)) as IdentAST
+        val importAst = ImportAST(IdentAST("${filename.name}.${extension.name}"))
+        importAst.ctx = ctx
+        return importAst
     }
 
     override fun visitReadStat(ctx: WaccParser.ReadStatContext): AST {
@@ -135,7 +151,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             fieldList += StructFieldAST(visit(field.type()) as TypeAST,
                     visit(field.ident()) as IdentAST)
         }
-        val structDeclare = StructDeclareAST(visit(ctx.ident()) as IdentAST, fieldList)
+        val structDeclare = StructDeclareAST(visit(ctx.structType().capitalisedIdent()) as IdentAST, fieldList)
         structDeclare.ctx = ctx
         return structDeclare
     }
@@ -149,13 +165,6 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         structAssign.ctx = ctx
         return structAssign
     }
-
-
-    override fun visitStructType(ctx: WaccParser.StructTypeContext): AST {
-        //TODO("Review, augment with list of types?")
-        return StructTypeAST(visit(ctx.ident()) as IdentAST)
-    }
-
 
     override fun visitWhileStat(ctx: WaccParser.WhileStatContext): AST {
         val whileStatAst = WhileStatAST(visit(ctx.expr()) as ExprAST,
@@ -172,9 +181,14 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         }
     }
 
+    override fun visitStructType(ctx: WaccParser.StructTypeContext): AST {
+        return StructTypeAST(visit(ctx.capitalisedIdent()) as IdentAST)
+    }
+
     override fun visitAssignLhs(ctx: WaccParser.AssignLhsContext): AST {
         return visitChildren(ctx)
     }
+
 
     override fun visitAssignRhs(ctx: WaccParser.AssignRhsContext): AST {
         return when {
@@ -290,6 +304,17 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return visitChildren(ctx)
     }
 
+    override fun visitStructAccess(ctx: WaccParser.StructAccessContext): AST {
+        val structAccessAST = StructAccessAST(visit(ctx.ident(0)) as IdentAST,
+                visit(ctx.ident(1)) as IdentAST)
+        structAccessAST.ctx = ctx
+        return structAccessAST
+    }
+
+    override fun visitStructAccessExpr(ctx: WaccParser.StructAccessExprContext): AST {
+        return visitChildren(ctx)
+    }
+
     override fun visitBinopExpr(ctx: WaccParser.BinopExprContext): AST {
         val binop = when (ctx.getChild(1).text) {
             "+" -> IntBinOp.PLUS
@@ -377,10 +402,18 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return NullPairLiterAST()
     }
 
-    override fun visitIdent(ctx: WaccParser.IdentContext): AST {
+    private fun generateIdentAST(ctx: ParserRuleContext): IdentAST {
         val identAST = IdentAST(ctx.text)
         identAST.ctx = ctx
         return identAST
+    }
+
+    override fun visitIdent(ctx: WaccParser.IdentContext): AST {
+        return generateIdentAST(ctx)
+    }
+
+    override fun visitCapitalisedIdent(ctx: WaccParser.CapitalisedIdentContext): AST {
+        return generateIdentAST(ctx)
     }
 
 }

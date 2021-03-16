@@ -1,0 +1,28 @@
+# struct as function return type
+
+# Output:
+## 23
+## o
+## 78
+## g
+
+#Exitcode:
+#* 0
+
+# Program:
+
+begin
+  struct Person p(struct Person x) is
+    struct Person fred = {55+x.age, 'g'};
+    return fred
+  end
+  struct Person {int age; char grade;};
+  struct Person bob = {23, 'o'};
+  println bob.age;
+  println bob.grade;
+  struct Person dave = {1, 'n'};
+  dave = call p(bob);
+  println dave.age;
+  println dave.grade
+
+end

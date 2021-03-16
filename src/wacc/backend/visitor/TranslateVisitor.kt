@@ -13,10 +13,13 @@ import wacc.backend.translate.RuntimeErrors
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
+import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
+import wacc.frontend.ast.assign.StructAssignAST
+import wacc.frontend.ast.assign.StructFieldAssignAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -243,7 +246,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         /** Translates the expression of the statment*/
         instrs.addAll(visit(ast.expr))
         val reg = seeLastUsedCalleeReg()
-        val exprType = ast.expr.getRealType(ast.symTable)
+        val exprType: TypeAST = ast.expr.getRealType(ast.symTable)
         if (ast.expr is ArrayElemAST) {
             var memType: MemoryType? = null
             if (exprType.isBoolOrChar()) {
@@ -309,8 +312,22 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             Action.FREE -> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
-                cLib.addCode(CLibrary.Call.FREE_PAIR)
+                val methodName = when (exprType) {
+                    is ArrayTypeAST -> {
+                        CLibrary.Call.FREE_ARRAY
+                    }
+                    is PairTypeAST -> {
+                        CLibrary.Call.FREE_PAIR
+                    }
+                    is StructTypeAST -> {
+                        CLibrary.Call.FREE_STRUCT
+                    }
+                    else -> {
+                        CLibrary.Call.FREE_ARRAY
+                    } // Should never reach here since the semantic check only allows the above
+                }
+                instrs.add(BranchInstr(Condition.AL, Label(methodName.toString()), true))
+                cLib.addCode(methodName)
                 freeCalleeReg()
             }
             Action.RETURN -> {
@@ -370,19 +387,26 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
             }
+            is StructAccessAST -> {
+                val stackOffset = ast.symTable.findOffsetInStack(ast.lhs.structIdent.name)
+                val structReg = getNextFreeCalleeReg()
+                instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, stackOffset, false), structReg))
+                val accessOffset = ast.lhs.structDeclare.getOffsetInStruct(ast.lhs.fieldIdent)
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(structReg, accessOffset, false), calleeReg))
+                freeCalleeReg()
+            }
         }
-
         freeCalleeReg()
-
         return instrs
-
     }
 
     /** Translates a Declare Statement AST */
     override fun visitDeclareStatAST(ast: DeclareStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         /** Translates the right hand side of the declare */
-        instrs.addAll(visit(ast.rhs))
+        if (ast.rhs !is StructAssignAST) {
+            instrs.addAll(visit(ast.rhs))
+        }
         if (ast.rhs is StrLiterAST) {
             ast.stringLabel = dataDirective.getStringLabel(ast.rhs.value)
         }
@@ -404,6 +428,26 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }
+            is StructTypeAST -> {
+                val structType = ast.type as StructTypeAST
+                val structInST = ast.symTable.lookupAll(structType.ident.name)
+
+                /** Checks that the struct we are looking for is in the symbol table*/
+                if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
+                    throw RuntimeException("Struct not in symbol table during Code gen")
+                }
+                val structDeclareAST = structInST.get() as StructDeclareAST
+                /** Mallocs space for all elements in the struct*/
+                instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(structDeclareAST.totalSizeOfFields), Register.R0))
+                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+                val stackReg = getNextFreeCalleeReg()
+                instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
+                instrs.addAll(visit(ast.rhs))
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.findOffsetInStack(ast.ident.name), false), seeLastUsedCalleeReg()))
+                freeCalleeReg()
+                return instrs
+
+            }
         }
         val offset = ast.symTable.offsetSize
         when (ast.rhs) {
@@ -414,7 +458,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
         }
-        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), Register.R4))
+        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), seeLastUsedCalleeReg()))
         freeCalleeReg()
 
         return instrs
@@ -506,6 +550,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Translates a Call RHS AST */
     override fun visitCallRhsAST(ast: CallRhsAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
+
         /** Translates arguements in reverse order */
         var totalBytes = 0
         val argTypesReversed = ast.argTypes.reversed()
@@ -514,7 +559,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
             val reg = seeLastUsedCalleeReg()
-            val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
+            val bytes = getBytesOfType(argTypesReversed[index])
             totalBytes += bytes
             ast.symTable.callOffset = totalBytes
             if (argTypesReversed[index].isBoolOrChar()) {
@@ -976,4 +1021,49 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return emptyList()
     }
 
+    /** Translates a Struct Declare AST. Requires no code generation */
+    override fun visitStructDeclareAST(ast: StructDeclareAST): List<Instruction> {
+        return emptyList()
+    }
+
+    override fun visitStructAssignAST(ast: StructAssignAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        val symbolTable = ast.symTable
+        var memtype: MemoryType? = null
+        val stackReg = seeLastUsedCalleeReg()
+        var fieldOffset = 0
+        for (assign in ast.assignments) {
+            instrs.addAll(visit(assign))
+            val assignType = assign.getRealType(symbolTable)
+//            instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(assignType)), Register.R0))
+//            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+            if (assignType.isBoolOrChar()) {
+                memtype = MemoryType.B
+            }
+            instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(stackReg, fieldOffset, false), seeLastUsedCalleeReg()))
+            freeCalleeReg()
+            fieldOffset += getBytesOfType(assign.getRealType(symbolTable))
+//            instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
+
+        }
+        return instrs
+    }
+
+    override fun visitStructAccessAST(ast: StructAccessAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        val memtype: MemoryType? = null
+        var stackOffset = ast.symTable.findOffsetInStack(ast.structIdent.name)
+        stackOffset += ast.symTable.checkParamInFuncSymbolTable(ast.structIdent.name)
+        val resultReg = getNextFreeCalleeReg()
+        val structReg = getNextFreeCalleeReg()
+        instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, stackOffset, false), structReg))
+        val accessOffset = ast.structDeclare.getOffsetInStruct(ast.fieldIdent)
+        instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(structReg, accessOffset, false), resultReg))
+        freeCalleeReg()
+        return instrs
+    }
+
+    override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): List<Instruction> {
+        TODO("Not yet implemented")
+    }
 }
