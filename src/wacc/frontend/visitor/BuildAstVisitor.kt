@@ -119,6 +119,10 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return actionStatAST
     }
 
+    override fun visitVoidReturnStat(ctx: WaccParser.VoidReturnStatContext?): AST {
+        return VoidReturnStatAST()
+    }
+
     override fun visitCallStat(ctx: WaccParser.CallStatContext): AST {
         // Build the CallRhsAST in the same way as in visitAssignRhs()
         var argList = emptyList<ExprAST>()
