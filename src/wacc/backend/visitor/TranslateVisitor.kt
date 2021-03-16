@@ -31,6 +31,7 @@ import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
@@ -241,6 +242,36 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.addAll(visit(ast.cond))
         instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
         instrs.add(BranchInstr(Condition.EQ, bodyLabel, false))
+        freeCalleeReg()
+        return instrs
+    }
+
+    override fun visitForStatAST(ast: ForStatAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        val condLabel = getNextLabel()
+        val bodyLabel = getNextLabel()
+       /**Translates the first statement in the loop before jumping to condition*/
+        val stackOffset = ast.blockST.getStackOffset()
+        ast.blockST.startingOffset = stackOffset
+        if (stackOffset > 0) {
+            instrs.add(SubInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+        }
+        instrs.addAll(visit(ast.stat))
+        instrs.add(BranchInstr(Condition.AL, condLabel, false))
+
+        instrs.add(bodyLabel)
+        /** Translates all the statements within the for loop body */
+        ast.body.forEach { instrs.addAll(visit(it)) }
+        /**Translates the change in loop variable as defined in the loop*/
+        instrs.addAll(visit(ast.inc))
+        /** Translates the condition after the loop body.*/
+        instrs.add(condLabel)
+        instrs.addAll(visit(ast.cond))
+        instrs.add(CompareInstr(seeLastUsedCalleeReg(), ImmediateIntOperand(1)))
+        instrs.add(BranchInstr(Condition.EQ, bodyLabel, false))
+        if (stackOffset > 0) {
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
+        }
         freeCalleeReg()
         return instrs
     }

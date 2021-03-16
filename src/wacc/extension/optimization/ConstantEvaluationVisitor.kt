@@ -16,6 +16,7 @@ import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
@@ -257,6 +258,10 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
     }
 
     override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): AST {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitForStatAST(ast: ForStatAST): AST {
         TODO("Not yet implemented")
     }
 

@@ -14,6 +14,7 @@ import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
@@ -40,6 +41,7 @@ interface AstVisitor<T> {
     fun visitBlockStatAST(ast: BlockStatAST): T
     fun visitIfStatAST(ast: IfStatAST): T
     fun visitWhileStatAST(ast: WhileStatAST): T
+    fun visitForStatAST(ast: ForStatAST): T
 
     fun visitActionStatAST(ast: ActionStatAST): T
     fun visitVoidReturnStatAST(ast: VoidReturnStatAST): T

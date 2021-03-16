@@ -63,13 +63,6 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMultiStat(WaccParser.MultiStatContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code skipStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSkipStat(WaccParser.SkipStatContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code callStat}
 	 * labeled alternative in {@link WaccParser#stat}.
 	 * @param ctx the parse tree
@@ -81,26 +74,49 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * labeled alternative in {@link WaccParser#stat}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
-	 */
-	T visitStructDeclareStat(WaccParser.StructDeclareStatContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code actionStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitActionStat(WaccParser.ActionStatContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code voidReturnStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVoidReturnStat(WaccParser.VoidReturnStatContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code assignStat}
-	 * labeled alternative in {@link WaccParser#stat}.
-	 * @param ctx the parse tree
+   */
+  T visitStructDeclareStat(WaccParser.StructDeclareStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code actionStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitActionStat(WaccParser.ActionStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code forStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitForStat(WaccParser.ForStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code skipStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitSkipStat(WaccParser.SkipStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code voidReturnStat} labeled alternative in {@link
+   * WaccParser#stat}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitVoidReturnStat(WaccParser.VoidReturnStatContext ctx);
+
+  /**
+   * Visit a parse tree produced by the {@code assignStat}
+   * labeled alternative in {@link WaccParser#stat}.
+   * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssignStat(WaccParser.AssignStatContext ctx);
