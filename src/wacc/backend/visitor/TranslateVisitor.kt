@@ -126,7 +126,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         if (stackOffset > 0 && !returnedOrExited) {
             instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(stackOffset)))
         }
-        instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+//        instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
         instrs.add(DirectiveInstr("ltorg"))
         freeAllCalleeReg()
         return instrs
@@ -153,18 +153,18 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         if ((lastStat is ActionStatAST)) {
             if (lastStat.action == Action.RETURN) {
                 hasReturn = true
-                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(table.getFuncStackOffset())))
-                instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-                freeAllCalleeReg()
+//                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(table.getFuncStackOffset())))
+//                instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+//                freeAllCalleeReg()
             }
             if (lastStat.action == Action.EXIT) {
                 hasReturn = true
             }
         } else if ((lastStat is VoidReturnStatAST)) {
             hasReturn = true
-            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(table.getFuncStackOffset())))
-            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
-            freeAllCalleeReg()
+//            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(table.getFuncStackOffset())))
+//            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+//            freeAllCalleeReg()
         }
         return Pair(instrs, hasReturn)
     }
@@ -335,6 +335,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             Action.RETURN -> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+
+                instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(ast.symTable.getFuncStackOffset())))
+                instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+                freeAllCalleeReg()
             }
         }
         return instrs
@@ -343,7 +347,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     override fun visitVoidReturnStatAST(ast: VoidReturnStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-        // Intentionally do nothing
+
+        instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(ast.symTable.getFuncStackOffset())))
+        instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+        freeAllCalleeReg()
+
         return instrs
     }
 
