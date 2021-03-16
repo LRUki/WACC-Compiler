@@ -69,3 +69,28 @@ class ImplicitTypeAST : TypeAST {
     }
 
 }
+
+class VoidTypeAST : TypeAST {
+
+    override fun toString(): String {
+        return "void"
+    }
+
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
+        return false
+    }
+
+    /**
+     * Technically, equals() should never be called on an VoidTypeAST
+     */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is VoidTypeAST) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
+
+}

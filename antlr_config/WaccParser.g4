@@ -6,7 +6,7 @@ options {
 
 program: importStat* BEGIN func* stat END EOF;
 
-func: type ident L_PAREN paramList? R_PAREN IS stat END;
+func: (type | VOID) ident L_PAREN paramList? R_PAREN IS stat END;
 
 paramList: param (COMMA param)*;
 
