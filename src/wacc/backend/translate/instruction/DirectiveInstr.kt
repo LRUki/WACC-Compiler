@@ -23,4 +23,8 @@ class LTORGDirective(): Instruction {
     override fun toX86(): String {
         return ""
     }
+
+    override fun equals(other: Any?): Boolean {
+        return other is LTORGDirective
+    }
 }
