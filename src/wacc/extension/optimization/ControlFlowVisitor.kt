@@ -12,6 +12,7 @@ import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.CallStatAST
@@ -98,6 +99,10 @@ class ControlFlowVisitor : OptimisationVisitor() {
         } else {
             throw RuntimeException("If condition was neither true or false. Semantic check failed")
         }
+    }
+
+    override fun visitForStatAST(ast: ForStatAST): AST {
+        TODO("Not yet implemented")
     }
 
 }

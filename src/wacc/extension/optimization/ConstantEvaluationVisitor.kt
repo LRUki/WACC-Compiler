@@ -261,4 +261,8 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
         TODO("Not yet implemented")
     }
 
+    override fun visitForStatAST(ast: ForStatAST): AST {
+        TODO("Not yet implemented")
+    }
+
 }
