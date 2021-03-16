@@ -28,6 +28,10 @@ object CodeGenerator {
 
     var useAccumulator = false
 
+    //optimization flags
+    var constEvaluation = false
+    var registerAllocation = false
+
     init {
         reset()
     }
