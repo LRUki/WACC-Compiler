@@ -1,0 +1,7 @@
+begin
+  int i = 0;
+  while true do
+    i = i + 1
+  done;
+  int x = 420
+end

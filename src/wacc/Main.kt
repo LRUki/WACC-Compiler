@@ -10,6 +10,7 @@ import wacc.Main.waccFile
 import wacc.backend.generateCode
 import wacc.backend.printCode
 import wacc.extension.optimization.ConstantEvaluationVisitor
+import wacc.extension.optimization.ControlFlowVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -45,6 +46,7 @@ fun main(args: Array<String>) {
     }
 
     val optimize = flags.contains("-o")
+    val controlFlow = flags.contains("-cf")
 
     val inputFile = File(paths[0])
     waccFile = WaccFile(inputFile)
@@ -52,6 +54,9 @@ fun main(args: Array<String>) {
 
     if (optimize) {
         waccFile.optimise()
+    }
+    if (controlFlow) {
+        ast = ControlFlowVisitor().visit(ast)
     }
 
     val outputString = waccFile.backend()

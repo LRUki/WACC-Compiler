@@ -86,6 +86,12 @@ test-semantic-extension:
     - echo "Testing semantics"
     - make clean rules
     - ./gradlew test --tests extension.SemanticTest
+test-control-flow:
+  stage: test-extension
+  script:
+    - echo "Testing control flow"
+    - ./gradlew test --tests extension.ControlFlowTest
+
 
 test-new-feature-integration:
   stage: test-extension
