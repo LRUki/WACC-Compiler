@@ -21,7 +21,7 @@ import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.TypeAST
 
-class ConstantEvaluationVisitor: OptimisationVisitor {
+class ConstantEvaluationVisitor: OptimisationVisitor() {
     override fun visitProgramAST(ast: ProgramAST): AST {
         val importList = mutableListOf<ImportAST>()
         ast.imports.forEach {

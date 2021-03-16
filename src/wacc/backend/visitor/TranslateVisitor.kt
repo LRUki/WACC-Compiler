@@ -336,6 +336,10 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     }
 
+    override fun visitVoidReturnStatAST(ast: VoidReturnStatAST): List<Instruction> {
+        TODO("Not yet implemented")
+    }
+
     /** Translates a Call Statement AST */
     override fun visitCallStatAST(ast: CallStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()

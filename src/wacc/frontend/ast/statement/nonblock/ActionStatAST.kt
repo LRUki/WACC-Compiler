@@ -64,3 +64,27 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
 enum class Action {
     FREE, RETURN, EXIT, PRINT, PRINTLN
 }
+
+class VoidReturnStatAST() : StatAST, AbstractAST() {
+    override fun check(table: SymbolTable): Boolean {
+        symTable = table
+        val exprType = VoidTypeAST()
+
+        val closestFunc = table.lookupFirstFunc()
+        if (closestFunc.isEmpty) {
+            semanticError("A return token is outside of a function scope", ctx)
+            return false
+        }
+        val returnType = (closestFunc.get()).type
+        if (returnType != exprType) {
+            semanticError("Expected type $returnType, Actual type $exprType", ctx)
+            return false
+        }
+        return true
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        TODO("Not yet implemented")
+    }
+
+}

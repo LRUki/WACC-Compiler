@@ -16,7 +16,7 @@ import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.CallStatAST
 
-class ControlFlowVisitor : OptimisationVisitor {
+class ControlFlowVisitor : OptimisationVisitor() {
 
     override fun visitProgramAST(ast: ProgramAST): AST {
         val importList = mutableListOf<ImportAST>()
