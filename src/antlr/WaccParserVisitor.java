@@ -70,6 +70,13 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSkipStat(WaccParser.SkipStatContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code callStat}
+	 * labeled alternative in {@link WaccParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCallStat(WaccParser.CallStatContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code structDeclareStat}
 	 * labeled alternative in {@link WaccParser#stat}.
 	 * @param ctx the parse tree
@@ -83,6 +90,13 @@ public interface WaccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitActionStat(WaccParser.ActionStatContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code voidReturnStat}
+	 * labeled alternative in {@link WaccParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVoidReturnStat(WaccParser.VoidReturnStatContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code assignStat}
 	 * labeled alternative in {@link WaccParser#stat}.

@@ -2,6 +2,7 @@ package wacc.extension.optimization
 
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AstVisitor
+import wacc.frontend.ast.OptimisationVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.*
 import wacc.frontend.ast.expression.*
@@ -20,7 +21,7 @@ import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.TypeAST
 
-class ConstantEvaluationVisitor: AstVisitor<AST> {
+class ConstantEvaluationVisitor: OptimisationVisitor() {
     override fun visitProgramAST(ast: ProgramAST): AST {
         val importList = mutableListOf<ImportAST>()
         ast.imports.forEach {
@@ -258,6 +259,5 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
     override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): AST {
         TODO("Not yet implemented")
     }
-
 
 }

@@ -69,3 +69,32 @@ class ImplicitTypeAST : TypeAST {
     }
 
 }
+
+class VoidTypeAST : TypeAST {
+
+    override fun toString(): String {
+        return "void"
+    }
+
+    /**
+     * void is not a concrete type so a void function cannot be assigned to
+     * an implicitly typed variable, as it doesn't return anything.
+     */
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
+        return false
+    }
+
+    /**
+     * Technically, equals() should never be called on an VoidTypeAST
+     */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is VoidTypeAST) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
+
+}

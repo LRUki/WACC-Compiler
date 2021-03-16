@@ -6,18 +6,20 @@ options {
 
 program: importStat* BEGIN func* stat END EOF;
 
-func: type ident L_PAREN paramList? R_PAREN IS stat END;
+func: (type | VOID) ident L_PAREN paramList? R_PAREN IS stat END;
 
 paramList: param (COMMA param)*;
 
 param: type ident;
 
 stat: SKIP_TOKEN                                      #skipStat
+      | CALL ident L_PAREN argList? R_PAREN           #callStat
       | (type | implicitType) ident ASSIGN assignRhs  #declareStat
       | assignLhs ASSIGN assignRhs                    #assignStat
       | structDeclare                                 #structDeclareStat
       | READ assignLhs                                #readStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
+      | RETURN                                        #voidReturnStat
       | IF expr THEN stat ELSE stat FI                #ifStat
       | WHILE expr DO stat DONE                       #whileStat
       | BEGIN stat END                                #blockStat

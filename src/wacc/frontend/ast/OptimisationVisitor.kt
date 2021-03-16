@@ -19,10 +19,10 @@ import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.TypeAST
 
-interface OptimisationVisitor : AstVisitor<AST> {
+abstract class OptimisationVisitor : AstVisitor<AST> {
     /*
- * Visit program and function ASTs.
- */
+     * Visit program and function ASTs.
+     */
     override fun visitProgramAST(ast: ProgramAST): AST {
         return ast
     }
@@ -51,6 +51,10 @@ interface OptimisationVisitor : AstVisitor<AST> {
     }
 
     override fun visitActionStatAST(ast: ActionStatAST): AST {
+        return ast
+    }
+
+    override fun visitVoidReturnStatAST(ast: VoidReturnStatAST): AST {
         return ast
     }
 
@@ -165,4 +169,7 @@ interface OptimisationVisitor : AstVisitor<AST> {
         return ast
     }
 
+    override fun visitCallStatAST(ast: CallStatAST): AST {
+        return ast
+    }
 }
