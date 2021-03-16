@@ -1,5 +1,6 @@
 package wacc.backend
 
+import wacc.backend.translate.instruction.DirectiveInstr
 import wacc.backend.translate.instruction.Instruction
 
 const val DOT_DATA = ".data"
@@ -15,7 +16,12 @@ const val DOT_GLOBAL_MAIN = ".global main"
  * @return ARM assembly instructions represented by all these instruction
  */
   fun printCode(instrs: List<Instruction>): String {
-    val lines = instrs.map { instr -> instr.toArm() }
+    /** Sets up directives found at the start of the assembly file*/
+    val data = CodeGenerator.dataDirective.translate()
+    val text = (DirectiveInstr("text"))
+    val glob = (DirectiveInstr("global main"))
+    val allInstrs = data + listOf<Instruction>(text, glob) + instrs
+    val lines = allInstrs.map { instr -> instr.toArm() }
             .map { line -> if (shouldIndent(line)) "\t" + line else line }
     val builder = StringBuilder()
     lines.forEach {
@@ -31,13 +37,24 @@ const val DOT_GLOBAL_MAIN = ".global main"
     return builder.toString()
 }
 
-fun printX86(instrs: List<Instruction>): String{
-    val lines = instrs.map { instr -> instr.toX86() }
+fun printX86(instrs: List<Instruction>): String {
+    val data = CodeGenerator.dataDirective.translate()
+    val text = (DirectiveInstr("text"))
+    val glob = (DirectiveInstr("globl _start"))
+    val allInstrs = data + listOf<Instruction>(text, glob) + instrs
+    val lines = allInstrs.map { instr -> instr.toX86() }
+            .map { line -> if (shouldIndent(line)) "\t" + line else line }
     val builder = StringBuilder()
 
     lines.forEach {
-        builder.append(it)
-        builder.appendLine()
+        val addEmptyLine = it.startsWith(DOT_DATA) || it.startsWith(DOT_TEXT)
+        if (addEmptyLine && builder.isNotBlank()) {
+            builder.appendLine()
+        }
+        builder.appendLine(it)
+        if (addEmptyLine) {
+            builder.appendLine()
+        }
     }
     return builder.toString()
 }

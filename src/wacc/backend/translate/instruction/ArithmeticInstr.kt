@@ -32,7 +32,7 @@ abstract class AbstractArithmeticInstr(val type: ArithmeticInstrType,val conditi
     }
 
     override fun toX86(): String {
-        return "${type.name.toLowerCase()}${condition.toX86()}${reg1.toX86()}${operand.toX86()}"
+        return "${type.name.toLowerCase()}${condition.toX86()} ${operand.toX86()}, ${reg1.toX86()}"
     }
 }
 

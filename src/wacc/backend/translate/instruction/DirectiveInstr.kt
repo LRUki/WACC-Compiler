@@ -11,7 +11,6 @@ data class DirectiveInstr(val directive: String) : Instruction {
     }
 
     override fun toX86(): String {
-//        TODO("Not yet implemented")
-        return ""
+        return ".$directive".trim()
     }
 }

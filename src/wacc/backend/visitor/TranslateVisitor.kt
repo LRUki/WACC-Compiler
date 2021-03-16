@@ -80,9 +80,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitProgramAST(ast: ProgramAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
 
-        /** Sets up directives found at the start of the assembly file*/
-        instrs.add(DirectiveInstr("text"))
-        instrs.add(DirectiveInstr("global main"))
+
 
         /** Translates all of the function definitions */
         ast.funcList.forEach { instrs.addAll(visit(it)) }
@@ -97,11 +95,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
         /** Translates all string labels, c library functions and runtime
          * errors that have been recursively found and added */
-        val data = dataDirective.translate()
+
         val cLib = cLib.translate()
         val runtime = runtimeErrors.translate()
 
-        return data + instrs + runtime + cLib
+        return instrs + runtime + cLib
     }
 
     /** Translates a Function AST */

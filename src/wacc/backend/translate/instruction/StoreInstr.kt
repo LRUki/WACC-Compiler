@@ -18,6 +18,6 @@ class StoreInstr( val memType: MemoryType?,
     }
 
     override fun toX86(): String {
-        TODO("Not yet implemented")
+        return "mov ${srcRegister.toX86()}, ${mode.toX86()} "
     }
 }

@@ -46,7 +46,7 @@ class RegisterAddrWithOffsetMode(val reg: Register, val offset: Int, val isPreIn
     }
 
     override fun toX86(): String {
-        TODO("Not yet implemented")
+        return "-$offset(${reg.toX86()})"
     }
 }
 

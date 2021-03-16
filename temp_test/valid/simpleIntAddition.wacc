@@ -1,0 +1,12 @@
+# simple int addition
+
+# Output:
+#
+
+# Program:
+
+begin
+  int x = 5;
+  int y = 10;
+  x = x + y
+end

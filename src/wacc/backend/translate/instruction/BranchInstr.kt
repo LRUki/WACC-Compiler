@@ -19,8 +19,6 @@ data class BranchInstr(val condition: Condition,
     }
 
     override fun toX86(): String {
-        var instr = "j"
-        instr += condition.toX86()
-        return instr + " " + label.name
+        return "${if (condition == Condition.AL) "jmp" else "j${condition.toX86()}"} ${label.name}"
     }
 }

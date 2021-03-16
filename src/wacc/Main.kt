@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 import wacc.Main.waccFile
 import wacc.backend.generateCode
 import wacc.backend.printCode
+import wacc.backend.printX86
 import wacc.extension.optimization.ConstantEvaluationVisitor
 import wacc.extension.optimization.ControlFlowVisitor
 import wacc.frontend.SymbolTable
@@ -155,7 +156,9 @@ class WaccFile(val file: File) {
 
     fun backend(): String {
         val instrs = generateCode(ast as ProgramAST)
-        return printCode(instrs)
+//        return printCode(instrs)
+        return printX86(instrs)
+
     }
 
     fun optimise() {
