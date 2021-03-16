@@ -27,7 +27,7 @@ interface ExprAST : RhsAST {
  * @property expr2 Second Expression
  */
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
-    var size = 0
+    var weight = -1
     var pointerOp = false
     var shiftOffset = 0
 
@@ -101,20 +101,18 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
     }
 
     override fun weight(): Int {
-        if(size != 0){
-            return size
+        if (weight < 0) {
+            val c1 = Math.max(expr1.weight(), expr2.weight() + 1) //if we select e1 first
+            val c2 = Math.max(expr1.weight() + 1, expr2.weight()) //if we select e2 first
+            weight = Math.min(c1, c2)
         }
-        val c1 = Math.max(expr1.weight(), expr2.weight() + 1) //if we select e1 first
-        val c2 = Math.max(expr1.weight() + 1, expr2.weight()) //if we select e2 first
-        size = Math.min(c1, c2)
-        return size
+        return weight
     }
 
 }
 
 
-interface BinOp {
-}
+interface BinOp
 
 enum class IntBinOp : BinOp, BiFunction<Int, Int, Int> {
     PLUS {
@@ -177,7 +175,7 @@ enum class CmpBinOp : BinOp {
  * @property expr Expression to operate on
  */
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
-    var size = 0
+    var weight = -1
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         if (!expr.check(table)) {
@@ -248,11 +246,10 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
     }
 
     override fun weight(): Int {
-        if (size != 0){
-            return size
+        if (weight < 0) {
+            weight = expr.weight()
         }
-        size += expr.weight()
-        return size
+        return weight
     }
 }
 

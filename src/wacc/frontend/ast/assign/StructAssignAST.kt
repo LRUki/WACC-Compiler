@@ -21,10 +21,6 @@ class StructAssignAST(val assignments: List<RhsAST>) : RhsAST, AbstractAST() {
         return visitor.visitStructAssignAST(this)
     }
 
-    fun weight(): Int {
-        TODO("Not yet implemented")
-    }
-
     override fun getRealType(table: SymbolTable): TypeAST {
         return StructTypeAST(defStructIdent)
     }

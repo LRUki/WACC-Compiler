@@ -110,6 +110,14 @@ object CodeGenerator {
             freeCalleeReg()
         }
     }
+
+    /** swap the first two registers for expression weight */
+    fun swapFirstTwoReg() {
+        val reg1 = freeCalleeSavedRegs.pop()
+        val reg2 = freeCalleeSavedRegs.pop()
+        freeCalleeSavedRegs.push(reg1)
+        freeCalleeSavedRegs.push(reg2)
+    }
 }
 
 /**
