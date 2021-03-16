@@ -56,7 +56,7 @@ fun main(args: Array<String>) {
         waccFile.optimise()
     }
     if (controlFlow) {
-        ast = ControlFlowVisitor().visit(ast)
+        waccFile.controlFlowAnalysis()
     }
 
     val outputString = waccFile.backend()
@@ -160,5 +160,8 @@ class WaccFile(val file: File) {
 
     fun optimise() {
         ast = ConstantEvaluationVisitor().visit(ast)
+    }
+    fun controlFlowAnalysis() {
+        ast = ControlFlowVisitor().visit(ast)
     }
 }

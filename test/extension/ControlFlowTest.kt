@@ -3,14 +3,12 @@ package extension
 import frontend.actionOnFiles
 import org.junit.Test
 import wacc.backend.generateCode
-import wacc.buildAST
-import wacc.checkSemantics
-import wacc.checkSyntax
+
 import wacc.extension.optimization.ConstantEvaluationVisitor
 import wacc.extension.optimization.ControlFlowVisitor
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
-import wacc.parse
+import wacc.Main.waccFile
 import java.io.File
 import kotlin.test.assertTrue
 
@@ -18,11 +16,11 @@ class ControlFlowTest {
     val path = "extension_wacc/valid/optimization/control_flow"
 
     private fun simpleFrontend(file: File): AST {
-        val program = parse(file.inputStream())
-        checkSyntax(program)
+        val program = waccFile.parse(file.inputStream())
+        waccFile.checkSyntax(program)
 
-        val ast = buildAST(program)
-        checkSemantics(ast)
+        val ast = waccFile.buildAST(program)
+        waccFile.checkSemantics(ast)
         return ast
     }
 
@@ -96,6 +94,7 @@ class ControlFlowTest {
 
         assertTrue { instrs.size > optimisedInstrs.size }
     }
+
 }
 
 
