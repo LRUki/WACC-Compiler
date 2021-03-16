@@ -11,7 +11,7 @@ object ErrorUtil {
 
 fun syntaxError(msg: String, ctx: ParserRuleContext) = runBlocking {
     runBlocking {
-        Main.syntaxErrorChannel.send(SyntaxException(
+        Main.waccFile.syntaxErrorChannel.send(SyntaxException(
                 "Syntax Error at line" +
                         " ${ctx.start.line}:${ctx.start.charPositionInLine} $msg", ctx.start.line
         ))
@@ -20,7 +20,7 @@ fun syntaxError(msg: String, ctx: ParserRuleContext) = runBlocking {
 
 fun semanticError(msg: String, ctx: ParserRuleContext) = runBlocking {
     runBlocking {
-        Main.semanticErrorChannel.send(SemanticException(
+        Main.waccFile.semanticErrorChannel.send(SemanticException(
                 "Semantic Error at line ${ctx.start.line}:${ctx.start.charPositionInLine} $msg",
                 ctx.start.line))
     }

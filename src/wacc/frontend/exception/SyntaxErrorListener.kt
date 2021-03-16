@@ -19,7 +19,7 @@ class SyntaxErrorListener : BaseErrorListener() {
             e: RecognitionException?
     ) {
 
-        runBlocking { Main.syntaxErrorChannel.send(SyntaxException("Syntax Error at line $line:$charPositionInLine $msg", line)) }
+        runBlocking { Main.waccFile.syntaxErrorChannel.send(SyntaxException("Syntax Error at line $line:$charPositionInLine $msg", line)) }
     }
 }
 

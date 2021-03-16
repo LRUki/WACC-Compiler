@@ -1,10 +1,10 @@
 # simple struct declaration
 
 # Output:
-#
+# #empty#
 
 # Program:
 
 begin
-  struct person {int age; char grade;}
+  struct Person {int age; char grade;}
 end

@@ -4,7 +4,7 @@ options {
   tokenVocab=WaccLexer;
 }
 
-program: BEGIN func* stat END EOF;
+program: importStat* BEGIN func* stat END EOF;
 
 func: type ident L_PAREN paramList? R_PAREN IS stat END;
 
@@ -26,7 +26,8 @@ stat: SKIP_TOKEN                                      #skipStat
 assignLhs: ident
          | arrayElem
          | pairElem
-         | pointerElem ;
+         | pointerElem
+         | structAccess;
 
 assignRhs: expr
          | arrayLiter
@@ -35,11 +36,15 @@ assignRhs: expr
          | CALL ident L_PAREN argList? R_PAREN
          | structAssign;
 
-structDeclare: STRUCT ident L_CURLY (structMember SEMICOLON)* R_CURLY;
+importStat: IMPORT ident DOT ident ;
+
+structDeclare: structType L_CURLY (structMember SEMICOLON)* R_CURLY;
 
 structAssign: L_CURLY (assignRhs (COMMA assignRhs)*) R_CURLY;
 
 structMember: type ident;
+
+structAccess: ident DOT ident;
 
 argList: expr (COMMA expr)* ;
 
@@ -65,7 +70,7 @@ pointerType: (baseType | pairType | arrayType | structType) MULT+ ;
 
 implicitType: VAR ;
 
-structType: STRUCT ident;
+structType: STRUCT capitalisedIdent;
 
 expr: expr binop1 expr     #binopExpr
     | expr binop2 expr     #binopExpr
@@ -81,6 +86,7 @@ expr: expr binop1 expr     #binopExpr
     | ident                #singletonExpr
     | arrayElem            #singletonExpr
     | unop expr            #unopExpr
+    | structAccess         #structAccessExpr
     | L_PAREN expr R_PAREN #parenExpr;
 
 unop: NOT | MINUS | LEN | ORD | CHR | REF | MULT ;
@@ -106,5 +112,6 @@ arrayLiter: L_SQUARE (expr (COMMA expr)*)? R_SQUARE ;
 
 pairLiter: NULL ;
 
-ident: IDENT ;
+ident: IDENT | CAPTIALISED_IDENT;
 
+capitalisedIdent: CAPTIALISED_IDENT ;
