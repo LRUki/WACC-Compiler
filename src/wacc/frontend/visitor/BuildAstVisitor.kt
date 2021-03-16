@@ -51,7 +51,13 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                 paramList += visit(param) as ParamAST
             }
         }
-        val funcAST = FuncAST(visit(ctx.type()) as TypeAST,
+
+        val returnType = if (ctx.VOID() == null) {
+            visit(ctx.type()) as TypeAST
+        } else {
+            VoidTypeAST()
+        }
+        val funcAST = FuncAST(returnType,
                 visit(ctx.ident()) as IdentAST,
                 paramList,
                 statToList(visit(ctx.stat()) as StatAST)

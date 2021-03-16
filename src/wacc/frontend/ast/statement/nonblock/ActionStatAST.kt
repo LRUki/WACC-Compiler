@@ -84,7 +84,7 @@ class VoidReturnStatAST() : StatAST, AbstractAST() {
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
-        TODO("Not yet implemented")
+        return visitor.visitVoidReturnStatAST(this)
     }
 
 }

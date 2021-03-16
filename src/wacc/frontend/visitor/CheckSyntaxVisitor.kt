@@ -17,6 +17,11 @@ import wacc.frontend.exception.syntaxError
  */
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
+//        if (ctx.VOID() != null) {
+//            // No need to check for return statement for void functions
+//            return null
+//        }
+
         //check if function ends with return or exit
         val lastStat: WaccParser.StatContext = getLastStat(ctx.stat())
         var functionEndsWithExitOrReturn = isExitOrReturn(lastStat)
@@ -85,6 +90,9 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     private fun isExitOrReturn(statCtx: WaccParser.StatContext): Boolean {
         if (statCtx is WaccParser.ActionStatContext &&
                 (statCtx.EXIT() != null || statCtx.RETURN() != null)) {
+            return true
+        }
+        if (statCtx is WaccParser.VoidReturnStatContext) {
             return true
         }
         return false
