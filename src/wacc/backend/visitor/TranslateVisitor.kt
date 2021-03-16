@@ -588,7 +588,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         var reg2:Register
 
         val flip = ast.expr1.weight() <= ast.expr2.weight()
-                && ast.binOp != IntBinOp.DIV && ast.binOp != IntBinOp.MOD
+                && ast.binOp != IntBinOp.DIV && ast.binOp != IntBinOp.MOD && CodeGenerator.registerAllocation
         if (!flip) {
             instrs.addAll(visit(ast.expr1))
             reg1 = seeLastUsedCalleeReg()
