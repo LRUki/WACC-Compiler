@@ -27,6 +27,7 @@ import kotlin.system.exitProcess
 
 object Main {
     lateinit var waccFile: WaccFile
+    val importedFiles = mutableMapOf<String, ProgramAST>()
 }
 
 fun main(args: Array<String>) {

@@ -1,11 +1,13 @@
 package wacc.frontend.ast.program
 
+import wacc.Main
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.nonblock.StructDeclareAST
+import java.io.File
 
 /**
  * AST node to represent a Program
@@ -18,6 +20,7 @@ class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val fun
     override fun check(table: SymbolTable): Boolean {
         symTable = table
         funcList.forEach { it.checkNameAndAddToST(table) }
+        addCurrentFileToImported()
         val importFuncs = mutableListOf<FuncAST>()
         imports.forEach {
             if (!it.check(table)) {
@@ -52,6 +55,11 @@ class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val fun
             }
         }
         return true
+    }
+
+    private fun addCurrentFileToImported() {
+        val path = Main.waccFile.currentFilePath
+        Main.importedFiles[path] = this
     }
 
 

@@ -1,0 +1,25 @@
+# nested imports 1
+
+# Output:
+## 2
+## 3
+## 4
+
+#Exitcode:
+#* 0
+
+# Program:
+
+import nestedImports2.wacc
+
+begin
+  int funcOneAdd(int a) is
+    return a + 1
+  end
+  int x = call funcOneAdd(1);
+  int y = call funcTwoAdd(1);
+  int z = call funcThreeAdd(1);
+  println x;
+  println y;
+  println z
+end
