@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.Main.waccFile
+import wacc.backend.CodeGenerator
 import wacc.backend.generateCode
 import wacc.backend.printCode
 import wacc.extension.optimization.ConstantEvaluationVisitor
@@ -47,14 +48,17 @@ fun main(args: Array<String>) {
 
     val optimize = flags.contains("-o")
     val controlFlow = flags.contains("-cf")
+    CodeGenerator.constEvaluation = optimize || flags.contains("-ce")
+    CodeGenerator.registerAllocation = optimize || flags.contains("-ra")
 
     val inputFile = File(paths[0])
     waccFile = WaccFile(inputFile)
     waccFile.frontend()
 
-    if (optimize) {
-        waccFile.optimise()
+    if (CodeGenerator.constEvaluation) {
+        waccFile.constEvaluation()
     }
+
     if (controlFlow) {
         waccFile.controlFlowAnalysis()
     }
@@ -158,7 +162,7 @@ class WaccFile(val file: File) {
         return printCode(instrs)
     }
 
-    fun optimise() {
+    fun constEvaluation() {
         ast = ConstantEvaluationVisitor().visit(ast)
     }
     fun controlFlowAnalysis() {
