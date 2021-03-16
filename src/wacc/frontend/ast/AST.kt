@@ -1,7 +1,6 @@
 package wacc.frontend.ast
 
 import org.antlr.v4.runtime.ParserRuleContext
-import wacc.backend.translate.instruction.Instruction
 import wacc.frontend.SymbolTable
 
 /**

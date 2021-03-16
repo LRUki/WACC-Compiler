@@ -3,6 +3,7 @@ package backend
 import frontend.actionOnFiles
 import org.junit.Before
 import org.junit.Test
+import wacc.WaccFile
 import wacc.backend.CodeGenerator
 import wacc.backend.generateCode
 import wacc.backend.translate.instruction.*
@@ -10,11 +11,7 @@ import wacc.backend.translate.instruction.instructionpart.Condition
 import wacc.backend.translate.instruction.instructionpart.ImmediateIntMode
 import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.buildAST
-import wacc.checkSemantics
-import wacc.checkSyntax
 import wacc.frontend.ast.program.ProgramAST
-import wacc.parse
 import java.io.File
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -28,10 +25,11 @@ class TranslateTest {
     }
 
     private fun compileAndGenerate(file: File): List<Instruction> {
-        val program = parse(file.inputStream())
-        checkSyntax(program)
-        val ast = buildAST(program)
-        checkSemantics(ast)
+        val waccFile = WaccFile(file)
+        val program = waccFile.parse(file.inputStream())
+        waccFile.checkSyntax(program)
+        val ast = waccFile.buildAST(program)
+        waccFile.checkSemantics(ast)
         return generateCode(ast as ProgramAST)
     }
 

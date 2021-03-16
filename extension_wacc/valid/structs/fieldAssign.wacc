@@ -1,0 +1,12 @@
+# assignment of a field in a struct
+
+# Output:
+#
+
+# Program:
+
+begin
+  struct Person {int age; char grade;};
+  struct Person Bob = {42, 'A'};
+  Bob.age = 20
+end

@@ -1,0 +1,5 @@
+begin
+  while true do
+    skip
+  done
+end

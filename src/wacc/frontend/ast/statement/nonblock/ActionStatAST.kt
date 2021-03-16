@@ -24,7 +24,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         val exprType = expr.getRealType(table)
         when (action) {
             Action.FREE -> {
-                if (exprType is ArrayTypeAST || exprType is PairTypeAST) {
+                if (exprType is ArrayTypeAST || exprType is PairTypeAST || exprType is StructTypeAST) {
                     return true
                 }
                 semanticError("Expected type ARRAY or PAIR, Actual type $exprType", ctx)

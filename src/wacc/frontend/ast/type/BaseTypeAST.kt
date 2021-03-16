@@ -4,7 +4,7 @@ import wacc.frontend.ast.AbstractAST
 
 /**
  * AST node representing a Base Type
- * INT, CHAR, STRING, BOOL
+ * INT, CHAR, STRING, BOOLvi
  *
  * @property type Type declared by BaseType enum
  */
@@ -23,8 +23,12 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
         return (type == BaseType.BOOL) || (type == BaseType.CHAR)
     }
 
+    override fun isConcreteType(parentType: TypeAST?): Boolean {
+        return true
+    }
+
     override fun toString(): String {
-        return type.name
+        return type.name.toLowerCase()
     }
 
     override fun hashCode(): Int {
@@ -32,6 +36,6 @@ class BaseTypeAST(val type: BaseType) : TypeAST, AbstractAST() {
     }
 }
 
-enum class BaseType() {
-    INT(), BOOL(), CHAR(), STRING()
+enum class BaseType {
+    INT, BOOL, CHAR, STRING
 }

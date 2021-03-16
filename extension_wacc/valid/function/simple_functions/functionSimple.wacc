@@ -1,0 +1,26 @@
+# a simple function definition and call
+
+# Output:
+# 0
+
+# Program:
+
+begin
+  int f() is
+    return 0
+  end
+  int f(int n) is
+    return -1
+  end
+  int f(bool n) is
+    return -1
+  end
+  int f(char n) is
+    return -1
+  end
+  int f(string n) is
+    return -1
+  end
+  int x = call f() ;
+  println x 
+end

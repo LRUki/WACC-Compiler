@@ -1,5 +1,6 @@
 package wacc.backend.visitor
 
+import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.cLib
 import wacc.backend.CodeGenerator.dataDirective
 import wacc.backend.CodeGenerator.freeAllCalleeReg
@@ -13,15 +14,19 @@ import wacc.backend.translate.RuntimeErrors
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
+import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
+import wacc.frontend.ast.assign.StructAssignAST
+import wacc.frontend.ast.assign.StructFieldAssignAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairChoice
 import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -31,6 +36,8 @@ import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.*
+import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
+import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 
 /**
  * Visitor pattern for code generation.
@@ -240,7 +247,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         /** Translates the expression of the statment*/
         instrs.addAll(visit(ast.expr))
         val reg = seeLastUsedCalleeReg()
-        val exprType = ast.expr.getRealType(ast.symTable)
+        val exprType: TypeAST = ast.expr.getRealType(ast.symTable)
         if (ast.expr is ArrayElemAST) {
             var memType: MemoryType? = null
             if (exprType.isBoolOrChar()) {
@@ -292,6 +299,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                         instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
                         cLib.addCode(CLibrary.Call.PRINT_REFERENCE)
                     }
+                    is PointerTypeAST -> {
+                        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+                        instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.PRINT_REFERENCE.toString()), true))
+                        cLib.addCode(CLibrary.Call.PRINT_REFERENCE)
+                    }
                 }
                 if (ast.action == Action.PRINTLN) {
                     cLib.addCode(CLibrary.Call.PRINT_LN)
@@ -301,8 +313,22 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             Action.FREE -> {
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(seeLastUsedCalleeReg())))
-                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.Call.FREE_PAIR.toString()), true))
-                cLib.addCode(CLibrary.Call.FREE_PAIR)
+                val methodName = when (exprType) {
+                    is ArrayTypeAST -> {
+                        CLibrary.Call.FREE_ARRAY
+                    }
+                    is PairTypeAST -> {
+                        CLibrary.Call.FREE_PAIR
+                    }
+                    is StructTypeAST -> {
+                        CLibrary.Call.FREE_STRUCT
+                    }
+                    else -> {
+                        CLibrary.Call.FREE_ARRAY
+                    } // Should never reach here since the semantic check only allows the above
+                }
+                instrs.add(BranchInstr(Condition.AL, Label(methodName.toString()), true))
+                cLib.addCode(methodName)
                 freeCalleeReg()
             }
             Action.RETURN -> {
@@ -336,6 +362,9 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
             }
+            is PointerElemAST -> {
+                instrs.add(LoadInstr(Condition.AL, null, RegisterMode(calleeReg), calleeReg))
+            }
         }
 
         when (ast.lhs) {
@@ -353,21 +382,32 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.addAll(visit(ast.lhs))
                 instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
                 freeCalleeReg()
-
+            }
+            is PointerElemAST -> {
+                instrs.addAll(visit(ast.lhs))
+                instrs.add(StoreInstr(memtype, RegisterMode(seeLastUsedCalleeReg()), calleeReg))
+                freeCalleeReg()
+            }
+            is StructAccessAST -> {
+                val stackOffset = ast.symTable.findOffsetInStack(ast.lhs.structIdent.name)
+                val structReg = getNextFreeCalleeReg()
+                instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, stackOffset, false), structReg))
+                val accessOffset = ast.lhs.structDeclare.getOffsetInStruct(ast.lhs.fieldIdent)
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(structReg, accessOffset, false), calleeReg))
+                freeCalleeReg()
             }
         }
-
         freeCalleeReg()
-
         return instrs
-
     }
 
     /** Translates a Declare Statement AST */
     override fun visitDeclareStatAST(ast: DeclareStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         /** Translates the right hand side of the declare */
-        instrs.addAll(visit(ast.rhs))
+        if (ast.rhs !is StructAssignAST) {
+            instrs.addAll(visit(ast.rhs))
+        }
         if (ast.rhs is StrLiterAST) {
             ast.stringLabel = dataDirective.getStringLabel(ast.rhs.value)
         }
@@ -389,8 +429,28 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                     instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
                 }
             }
+            is StructTypeAST -> {
+                val structType = ast.type as StructTypeAST
+                val structInST = ast.symTable.lookupAll(structType.ident.name)
+
+                /** Checks that the struct we are looking for is in the symbol table*/
+                if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
+                    throw RuntimeException("Struct not in symbol table during Code gen")
+                }
+                val structDeclareAST = structInST.get() as StructDeclareAST
+                /** Mallocs space for all elements in the struct*/
+                instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(structDeclareAST.totalSizeOfFields), Register.R0))
+                instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+                val stackReg = getNextFreeCalleeReg()
+                instrs.add(MoveInstr(Condition.AL, stackReg, RegisterOperand(Register.R0)))
+                instrs.addAll(visit(ast.rhs))
+                instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, ast.symTable.findOffsetInStack(ast.ident.name), false), seeLastUsedCalleeReg()))
+                freeCalleeReg()
+                return instrs
+
+            }
         }
-        var offset = ast.symTable.offsetSize
+        val offset = ast.symTable.offsetSize
         when (ast.rhs) {
             is PairElemAST -> {
                 instrs.add(LoadInstr(Condition.AL, memtype, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
@@ -399,7 +459,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(LoadInstr(Condition.AL, null, RegisterMode(seeLastUsedCalleeReg()), seeLastUsedCalleeReg()))
             }
         }
-        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), Register.R4))
+        instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(Register.SP, offset, false), seeLastUsedCalleeReg()))
         freeCalleeReg()
 
         return instrs
@@ -491,6 +551,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Translates a Call RHS AST */
     override fun visitCallRhsAST(ast: CallRhsAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
+
         /** Translates arguements in reverse order */
         var totalBytes = 0
         val argTypesReversed = ast.argTypes.reversed()
@@ -499,7 +560,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             var memType: MemoryType? = null
             instrs.addAll(visit(arg))
             val reg = seeLastUsedCalleeReg()
-            val bytes = SymbolTable.getBytesOfType(argTypesReversed[index])
+            val bytes = getBytesOfType(argTypesReversed[index])
             totalBytes += bytes
             ast.symTable.callOffset = totalBytes
             if (argTypesReversed[index].isBoolOrChar()) {
@@ -523,10 +584,25 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Transaltes a Binary operator */
     override fun visitBinOpExprAST(ast: BinOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-        instrs.addAll(visit(ast.expr1))
-        var reg1 = seeLastUsedCalleeReg()
-        instrs.addAll(visit(ast.expr2))
-        var reg2 = seeLastUsedCalleeReg()
+        var reg1: Register
+        var reg2: Register
+
+        val flip = ast.expr1.weight() <= ast.expr2.weight()
+                && ast.binOp != IntBinOp.DIV && ast.binOp != IntBinOp.MOD
+        if (!flip) {
+            instrs.addAll(visit(ast.expr1))
+            reg1 = seeLastUsedCalleeReg()
+            instrs.addAll(visit(ast.expr2))
+            reg2 = seeLastUsedCalleeReg()
+        } else {
+//            if (ast.binOp == IntBinOp.DIV || ast.binOp == IntBinOp.MOD) {
+//                CodeGenerator.swapFirstTwoReg()
+//            }
+            instrs.addAll(visit(ast.expr2))
+            reg1 = seeLastUsedCalleeReg()
+            instrs.addAll(visit(ast.expr1))
+            reg2 = seeLastUsedCalleeReg()
+        }
 
         /** Decides whether to use accumulator and sets appropriate registers when required */
         var useAccumulator = false
@@ -538,27 +614,61 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
         /** Add appropriate instructions depending on instruction typeAdd opUse different instructions for accumulator when required */
         when (ast.binOp) {
-            BinOp.PLUS -> {
+            IntBinOp.PLUS -> {
                 if (!useAccumulator) {
-                    instrs.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    if (!ast.pointerOp) {
+                        instrs.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                    } else {
+                        instrs.add(AddInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 } else {
                     instrs.add(PopInstr(Register.R11))
-                    instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    if (!ast.pointerOp) {
+                        instrs.add(AddInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    } else {
+                        instrs.add(AddInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                    }
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
-            BinOp.MINUS -> {
-                if (!useAccumulator) {
-                    instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+            IntBinOp.MINUS -> {
+                if (!flip) {
+                    if (!useAccumulator) {
+                        if (!ast.pointerOp) {
+                            instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                        } else {
+                            instrs.add(SubInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                        }
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        if (!ast.pointerOp) {
+                            instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                        } else {
+                            instrs.add(SubInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                        }
+                    }
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(SubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                    if (!useAccumulator) {
+                        if (!ast.pointerOp) {
+                            instrs.add(ReverseSubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
+                        } else {
+                            instrs.add(ReverseSubInstr(Condition.AL, reg1, reg1, RegShiftOffsetOperand(reg2, ShiftType.LSL, ast.shiftOffset), true))
+                        }
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        if (!ast.pointerOp) {
+                            instrs.add(ReverseSubInstr(Condition.AL, reg1, reg2, RegisterOperand(reg1), true))
+                        } else {
+                            instrs.add(ReverseSubInstr(Condition.AL, reg1, reg2, RegShiftOffsetOperand(reg1, ShiftType.LSL, ast.shiftOffset), true))
+                        }
+                    }
+
                 }
                 instrs.add(BranchInstr(Condition.VS, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
-            BinOp.MULT -> {
+            IntBinOp.MULT -> {
                 val shiftAmount = 31
                 if (!useAccumulator) {
                     instrs.add(MultInstr(Condition.AL, reg1, reg2, reg1, reg2))
@@ -570,7 +680,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(BranchInstr(Condition.NE, RuntimeErrors.throwOverflowErrorLabel, true))
                 runtimeErrors.addOverflowError()
             }
-            BinOp.DIV -> {
+            IntBinOp.DIV -> {
                 val assemblyDivideFunName = "__aeabi_idiv"
                 if (!useAccumulator) {
                     instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
@@ -585,7 +695,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(BranchInstr(Condition.AL, Label(assemblyDivideFunName), true))
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R0)))
             }
-            BinOp.MOD -> {
+            IntBinOp.MOD -> {
                 val assemblyDivModFunName = "__aeabi_idivmod"
                 if (!useAccumulator) {
                     instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
@@ -600,7 +710,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(BranchInstr(Condition.AL, Label(assemblyDivModFunName), true))
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
             }
-            BinOp.EQ -> {
+            CmpBinOp.EQ -> {
                 if (!useAccumulator) {
                     instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 } else {
@@ -611,7 +721,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(MoveInstr(Condition.NE, reg1, ImmediateBoolOperand(false)))
             }
 
-            BinOp.NEQ -> {
+            CmpBinOp.NEQ -> {
                 if (!useAccumulator) {
                     instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 } else {
@@ -621,48 +731,94 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(MoveInstr(Condition.NE, reg1, ImmediateBoolOperand(true)))
                 instrs.add(MoveInstr(Condition.EQ, reg1, ImmediateBoolOperand(false)))
             }
-            BinOp.LTE -> {
-                if (!useAccumulator) {
-                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+            CmpBinOp.LTE -> {
+                if (!flip) {
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(false)))
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(false)))
                 }
-                instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(true)))
-                instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(false)))
+
             }
-            BinOp.LT -> {
-                if (!useAccumulator) {
-                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+            CmpBinOp.LT -> {
+                if (!flip) {
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(false)))
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(false)))
                 }
-                instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(true)))
-                instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(false)))
             }
-            BinOp.GTE -> {
-                if (!useAccumulator) {
-                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+            CmpBinOp.GTE -> {
+                if (!flip) {
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(false)))
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(false)))
                 }
-                instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(true)))
-                instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(false)))
             }
-            BinOp.GT -> {
-                if (!useAccumulator) {
-                    instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+            CmpBinOp.GT -> {
+                if (!flip) {
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(false)))
                 } else {
-                    instrs.add(PopInstr(Register.R11))
-                    instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    if (!useAccumulator) {
+                        instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
+                    } else {
+                        instrs.add(PopInstr(Register.R11))
+                        instrs.add(CompareInstr(reg2, RegisterOperand(reg1)))
+                    }
+                    instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(true)))
+                    instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(false)))
                 }
-                instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(true)))
-                instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(false)))
+
             }
 
-            BinOp.AND -> {
+            BoolBinOp.AND -> {
                 if (!useAccumulator) {
                     instrs.add(AndInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
                 } else {
@@ -671,7 +827,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
                 }
             }
-            BinOp.OR -> {
+            BoolBinOp.OR -> {
                 if (!useAccumulator) {
                     instrs.add(OrInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
                 } else {
@@ -710,6 +866,37 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             }
             UnOp.CHR -> {
                 // Intentionally Left Blank
+            }
+            UnOp.REF -> {
+                when (ast.expr) {
+                    is IdentAST -> {
+                        val ident = ast.expr
+
+                        /** Computes offset to push down the stack pointer */
+                        var stackOffset = ident.symTable.findOffsetInStack(ident.name)
+                        stackOffset += ident.symTable.checkParamInFuncSymbolTable(ident.name) + ident.symTable.callOffset
+                        instrs.add(AddInstr(Condition.AL, reg1, Register.SP, ImmediateIntOperand(stackOffset), false))
+                    }
+                    is ArrayElemAST -> {
+                        // Intentionally leave blank
+                    }
+                }
+                instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(reg1)))
+            }
+            UnOp.DEREF -> {
+                /** Translates the expression */
+                if (ast.expr is ArrayElemAST) {
+                    instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
+                }
+                instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
+                instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
+                runtimeErrors.addNullReferenceCheck()
+                var memType: MemoryType? = null
+                if ((ast.expr.getRealType(ast.symTable) as PointerTypeAST).type.isBoolOrChar()) {
+                    memType = MemoryType.SB
+                }
+                instrs.add(LoadInstr(Condition.AL, memType, RegisterMode(reg1), reg1))
+
             }
         }
         return instrs
@@ -763,6 +950,19 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         } else {
             instrs.add(LoadInstr(Condition.AL, null, RegisterAddrWithOffsetMode(reg, pointerOffset, false), reg))
         }
+        return instrs
+    }
+
+    override fun visitPointerElemAST(ast: PointerElemAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        /** Translates the expression */
+        instrs.addAll(visit(ast.ident))
+        val reg = seeLastUsedCalleeReg()
+        instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
+        instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
+        runtimeErrors.addNullReferenceCheck()
+//        instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg), reg))
+
         return instrs
     }
 
@@ -886,4 +1086,49 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         return emptyList()
     }
 
+    /** Translates a Struct Declare AST. Requires no code generation */
+    override fun visitStructDeclareAST(ast: StructDeclareAST): List<Instruction> {
+        return emptyList()
+    }
+
+    override fun visitStructAssignAST(ast: StructAssignAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        val symbolTable = ast.symTable
+        var memtype: MemoryType? = null
+        val stackReg = seeLastUsedCalleeReg()
+        var fieldOffset = 0
+        for (assign in ast.assignments) {
+            instrs.addAll(visit(assign))
+            val assignType = assign.getRealType(symbolTable)
+//            instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(SymbolTable.getBytesOfType(assignType)), Register.R0))
+//            instrs.add(BranchInstr(Condition.AL, Label(CLibrary.LibraryFunctions.MALLOC.toString()), true))
+            if (assignType.isBoolOrChar()) {
+                memtype = MemoryType.B
+            }
+            instrs.add(StoreInstr(memtype, RegisterAddrWithOffsetMode(stackReg, fieldOffset, false), seeLastUsedCalleeReg()))
+            freeCalleeReg()
+            fieldOffset += getBytesOfType(assign.getRealType(symbolTable))
+//            instrs.add(StoreInstr(null, RegisterMode(stackReg), Register.R0))
+
+        }
+        return instrs
+    }
+
+    override fun visitStructAccessAST(ast: StructAccessAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        val memtype: MemoryType? = null
+        var stackOffset = ast.symTable.findOffsetInStack(ast.structIdent.name)
+        stackOffset += ast.symTable.checkParamInFuncSymbolTable(ast.structIdent.name)
+        val resultReg = getNextFreeCalleeReg()
+        val structReg = getNextFreeCalleeReg()
+        instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(Register.SP, stackOffset, false), structReg))
+        val accessOffset = ast.structDeclare.getOffsetInStruct(ast.fieldIdent)
+        instrs.add(LoadInstr(Condition.AL, memtype, RegisterAddrWithOffsetMode(structReg, accessOffset, false), resultReg))
+        freeCalleeReg()
+        return instrs
+    }
+
+    override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): List<Instruction> {
+        TODO("Not yet implemented")
+    }
 }

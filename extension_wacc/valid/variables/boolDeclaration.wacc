@@ -1,0 +1,10 @@
+# simple boolean variable declaration
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  var b = false
+end

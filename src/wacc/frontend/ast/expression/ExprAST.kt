@@ -3,18 +3,21 @@ package wacc.frontend.ast.expression
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.ast.type.ArrayTypeAST
-import wacc.frontend.ast.type.BaseType
-import wacc.frontend.ast.type.BaseTypeAST
-import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.*
 import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
 import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 import wacc.frontend.ast.type.TypeInstance.intTypeInstance
 import wacc.frontend.ast.type.TypeInstance.stringTypeInstance
 import wacc.frontend.exception.semanticError
+import java.util.function.BiFunction
 
-interface ExprAST : RhsAST
+interface ExprAST : RhsAST {
+    fun weight(): Int {
+        return 1
+    }
+}
 
 /**
  * AST node to represent an expression with a Binary Operation
@@ -24,6 +27,9 @@ interface ExprAST : RhsAST
  * @property expr2 Second Expression
  */
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
+    var weight = -1
+    var pointerOp = false
+    var shiftOffset = 0
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -34,19 +40,31 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         val type1 = expr1.getRealType(table)
         val type2 = expr2.getRealType(table)
 
+        // Allow pointer arithmetic
+        if (type1 is PointerTypeAST && type2 == intTypeInstance
+                && (binOp == IntBinOp.PLUS || binOp == IntBinOp.MINUS)) {
+            pointerOp = true
+            shiftOffset = when (type1.type) {
+                charTypeInstance -> 0
+                boolTypeInstance -> 0
+                else -> 2
+            }
+            return true
+        }
+
         if (type1 != type2) {
             semanticError("Expected type $type1, Actual type $type2", ctx)
             return false
         }
+
         when (binOp) {
-            BinOp.MULT, BinOp.DIV, BinOp.MOD,
-            BinOp.PLUS, BinOp.MINUS -> {
+            is IntBinOp -> {
                 if (type1 == intTypeInstance) {
                     return true
                 }
                 semanticError("Expected type INT, Actual type $type1", ctx)
             }
-            BinOp.LTE, BinOp.LT, BinOp.GTE, BinOp.GT -> {
+            CmpBinOp.LTE, CmpBinOp.LT, CmpBinOp.GTE, CmpBinOp.GT -> {
                 if (type1 == intTypeInstance ||
                         type1 == charTypeInstance ||
                         type1 == stringTypeInstance) {
@@ -54,7 +72,7 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 }
                 semanticError("Expected type INT, CHAR or STRING, Actual type $type1", ctx)
             }
-            BinOp.AND, BinOp.OR -> {
+            is BoolBinOp -> {
                 if (type1 == boolTypeInstance) {
                     return true
                 }
@@ -62,37 +80,93 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
             }
             else -> return true
         }
+
         return false
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {
-        return when (binOp) {
-            BinOp.MULT, BinOp.DIV, BinOp.MOD,
-            BinOp.PLUS, BinOp.MINUS -> {
-                BaseTypeAST(BaseType.INT)
-            }
-
-            BinOp.EQ, BinOp.NEQ, BinOp.LTE, BinOp.LT,
-            BinOp.GTE, BinOp.GT, BinOp.AND, BinOp.OR -> {
-                BaseTypeAST(BaseType.BOOL)
-            }
+        // Allow pointer arithmetic
+        if (pointerOp) {
+            return expr1.getRealType(table)
         }
+
+        return if (binOp is IntBinOp)
+            BaseTypeAST(BaseType.INT)
+        else
+            BaseTypeAST(BaseType.BOOL)
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitBinOpExprAST(this)
     }
 
+    override fun weight(): Int {
+        if (weight < 0) {
+            val c1 = Math.max(expr1.weight(), expr2.weight() + 1) //if we select e1 first
+            val c2 = Math.max(expr1.weight() + 1, expr2.weight()) //if we select e2 first
+            weight = Math.min(c1, c2)
+        }
+        return weight
+    }
+
 }
 
-enum class BinOp {
-    MULT, DIV, MOD,
-    PLUS, MINUS,
-    LTE, LT, GTE, GT,
-    EQ, NEQ,
-    AND,
-    OR
+
+interface BinOp
+
+enum class IntBinOp : BinOp, BiFunction<Int, Int, Int> {
+    PLUS {
+        override fun apply(t: Int, u: Int): Int {
+            return t + u
+        }
+
+    },
+    MINUS {
+        override fun apply(t: Int, u: Int): Int {
+            return t - u
+        }
+    },
+    MULT {
+        override fun apply(t: Int, u: Int): Int {
+            return t * u
+        }
+    },
+    DIV {
+        override fun apply(t: Int, u: Int): Int {
+            return t / u
+        }
+    },
+    MOD {
+        override fun apply(t: Int, u: Int): Int {
+            return t % u
+        }
+    };
+
+
 }
+
+enum class BoolBinOp : BinOp, BiFunction<Boolean, Boolean, Boolean> {
+    AND {
+        override fun apply(t: Boolean, u: Boolean): Boolean {
+            return t and u
+        }
+    },
+    OR {
+        override fun apply(t: Boolean, u: Boolean): Boolean {
+            return t or u
+        }
+    }
+}
+
+enum class CmpBinOp : BinOp {
+    LTE,
+    LT,
+    GTE,
+    GT,
+    EQ,
+    NEQ,
+}
+
 
 /**
  * AST node to represent an expression with a Unary Operation
@@ -101,8 +175,9 @@ enum class BinOp {
  * @property expr Expression to operate on
  */
 class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
-
+    var weight = -1
     override fun check(table: SymbolTable): Boolean {
+        symTable = table
         if (!expr.check(table)) {
             return false
         }
@@ -133,6 +208,19 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
                 }
                 semanticError("Expected type CHAR, Actual type $exprType", ctx)
             }
+            UnOp.REF -> {
+                if (expr is IdentAST || expr is ArrayElemAST) {
+                    return true
+                }
+                semanticError("Referencing is not supported for a value not in memory", ctx)
+            }
+            UnOp.DEREF -> {
+                if (exprType is PointerTypeAST) {
+                    return true
+                }
+                semanticError("Unable to dereference non-pointer type $exprType", ctx)
+
+            }
         }
         return false
     }
@@ -142,14 +230,29 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
             UnOp.NOT -> BaseTypeAST(BaseType.BOOL)
             UnOp.CHR -> BaseTypeAST(BaseType.CHAR)
             UnOp.MINUS, UnOp.LEN, UnOp.ORD -> BaseTypeAST(BaseType.INT)
+            UnOp.REF -> {
+                val exprType = expr.getRealType(table)
+                PointerTypeAST(exprType)
+            }
+            UnOp.DEREF -> {
+                val exprType = expr.getRealType(table)
+                (exprType as PointerTypeAST).type
+            }
         }
     }
 
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitUnOpExprAST(this)
     }
+
+    override fun weight(): Int {
+        if (weight < 0) {
+            weight = expr.weight()
+        }
+        return weight
+    }
 }
 
 enum class UnOp {
-    NOT, MINUS, LEN, ORD, CHR
+    NOT, MINUS, LEN, ORD, CHR, REF, DEREF
 }

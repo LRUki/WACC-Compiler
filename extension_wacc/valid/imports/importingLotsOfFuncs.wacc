@@ -1,0 +1,33 @@
+# file being imported
+
+# Output:
+## 5
+## 7
+## 10
+## 9
+## 9
+## 5
+## 5
+
+#Exitcode:
+#* 0
+
+# Program:
+
+import fileWithLotsOfFuncs.wacc
+
+begin
+  int fileTwo(int x) is
+    println x;
+    return x + 2
+  end
+  int x = call fileTwo(5);
+  println x;
+  int y = call inc(9);
+  println y;
+  y = call dec(y);
+  println y;
+  y = call f(y);
+  println y
+
+end

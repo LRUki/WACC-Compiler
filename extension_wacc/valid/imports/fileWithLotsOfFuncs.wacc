@@ -1,0 +1,49 @@
+# file being imported with lots of functions
+
+# Output:
+## 1
+
+#Exitcode:
+#* 0
+
+# Program:
+
+begin
+  int fileTwo(int x) is
+    println x;
+    return x + 2
+  end
+
+  int inc(int x) is
+    return x + 1
+  end
+
+  int dec(int x) is
+    return x - 1
+  end
+
+  char doSomething(int a, bool b, char c, string d, bool[] e, int[] f) is
+    print "a is " ;
+    println a ;
+    print "b is " ;
+    println b ;
+    print "c is " ;
+    println c ;
+    print "d is " ;
+    println d ;
+    print "e is " ;
+    println e ;
+    print "f is " ;
+    println f ;
+    return 'g'
+  end
+
+  int f(int x) is
+    println x;
+    x = 5;
+    println x;
+    return x
+  end
+
+  println 1
+end
