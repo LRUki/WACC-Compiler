@@ -18,10 +18,13 @@ import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.expression.StrLiterAST
+import wacc.frontend.ast.expression.StructAccessAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*
@@ -43,6 +46,27 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         if (!rhs.check(table)) {
             return false
         }
+        if (rhs is StructAccessAST) {
+            val structFromIdent = table.lookup(rhs.structIdent.name)
+            if (structFromIdent.isEmpty) {
+                semanticError("Setting fields for a non-declared struct", ctx)
+                return false
+            }
+            val structUsageInST = structFromIdent.get()
+            val structName =
+                    if (structUsageInST is ParamAST) {
+                        (structUsageInST.type as StructTypeAST).ident.name
+                    } else {
+                        val structDeclareInST = structFromIdent.get() as DeclareStatAST
+                        (structDeclareInST.type as StructTypeAST).ident.name
+                    }
+            val structInST = table.lookupAll(structName)
+            if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
+                semanticError("Declared instance of non-existing type struct $structName", ctx)
+                return false
+            }
+        }
+
         val identName = table.lookup(ident.name)
         val rhsType = rhs.getRealType(table)
         if (identName.isPresent && identName.get() !is FuncAST) {
@@ -64,6 +88,33 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
             }
         }
 
+        if (type is StructTypeAST) {
+            val structInTable = table.lookupAll((type as StructTypeAST).ident.name)
+            if (structInTable.isEmpty || structInTable.get() !is StructDeclareAST) {
+                semanticError("Struct has not been declared before use", ctx)
+                return false
+            }
+            val structFields = (structInTable.get() as StructDeclareAST).fields
+            val structFieldTypes = structFields.map { it.type }
+            if (rhs !is StructAssignAST) {
+                semanticError("Invalid method of assigning to a struct", ctx)
+                return false
+            }
+            if (structFieldTypes.size > rhs.assignments.size) {
+                semanticError("Some fields of the struct are not being assigned", ctx)
+                return false
+            }
+            if (structFieldTypes.size < rhs.assignments.size) {
+                semanticError("attempting to assign to more fields than the struct has", ctx)
+                return false
+            }
+            for (i in structFieldTypes.indices) {
+                if (!rhs.assignments[i].getRealType(table).equals(structFieldTypes[i])) {
+                    semanticError("Invalid assignment: Trying to assign ${rhs.assignments[i].getRealType(table)} to ${structFieldTypes[i]}", ctx)
+                    return false
+                }
+            }
+        }
         table.add(ident.name, this)
         return true
     }

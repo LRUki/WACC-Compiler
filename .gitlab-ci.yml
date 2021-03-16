@@ -73,6 +73,25 @@ test-const-evaluation:
     - echo "Testing const evaluation"
     - ./gradlew test --tests extension.ConstantEvaluationTest
 
+test-syntax-extension:
+  stage: test-extension
+  script:
+    - echo "Testing syntax"
+    - make clean rules
+    - ./gradlew test --tests extension.SyntaxTest
+
+test-semantic-extension:
+  stage: test-extension
+  script:
+    - echo "Testing semantics"
+    - make clean rules
+    - ./gradlew test --tests extension.SemanticTest
+test-control-flow:
+  stage: test-extension
+  script:
+    - echo "Testing control flow"
+    - ./gradlew test --tests extension.ControlFlowTest
+
 
 test-new-feature-integration:
   stage: test-extension

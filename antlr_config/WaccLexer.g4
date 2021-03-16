@@ -20,7 +20,11 @@ FOR: 'for';
 DO: 'do' ;
 DONE: 'done' ;
 NULL: 'null' ;
+//struct
 STRUCT: 'struct' ;
+DOT: '.' ;
+//imports
+IMPORT: 'import' ;
 
 ASSIGN: '=' ;
 SEMICOLON: ';' ;
@@ -42,6 +46,9 @@ STRING: 'string' ;
 
 //implicit types
 VAR: 'var' ;
+
+//void return type
+VOID: 'void' ;
 
 //unary operators
 NOT: '!' ;
@@ -78,11 +85,13 @@ NUMBER : DIGIT+ ;
 fragment DIGIT: [0-9] ; 
 
 //identifier
+CAPTIALISED_IDENT: ([A-Z] | '_')(([a-zA-Z0-9]) | '_')* ;
 IDENT: ([a-zA-Z] | '_')(([a-zA-Z0-9]) | '_')* ;
 
 WHITESPACE: [ \n\t\r]+ -> skip ;
 ESCAPE_CHARACTER: [0btnfr"'\\] ;
 CHARACTER: ~[\\'"] | '\\' ESCAPE_CHARACTER ;
+
 
 //string literal
 STR_LITER: '"' (CHARACTER)* '"' ;

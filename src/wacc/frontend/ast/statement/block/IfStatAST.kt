@@ -1,21 +1,10 @@
 package wacc.frontend.ast.statement.block
 
-import wacc.backend.CodeGenerator.freeAllCalleeReg
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.getNextLabel
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.statement.StatAST
-import wacc.frontend.ast.statement.nonblock.Action
-import wacc.frontend.ast.statement.nonblock.ActionStatAST
 import wacc.frontend.ast.type.TypeInstance
 import wacc.frontend.exception.semanticError
 
@@ -61,5 +50,6 @@ class IfStatAST(val cond: ExprAST, val thenBody: List<StatAST>, val elseBody: Li
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitIfStatAST(this)
     }
+
 
 }

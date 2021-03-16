@@ -45,7 +45,8 @@ class CLibrary {
         PRINT_REFERENCE,
         PRINT_LN,
         FREE_ARRAY,
-        FREE_PAIR;
+        FREE_PAIR,
+        FREE_STRUCT;
 
         override fun toString(): String {
             return "p_${super.toString().toLowerCase()}"
@@ -72,11 +73,13 @@ class CLibrary {
             Call.PRINT_LN -> generatePrintLnCall()
             Call.FREE_PAIR -> generateFreePairCall()
             Call.FREE_ARRAY -> generateFreeArrayCall()
+            Call.FREE_STRUCT -> generateFreeStructCall()
         }
         instructions.add(callLabel)
         instructions.addAll(body)
         libraryCalls[call] = instructions
     }
+
 
     /** Adds all the individual blocks of code in the hash map together and returns the result.*/
     fun translate(): List<Instruction> {
@@ -284,8 +287,8 @@ class CLibrary {
          */
     }
 
-    /** Generates the block of code for free array call */
-    fun generateFreeArrayCall(): List<Instruction> {
+    /** Generates the code for freeing a single malloced object */
+    private fun freeSingleMallocedObject(): List<Instruction> {
         val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
         val errorLabel = CodeGenerator.dataDirective.addStringLabel(errorMessage)
 
@@ -304,4 +307,15 @@ class CLibrary {
          * POP {pc}
          */
     }
+
+    /** Generates the block of code for free array call */
+    fun generateFreeArrayCall(): List<Instruction> {
+        return freeSingleMallocedObject()
+    }
+
+    /** Generates the block of code for freeing a struct */
+    fun generateFreeStructCall(): List<Instruction> {
+        return freeSingleMallocedObject()
+    }
+
 }

@@ -1,0 +1,12 @@
+# struct used before it has been defined
+
+# Output:
+#
+
+# Program:
+
+begin
+  struct Person krishan = {20, 'A'};
+  struct Person nasir = {19, 'x'};
+  struct Person {int age; char grade;}
+end

@@ -1,17 +1,6 @@
 package wacc.frontend.ast.expression
 
-import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.getNextFreeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.MemoryType
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.*
-import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
-import wacc.frontend.SymbolTable.Companion.getBytesOfType
 import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
@@ -56,6 +45,7 @@ class CharLiterAST(val value: Char) : LiterAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitCharLiterAST(this)
     }
+
 }
 
 class NullPairLiterAST : LiterAST {
@@ -66,12 +56,12 @@ class NullPairLiterAST : LiterAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitNullPairLiterAST(this)
     }
+
 }
 
 class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     lateinit var arrayType: TypeAST
     lateinit var symTable: SymbolTable
-
     override fun check(table: SymbolTable): Boolean {
         for (value in values) {
             if (!value.check(table)) {
@@ -99,4 +89,5 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitArrayLiterAST(this)
     }
+
 }

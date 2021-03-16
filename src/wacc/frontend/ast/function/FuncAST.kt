@@ -20,7 +20,6 @@ import wacc.frontend.exception.semanticError
  */
 class FuncAST(val type: TypeAST, var ident: IdentAST,
               val paramList: List<ParamAST>, val body: List<StatAST>) : AbstractAST(), Identifiable {
-
     override fun check(table: SymbolTable): Boolean {
         //create a symbol table for the function and add all parameters to it
         symTable = FuncSymbolTable(table, this)

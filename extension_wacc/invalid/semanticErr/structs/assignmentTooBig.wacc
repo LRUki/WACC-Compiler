@@ -1,0 +1,11 @@
+# assign too many members to a struct
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  struct Person {int age; char grade;};
+  struct Person mary = {20, 'a', "banana"}
+end

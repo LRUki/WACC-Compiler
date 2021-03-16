@@ -2,16 +2,15 @@ package wacc.extension.optimization
 
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.AstVisitor
+import wacc.frontend.ast.OptimisationVisitor
 import wacc.frontend.ast.array.ArrayElemAST
-import wacc.frontend.ast.assign.CallRhsAST
-import wacc.frontend.ast.assign.LhsAST
-import wacc.frontend.ast.assign.NewPairRhsAST
-import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.assign.*
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.pointer.PointerElemAST
+import wacc.frontend.ast.program.ImportAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
@@ -20,23 +19,24 @@ import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
-import wacc.frontend.ast.statement.nonblock.ActionStatAST
-import wacc.frontend.ast.statement.nonblock.AssignStatAST
-import wacc.frontend.ast.statement.nonblock.DeclareStatAST
-import wacc.frontend.ast.statement.nonblock.ReadStatAST
+import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.TypeAST
 
-class ConstantEvaluationVisitor: AstVisitor<AST> {
+class ConstantEvaluationVisitor: OptimisationVisitor() {
     override fun visitProgramAST(ast: ProgramAST): AST {
+        val importList = mutableListOf<ImportAST>()
+        ast.imports.forEach {
+            importList.add(visit(it) as ImportAST)
+        }
         val funcList = mutableListOf<FuncAST>()
-        ast.funcList.forEach{
-            funcList.add( visit(it) as FuncAST)
+        ast.funcList.forEach {
+            funcList.add(visit(it) as FuncAST)
         }
         val stats = mutableListOf<StatAST>()
-        ast.stats.forEach{
+        ast.stats.forEach {
             stats.add(visit(it) as StatAST)
         }
-        val programAST = ProgramAST(funcList, stats)
+        val programAST = ProgramAST(importList, stats, funcList)
         programAST.symTable = ast.symTable
         return programAST
     }
@@ -245,9 +245,20 @@ class ConstantEvaluationVisitor: AstVisitor<AST> {
         return ast
     }
 
-    override fun visitForStatAST(ast: ForStatAST): AST {
+    override fun visitStructDeclareAST(ast: StructDeclareAST): AST {
         TODO("Not yet implemented")
     }
 
+    override fun visitStructAssignAST(ast: StructAssignAST): AST {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitStructAccessAST(ast: StructAccessAST): AST {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): AST {
+        TODO("Not yet implemented")
+    }
 
 }

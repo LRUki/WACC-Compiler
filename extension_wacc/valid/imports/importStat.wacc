@@ -1,0 +1,25 @@
+# importing another wacc file
+
+# Output:
+## true
+## 6
+## a
+## 8
+
+#Exitcode:
+#* 0
+
+# Program:
+
+import importStat2.wacc
+
+begin
+  char fileOne(bool t) is
+    println t;
+    return 'a'
+  end
+  char x = call fileOne(true);
+  int y = call fileTwo(6);
+  println x;
+  println y
+end

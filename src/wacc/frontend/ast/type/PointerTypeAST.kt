@@ -20,6 +20,7 @@ class PointerTypeAST(val type: TypeAST) : TypeAST, Identifiable {
         return true
     }
 
+
     override fun hashCode(): Int {
         return type.hashCode()
     }
