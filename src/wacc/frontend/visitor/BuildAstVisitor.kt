@@ -119,6 +119,23 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         return actionStatAST
     }
 
+    override fun visitCallStat(ctx: WaccParser.CallStatContext): AST {
+        // Build the CallRhsAST in the same way as in visitAssignRhs()
+        var argList = emptyList<ExprAST>()
+        if (ctx.argList() != null) {
+            for (expr in ctx.argList().expr()) {
+                argList += visit(expr) as ExprAST
+            }
+        }
+        val callRhsAST = CallRhsAST(visit(ctx.ident()) as IdentAST, argList)
+        callRhsAST.ctx = ctx
+
+        // Build the CallStatAST from the CallRhsAST built
+        val callStatAST = CallStatAST(callRhsAST)
+        callStatAST.ctx = ctx
+        return callStatAST
+    }
+
     override fun visitAssignStat(ctx: WaccParser.AssignStatContext): AST {
         val assignStatAST = AssignStatAST(visit(ctx.assignLhs()) as LhsAST,
                 visit(ctx.assignRhs()) as RhsAST)

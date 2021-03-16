@@ -13,6 +13,7 @@ paramList: param (COMMA param)*;
 param: type ident;
 
 stat: SKIP_TOKEN                                      #skipStat
+      | CALL ident L_PAREN argList? R_PAREN           #callStat
       | (type | implicitType) ident ASSIGN assignRhs  #declareStat
       | assignLhs ASSIGN assignRhs                    #assignStat
       | structDeclare                                 #structDeclareStat

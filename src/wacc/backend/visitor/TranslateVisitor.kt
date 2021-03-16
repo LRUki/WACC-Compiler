@@ -1,6 +1,5 @@
 package wacc.backend.visitor
 
-import wacc.backend.CodeGenerator
 import wacc.backend.CodeGenerator.cLib
 import wacc.backend.CodeGenerator.dataDirective
 import wacc.backend.CodeGenerator.freeAllCalleeReg
@@ -36,8 +35,6 @@ import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.*
-import wacc.frontend.ast.type.TypeInstance.boolTypeInstance
-import wacc.frontend.ast.type.TypeInstance.charTypeInstance
 
 /**
  * Visitor pattern for code generation.
@@ -339,6 +336,24 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
     }
 
+    /** Translates a Call Statement AST */
+    override fun visitCallStatAST(ast: CallStatAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        /** Translates the right hand side of the assignment */
+        instrs.addAll(visit(ast.rhs))
+
+        val rhsType = ast.rhs.getRealType(ast.symTable)
+        var memtype: MemoryType? = null
+        if (rhsType is BaseTypeAST) {
+            if (rhsType.isBoolOrChar()) {
+                memtype = MemoryType.B
+            }
+        }
+
+        freeCalleeReg()
+        return instrs
+    }
+
     /** Translates a Assign Statement AST */
     override fun visitAssignStatAST(ast: AssignStatAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
@@ -584,12 +599,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     /** Transaltes a Binary operator */
     override fun visitBinOpExprAST(ast: BinOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
-        var reg1:Register
-        var reg2:Register
+        var reg1: Register
+        var reg2: Register
 
-        val flip = ast.expr1.weight() <= ast.expr2.weight()
+        val reverse = ast.expr1.weight() <= ast.expr2.weight()
                 && ast.binOp != IntBinOp.DIV && ast.binOp != IntBinOp.MOD
-        if (!flip) {
+        if (!reverse) {
             instrs.addAll(visit(ast.expr1))
             reg1 = seeLastUsedCalleeReg()
             instrs.addAll(visit(ast.expr2))
@@ -633,7 +648,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 runtimeErrors.addOverflowError()
             }
             IntBinOp.MINUS -> {
-                if (!flip) {
+                if (!reverse) {
                     if (!useAccumulator) {
                         if (!ast.pointerOp) {
                             instrs.add(SubInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
@@ -732,7 +747,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 instrs.add(MoveInstr(Condition.EQ, reg1, ImmediateBoolOperand(false)))
             }
             CmpBinOp.LTE -> {
-                if (!flip) {
+                if (!reverse) {
                     if (!useAccumulator) {
                         instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                     } else {
@@ -754,7 +769,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
 
             }
             CmpBinOp.LT -> {
-                if (!flip) {
+                if (!reverse) {
                     if (!useAccumulator) {
                         instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                     } else {
@@ -775,7 +790,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
             }
             CmpBinOp.GTE -> {
-                if (!flip) {
+                if (!reverse) {
                     if (!useAccumulator) {
                         instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                     } else {
@@ -796,7 +811,7 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
                 }
             }
             CmpBinOp.GT -> {
-                if (!flip) {
+                if (!reverse) {
                     if (!useAccumulator) {
                         instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                     } else {
@@ -1130,4 +1145,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
     override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): List<Instruction> {
         TODO("Not yet implemented")
     }
+
+
 }
