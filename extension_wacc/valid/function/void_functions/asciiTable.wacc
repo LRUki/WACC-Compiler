@@ -104,17 +104,17 @@
 # Program:
 
 begin
-  bool printLine(int n) is
+  void printLine(int n) is
     int i = 0 ;
     while i < n do
       print "-" ;
       i = i + 1
     done ;
     println "" ;
-    return true
+    return
   end
 
-  bool printMap(int n) is
+  void printMap(int n) is
     print "|  " ;
     if n <100 then
       print " "
@@ -125,7 +125,7 @@ begin
     print " = " ;
     print chr n ;
     println "  |" ; 
-    return true
+    return
   end
 
   println "Asci character lookup table:" ;

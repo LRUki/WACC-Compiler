@@ -19,6 +19,7 @@ stat: SKIP_TOKEN                                      #skipStat
       | structDeclare                                 #structDeclareStat
       | READ assignLhs                                #readStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
+      | RETURN                                        #voidReturnStat
       | IF expr THEN stat ELSE stat FI                #ifStat
       | WHILE expr DO stat DONE                       #whileStat
       | BEGIN stat END                                #blockStat

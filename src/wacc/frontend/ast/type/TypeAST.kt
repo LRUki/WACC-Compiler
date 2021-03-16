@@ -76,6 +76,10 @@ class VoidTypeAST : TypeAST {
         return "void"
     }
 
+    /**
+     * void is not a concrete type so a void function cannot be assigned to
+     * an implicitly typed variable, as it doesn't return anything.
+     */
     override fun isConcreteType(parentType: TypeAST?): Boolean {
         return false
     }

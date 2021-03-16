@@ -160,6 +160,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
             if (lastStat.action == Action.EXIT) {
                 hasReturn = true
             }
+        } else if ((lastStat is VoidReturnStatAST)) {
+            hasReturn = true
+            instrs.add(AddInstr(Condition.AL, Register.SP, Register.SP, ImmediateIntOperand(table.getFuncStackOffset())))
+            instrs.addAll(regsToPopInstrs(listOf(Register.PC)))
+            freeAllCalleeReg()
         }
         return Pair(instrs, hasReturn)
     }
@@ -334,6 +339,12 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         }
         return instrs
 
+    }
+
+    override fun visitVoidReturnStatAST(ast: VoidReturnStatAST): List<Instruction> {
+        val instrs = mutableListOf<Instruction>()
+        // Intentionally do nothing
+        return instrs
     }
 
     /** Translates a Call Statement AST */
