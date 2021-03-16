@@ -46,6 +46,9 @@ STRING: 'string' ;
 //implicit types
 VAR: 'var' ;
 
+//void return type
+VOID: 'void' ;
+
 //unary operators
 NOT: '!' ;
 LEN: 'len' ;

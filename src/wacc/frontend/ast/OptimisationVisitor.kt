@@ -165,4 +165,7 @@ interface OptimisationVisitor : AstVisitor<AST> {
         return ast
     }
 
+    override fun visitCallStatAST(ast: CallStatAST): AST {
+        return ast
+    }
 }

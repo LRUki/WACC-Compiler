@@ -14,6 +14,7 @@ import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
+import wacc.frontend.ast.statement.nonblock.CallStatAST
 
 class ControlFlowVisitor : OptimisationVisitor {
 

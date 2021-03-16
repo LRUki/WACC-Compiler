@@ -42,6 +42,7 @@ interface AstVisitor<T> {
     fun visitWhileStatAST(ast: WhileStatAST): T
 
     fun visitActionStatAST(ast: ActionStatAST): T
+    fun visitCallStatAST(ast: CallStatAST): T
     fun visitAssignStatAST(ast: AssignStatAST): T
     fun visitDeclareStatAST(ast: DeclareStatAST): T
     fun visitReadStatAST(ast: ReadStatAST): T
