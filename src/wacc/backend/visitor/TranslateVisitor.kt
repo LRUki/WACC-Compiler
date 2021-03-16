@@ -343,12 +343,6 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.addAll(visit(ast.rhs))
 
         val rhsType = ast.rhs.getRealType(ast.symTable)
-        var memtype: MemoryType? = null
-        if (rhsType is BaseTypeAST) {
-            if (rhsType.isBoolOrChar()) {
-                memtype = MemoryType.B
-            }
-        }
 
         freeCalleeReg()
         return instrs

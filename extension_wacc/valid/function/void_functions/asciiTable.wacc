@@ -129,12 +129,12 @@ begin
   end
 
   println "Asci character lookup table:" ;
-  bool r = call printLine(13) ;
+  call printLine(13) ;
   int num = ord ' ' ;
   while num < 127 do
-    r = call printMap(num) ;
+    call printMap(num) ;
     num = num + 1
   done ;
-  r = call printLine(13)
+  call printLine(13)
 end
 

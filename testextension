@@ -45,7 +45,7 @@ do
       EXITCODE=$(echo "$PIPE_RESULT" | cut -d' ' -f 1)
 
       OUTPUT_MATCHES=$(echo "$PIPE_RESULT" | cut -d' ' -f 2)
-      if [ ! -z $(grep "$FILENAME"'$' "testassemble.skip") ]
+      if [ ! -z $(grep "$FILENAME"'$' "testextension.skip") ]
       then
         OUTPUT_MATCHES=0
         echo "Assume $FILENAME correct."
