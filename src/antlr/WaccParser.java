@@ -52,11 +52,12 @@ public class WaccParser extends Parser {
         "arrayElem", "intLiter", "boolLiter", "strLiter", "charLiter", "arrayLiter",
         "pairLiter", "ident", "capitalisedIdent"
     };
-	}
-	public static final String[] ruleNames = makeRuleNames();
+  }
 
-	private static String[] makeLiteralNames() {
-		return new String[]{
+  public static final String[] ruleNames = makeRuleNames();
+
+  private static String[] makeLiteralNames() {
+    return new String[]{
         null, "'begin'", "'end'", "'is'", "'skip'", "'read'", "'free'", "'return'",
         "'exit'", "'print'", "'println'", "'if'", "'then'", "'else'", "'fi'",
         "'while'", "'do'", "'done'", "'null'", "'struct'", "'.'", "'import'",
@@ -66,10 +67,10 @@ public class WaccParser extends Parser {
         "'%'", "'>='", "'>'", "'<='", "'<'", "'=='", "'!='", "'&&'", "'||'",
         "'('", "')'", "'['", "']'", "'{'", "'}'"
     };
-	}
+  }
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
-		return new String[]{
+    return new String[]{
         null, "BEGIN", "END", "IS", "SKIP_TOKEN", "READ", "FREE", "RETURN", "EXIT",
         "PRINT", "PRINTLN", "IF", "THEN", "ELSE", "FI", "WHILE", "DO", "DONE",
         "NULL", "STRUCT", "DOT", "IMPORT", "ASSIGN", "SEMICOLON", "COMMA", "NEWPAIR",
@@ -80,7 +81,7 @@ public class WaccParser extends Parser {
         "CAPTIALISED_IDENT", "IDENT", "WHITESPACE", "ESCAPE_CHARACTER", "CHARACTER",
         "STR_LITER", "CHAR_LITER", "COMMENT"
     };
-	}
+  }
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -122,15 +123,19 @@ public class WaccParser extends Parser {
 	public String[] getRuleNames() { return ruleNames; }
 
 	@Override
-	public String getSerializedATN() { return _serializedATN; }
+  public String getSerializedATN() {
+    return _serializedATN;
+  }
 
-	@Override
-	public ATN getATN() { return _ATN; }
+  @Override
+  public ATN getATN() {
+    return _ATN;
+  }
 
-	public WaccParser(TokenStream input) {
-		super(input);
-		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
-	}
+  public WaccParser(TokenStream input) {
+    super(input);
+    _interp = new ParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
+  }
 
   public static class ProgramContext extends ParserRuleContext {
 
@@ -174,14 +179,17 @@ public class WaccParser extends Parser {
     public int getRuleIndex() {
       return RULE_program;
     }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitProgram(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 
-	public final ProgramContext program() throws RecognitionException {
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor)
+        return ((WaccParserVisitor<? extends T>) visitor).visitProgram(this);
+      else
+        return visitor.visitChildren(this);
+    }
+  }
+
+  public final ProgramContext program() throws RecognitionException {
     ProgramContext _localctx = new ProgramContext(_ctx, getState());
     enterRule(_localctx, 0, RULE_program);
     int _la;
@@ -228,16 +236,14 @@ public class WaccParser extends Parser {
         setState(95);
         match(EOF);
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class FuncContext extends ParserRuleContext {
@@ -273,7 +279,7 @@ public class WaccParser extends Parser {
 		enterRule(_localctx, 2, RULE_func);
 		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
+      enterOuterAlt(_localctx, 1);
       {
         setState(97);
         type();
@@ -341,7 +347,7 @@ public class WaccParser extends Parser {
 		enterRule(_localctx, 4, RULE_paramList);
 		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
+      enterOuterAlt(_localctx, 1);
       {
         setState(108);
         param();
@@ -361,8 +367,8 @@ public class WaccParser extends Parser {
           _errHandler.sync(this);
           _la = _input.LA(1);
         }
-			}
-		}
+      }
+    }
 		catch (RecognitionException re) {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
@@ -396,14 +402,14 @@ public class WaccParser extends Parser {
 		ParamContext _localctx = new ParamContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_param);
 		try {
-			enterOuterAlt(_localctx, 1);
+      enterOuterAlt(_localctx, 1);
       {
         setState(116);
         type();
         setState(117);
         ident();
       }
-		}
+    }
 		catch (RecognitionException re) {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
@@ -420,7 +426,7 @@ public class WaccParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_stat; }
-	 
+
 		public StatContext() { }
 		public void copyFrom(StatContext ctx) {
 			super.copyFrom(ctx);
@@ -473,21 +479,29 @@ public class WaccParser extends Parser {
 		}
 	}
 	public static class MultiStatContext extends StatContext {
-		public List<StatContext> stat() {
-			return getRuleContexts(StatContext.class);
-		}
-		public StatContext stat(int i) {
-			return getRuleContext(StatContext.class,i);
-		}
-		public TerminalNode SEMICOLON() { return getToken(WaccParser.SEMICOLON, 0); }
-		public MultiStatContext(StatContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+
+    public List<StatContext> stat() {
+      return getRuleContexts(StatContext.class);
+    }
+
+    public StatContext stat(int i) {
+      return getRuleContext(StatContext.class, i);
+    }
+
+    public TerminalNode SEMICOLON() {
+      return getToken(WaccParser.SEMICOLON, 0);
+    }
+
+    public MultiStatContext(StatContext ctx) {
+      copyFrom(ctx);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
       if (visitor instanceof WaccParserVisitor)
         return ((WaccParserVisitor<? extends T>) visitor).visitMultiStat(this);
-      else {
+      else
         return visitor.visitChildren(this);
-      }
     }
   }
 
@@ -503,11 +517,10 @@ public class WaccParser extends Parser {
 
     @Override
     public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor) {
+      if (visitor instanceof WaccParserVisitor)
         return ((WaccParserVisitor<? extends T>) visitor).visitSkipStat(this);
-      } else {
+      else
         return visitor.visitChildren(this);
-      }
     }
   }
 
@@ -523,11 +536,10 @@ public class WaccParser extends Parser {
 
     @Override
     public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor) {
+      if (visitor instanceof WaccParserVisitor)
         return ((WaccParserVisitor<? extends T>) visitor).visitStructDeclareStat(this);
-      } else {
+      else
         return visitor.visitChildren(this);
-      }
     }
   }
 
@@ -552,27 +564,48 @@ public class WaccParser extends Parser {
     public TerminalNode PRINT() {
       return getToken(WaccParser.PRINT, 0);
     }
-		public TerminalNode PRINTLN() { return getToken(WaccParser.PRINTLN, 0); }
-		public ActionStatContext(StatContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitActionStat(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class AssignStatContext extends StatContext {
-		public AssignLhsContext assignLhs() {
+
+    public TerminalNode PRINTLN() {
+      return getToken(WaccParser.PRINTLN, 0);
+    }
+
+    public ActionStatContext(StatContext ctx) {
+      copyFrom(ctx);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor)
+        return ((WaccParserVisitor<? extends T>) visitor).visitActionStat(this);
+      else
+        return visitor.visitChildren(this);
+    }
+  }
+
+  public static class AssignStatContext extends StatContext {
+
+    public AssignLhsContext assignLhs() {
 			return getRuleContext(AssignLhsContext.class,0);
-		}
-		public TerminalNode ASSIGN() { return getToken(WaccParser.ASSIGN, 0); }
-		public AssignRhsContext assignRhs() {
-			return getRuleContext(AssignRhsContext.class,0);
-		}
-		public AssignStatContext(StatContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitAssignStat(this);
-			else return visitor.visitChildren(this);
+    }
+
+    public TerminalNode ASSIGN() {
+      return getToken(WaccParser.ASSIGN, 0);
+    }
+
+    public AssignRhsContext assignRhs() {
+      return getRuleContext(AssignRhsContext.class, 0);
+    }
+
+    public AssignStatContext(StatContext ctx) {
+      copyFrom(ctx);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor)
+        return ((WaccParserVisitor<? extends T>) visitor).visitAssignStat(this);
+      else
+        return visitor.visitChildren(this);
     }
   }
 
@@ -604,11 +637,10 @@ public class WaccParser extends Parser {
 
     @Override
     public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor) {
+      if (visitor instanceof WaccParserVisitor)
         return ((WaccParserVisitor<? extends T>) visitor).visitDeclareStat(this);
-      } else {
+      else
         return visitor.visitChildren(this);
-      }
     }
   }
 
@@ -619,16 +651,27 @@ public class WaccParser extends Parser {
     }
 
     public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public TerminalNode DO() { return getToken(WaccParser.DO, 0); }
-		public StatContext stat() {
-			return getRuleContext(StatContext.class,0);
-		}
-		public TerminalNode DONE() { return getToken(WaccParser.DONE, 0); }
-		public WhileStatContext(StatContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      return getRuleContext(ExprContext.class, 0);
+    }
+
+    public TerminalNode DO() {
+      return getToken(WaccParser.DO, 0);
+    }
+
+    public StatContext stat() {
+      return getRuleContext(StatContext.class, 0);
+    }
+
+    public TerminalNode DONE() {
+      return getToken(WaccParser.DONE, 0);
+    }
+
+    public WhileStatContext(StatContext ctx) {
+      copyFrom(ctx);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitWhileStat(this);
 			else return visitor.visitChildren(this);
 		}
@@ -647,8 +690,8 @@ public class WaccParser extends Parser {
 		enterRecursionRule(_localctx, 8, RULE_stat, _p);
 		int _la;
 		try {
-			int _alt;
-			enterOuterAlt(_localctx, 1);
+      int _alt;
+      enterOuterAlt(_localctx, 1);
       {
         setState(156);
         _errHandler.sync(this);
@@ -825,18 +868,17 @@ public class WaccParser extends Parser {
           _errHandler.sync(this);
           _alt = getInterpreter().adaptivePredict(_input, 6, _ctx);
         }
-			}
+      }
 		}
 		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			unrollRecursionContexts(_parentctx);
-		}
-		return _localctx;
-	}
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      unrollRecursionContexts(_parentctx);
+    }
+    return _localctx;
+  }
 
   public static class AssignLhsContext extends ParserRuleContext {
 
@@ -871,18 +913,17 @@ public class WaccParser extends Parser {
 
     @Override
     public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor) {
+      if (visitor instanceof WaccParserVisitor)
         return ((WaccParserVisitor<? extends T>) visitor).visitAssignLhs(this);
-      } else {
+      else
         return visitor.visitChildren(this);
-      }
     }
   }
 
-	public final AssignLhsContext assignLhs() throws RecognitionException {
-		AssignLhsContext _localctx = new AssignLhsContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_assignLhs);
-		try {
+  public final AssignLhsContext assignLhs() throws RecognitionException {
+    AssignLhsContext _localctx = new AssignLhsContext(_ctx, getState());
+    enterRule(_localctx, 10, RULE_assignLhs);
+    try {
       setState(171);
       _errHandler.sync(this);
       switch (getInterpreter().adaptivePredict(_input, 7, _ctx)) {
@@ -922,7 +963,7 @@ public class WaccParser extends Parser {
         }
         break;
       }
-		}
+    }
 		catch (RecognitionException re) {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
@@ -938,16 +979,30 @@ public class WaccParser extends Parser {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
-		public ExprContext expr(int i) {
-			return getRuleContext(ExprContext.class,i);
-		}
-		public ArrayLiterContext arrayLiter() {
-			return getRuleContext(ArrayLiterContext.class,0);
-		}
-		public TerminalNode NEWPAIR() { return getToken(WaccParser.NEWPAIR, 0); }
-		public TerminalNode L_PAREN() { return getToken(WaccParser.L_PAREN, 0); }
-		public TerminalNode COMMA() { return getToken(WaccParser.COMMA, 0); }
-		public TerminalNode R_PAREN() { return getToken(WaccParser.R_PAREN, 0); }
+
+    public ExprContext expr(int i) {
+      return getRuleContext(ExprContext.class, i);
+    }
+
+    public ArrayLiterContext arrayLiter() {
+      return getRuleContext(ArrayLiterContext.class, 0);
+    }
+
+    public TerminalNode NEWPAIR() {
+      return getToken(WaccParser.NEWPAIR, 0);
+    }
+
+    public TerminalNode L_PAREN() {
+      return getToken(WaccParser.L_PAREN, 0);
+    }
+
+    public TerminalNode COMMA() {
+      return getToken(WaccParser.COMMA, 0);
+    }
+
+    public TerminalNode R_PAREN() {
+      return getToken(WaccParser.R_PAREN, 0);
+    }
 
     public PairElemContext pairElem() {
       return getRuleContext(PairElemContext.class, 0);
@@ -980,11 +1035,10 @@ public class WaccParser extends Parser {
 
     @Override
     public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor) {
+      if (visitor instanceof WaccParserVisitor)
         return ((WaccParserVisitor<? extends T>) visitor).visitAssignRhs(this);
-      } else {
+      else
         return visitor.visitChildren(this);
-      }
     }
   }
 
@@ -1020,66 +1074,66 @@ public class WaccParser extends Parser {
         }
         break;
         case L_SQUARE:
-				enterOuterAlt(_localctx, 2);
+          enterOuterAlt(_localctx, 2);
         {
           setState(174);
           arrayLiter();
         }
-				break;
-			case NEWPAIR:
-				enterOuterAlt(_localctx, 3);
-      {
-        setState(175);
-        match(NEWPAIR);
-        setState(176);
-        match(L_PAREN);
-        setState(177);
-        expr(0);
-        setState(178);
-        match(COMMA);
-        setState(179);
-        expr(0);
-        setState(180);
-        match(R_PAREN);
-      }
-				break;
-			case FST:
-			case SND:
-				enterOuterAlt(_localctx, 4);
-      {
-        setState(182);
-        pairElem();
-      }
-				break;
-			case CALL:
-				enterOuterAlt(_localctx, 5);
-      {
-        setState(183);
-        match(CALL);
-        setState(184);
-        ident();
-        setState(185);
-        match(L_PAREN);
-        setState(187);
-        _errHandler.sync(this);
-        _la = _input.LA(1);
-        if (((((_la - 18)) & ~0x3f) == 0 &&
-            ((1L << (_la - 18)) & ((1L << (NULL - 18)) | (1L << (TRUE - 18)) | (1L << (FALSE - 18))
-                | (1L << (NOT - 18)) | (1L << (LEN - 18)) | (1L << (ORD - 18)) | (1L << (CHR - 18))
-                | (1L << (REF - 18)) | (1L << (PLUS - 18)) | (1L << (MINUS - 18)) | (1L << (MULT
-                - 18)) | (1L << (L_PAREN - 18)) | (1L << (NUMBER - 18)) | (1L << (CAPTIALISED_IDENT
-                - 18)) | (1L << (IDENT - 18)) | (1L << (STR_LITER - 18)) | (1L << (CHAR_LITER
-                - 18)))) != 0)) {
-          {
-            setState(186);
-            argList();
-          }
+        break;
+        case NEWPAIR:
+          enterOuterAlt(_localctx, 3);
+        {
+          setState(175);
+          match(NEWPAIR);
+          setState(176);
+          match(L_PAREN);
+          setState(177);
+          expr(0);
+          setState(178);
+          match(COMMA);
+          setState(179);
+          expr(0);
+          setState(180);
+          match(R_PAREN);
         }
+        break;
+        case FST:
+        case SND:
+          enterOuterAlt(_localctx, 4);
+        {
+          setState(182);
+          pairElem();
+        }
+        break;
+        case CALL:
+          enterOuterAlt(_localctx, 5);
+        {
+          setState(183);
+          match(CALL);
+          setState(184);
+          ident();
+          setState(185);
+          match(L_PAREN);
+          setState(187);
+          _errHandler.sync(this);
+          _la = _input.LA(1);
+          if (((((_la - 18)) & ~0x3f) == 0 &&
+              ((1L << (_la - 18)) & ((1L << (NULL - 18)) | (1L << (TRUE - 18)) | (1L << (FALSE
+                  - 18)) | (1L << (NOT - 18)) | (1L << (LEN - 18)) | (1L << (ORD - 18)) | (1L << (
+                  CHR - 18)) | (1L << (REF - 18)) | (1L << (PLUS - 18)) | (1L << (MINUS - 18)) | (1L
+                  << (MULT - 18)) | (1L << (L_PAREN - 18)) | (1L << (NUMBER - 18)) | (1L << (
+                  CAPTIALISED_IDENT - 18)) | (1L << (IDENT - 18)) | (1L << (STR_LITER - 18)) | (1L
+                  << (CHAR_LITER - 18)))) != 0)) {
+            {
+              setState(186);
+              argList();
+            }
+          }
 
-        setState(189);
-        match(R_PAREN);
-      }
-      break;
+          setState(189);
+          match(R_PAREN);
+        }
+        break;
         case L_CURLY:
           enterOuterAlt(_localctx, 6);
         {
@@ -1090,7 +1144,7 @@ public class WaccParser extends Parser {
         default:
           throw new NoViableAltException(this);
       }
-		} catch (RecognitionException re) {
+    } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
       _errHandler.recover(this, re);
@@ -1461,16 +1515,25 @@ public class WaccParser extends Parser {
     }
 
     public TerminalNode COMMA(int i) {
-			return getToken(WaccParser.COMMA, i);
-		}
-		public ArgListContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_argList; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitArgList(this);
-			else return visitor.visitChildren(this);
+      return getToken(WaccParser.COMMA, i);
+    }
+
+    public ArgListContext(ParserRuleContext parent, int invokingState) {
+      super(parent, invokingState);
+    }
+
+    @Override
+    public int getRuleIndex() {
+      return RULE_argList;
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor) {
+        return ((WaccParserVisitor<? extends T>) visitor).visitArgList(this);
+      } else {
+        return visitor.visitChildren(this);
+      }
 		}
 	}
 
@@ -1499,16 +1562,14 @@ public class WaccParser extends Parser {
           _errHandler.sync(this);
           _la = _input.LA(1);
         }
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
+      }
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
 		return _localctx;
 	}
 
@@ -1544,20 +1605,20 @@ public class WaccParser extends Parser {
           setState(238);
           expr(0);
         }
-				break;
-			case SND:
-				enterOuterAlt(_localctx, 2);
-      {
-        setState(239);
-        match(SND);
-        setState(240);
-        expr(0);
+        break;
+        case SND:
+          enterOuterAlt(_localctx, 2);
+        {
+          setState(239);
+          match(SND);
+          setState(240);
+          expr(0);
+        }
+        break;
+        default:
+          throw new NoViableAltException(this);
       }
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-		} catch (RecognitionException re) {
+    } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
       _errHandler.recover(this, re);
@@ -1658,7 +1719,7 @@ public class WaccParser extends Parser {
     }
   }
 
-	public final TypeContext type() throws RecognitionException {
+  public final TypeContext type() throws RecognitionException {
     TypeContext _localctx = new TypeContext(_ctx, getState());
     enterRule(_localctx, 30, RULE_type);
     try {
@@ -1701,16 +1762,14 @@ public class WaccParser extends Parser {
         }
         break;
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class BaseTypeContext extends ParserRuleContext {
@@ -1750,17 +1809,15 @@ public class WaccParser extends Parser {
           consume();
         }
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
   public static class ArrayTypeContext extends ParserRuleContext {
 
@@ -1806,16 +1863,24 @@ public class WaccParser extends Parser {
 
     public ArrayTypeContext(ParserRuleContext parent, int invokingState) {
       super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_arrayType; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitArrayType(this);
-			else return visitor.visitChildren(this);
-		}
-	}
+    }
 
-	public final ArrayTypeContext arrayType() throws RecognitionException {
+    @Override
+    public int getRuleIndex() {
+      return RULE_arrayType;
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor) {
+        return ((WaccParserVisitor<? extends T>) visitor).visitArrayType(this);
+      } else {
+        return visitor.visitChildren(this);
+      }
+    }
+  }
+
+  public final ArrayTypeContext arrayType() throws RecognitionException {
     ArrayTypeContext _localctx = new ArrayTypeContext(_ctx, getState());
     enterRule(_localctx, 34, RULE_arrayType);
     int _la;
@@ -1870,17 +1935,15 @@ public class WaccParser extends Parser {
           setState(268);
           _errHandler.sync(this);
           _la = _input.LA(1);
-        } while ( _la==L_SQUARE );
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
+        } while (_la == L_SQUARE);
+      }
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
 		return _localctx;
 	}
 
@@ -1925,17 +1988,15 @@ public class WaccParser extends Parser {
         setState(275);
         match(R_PAREN);
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
   public static class PairElemTypeContext extends ParserRuleContext {
 
@@ -1972,9 +2033,9 @@ public class WaccParser extends Parser {
         return visitor.visitChildren(this);
       }
     }
-	}
+  }
 
-	public final PairElemTypeContext pairElemType() throws RecognitionException {
+  public final PairElemTypeContext pairElemType() throws RecognitionException {
     PairElemTypeContext _localctx = new PairElemTypeContext(_ctx, getState());
     enterRule(_localctx, 38, RULE_pairElemType);
     try {
@@ -2010,8 +2071,7 @@ public class WaccParser extends Parser {
         }
         break;
       }
-		}
-		catch (RecognitionException re) {
+    } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
       _errHandler.recover(this, re);
@@ -2232,43 +2292,53 @@ public class WaccParser extends Parser {
 
     public void copyFrom(ExprContext ctx) {
       super.copyFrom(ctx);
-		}
-	}
-	public static class UnopExprContext extends ExprContext {
-		public UnopContext unop() {
-			return getRuleContext(UnopContext.class,0);
-		}
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public UnopExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WaccParserVisitor ) return ((WaccParserVisitor<? extends T>)visitor).visitUnopExpr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
+    }
+  }
+
+  public static class UnopExprContext extends ExprContext {
+
+    public UnopContext unop() {
+      return getRuleContext(UnopContext.class, 0);
+    }
+
+    public ExprContext expr() {
+      return getRuleContext(ExprContext.class, 0);
+    }
+
+    public UnopExprContext(ExprContext ctx) {
+      copyFrom(ctx);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+      if (visitor instanceof WaccParserVisitor) {
+        return ((WaccParserVisitor<? extends T>) visitor).visitUnopExpr(this);
+      } else {
+        return visitor.visitChildren(this);
+      }
+    }
+  }
 
   public static class SingletonExprContext extends ExprContext {
 
     public IntLiterContext intLiter() {
-      return getRuleContext(IntLiterContext.class,0);
+      return getRuleContext(IntLiterContext.class, 0);
     }
 
     public BoolLiterContext boolLiter() {
-      return getRuleContext(BoolLiterContext.class,0);
+      return getRuleContext(BoolLiterContext.class, 0);
     }
 
     public CharLiterContext charLiter() {
-      return getRuleContext(CharLiterContext.class,0);
+      return getRuleContext(CharLiterContext.class, 0);
     }
 
     public StrLiterContext strLiter() {
-      return getRuleContext(StrLiterContext.class,0);
+      return getRuleContext(StrLiterContext.class, 0);
     }
 
     public PairLiterContext pairLiter() {
-      return getRuleContext(PairLiterContext.class,0);
+      return getRuleContext(PairLiterContext.class, 0);
     }
 
     public IdentContext ident() {
@@ -2324,16 +2394,19 @@ public class WaccParser extends Parser {
     }
 
     public Binop1Context binop1() {
-			return getRuleContext(Binop1Context.class,0);
-		}
-		public Binop2Context binop2() {
-			return getRuleContext(Binop2Context.class,0);
-		}
-		public Binop3Context binop3() {
-			return getRuleContext(Binop3Context.class,0);
-		}
-		public Binop4Context binop4() {
-			return getRuleContext(Binop4Context.class,0);
+      return getRuleContext(Binop1Context.class, 0);
+    }
+
+    public Binop2Context binop2() {
+      return getRuleContext(Binop2Context.class, 0);
+    }
+
+    public Binop3Context binop3() {
+      return getRuleContext(Binop3Context.class, 0);
+    }
+
+    public Binop4Context binop4() {
+      return getRuleContext(Binop4Context.class, 0);
 		}
 		public Binop5Context binop5() {
 			return getRuleContext(Binop5Context.class,0);
@@ -2389,64 +2462,64 @@ public class WaccParser extends Parser {
             intLiter();
           }
           break;
-			case 2: {
-        _localctx = new SingletonExprContext(_localctx);
-        _ctx = _localctx;
-        _prevctx = _localctx;
-        setState(301);
-        boolLiter();
-      }
-				break;
-			case 3: {
-        _localctx = new SingletonExprContext(_localctx);
-        _ctx = _localctx;
-        _prevctx = _localctx;
-        setState(302);
-        charLiter();
-      }
-				break;
-			case 4: {
-        _localctx = new SingletonExprContext(_localctx);
-        _ctx = _localctx;
-        _prevctx = _localctx;
-        setState(303);
-        strLiter();
-      }
-				break;
-			case 5: {
-        _localctx = new SingletonExprContext(_localctx);
-        _ctx = _localctx;
-        _prevctx = _localctx;
-        setState(304);
-        pairLiter();
-      }
-				break;
-			case 6: {
-        _localctx = new SingletonExprContext(_localctx);
-        _ctx = _localctx;
-        _prevctx = _localctx;
-        setState(305);
-        ident();
-      }
-				break;
-			case 7: {
-        _localctx = new SingletonExprContext(_localctx);
-        _ctx = _localctx;
-        _prevctx = _localctx;
-        setState(306);
-        arrayElem();
-      }
-				break;
-			case 8: {
-        _localctx = new UnopExprContext(_localctx);
-        _ctx = _localctx;
-        _prevctx = _localctx;
-        setState(307);
-        unop();
-        setState(308);
-        expr(3);
-      }
-      break;
+          case 2: {
+            _localctx = new SingletonExprContext(_localctx);
+            _ctx = _localctx;
+            _prevctx = _localctx;
+            setState(301);
+            boolLiter();
+          }
+          break;
+          case 3: {
+            _localctx = new SingletonExprContext(_localctx);
+            _ctx = _localctx;
+            _prevctx = _localctx;
+            setState(302);
+            charLiter();
+          }
+          break;
+          case 4: {
+            _localctx = new SingletonExprContext(_localctx);
+            _ctx = _localctx;
+            _prevctx = _localctx;
+            setState(303);
+            strLiter();
+          }
+          break;
+          case 5: {
+            _localctx = new SingletonExprContext(_localctx);
+            _ctx = _localctx;
+            _prevctx = _localctx;
+            setState(304);
+            pairLiter();
+          }
+          break;
+          case 6: {
+            _localctx = new SingletonExprContext(_localctx);
+            _ctx = _localctx;
+            _prevctx = _localctx;
+            setState(305);
+            ident();
+          }
+          break;
+          case 7: {
+            _localctx = new SingletonExprContext(_localctx);
+            _ctx = _localctx;
+            _prevctx = _localctx;
+            setState(306);
+            arrayElem();
+          }
+          break;
+          case 8: {
+            _localctx = new UnopExprContext(_localctx);
+            _ctx = _localctx;
+            _prevctx = _localctx;
+            setState(307);
+            unop();
+            setState(308);
+            expr(3);
+          }
+          break;
           case 9: {
             _localctx = new StructAccessExprContext(_localctx);
             _ctx = _localctx;
@@ -2494,72 +2567,72 @@ public class WaccParser extends Parser {
                   setState(319);
                   expr(17);
                 }
-						break;
-					case 2: {
-            _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
-            pushNewRecursionContext(_localctx, _startState, RULE_expr);
-            setState(321);
-            if (!(precpred(_ctx, 15))) {
-              throw new FailedPredicateException(this, "precpred(_ctx, 15)");
-            }
-            setState(322);
-            binop2();
-            setState(323);
-            expr(16);
-          }
-						break;
-					case 3: {
-            _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
-            pushNewRecursionContext(_localctx, _startState, RULE_expr);
-            setState(325);
-            if (!(precpred(_ctx, 14))) {
-              throw new FailedPredicateException(this, "precpred(_ctx, 14)");
-            }
-            setState(326);
-            binop3();
-            setState(327);
-            expr(15);
-          }
-						break;
-					case 4: {
-            _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
-            pushNewRecursionContext(_localctx, _startState, RULE_expr);
-            setState(329);
-            if (!(precpred(_ctx, 13))) {
-              throw new FailedPredicateException(this, "precpred(_ctx, 13)");
-            }
-            setState(330);
-            binop4();
-            setState(331);
-            expr(14);
-          }
-						break;
-					case 5: {
-            _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
-            pushNewRecursionContext(_localctx, _startState, RULE_expr);
-            setState(333);
-            if (!(precpred(_ctx, 12))) {
-              throw new FailedPredicateException(this, "precpred(_ctx, 12)");
-            }
-            setState(334);
-            binop5();
-            setState(335);
-            expr(13);
-          }
-						break;
-					case 6: {
-            _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
-            pushNewRecursionContext(_localctx, _startState, RULE_expr);
-            setState(337);
-            if (!(precpred(_ctx, 11))) {
-              throw new FailedPredicateException(this, "precpred(_ctx, 11)");
-            }
-            setState(338);
-            binop6();
-            setState(339);
-            expr(12);
-          }
-          break;
+                break;
+                case 2: {
+                  _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
+                  pushNewRecursionContext(_localctx, _startState, RULE_expr);
+                  setState(321);
+                  if (!(precpred(_ctx, 15))) {
+                    throw new FailedPredicateException(this, "precpred(_ctx, 15)");
+                  }
+                  setState(322);
+                  binop2();
+                  setState(323);
+                  expr(16);
+                }
+                break;
+                case 3: {
+                  _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
+                  pushNewRecursionContext(_localctx, _startState, RULE_expr);
+                  setState(325);
+                  if (!(precpred(_ctx, 14))) {
+                    throw new FailedPredicateException(this, "precpred(_ctx, 14)");
+                  }
+                  setState(326);
+                  binop3();
+                  setState(327);
+                  expr(15);
+                }
+                break;
+                case 4: {
+                  _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
+                  pushNewRecursionContext(_localctx, _startState, RULE_expr);
+                  setState(329);
+                  if (!(precpred(_ctx, 13))) {
+                    throw new FailedPredicateException(this, "precpred(_ctx, 13)");
+                  }
+                  setState(330);
+                  binop4();
+                  setState(331);
+                  expr(14);
+                }
+                break;
+                case 5: {
+                  _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
+                  pushNewRecursionContext(_localctx, _startState, RULE_expr);
+                  setState(333);
+                  if (!(precpred(_ctx, 12))) {
+                    throw new FailedPredicateException(this, "precpred(_ctx, 12)");
+                  }
+                  setState(334);
+                  binop5();
+                  setState(335);
+                  expr(13);
+                }
+                break;
+                case 6: {
+                  _localctx = new BinopExprContext(new ExprContext(_parentctx, _parentState));
+                  pushNewRecursionContext(_localctx, _startState, RULE_expr);
+                  setState(337);
+                  if (!(precpred(_ctx, 11))) {
+                    throw new FailedPredicateException(this, "precpred(_ctx, 11)");
+                  }
+                  setState(338);
+                  binop6();
+                  setState(339);
+                  expr(12);
+                }
+                break;
               }
             }
           }
@@ -2570,15 +2643,14 @@ public class WaccParser extends Parser {
 			}
 		}
 		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			unrollRecursionContexts(_parentctx);
-		}
-		return _localctx;
-	}
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      unrollRecursionContexts(_parentctx);
+    }
+    return _localctx;
+  }
 
   public static class UnopContext extends ParserRuleContext {
 
@@ -2621,15 +2693,14 @@ public class WaccParser extends Parser {
 
     @Override
     public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-      if (visitor instanceof WaccParserVisitor) {
+      if (visitor instanceof WaccParserVisitor)
         return ((WaccParserVisitor<? extends T>) visitor).visitUnop(this);
-      } else {
+      else
         return visitor.visitChildren(this);
-      }
     }
   }
 
-	public final UnopContext unop() throws RecognitionException {
+  public final UnopContext unop() throws RecognitionException {
     UnopContext _localctx = new UnopContext(_ctx, getState());
     enterRule(_localctx, 48, RULE_unop);
     int _la;
@@ -2643,23 +2714,20 @@ public class WaccParser extends Parser {
                 1L << MINUS) | (1L << MULT))) != 0))) {
           _errHandler.recoverInline(this);
         } else {
-          if (_input.LA(1) == Token.EOF) {
+          if (_input.LA(1) == Token.EOF)
             matchedEOF = true;
-          }
           _errHandler.reportMatch(this);
           consume();
         }
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class Binop1Context extends ParserRuleContext {
@@ -2697,16 +2765,14 @@ public class WaccParser extends Parser {
           consume();
         }
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class Binop2Context extends ParserRuleContext {
@@ -2742,16 +2808,14 @@ public class WaccParser extends Parser {
           consume();
         }
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class Binop3Context extends ParserRuleContext {
@@ -2790,16 +2854,14 @@ public class WaccParser extends Parser {
           consume();
         }
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class Binop4Context extends ParserRuleContext {
@@ -2835,16 +2897,14 @@ public class WaccParser extends Parser {
           consume();
         }
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class Binop5Context extends ParserRuleContext {
@@ -2872,13 +2932,12 @@ public class WaccParser extends Parser {
     } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
 	public static class Binop6Context extends ParserRuleContext {
 		public TerminalNode OR() { return getToken(WaccParser.OR, 0); }
@@ -2905,13 +2964,12 @@ public class WaccParser extends Parser {
     } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
 	public static class ArrayElemContext extends ParserRuleContext {
 		public IdentContext ident() {
@@ -2973,17 +3031,15 @@ public class WaccParser extends Parser {
           setState(367);
           _errHandler.sync(this);
           _alt = getInterpreter().adaptivePredict(_input, 23, _ctx);
-        } while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
+        } while (_alt != 2 && _alt != org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER);
+      }
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
 		return _localctx;
 	}
 
@@ -3031,12 +3087,11 @@ public class WaccParser extends Parser {
         setState(372);
         match(NUMBER);
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    }
 		finally {
 			exitRule();
 		}
@@ -3076,16 +3131,14 @@ public class WaccParser extends Parser {
           consume();
         }
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
 	}
 
 	public static class StrLiterContext extends ParserRuleContext {
@@ -3113,13 +3166,12 @@ public class WaccParser extends Parser {
     } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
 	public static class CharLiterContext extends ParserRuleContext {
 		public TerminalNode CHAR_LITER() { return getToken(WaccParser.CHAR_LITER, 0); }
@@ -3146,13 +3198,12 @@ public class WaccParser extends Parser {
     } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
 	public static class ArrayLiterContext extends ParserRuleContext {
 		public TerminalNode L_SQUARE() { return getToken(WaccParser.L_SQUARE, 0); }
@@ -3222,12 +3273,11 @@ public class WaccParser extends Parser {
         setState(391);
         match(R_SQUARE);
       }
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
+    } catch (RecognitionException re) {
+      _localctx.exception = re;
+      _errHandler.reportError(this, re);
+      _errHandler.recover(this, re);
+    }
 		finally {
 			exitRule();
 		}
@@ -3259,13 +3309,12 @@ public class WaccParser extends Parser {
     } catch (RecognitionException re) {
       _localctx.exception = re;
       _errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+      _errHandler.recover(this, re);
+    } finally {
+      exitRule();
+    }
+    return _localctx;
+  }
 
   public static class IdentContext extends ParserRuleContext {
 
@@ -3366,11 +3415,11 @@ public class WaccParser extends Parser {
     } finally {
       exitRule();
     }
-		return _localctx;
-	}
+    return _localctx;
+  }
 
-	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
-		switch (ruleIndex) {
+  public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
+    switch (ruleIndex) {
       case 4:
         return stat_sempred((StatContext) _localctx, predIndex);
       case 23:
@@ -3400,8 +3449,8 @@ public class WaccParser extends Parser {
       case 6:
         return precpred(_ctx, 11);
     }
-		return true;
-	}
+    return true;
+  }
 
   public static final String _serializedATN =
       "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3G\u0192\4\2\t\2\4" +
@@ -3547,10 +3596,11 @@ public class WaccParser extends Parser {
           "\u0121\u0126\u013d\u0157\u0159\u0171\u0174\u0184\u0187";
   public static final ATN _ATN =
       new ATNDeserializer().deserialize(_serializedATN.toCharArray());
-	static {
-		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
-		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
-			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
-		}
-	}
+
+  static {
+    _decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
+    for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
+      _decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
+    }
+  }
 }

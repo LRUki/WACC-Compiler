@@ -6,14 +6,14 @@ package wacc.backend.translate.instruction.instructionpart
  */
 enum class Register(private val x86: String) {
 
-    R0("eax"), R1("edi"), // Argument or Result
-    R2("esi"), R3("edx"), // Argument
-    R4("edi"), R5("esi"), R6("rdx"), R7("ecx"), R8("e8"), // Callee saves
-    R9("e9"), R10("e12"), R11("e13"), R12("r14"), // Callee saves
+    R0("rax"), R1("rdi"), // Argument or Result
+    R2("rsi"), R3("rdx"), // Argument
+    R4("rdi"), R5("rsi"), R6("rdx"), R7("rcx"), R8("r8"), // Callee saves
+    R9("r9"), R10("r12"), R11("r13"), R12("r14"), // Callee saves
 
-    SP("esp"),   // R13 or Stack pointer
-    LR("ebp"),   // R14 or Link register
-    PC("ebp"),   // R15 Program counter
+    SP("rsp"),   // R13 or Stack pointer
+    LR("rbp"),   // R14 or Link register
+    PC("rbp"),   // R15 Program counter
     CPSR("TODO"), // Current Program Status Register contains condition code flags, status bits, current mode bit
 
     NONE("");

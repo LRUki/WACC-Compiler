@@ -4,6 +4,7 @@ import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
 import org.junit.Test
+import wacc.backend.Language
 import wacc.backend.translate.instruction.*
 import wacc.backend.printCode
 import wacc.backend.translate.instruction.instructionpart.*
@@ -141,7 +142,8 @@ class PrintCodeTest {
                 PopInstr(Register.PC),
                 DirectiveInstr("ltorg")
         )
-        val output = printCode(instrs)
+        val output = printCode(instrs, Language.ARM)
+        print(output)
         assertThat(output, `is`("""
         .text
         

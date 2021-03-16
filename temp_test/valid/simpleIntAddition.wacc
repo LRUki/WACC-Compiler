@@ -8,5 +8,6 @@
 begin
   int x = 5;
   int y = 10;
-  x = x + y
+  x = x + y;
+  println x
 end
