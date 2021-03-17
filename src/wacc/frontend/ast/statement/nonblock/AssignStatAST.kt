@@ -3,10 +3,14 @@ package wacc.frontend.ast.statement.nonblock
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.StructAccessAST
 import wacc.frontend.ast.function.FuncAST
+import wacc.frontend.ast.pair.PairElemAST
+import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.exception.semanticError
@@ -49,6 +53,25 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
             semanticError("Type mismatch, $rightType cannot be assigned to $leftType", ctx)
             return false
         }
+        var name = ""
+        when (lhs) {
+            is IdentAST -> {
+                name = lhs.name
+            }
+            is ArrayElemAST -> {
+                name = lhs.ident.name
+            }
+            is PairElemAST -> {
+                name = (lhs.expr as IdentAST).name
+            }
+            is PointerElemAST -> {
+                name = lhs.ident.name
+            }
+            is StructAccessAST -> {
+                name = lhs.structIdent.name
+            }
+        }
+        table.setAccessField(name)
         return true
     }
 
