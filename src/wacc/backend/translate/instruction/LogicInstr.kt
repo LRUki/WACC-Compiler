@@ -30,7 +30,7 @@ abstract class AbstractLogicInstr(val type: LogicInstrType, val condition: Condi
     }
 
     override fun toX86(): String {
-        return "${type.x86}${condition.toX86()} ${reg1.toX86()}, ${reg2.toX86()}, ${operand.toX86()}"
+        return "${type.x86}${condition.toX86()}  ${reg2.toX86()}, ${operand.toX86()}"
     }
 }
 

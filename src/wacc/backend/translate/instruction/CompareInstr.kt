@@ -18,7 +18,7 @@ class CompareInstr(val register: Register,
     }
 
     override fun toX86(): String {
-        return "cmp ${register.toX86()} ${operand.toX86()}"
+        return "cmp ${register.toX86()}, ${operand.toX86()}"
     }
 
 }

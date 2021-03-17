@@ -20,6 +20,10 @@ class LoadInstr(val condition: Condition, val memType: MemoryType?,
     }
 
     override fun toX86(): String {
-        return "mov${condition.toX86()} ${mode.toX86()}, ${destRegister.toX86()}"
+        return if (condition == Condition.AL) {
+            "mov ${mode.toX86()}, ${destRegister.toX86()}"
+        } else {
+            "cmov${condition.toX86()} ${mode.toX86()}, ${destRegister.toX86()}"
+        }
     }
 }

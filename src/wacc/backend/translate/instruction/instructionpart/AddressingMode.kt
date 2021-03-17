@@ -26,7 +26,7 @@ class ImmediateLabelMode(val label: String) : AddressingMode {
     }
 
     override fun toX86(): String {
-        return "$${label}"
+        return label
     }
 }
 
