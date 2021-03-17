@@ -60,6 +60,7 @@ class RuntimeErrors(val codeGenerator: CodeGenerator) {
 
 
     /** Sets the runtimeError variable to the list of instructions for runtime errors */
+    @Synchronized
     fun addThrowRuntimeError() {
         if (runtimeError == null) {
             runtimeError = listOf(
@@ -79,6 +80,7 @@ class RuntimeErrors(val codeGenerator: CodeGenerator) {
     }
 
     /** Sets the nullReferenceError variable to the list of instructions for null reference errors */
+    @Synchronized
     fun addNullReferenceCheck() {
         if (nullReferenceError == null) {
             val errorMsgLabel = codeGenerator.dataDirective.addStringLabel(ErrorType.NULL_REFERENCE.toString())
@@ -103,6 +105,7 @@ class RuntimeErrors(val codeGenerator: CodeGenerator) {
     }
 
     /** Sets the divideZero variable to the list of instructions for divide by 0 errors */
+    @Synchronized
     fun addDivideByZeroCheck() {
         if (divideZeroError == null) {
             val errorMsgLabel = codeGenerator.dataDirective.addStringLabel(ErrorType.DIVIDE_BY_ZERO.toString())
@@ -127,6 +130,7 @@ class RuntimeErrors(val codeGenerator: CodeGenerator) {
     }
 
     /** Sets the checkArrayBounds variable to the list of instructions for array bounds checking */
+    @Synchronized
     fun addArrayBoundsCheck() {
         if (checkArrayBounds == null) {
             val negativeMsgLabel = codeGenerator.dataDirective.addStringLabel(ErrorType.NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
@@ -162,6 +166,7 @@ class RuntimeErrors(val codeGenerator: CodeGenerator) {
 
 
     /** Sets the overflowError variable to the list of instructions for overflow errors */
+    @Synchronized
     fun addOverflowError() {
         if (overflowError == null) {
             val errorMsg = codeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())

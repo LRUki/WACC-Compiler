@@ -10,34 +10,30 @@ import wacc.backend.translate.RuntimeErrors
 import wacc.backend.visitor.TranslateVisitor
 import wacc.frontend.ast.program.ProgramAST
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 class CodeGenerator {
 
-    lateinit var dataDirective: DataDirective
-    lateinit var cLib: CLibrary
-    lateinit var runtimeErrors: RuntimeErrors
-    var labelNumber: Int = 0
+    var dataDirective: DataDirective
+    var cLib: CLibrary
+    var runtimeErrors: RuntimeErrors
+    var labelNumber: AtomicInteger
 
-    lateinit var resultRegisters: MutableList<Register>
-    lateinit var argumentRegisters: MutableList<Register>
-    lateinit var freeCalleeSavedRegs: Stack<Register>
-    lateinit var calleSavedRegsInUse: Stack<Register>
+    var resultRegisters: MutableList<Register>
+    var argumentRegisters: MutableList<Register>
+    var freeCalleeSavedRegs: Stack<Register>
+    var calleSavedRegsInUse: Stack<Register>
 
-    lateinit var freeResultRegs: MutableList<Register>
-    lateinit var freeArgumentRegs: MutableList<Register>
+    var freeResultRegs: MutableList<Register>
+    var freeArgumentRegs: MutableList<Register>
 
     var useAccumulator = false
 
     init {
-        reset()
-    }
-
-    /** A function which resets the state of the code generator*/
-    fun reset() {
         dataDirective = DataDirective(StringLabels(mutableListOf()))
         cLib = CLibrary(this)
         runtimeErrors = RuntimeErrors(this)
-        labelNumber = 0
+        labelNumber = AtomicInteger(0)
 
         resultRegisters = mutableListOf(Register.R0, Register.R1)
         argumentRegisters = mutableListOf(Register.R2, Register.R3)
@@ -62,7 +58,7 @@ class CodeGenerator {
 
     /** Gets the next free label number using a global counter */
     fun getNextLabel(): Label {
-        return Label("L${labelNumber++}")
+        return Label("L${labelNumber.getAndIncrement()}")
     }
 
     /** Return at next free callee register available
@@ -117,6 +113,17 @@ class CodeGenerator {
         val reg2 = freeCalleeSavedRegs.pop()
         freeCalleeSavedRegs.push(reg1)
         freeCalleeSavedRegs.push(reg2)
+    }
+
+    fun clone(): CodeGenerator {
+        val codeGenerator = CodeGenerator()
+
+        codeGenerator.dataDirective = this.dataDirective
+        codeGenerator.cLib = this.cLib
+        codeGenerator.runtimeErrors = this.runtimeErrors
+        codeGenerator.labelNumber = this.labelNumber
+
+        return codeGenerator
     }
 }
 

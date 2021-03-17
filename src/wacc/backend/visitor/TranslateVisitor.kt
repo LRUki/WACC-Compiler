@@ -29,6 +29,7 @@ import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.*
+import java.util.stream.Collectors
 
 /**
  * Visitor pattern for code generation.
@@ -36,9 +37,7 @@ import wacc.frontend.ast.type.*
  * the frontend and recursively generates code
  * based on different AST visit methods
  */
-class TranslateVisitor : AstVisitor<List<Instruction>> {
-
-    private val codeGenerator = CodeGenerator()
+class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator()) : AstVisitor<List<Instruction>> {
 
     private val pointerOffset = 4
 
@@ -77,8 +76,11 @@ class TranslateVisitor : AstVisitor<List<Instruction>> {
         instrs.add(DirectiveInstr("text"))
         instrs.add(DirectiveInstr("global main"))
 
-        /** Translates all of the function definitions */
-        ast.funcList.forEach { instrs.addAll(visit(it)) }
+        /** Translates all of the function definitions (in parallel) */
+        val listOfFuncInstrs = ast.funcList.parallelStream()
+                .map { TranslateVisitor(codeGenerator.clone()).visit(it) }
+                .collect(Collectors.toList())
+        listOfFuncInstrs.forEach{ instrs.addAll(it) }
 
         /** Translates each statement in the program */
         instrs.add(Label("main"))

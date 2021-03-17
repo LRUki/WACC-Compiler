@@ -58,6 +58,7 @@ class CLibrary(val codeGenerator: CodeGenerator) {
 
     /** Given a call, we add it and it's list of instructions
      to the hash map (provided it isn't already in the map)*/
+    @Synchronized
     fun addCode(call: Call) {
         if (libraryCalls.containsKey(call)) {
             return
