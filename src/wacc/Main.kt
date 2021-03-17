@@ -68,6 +68,7 @@ fun main(args: Array<String>) {
     }
 //    waccFile.constEvaluation()
 //    waccFile.constPropagation()
+//    waccFile.constEvaluation()
 
     val outputString = waccFile.backend()
     var outputFileName = inputFile.nameWithoutExtension + ".s"

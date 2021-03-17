@@ -76,6 +76,7 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         if (!identInST) {
             val entry = ast.symTable.lookupAll(ast.name).get()
             if (entry is DeclareStatAST) {
+                ast.symTable.updateConstPropVariable(ast.name, entry)
                 return entry.rhs
             }
         }

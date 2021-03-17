@@ -117,6 +117,17 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         throw RuntimeException("Trying to get the access flag of a variable not in the symbol table ")
     }
 
+    fun updateConstPropVariable(name: String, identifiable: Identifiable) {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            currSymbolTable[name] = SymbolTableField(identifiable, value.size, true)
+            return
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.updateConstPropVariable(name, identifiable)
+        }
+    }
+
     /**
      * Add an element to the internal representation of the hash table
      * Calculates the size of the object and store that alongside obj
