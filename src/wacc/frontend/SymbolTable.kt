@@ -58,7 +58,6 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun lookup(name: String): Optional<Identifiable> {
         val value = currSymbolTable[name]
         if (value != null) {
-            value.accessFlag = true
             return Optional.of(value.identifiable)
         }
         return Optional.empty()
@@ -99,6 +98,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         val value = currSymbolTable[name]
         if (value != null) {
             value.accessFlag = true
+            return
         }
         if (encSymbolTable != null) {
             return encSymbolTable.setAccessField(name)
