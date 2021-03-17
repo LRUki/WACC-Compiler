@@ -1,6 +1,7 @@
 package wacc.frontend.ast.program
 
 import wacc.Main
+import wacc.WaccConfig
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
@@ -35,7 +36,11 @@ class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val fun
                 return false
             }
         }
-        funcList.parallelStream().forEach { it.check(table) }
+        if (!WaccConfig.parallelCompile) {
+            funcList.stream()
+        } else {
+            funcList.parallelStream()
+        }.forEach { it.check(table) }
         /* Checks all the remaining statements */
         stats.filter { it !is StructDeclareAST }.forEach {
             if (!it.check(table)) {
