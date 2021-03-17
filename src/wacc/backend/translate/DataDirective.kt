@@ -11,10 +11,12 @@ import wacc.backend.translate.instruction.Instruction
 class DataDirective(val stringLabels: StringLabels) {
 
     /** Adds a string literal to the data section. */
+    @Synchronized
     fun addStringLabel(string: String): String {
         return stringLabels.add(string)
     }
 
+    @Synchronized
     fun getStringLabel(string: String): String {
         return stringLabels.getLabel(string)
     }

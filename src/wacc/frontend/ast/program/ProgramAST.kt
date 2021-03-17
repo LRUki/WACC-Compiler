@@ -35,7 +35,7 @@ class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val fun
                 return false
             }
         }
-        funcList.forEach { it.check(table) }
+        funcList.parallelStream().forEach { it.check(table) }
         /* Checks all the remaining statements */
         stats.filter { it !is StructDeclareAST }.forEach {
             if (!it.check(table)) {

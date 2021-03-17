@@ -13,7 +13,7 @@ import wacc.backend.translate.instruction.instructionpart.*
  * Generates the C library functions assembly code
  *
  */
-class CLibrary {
+class CLibrary(val codeGenerator: CodeGenerator) {
     private val pointerOffset = 4
 
     /**
@@ -58,6 +58,7 @@ class CLibrary {
 
     /** Given a call, we add it and it's list of instructions
      to the hash map (provided it isn't already in the map)*/
+    @Synchronized
     fun addCode(call: Call) {
         if (libraryCalls.containsKey(call)) {
             return
@@ -97,7 +98,7 @@ class CLibrary {
             Call.READ_CHAR -> " %c\\0"
             else -> throw Exception("Unable to generate code for non-read types")
         }
-        val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
+        val stringFormatLabel = codeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
@@ -120,7 +121,7 @@ class CLibrary {
     /** Generates the block of code for print int call */
     fun generatePrintIntCall(): List<Instruction> {
         val stringFormat = "%d\\0"
-        val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
+        val stringFormatLabel = codeGenerator.dataDirective.addStringLabel(stringFormat)
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
                 LoadInstr(Condition.AL, null, ImmediateLabelMode(stringFormatLabel), Register.R0),
@@ -147,8 +148,8 @@ class CLibrary {
     fun generatePrintBoolCall(): List<Instruction> {
         val trueString = "true\\0"
         val falseString = "false\\0"
-        val trueLabel = CodeGenerator.dataDirective.addStringLabel(trueString)
-        val falseLabel = CodeGenerator.dataDirective.addStringLabel(falseString)
+        val trueLabel = codeGenerator.dataDirective.addStringLabel(trueString)
+        val falseLabel = codeGenerator.dataDirective.addStringLabel(falseString)
 
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateIntOperand(0)),
@@ -176,7 +177,7 @@ class CLibrary {
     /** Generates the block of code for print string call */
     fun generatePrintStringCall(): List<Instruction> {
         val stringFormat = "%.*s\\0"
-        val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
+        val stringFormatLabel = codeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
                 LoadInstr(Condition.AL, null, RegisterMode(Register.R0), Register.R1),
@@ -204,7 +205,7 @@ class CLibrary {
     /** Generates the block of code for print reference call */
     fun generatePrintReferenceCall(): List<Instruction> {
         val stringFormat = "%p\\0"
-        val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
+        val stringFormatLabel = codeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
                 MoveInstr(Condition.AL, Register.R1, RegisterOperand(Register.R0)),
@@ -230,7 +231,7 @@ class CLibrary {
     /** Generates the block of code for print new line call */
     fun generatePrintLnCall(): List<Instruction> {
         val stringFormat = "\\0"
-        val stringFormatLabel = CodeGenerator.dataDirective.addStringLabel(stringFormat)
+        val stringFormatLabel = codeGenerator.dataDirective.addStringLabel(stringFormat)
 
         val instructions = listOf(
                 LoadInstr(Condition.AL, null, ImmediateLabelMode(stringFormatLabel), Register.R0),
@@ -253,7 +254,7 @@ class CLibrary {
 
     /** Generates the block of code for free pair call */
     fun generateFreePairCall(): List<Instruction> {
-        val label = CodeGenerator.dataDirective.addStringLabel(RuntimeErrors.ErrorType.NULL_REFERENCE.toString())
+        val label = codeGenerator.dataDirective.addStringLabel(RuntimeErrors.ErrorType.NULL_REFERENCE.toString())
 
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateIntOperand(0)),
@@ -268,7 +269,7 @@ class CLibrary {
                 PopInstr(Register.R0),
                 BranchInstr(Condition.AL, Label(LibraryFunctions.FREE.toString()), true),
         )
-        CodeGenerator.runtimeErrors.addThrowRuntimeError()
+        codeGenerator.runtimeErrors.addThrowRuntimeError()
         return listOf(PushInstr(Register.LR)) + instructions + listOf(PopInstr(Register.PC))
         /**
          * PUSH {lr}
@@ -290,7 +291,7 @@ class CLibrary {
     /** Generates the code for freeing a single malloced object */
     private fun freeSingleMallocedObject(): List<Instruction> {
         val errorMessage = RuntimeErrors.ErrorType.NULL_REFERENCE.toString()
-        val errorLabel = CodeGenerator.dataDirective.addStringLabel(errorMessage)
+        val errorLabel = codeGenerator.dataDirective.addStringLabel(errorMessage)
 
         val instructions = listOf(
                 CompareInstr(Register.R0, ImmediateIntOperand(0)),

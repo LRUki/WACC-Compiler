@@ -18,11 +18,11 @@ import kotlin.test.assertTrue
 
 class TranslateTest {
 
-    @Before
-    @Throws(Exception::class)
-    fun setUp() {
-        CodeGenerator.reset()
-    }
+//    @Before
+//    @Throws(Exception::class)
+//    fun setUp() {
+//        CodeGenerator.reset()
+//    }
 
     private fun compileAndGenerate(file: File): List<Instruction> {
         val waccFile = WaccFile(file)

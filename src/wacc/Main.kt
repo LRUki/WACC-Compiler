@@ -47,20 +47,21 @@ fun main(args: Array<String>) {
         }
     }
 
+    // Set optimization flags from arguments
     val optimize = flags.contains("-o")
-    val controlFlow = flags.contains("-cf")
-    CodeGenerator.constEvaluation = optimize || flags.contains("-ce")
-    CodeGenerator.registerAllocation = optimize || flags.contains("-ra")
+    WaccConfig.controlFlow = optimize || flags.contains("-cf")
+    WaccConfig.constEvaluation = optimize || flags.contains("-ce")
+    WaccConfig.registerAllocation = optimize || flags.contains("-ra")
 
     val inputFile = File(paths[0])
     waccFile = WaccFile(inputFile)
     waccFile.frontend()
 
-    if (CodeGenerator.constEvaluation) {
+    if (WaccConfig.constEvaluation) {
         waccFile.constEvaluation()
     }
 
-    if (controlFlow) {
+    if (WaccConfig.controlFlow) {
         waccFile.controlFlowAnalysis()
     }
 
