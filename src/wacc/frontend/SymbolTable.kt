@@ -106,6 +106,17 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         throw RuntimeException("Trying to test the access flag of a variable not in the symbol table ")
     }
 
+    fun getAccessField(name: String): Boolean {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            return value.accessFlag
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.getAccessField(name)
+        }
+        throw RuntimeException("Trying to get the access flag of a variable not in the symbol table ")
+    }
+
     /**
      * Add an element to the internal representation of the hash table
      * Calculates the size of the object and store that alongside obj
@@ -329,6 +340,6 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
 }
 
-class SymbolTableField(val identifiable: Identifiable, val size:Int, var accessFlag: Boolean)
+class SymbolTableField(val identifiable: Identifiable, val size: Int, var accessFlag: Boolean)
 
 class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

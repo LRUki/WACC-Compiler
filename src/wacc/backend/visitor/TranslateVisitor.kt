@@ -1038,7 +1038,6 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
         }
         offset += ast.symTable.checkParamInFuncSymbolTable(ast.name) + ast.symTable.callOffset
         return listOf(LoadInstr(Condition.AL, memType, RegisterAddrWithOffsetMode(Register.SP, offset, false), codeGenerator.getNextFreeCalleeReg()))
-
     }
 
     /** Translates a Boolean IntAST */

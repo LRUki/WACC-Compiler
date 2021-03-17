@@ -10,6 +10,7 @@ import wacc.Main.waccFile
 import wacc.backend.generateCode
 import wacc.backend.printCode
 import wacc.extension.optimization.ConstantEvaluationVisitor
+import wacc.extension.optimization.ConstantPropagationVisitor
 import wacc.extension.optimization.ControlFlowVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
@@ -50,6 +51,7 @@ fun main(args: Array<String>) {
     val optimize = flags.contains("-o")
     WaccConfig.controlFlow = optimize || flags.contains("-oControlFlow")
     WaccConfig.constEval = optimize || flags.contains("-oConstEval")
+
     WaccConfig.regAlloc = optimize || flags.contains("-oRegAlloc")
     WaccConfig.parallelCompile = optimize || flags.contains("-oParallelCompile")
 
@@ -64,6 +66,8 @@ fun main(args: Array<String>) {
     if (WaccConfig.controlFlow) {
         waccFile.controlFlowAnalysis()
     }
+//    waccFile.constEvaluation()
+//    waccFile.constPropagation()
 
     val outputString = waccFile.backend()
     var outputFileName = inputFile.nameWithoutExtension + ".s"
@@ -169,5 +173,9 @@ class WaccFile(val file: File) {
     }
     fun controlFlowAnalysis() {
         ast = ControlFlowVisitor().visit(ast)
+    }
+
+    fun constPropagation() {
+        ast = ConstantPropagationVisitor().visit(ast)
     }
 }
