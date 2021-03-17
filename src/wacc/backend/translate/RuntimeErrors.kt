@@ -14,7 +14,7 @@ import wacc.backend.translate.instruction.instructionpart.RegisterOperand
  * Runtime errors is a class to represent runtime errors
  * we encounter in our program
  */
-class RuntimeErrors {
+class RuntimeErrors(val codeGenerator: CodeGenerator) {
 
     /** Initially we have no errors so each error is null*/
     private val EXIT_CODE = -1
@@ -68,7 +68,7 @@ class RuntimeErrors {
                     MoveInstr(Condition.AL, Register.R0, ImmediateIntOperand(EXIT_CODE)),
                     BranchInstr(Condition.AL, exitLabel, true)
             )
-            CodeGenerator.cLib.addCode(CLibrary.Call.PRINT_STRING)
+            codeGenerator.cLib.addCode(CLibrary.Call.PRINT_STRING)
             /**
              * p_throw_runtime_error:
              * BL p_print_string
@@ -81,7 +81,7 @@ class RuntimeErrors {
     /** Sets the nullReferenceError variable to the list of instructions for null reference errors */
     fun addNullReferenceCheck() {
         if (nullReferenceError == null) {
-            val errorMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NULL_REFERENCE.toString())
+            val errorMsgLabel = codeGenerator.dataDirective.addStringLabel(ErrorType.NULL_REFERENCE.toString())
             nullReferenceError = listOf(
                     nullReferenceLabel,
                     PushInstr(Register.LR),
@@ -105,7 +105,7 @@ class RuntimeErrors {
     /** Sets the divideZero variable to the list of instructions for divide by 0 errors */
     fun addDivideByZeroCheck() {
         if (divideZeroError == null) {
-            val errorMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.DIVIDE_BY_ZERO.toString())
+            val errorMsgLabel = codeGenerator.dataDirective.addStringLabel(ErrorType.DIVIDE_BY_ZERO.toString())
             divideZeroError = listOf(
                     divideZeroCheckLabel,
                     PushInstr(Register.LR),
@@ -129,8 +129,8 @@ class RuntimeErrors {
     /** Sets the checkArrayBounds variable to the list of instructions for array bounds checking */
     fun addArrayBoundsCheck() {
         if (checkArrayBounds == null) {
-            val negativeMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
-            val tooLargeMsgLabel = CodeGenerator.dataDirective.addStringLabel(ErrorType.LARGE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
+            val negativeMsgLabel = codeGenerator.dataDirective.addStringLabel(ErrorType.NEGATIVE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
+            val tooLargeMsgLabel = codeGenerator.dataDirective.addStringLabel(ErrorType.LARGE_ARRAY_INDEX_OUT_OF_BOUNDS.toString())
 
             checkArrayBounds = listOf(
                     checkArrayBoundsLabel,
@@ -164,7 +164,7 @@ class RuntimeErrors {
     /** Sets the overflowError variable to the list of instructions for overflow errors */
     fun addOverflowError() {
         if (overflowError == null) {
-            val errorMsg = CodeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())
+            val errorMsg = codeGenerator.dataDirective.addStringLabel(ErrorType.OVERFLOW_ERROR.toString())
             overflowError = listOf(
                     throwOverflowErrorLabel,
                     LoadInstr(Condition.AL, null, ImmediateLabelMode(errorMsg), Register.R0),

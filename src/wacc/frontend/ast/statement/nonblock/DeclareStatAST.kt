@@ -1,8 +1,6 @@
 package wacc.frontend.ast.statement.nonblock
 
 import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
 import wacc.backend.translate.instruction.Instruction
 import wacc.backend.translate.instruction.instructionpart.Condition
 import wacc.backend.translate.instruction.instructionpart.MemoryType

@@ -14,11 +14,11 @@ import java.io.File
 class RuntimeErrorTest {
     val PATH = "wacc_examples/valid/runtimeErr"
 
-    @Before
-    @Throws(Exception::class)
-    fun setUp() {
-        CodeGenerator.reset()
-    }
+//    @Before
+//    @Throws(Exception::class)
+//    fun setUp() {
+//        CodeGenerator.reset()
+//    }
 
     @Test
     fun arrayRuntimeErrorContainsCheckArrayBounds() {

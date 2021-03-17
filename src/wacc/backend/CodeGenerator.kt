@@ -11,7 +11,7 @@ import wacc.backend.visitor.TranslateVisitor
 import wacc.frontend.ast.program.ProgramAST
 import java.util.*
 
-object CodeGenerator {
+class CodeGenerator {
 
     lateinit var dataDirective: DataDirective
     lateinit var cLib: CLibrary
@@ -28,10 +28,6 @@ object CodeGenerator {
 
     var useAccumulator = false
 
-    //optimization flags
-    var constEvaluation = false
-    var registerAllocation = false
-
     init {
         reset()
     }
@@ -39,8 +35,8 @@ object CodeGenerator {
     /** A function which resets the state of the code generator*/
     fun reset() {
         dataDirective = DataDirective(StringLabels(mutableListOf()))
-        cLib = CLibrary()
-        runtimeErrors = RuntimeErrors()
+        cLib = CLibrary(this)
+        runtimeErrors = RuntimeErrors(this)
         labelNumber = 0
 
         resultRegisters = mutableListOf(Register.R0, Register.R1)
