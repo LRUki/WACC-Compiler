@@ -64,7 +64,8 @@ class ControlFlowVisitor : OptimisationVisitor() {
         val cond = visit(ast.cond) as ExprAST
 
         if (cond !is BoolLiterAST) {
-            throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
+//            throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
+            return ast
         }
 
         val branchOfChoice = mutableListOf<StatAST>()
@@ -87,7 +88,8 @@ class ControlFlowVisitor : OptimisationVisitor() {
         val cond = visit(ast.cond) as ExprAST
 
         if (cond !is BoolLiterAST) {
-            throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
+//            throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
+            return ast
         }
         /** Condition is true, proceed as normal */
         if (cond.value) {
