@@ -1,5 +1,6 @@
 package wacc.backend.visitor
 
+import wacc.WaccConfig
 import wacc.backend.CodeGenerator
 import wacc.backend.translate.CLibrary
 import wacc.backend.translate.RuntimeErrors
@@ -77,9 +78,14 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
         instrs.add(DirectiveInstr("global main"))
 
         /** Translates all of the function definitions (in parallel) */
-        val listOfFuncInstrs = ast.funcList.parallelStream()
+        val listOfFuncInstrs = if (!WaccConfig.parallelCompile) {
+            ast.funcList.stream()
+        } else {
+            ast.funcList.parallelStream()
+        }
                 .map { TranslateVisitor(codeGenerator.clone()).visit(it) }
                 .collect(Collectors.toList())
+
         listOfFuncInstrs.forEach{ instrs.addAll(it) }
 
         /** Translates each statement in the program */

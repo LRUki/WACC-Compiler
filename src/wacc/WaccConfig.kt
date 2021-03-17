@@ -3,6 +3,7 @@ package wacc
 object WaccConfig {
     //optimization flags
     var controlFlow = false
-    var constEvaluation = false
-    var registerAllocation = false
+    var constEval = false
+    var regAlloc = false
+    var parallelCompile = false
 }
