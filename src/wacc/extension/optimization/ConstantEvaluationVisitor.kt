@@ -1,7 +1,6 @@
 package wacc.extension.optimization
 
 import wacc.frontend.ast.AST
-import wacc.frontend.ast.AstVisitor
 import wacc.frontend.ast.OptimisationVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.*
@@ -50,7 +49,6 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
     }
 
     override fun visitParamAST(ast: ParamAST): AST {
-        //todo
         return ast
     }
 
@@ -103,7 +101,6 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
     }
 
     override fun visitAssignStatAST(ast: AssignStatAST): AST {
-        //todo just right hand side?
         val assignStatAst = AssignStatAST(ast.lhs, visit(ast.rhs) as RhsAST)
         assignStatAst.symTable = ast.symTable
         return assignStatAst
@@ -143,7 +140,6 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
     }
 
     override fun visitCallRhsAST(ast: CallRhsAST): AST {
-        //TODO arglist could be constant?
         val argList = mutableListOf<ExprAST>()
         ast.argList.forEach { argList.add(visit(it) as ExprAST) }
         val callRhsAST = CallRhsAST(ast.ident, argList)
@@ -160,8 +156,10 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
                 ((e1 is BoolLiterAST) and (e2 is BoolLiterAST))) {
 
             return when (ast.binOp) {
+                /** evaluate ||, && */
                 is BoolBinOp ->
                     BoolLiterAST((ast.binOp).apply((e1 as BoolLiterAST).value, (e2 as BoolLiterAST).value))
+                /** evaluate +, -, *, /, % */
                 is IntBinOp -> {
                     val v1 = (e1 as IntLiterAST).value
                     val v2 = (e2 as IntLiterAST).value
@@ -173,6 +171,7 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
                 is CmpBinOp -> {
                     val v1 = (e1 as IntLiterAST).value
                     val v2 = (e2 as IntLiterAST).value
+                    /** evaluate <, <=, ==, !=, >, >=  */
                     when (ast.binOp) {
                         CmpBinOp.EQ -> BoolLiterAST(v1 == v2)
                         CmpBinOp.NEQ -> BoolLiterAST(v1 != v2)
@@ -189,13 +188,17 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
         }
     }
 
+
     override fun visitUnOpExprAST(ast: UnOpExprAST): AST {
         val e1 = visit(ast.expr)
         if ((e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT)) {
+            /** evaluate not */
             return BoolLiterAST(!(e1 as BoolLiterAST).value)
         } else if ((e1 is IntLiterAST) and (ast.unOp == UnOp.CHR)) {
+            /** evaluate chr */
             return CharLiterAST((e1 as IntLiterAST).value.toChar())
         } else if ((e1 is CharLiterAST) and (ast.unOp == UnOp.ORD)) {
+            /** evaluate ord */
             return IntLiterAST((e1 as CharLiterAST).value.toInt())
         }
         return ast
