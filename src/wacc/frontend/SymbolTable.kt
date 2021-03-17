@@ -58,7 +58,6 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun lookup(name: String): Optional<Identifiable> {
         val value = currSymbolTable[name]
         if (value != null) {
-            value.accessFlag = true
             return Optional.of(value.identifiable)
         }
         return Optional.empty()
@@ -92,6 +91,19 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             return Optional.empty()
         }
         return encSymbolTable.lookupFirstFunc()
+    }
+
+    /** Called when the variable is assigned to */
+    fun setAccessField(name: String) {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            value.accessFlag = true
+            return
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.setAccessField(name)
+        }
+        throw RuntimeException("Trying to test the access flag of a variable not in the symbol table ")
     }
 
     /**
