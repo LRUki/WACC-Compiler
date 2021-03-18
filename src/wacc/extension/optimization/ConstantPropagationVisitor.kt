@@ -10,6 +10,8 @@ import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.block.IfStatAST
+import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.Action
 import wacc.frontend.ast.statement.nonblock.ActionStatAST
 import wacc.frontend.ast.statement.nonblock.AssignStatAST
@@ -52,6 +54,7 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         blockStatAST.symTable = ast.symTable
         return blockStatAST
     }
+
 
 
     override fun visitIdentAST(ast: IdentAST): AST {
@@ -119,18 +122,9 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
     }
 
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
-        var exp1 = ast.expr1
-        var exp2 = ast.expr2
-        var changed = false
-        if (ast.expr1 is IdentAST) {
-            exp1 = visit(ast.expr1) as ExprAST
-            changed = true
-        }
-        if (ast.expr2 is IdentAST) {
-            exp2 = visit(ast.expr2) as ExprAST
-            changed = true
-        }
-        if (changed) {
+        val exp1 = visit(ast.expr1) as ExprAST
+        val exp2 = visit(ast.expr2) as ExprAST
+        if (exp1 != ast.expr1 || exp2 != ast.expr2) {
             val binOpExpr = BinOpExprAST(ast.binOp, exp1, exp2)
             binOpExpr.symTable = ast.symTable
             return binOpExpr
@@ -148,5 +142,31 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
             }
         }
         return ast
+    }
+    override fun visitIfStatAST(ast: IfStatAST): AST {
+        val ifCond = visit(ast.cond) as ExprAST
+        val thenStats = mutableListOf<StatAST>()
+        val elseStats = mutableListOf<StatAST>()
+        ast.thenBody.forEach { thenStats.add(visit(it) as StatAST) }
+        ast.elseBody.forEach { elseStats.add(visit(it) as StatAST) }
+        val ifStatAst = IfStatAST(ifCond, thenStats, elseStats)
+        ifStatAst.symTable = ast.symTable
+        ifStatAst.thenST = ast.thenST
+        ifStatAst.elseST = ast.elseST
+        ifStatAst.thenHasReturn = ast.thenHasReturn
+        ifStatAst.elseHasReturn = ast.elseHasReturn
+        return ifStatAst
+    }
+
+    override fun visitWhileStatAST(ast: WhileStatAST): AST {
+        val whileCond = visit(ast.cond) as ExprAST
+        val bodyStats = mutableListOf<StatAST>()
+        ast.body.forEach{
+            bodyStats.add(visit(it) as StatAST)
+        }
+        val whileAST = WhileStatAST(whileCond, bodyStats)
+        whileAST.symTable = ast.symTable
+        whileAST.blockST = ast.blockST
+        return whileAST
     }
 }

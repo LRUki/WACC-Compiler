@@ -179,14 +179,21 @@ class ConstantEvaluationVisitor : OptimisationVisitor() {
 
     override fun visitUnOpExprAST(ast: UnOpExprAST): AST {
         val e1 = visit(ast.expr)
-        if ((e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT)) {
-            return BoolLiterAST(!(e1 as BoolLiterAST).value)
-        } else if ((e1 is IntLiterAST) and (ast.unOp == UnOp.CHR)) {
-            return CharLiterAST((e1 as IntLiterAST).value.toChar())
-        } else if ((e1 is CharLiterAST) and (ast.unOp == UnOp.ORD)) {
-            return IntLiterAST((e1 as CharLiterAST).value.toInt())
+        when {
+            (e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT) -> {
+                return BoolLiterAST(!(e1 as BoolLiterAST).value)
+            }
+            (e1 is IntLiterAST) and (ast.unOp == UnOp.CHR) -> {
+                return CharLiterAST((e1 as IntLiterAST).value.toChar())
+            }
+            (e1 is CharLiterAST) and (ast.unOp == UnOp.ORD) -> {
+                return IntLiterAST((e1 as CharLiterAST).value.toInt())
+            }
+            (e1 is IntLiterAST) and (ast.unOp == UnOp.MINUS) -> {
+                return IntLiterAST(-(e1 as IntLiterAST).value.toInt())
+            }
+            else -> return ast
         }
-        return ast
     }
 
     override fun visitStructAssignAST(ast: StructAssignAST): AST {

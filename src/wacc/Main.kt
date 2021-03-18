@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.Main.waccFile
+import wacc.WaccConfig.constEval
 import wacc.backend.generateCode
 import wacc.backend.printCode
 import wacc.extension.optimization.ConstantEvaluationVisitor
@@ -172,12 +173,18 @@ class WaccFile(val file: File) {
 
     fun constEvaluation() {
         ast = ConstantEvaluationVisitor().visit(ast)
+
     }
     fun controlFlowAnalysis() {
         ast = ControlFlowVisitor().visit(ast)
     }
 
     fun constPropagation() {
+        if (!constEval) {
+            constEvaluation()
+            constEval = true
+        }
         ast = ConstantPropagationVisitor().visit(ast)
+        constEvaluation()
     }
 }
