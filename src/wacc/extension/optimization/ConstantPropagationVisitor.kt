@@ -6,20 +6,14 @@ import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
-import wacc.frontend.ast.program.ImportAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
-import wacc.frontend.ast.statement.nonblock.ActionStatAST
 import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 
 class ConstantPropagationVisitor : OptimisationVisitor() {
     override fun visitProgramAST(ast: ProgramAST): AST {
-        val importList = mutableListOf<ImportAST>()
-        ast.imports.forEach {
-            importList.add(visit(it) as ImportAST)
-        }
         val funcList = mutableListOf<FuncAST>()
         ast.funcList.forEach {
             funcList.add(visit(it) as FuncAST)
@@ -28,7 +22,7 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         ast.stats.forEach {
             stats.add(visit(it) as StatAST)
         }
-        val programAST = ProgramAST(importList, stats, funcList)
+        val programAST = ProgramAST(ast.imports, stats, funcList)
         programAST.symTable = ast.symTable
         return programAST
     }
@@ -57,13 +51,9 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
     }
 
 
-    //    visitBla(){
-//        visit(ident)
-//        return ast
-//    }
     override fun visitIdentAST(ast: IdentAST): AST {
-        val assgined = ast.symTable.getAssignedField(ast.name)
-        if (!assgined) {
+        val assigned = ast.symTable.getAssignedField(ast.name)
+        if (!assigned) {
             val entry = ast.symTable.lookupAll(ast.name).get()
             if (entry is DeclareStatAST) {
                 return entry.rhs
@@ -72,12 +62,20 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         return ast
     }
 
+    override fun visitStructAccessAST(ast: StructAccessAST): AST {
+        val assigned = ast.symTable.getAssignedField(ast.structIdent.name)
+//        if (!assigned) {
+//
+//        }
+        return ast
+    }
+
     override fun visitAssignStatAST(ast: AssignStatAST): AST {
         if (ast.lhs is IdentAST) {
             val rhs = visit(ast.rhs) as RhsAST
             if (ast.rhs != rhs) {
                 val assignStat = AssignStatAST(ast.lhs, rhs)
-                ast.symTable.updateConstPropVariable(ast.lhs.name, rhs)
+                ast.symTable.updateOptimisedVariable(ast.lhs.name, rhs)
                 assignStat.symTable = ast.symTable
                 return assignStat
             }
@@ -90,7 +88,7 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         if (rhs != ast.rhs) {
             val declareStat = DeclareStatAST(ast.type, ast.ident, rhs)
             declareStat.symTable = ast.symTable
-            ast.symTable.updateConstPropVariable(ast.ident.name, rhs)
+            ast.symTable.updateOptimisedVariable(ast.ident.name, rhs)
             return declareStat
         }
         return ast
@@ -125,9 +123,4 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         return ast
     }
 
-//    override fun visitArrayElemAST(ast: ArrayElemAST): AST {
-//        val arrayElemAST = ArrayElemAST(visit(ast.ident) as IdentAST, ast.indices)
-//        arrayElemAST.symTable = ast.symTable
-//        return arrayElemAST
-//    }
 }

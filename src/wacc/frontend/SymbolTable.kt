@@ -118,18 +118,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         throw RuntimeException("Trying to get the access flag of a variable not in the symbol table ")
     }
 
-    fun updateConstPropVariable(name: String, identifiable: Identifiable) {
-        val value = currSymbolTable[name]
-        if (value != null) {
-            currSymbolTable[name] = SymbolTableField(identifiable, value.size, true)
-            return
-        }
-        if (encSymbolTable != null) {
-            return encSymbolTable.updateConstPropVariable(name, identifiable)
-        }
-    }
-
-    fun updateConstPropVariable(name: String, rhs: RhsAST) {
+    fun updateOptimisedVariable(name: String, rhs: RhsAST) {
         val value = currSymbolTable[name]
         if (value != null) {
             val entry = (currSymbolTable[name]?.identifiable as DeclareStatAST)
@@ -138,7 +127,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             return
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.updateConstPropVariable(name, rhs)
+            return encSymbolTable.updateOptimisedVariable(name, rhs)
         }
     }
 
