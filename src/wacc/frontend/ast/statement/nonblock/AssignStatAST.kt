@@ -1,31 +1,14 @@
 package wacc.frontend.ast.statement.nonblock
 
-import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.MemoryType
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.LoadInstr
-import wacc.backend.translate.instruction.StoreInstr
-import wacc.backend.translate.instruction.instructionpart.RegisterMode
-import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
-import wacc.frontend.ast.array.ArrayElemAST
-import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
-import wacc.frontend.ast.expression.StrLiterAST
 import wacc.frontend.ast.function.FuncAST
-import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.ArrayTypeAST
-import wacc.frontend.ast.type.BaseType
-import wacc.frontend.ast.type.BaseTypeAST
 import wacc.frontend.exception.semanticError
 
 /**
@@ -72,5 +55,6 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitAssignStatAST(this)
     }
+
 
 }

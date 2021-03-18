@@ -2,6 +2,9 @@ package wacc.frontend.visitor
 
 import antlr.WaccParser
 import antlr.WaccParserBaseVisitor
+import wacc.frontend.ast.AST
+import wacc.frontend.ast.expression.ExprAST
+import wacc.frontend.ast.expression.LiterAST
 import wacc.frontend.exception.SyntaxException
 import wacc.frontend.exception.syntaxError
 
@@ -14,6 +17,11 @@ import wacc.frontend.exception.syntaxError
  */
 class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
     override fun visitFunc(ctx: WaccParser.FuncContext): Void? {
+        if (ctx.VOID() != null) {
+            // No need to check for return statement for void functions
+            return null
+        }
+
         //check if function ends with return or exit
         val lastStat: WaccParser.StatContext = getLastStat(ctx.stat())
         var functionEndsWithExitOrReturn = isExitOrReturn(lastStat)
@@ -84,6 +92,21 @@ class CheckSyntaxVisitor : WaccParserBaseVisitor<Void>() {
                 (statCtx.EXIT() != null || statCtx.RETURN() != null)) {
             return true
         }
+        if (statCtx is WaccParser.VoidReturnStatContext) {
+            return true
+        }
         return false
+    }
+
+    override fun visitUnopExpr(ctx: WaccParser.UnopExprContext): Void? {
+        if (ctx.unop().MULT() != null) {
+            val expr = BuildAstVisitor().visit(ctx.expr()) as ExprAST
+            if (expr is LiterAST) {
+                // Throw a syntax error instead of a semantic error here to make
+                // invalid/syntaxErr/expressions/missingOperand1.wacc exit with correct code.
+                syntaxError("Dereference operator cannot apply to literals", ctx)
+            }
+        }
+        return null
     }
 }

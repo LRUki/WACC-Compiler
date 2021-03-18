@@ -1,16 +1,5 @@
 package wacc.frontend.ast.statement.block
 
-import wacc.backend.CodeGenerator
-import wacc.backend.CodeGenerator.freeCalleeReg
-import wacc.backend.CodeGenerator.seeLastUsedCalleeReg
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.AddInstr
-import wacc.backend.translate.instruction.BranchInstr
-import wacc.backend.translate.instruction.CompareInstr
-import wacc.backend.translate.instruction.SubInstr
-import wacc.backend.translate.instruction.instructionpart.ImmediateIntOperand
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.AstVisitor
@@ -50,5 +39,6 @@ class WhileStatAST(val cond: ExprAST, val body: List<StatAST>) : StatAST, Abstra
     override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
         return visitor.visitWhileStatAST(this)
     }
+
 
 }

@@ -1,0 +1,25 @@
+# a simple function is declared, but not called
+
+# Output:
+# #empty#
+
+# Program:
+
+begin
+  int f() is
+    return 0 
+  end
+  int f(int n) is
+    return 0
+  end
+  int f(bool n) is
+    return 0
+  end
+  int f(char n) is
+    return 0
+  end
+  int f(string n) is
+    return 0
+  end
+  skip
+end

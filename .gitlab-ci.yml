@@ -58,10 +58,43 @@ test-runtime-error:
 test-backend-integration:
   stage: test-backend
   script:
-    - echo "Testing printing of code"
+    - echo "Testing backend integration"
     - ./testassemble
 
-test-extension:
+test-optimization-integration:
   stage: test-extension
   script:
-    - echo "Testing the extension"
+    - echo "Testing integrity with optimization"
+    - ./testassemble -o
+
+test-const-evaluation:
+  stage: test-extension
+  script:
+    - echo "Testing const evaluation"
+    - ./gradlew test --tests extension.ConstantEvaluationTest
+
+test-syntax-extension:
+  stage: test-extension
+  script:
+    - echo "Testing syntax"
+    - make clean rules
+    - ./gradlew test --tests extension.SyntaxTest
+
+test-semantic-extension:
+  stage: test-extension
+  script:
+    - echo "Testing semantics"
+    - make clean rules
+    - ./gradlew test --tests extension.SemanticTest
+test-control-flow:
+  stage: test-extension
+  script:
+    - echo "Testing control flow"
+    - ./gradlew test --tests extension.ControlFlowTest
+
+
+test-new-feature-integration:
+  stage: test-extension
+  script:
+    - echo "Testing integrity with optimization"
+    - ./testextension

@@ -24,7 +24,7 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         val exprType = expr.getRealType(table)
         when (action) {
             Action.FREE -> {
-                if (exprType is ArrayTypeAST || exprType is PairTypeAST) {
+                if (exprType is ArrayTypeAST || exprType is PairTypeAST || exprType is StructTypeAST) {
                     return true
                 }
                 semanticError("Expected type ARRAY or PAIR, Actual type $exprType", ctx)
@@ -63,4 +63,28 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
 
 enum class Action {
     FREE, RETURN, EXIT, PRINT, PRINTLN
+}
+
+class VoidReturnStatAST() : StatAST, AbstractAST() {
+    override fun check(table: SymbolTable): Boolean {
+        symTable = table
+        val exprType = VoidTypeAST()
+
+        val closestFunc = table.lookupFirstFunc()
+        if (closestFunc.isEmpty) {
+            semanticError("A return token is outside of a function scope", ctx)
+            return false
+        }
+        val returnType = (closestFunc.get()).type
+        if (returnType != exprType) {
+            semanticError("Expected type $returnType, Actual type $exprType", ctx)
+            return false
+        }
+        return true
+    }
+
+    override fun <S : T, T> accept(visitor: AstVisitor<S>): T {
+        return visitor.visitVoidReturnStatAST(this)
+    }
+
 }

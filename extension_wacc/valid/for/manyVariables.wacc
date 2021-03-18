@@ -1,0 +1,26 @@
+# a for loop with many variable
+# Output:
+## 1
+## 2
+## 3
+## 4
+## 5
+## 6
+## 7
+## 8
+## 9
+## 10
+## 420
+
+#* 0
+
+# Program:
+begin
+int i = 420;
+for int i = 1; i <=10; i = i + 1 do
+    bool y = true;
+    int banana = 69;
+    println i
+done;
+println i
+end

@@ -4,51 +4,77 @@ options {
   tokenVocab=WaccLexer;
 }
 
-program: BEGIN func* stat END EOF;
+program: importStat* BEGIN func* stat END EOF;
 
-func: type ident L_PAREN paramList? R_PAREN IS stat END;
+func: (type | VOID) ident L_PAREN paramList? R_PAREN IS stat END;
 
 paramList: param (COMMA param)*;
 
 param: type ident;
 
 stat: SKIP_TOKEN                                      #skipStat
-      | type ident ASSIGN assignRhs                   #declareStat
+      | CALL ident L_PAREN argList? R_PAREN           #callStat
+      | (type | implicitType) ident ASSIGN assignRhs  #declareStat
       | assignLhs ASSIGN assignRhs                    #assignStat
+      | structDeclare                                 #structDeclareStat
       | READ assignLhs                                #readStat
       | (FREE | RETURN | EXIT | PRINT | PRINTLN) expr #actionStat
+      | RETURN                                        #voidReturnStat
       | IF expr THEN stat ELSE stat FI                #ifStat
       | WHILE expr DO stat DONE                       #whileStat
+      | FOR stat SEMICOLON expr SEMICOLON stat DO stat DONE #forStat
       | BEGIN stat END                                #blockStat
       | stat SEMICOLON stat                           #multiStat;
 
 assignLhs: ident
          | arrayElem
-         | pairElem ;
+         | pairElem
+         | pointerElem
+         | structAccess;
 
 assignRhs: expr
          | arrayLiter
          | NEWPAIR L_PAREN expr COMMA expr R_PAREN
          | pairElem
-         | CALL ident L_PAREN argList? R_PAREN;
+         | CALL ident L_PAREN argList? R_PAREN
+         | structAssign;
+
+importStat: IMPORT ident DOT ident ;
+
+structDeclare: structType L_CURLY (structMember SEMICOLON)* R_CURLY;
+
+structAssign: L_CURLY (assignRhs (COMMA assignRhs)*) R_CURLY;
+
+structMember: type ident;
+
+structAccess: ident DOT ident;
 
 argList: expr (COMMA expr)* ;
 
 pairElem: FST expr
         | SND expr ;
 
-type: baseType | pairType | arrayType ;
+pointerElem: MULT ident ;
+
+type: baseType | pairType | arrayType | structType | pointerType ;
 
 baseType: INT | BOOL | CHAR | STRING ;
 
-arrayType: (baseType | pairType) (L_SQUARE R_SQUARE)+ ;
+arrayType: (baseType | pairType | structType | L_PAREN pointerType R_PAREN) (L_SQUARE R_SQUARE)+ ;
 
 pairType: PAIR L_PAREN pairElemType COMMA pairElemType R_PAREN ;
 
 pairElemType: baseType
             | arrayType
+            | pairType
             | PAIR ;
-            
+
+pointerType: (baseType | pairType | arrayType | structType) MULT+ ;
+
+implicitType: VAR ;
+
+structType: STRUCT capitalisedIdent;
+
 expr: expr binop1 expr     #binopExpr
     | expr binop2 expr     #binopExpr
     | expr binop3 expr     #binopExpr
@@ -63,9 +89,10 @@ expr: expr binop1 expr     #binopExpr
     | ident                #singletonExpr
     | arrayElem            #singletonExpr
     | unop expr            #unopExpr
+    | structAccess         #structAccessExpr
     | L_PAREN expr R_PAREN #parenExpr;
 
-unop: NOT | MINUS | LEN | ORD | CHR;
+unop: NOT | MINUS | LEN | ORD | CHR | REF | MULT ;
 
 binop1: MULT | DIV | MOD;
 binop2: PLUS | MINUS;
@@ -88,5 +115,6 @@ arrayLiter: L_SQUARE (expr (COMMA expr)*)? R_SQUARE ;
 
 pairLiter: NULL ;
 
-ident: IDENT ;
+ident: IDENT | CAPTIALISED_IDENT;
 
+capitalisedIdent: CAPTIALISED_IDENT ;

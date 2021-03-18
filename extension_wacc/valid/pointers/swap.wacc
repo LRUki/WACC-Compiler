@@ -1,0 +1,24 @@
+# simple swap function using pointers
+
+# Output:
+# 20
+# 10
+
+# Exit:
+# 0
+
+# Program:
+
+begin
+  bool swap(int *a, int *b) is
+    int c = *a ;
+    *a = *b ;
+    *b = c ;
+    return true
+  end
+  int x = 10 ;
+  int y = 20 ;
+  bool b = call swap(&x, &y) ;
+  println x ;
+  println y
+end
