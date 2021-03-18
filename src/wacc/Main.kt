@@ -66,8 +66,8 @@ fun main(args: Array<String>) {
     if (WaccConfig.controlFlow) {
         waccFile.controlFlowAnalysis()
     }
-    waccFile.constEvaluation()
-    waccFile.constPropagation()
+//    waccFile.constEvaluation()
+//    waccFile.constPropagation()
 //    waccFile.constEvaluation()
 
     val outputString = waccFile.backend()

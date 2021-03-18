@@ -367,7 +367,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             "||" -> BoolBinOp.OR
             else -> throw RuntimeException()
         }
-        val binOpExprAST = BinOpExprAST(binop,
+        val binOpExprAST = BinOpExprAST(binop as BinOp,
                 visit(ctx.expr(0)) as ExprAST,
                 visit(ctx.expr(1)) as ExprAST)
         binOpExprAST.ctx = ctx

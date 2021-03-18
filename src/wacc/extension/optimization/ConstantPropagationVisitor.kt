@@ -3,6 +3,7 @@ package wacc.extension.optimization
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.OptimisationVisitor
 import wacc.frontend.ast.assign.RhsAST
+import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -64,9 +65,20 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
 
     override fun visitStructAccessAST(ast: StructAccessAST): AST {
         val assigned = ast.symTable.getAssignedField(ast.structIdent.name)
-//        if (!assigned) {
-//
-//        }
+        if (!assigned) {
+            var rhs: RhsAST? = null
+            val entry = ast.symTable.lookupAll(ast.structIdent.name).get()
+            val assignments = ((entry as DeclareStatAST).rhs as StructAssignAST).assignments
+            for (i in ast.structDeclare.fields.indices) {
+                if (ast.structDeclare.fields[i].ident.equals(ast.fieldIdent)) {
+                    rhs = assignments[i]
+                    break
+                }
+            }
+            if (rhs != null) {
+                return rhs
+            }
+        }
         return ast
     }
 
@@ -116,11 +128,13 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
 
     override fun visitUnOpExprAST(ast: UnOpExprAST): AST {
         if (ast.expr is IdentAST) {
-            val unOpExpr = UnOpExprAST(ast.unOp, visit(ast.expr) as ExprAST)
-            unOpExpr.symTable = ast.symTable
-            return unOpExpr
+            val expr = visit(ast.expr) as ExprAST
+            if (expr != ast.expr && ast.unOp != UnOp.REF) {
+                val unOpExpr = UnOpExprAST(ast.unOp, expr)
+                unOpExpr.symTable = ast.symTable
+                return unOpExpr
+            }
         }
         return ast
     }
-
 }

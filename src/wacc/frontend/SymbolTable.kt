@@ -123,7 +123,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (value != null) {
             val entry = (currSymbolTable[name]?.identifiable as DeclareStatAST)
             val declareAST = DeclareStatAST(entry.type, entry.ident, rhs)
-            currSymbolTable[name] = SymbolTableField(declareAST, value.size, true)
+            currSymbolTable[name] = SymbolTableField(declareAST, value.size, value.reAssignedFlag)
             return
         }
         if (encSymbolTable != null) {
