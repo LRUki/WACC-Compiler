@@ -18,6 +18,7 @@ import wacc.backend.printCode
 import wacc.extension.optimisation.ConstantEvaluationVisitor
 import wacc.extension.optimisation.ConstantPropagationVisitor
 import wacc.extension.optimisation.ControlFlowVisitor
+import wacc.extension.optimisation.InstructionEvaluationVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -77,7 +78,12 @@ fun main(args: Array<String>) {
     if (constProp) {
         waccFile.constPropagation()
     }
+    /** */
+//    waccFile.instrEvalOptim = true
+//    waccFile.constPropagation()
+//    waccFile.instrEvaluation()
 
+    /** */
     if (instrEvaluation) {
         waccFile.instrEvalOptim = true
     }
@@ -202,6 +208,6 @@ class WaccFile(val file: File) {
     }
 
     fun instrEvaluation() {
-
+        ast = InstructionEvaluationVisitor().visit(ast)
     }
 }
