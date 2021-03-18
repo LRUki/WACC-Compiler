@@ -106,8 +106,8 @@ class InstructionEvaluationVisitor : OptimisationVisitor() {
     }
 
     override fun visitIdentAST(ast: IdentAST): AST {
-        val assigned = ast.symTable.getAssignedField(ast.name)
-        if (!assigned) {
+        val accessed = ast.symTable.getAccessedField(ast.name)
+        if (!accessed) {
             return SkipStatAST()
         }
         return ast

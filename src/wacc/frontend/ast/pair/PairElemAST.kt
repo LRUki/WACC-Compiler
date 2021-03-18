@@ -35,6 +35,7 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
             semanticError("Trying to access the fields of a non pair type", ctx)
             return false
         }
+        table.setAccessedField(expr.name)
         return true
     }
 

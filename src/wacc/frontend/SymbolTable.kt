@@ -123,12 +123,35 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (value != null) {
             val entry = (currSymbolTable[name]?.identifiable as DeclareStatAST)
             val declareAST = DeclareStatAST(entry.type, entry.ident, rhs)
-            currSymbolTable[name] = SymbolTableField(declareAST, value.size, value.reAssignedFlag)
+            currSymbolTable[name] = SymbolTableField(declareAST, value.size, value.reAssignedFlag, false)
             return
         }
         if (encSymbolTable != null) {
             return encSymbolTable.updateOptimisedVariable(name, rhs)
         }
+    }
+
+    fun setAccessedField(name: String) {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            value.reAssignedFlag = true
+            return
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.setAssignedField(name)
+        }
+        throw RuntimeException("Trying to test the access flag of a variable not in the symbol table ")
+    }
+
+    fun getAccessedField(name: String): Boolean {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            return value.reAssignedFlag
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.getAssignedField(name)
+        }
+        throw RuntimeException("Trying to get the access flag of a variable not in the symbol table ")
     }
 
     /**
@@ -157,7 +180,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             }
             else -> 0
         }
-        currSymbolTable[name] = SymbolTableField(obj, size, false)
+        currSymbolTable[name] = SymbolTableField(obj, size, false, false)
     }
 
 
@@ -352,8 +375,9 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         }
     }
 
+
 }
 
-class SymbolTableField(val identifiable: Identifiable, val size: Int, var reAssignedFlag: Boolean)
+class SymbolTableField(val identifiable: Identifiable, val size: Int, var reAssignedFlag: Boolean, var accessedFlag: Boolean)
 
 class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

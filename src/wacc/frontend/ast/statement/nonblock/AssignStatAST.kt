@@ -72,6 +72,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
             }
         }
         table.setAssignedField(name)
+        table.setAccessedField(name)
         return true
     }
 
