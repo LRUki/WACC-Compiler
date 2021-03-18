@@ -1,0 +1,16 @@
+# tries to assign void return function to a variable
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  void f() is
+    return
+  end
+  int x = call f()
+end

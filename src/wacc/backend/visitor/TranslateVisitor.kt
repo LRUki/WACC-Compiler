@@ -652,6 +652,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
 
         val reverse = ast.expr1.weight() <= ast.expr2.weight()
                 && ast.binOp != IntBinOp.DIV && ast.binOp != IntBinOp.MOD
+                && !ast.pointerOp
         if (!reverse) {
             instrs.addAll(visit(ast.expr1))
             reg1 = codeGenerator.seeLastUsedCalleeReg()
