@@ -1,0 +1,17 @@
+# simple integer variable declaration and assignment
+
+# Output:
+## b
+## c
+
+# Exit:
+#* 0
+
+# Program:
+
+begin
+  char[] list = ['a','b','c','d'] ;
+  char* p = &list[1] ;
+  println *(p) ;
+  println *(p + 1)
+end
