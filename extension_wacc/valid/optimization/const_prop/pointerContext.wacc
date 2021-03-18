@@ -1,0 +1,20 @@
+# simple integer variable declaration and assignment
+
+# Output:
+# #empty#
+
+# Exit:
+# 20
+
+# Program:
+
+begin
+  int* f(int *n) is
+    return n
+  end
+  int x = 10 ;
+  int* p = &x ;
+  *p = 10 + *p ;
+  p = call f(p) ;
+  exit x
+end

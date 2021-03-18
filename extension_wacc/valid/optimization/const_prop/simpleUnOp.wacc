@@ -1,0 +1,13 @@
+# simple unop calculation
+
+# Output:
+# false
+
+# Program:
+
+begin
+  bool b1 = true ;
+  bool b2 = !b1 ;
+  int i1 = 12 ;
+  int i2 = -i1
+end

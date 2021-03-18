@@ -1,7 +1,7 @@
 # struct used before it has been defined
 
 # Output:
-#
+# 104
 
 # Program:
 
@@ -9,5 +9,6 @@ begin
   struct Person {int age; char grade;};
   struct Person bob = {20 * 5 +4, 'A'};
   int x = bob.age;
+  char g = bob.grade;
   println x
 end
