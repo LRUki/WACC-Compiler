@@ -35,7 +35,6 @@ class StructDeclareAST(val ident: IdentAST, val fields: List<StructFieldAST>) : 
                 totalSizeOfFields += 4
             }
         }
-
         table.add(ident.name, this)
         return true
     }

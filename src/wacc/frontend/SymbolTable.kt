@@ -94,28 +94,43 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return encSymbolTable.lookupFirstFunc()
     }
 
-    /** Called when the variable is assigned to */
-    fun setAssignedField(name: String) {
+    fun setField(name: String, field: SymbolTableFieldFlag) {
         val value = currSymbolTable[name]
         if (value != null) {
-            value.reAssignedFlag = true
+            when (field) {
+                SymbolTableFieldFlag.ACCESSED -> {
+                    value.accessedFlag = true
+                }
+                SymbolTableFieldFlag.ASSIGNED -> {
+                    value.reAssignedFlag = true
+                }
+            }
             return
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.setAssignedField(name)
+            return encSymbolTable.setField(name, field)
         }
-        throw RuntimeException("Trying to test the access flag of a variable not in the symbol table ")
     }
 
-    fun getAssignedField(name: String): Boolean {
+    fun getField(name: String, field: SymbolTableFieldFlag): Boolean {
         val value = currSymbolTable[name]
         if (value != null) {
             return value.reAssignedFlag
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.getAssignedField(name)
+            return encSymbolTable.getField(name, field)
         }
         throw RuntimeException("Trying to get the access flag of a variable not in the symbol table ")
+    }
+
+
+    /** Called when the variable is assigned to */
+    fun setAssignedField(name: String) {
+        setField(name, SymbolTableFieldFlag.ASSIGNED)
+    }
+
+    fun getAssignedField(name: String): Boolean {
+        return getField(name, SymbolTableFieldFlag.ASSIGNED)
     }
 
     fun updateOptimisedVariable(name: String, rhs: RhsAST) {
@@ -132,26 +147,11 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     fun setAccessedField(name: String) {
-        val value = currSymbolTable[name]
-        if (value != null) {
-            value.reAssignedFlag = true
-            return
-        }
-        if (encSymbolTable != null) {
-            return encSymbolTable.setAssignedField(name)
-        }
-        throw RuntimeException("Trying to test the access flag of a variable not in the symbol table ")
+        setField(name, SymbolTableFieldFlag.ACCESSED)
     }
 
     fun getAccessedField(name: String): Boolean {
-        val value = currSymbolTable[name]
-        if (value != null) {
-            return value.reAssignedFlag
-        }
-        if (encSymbolTable != null) {
-            return encSymbolTable.getAssignedField(name)
-        }
-        throw RuntimeException("Trying to get the access flag of a variable not in the symbol table ")
+        return getField(name, SymbolTableFieldFlag.ACCESSED)
     }
 
     /**
@@ -374,8 +374,11 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             }
         }
     }
+}
 
-
+enum class SymbolTableFieldFlag {
+    ASSIGNED,
+    ACCESSED
 }
 
 class SymbolTableField(val identifiable: Identifiable, val size: Int, var reAssignedFlag: Boolean, var accessedFlag: Boolean)

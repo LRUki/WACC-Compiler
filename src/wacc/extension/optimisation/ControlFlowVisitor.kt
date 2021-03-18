@@ -20,7 +20,6 @@ class ControlFlowVisitor : OptimisationVisitor() {
         val cond = visit(ast.cond) as ExprAST
 
         if (cond !is BoolLiterAST) {
-//            throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
             return ast
         }
 
@@ -31,12 +30,7 @@ class ControlFlowVisitor : OptimisationVisitor() {
 
         }
         /** Condition is false, else branch only */
-        else if (!cond.value) {
-            ast.elseBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
-
-        } else {
-            throw RuntimeException("If condition was neither true or false. Semantic check failed")
-        }
+        ast.elseBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
         return MultiStatAST(branchOfChoice)
     }
 
@@ -44,7 +38,6 @@ class ControlFlowVisitor : OptimisationVisitor() {
         val cond = visit(ast.cond) as ExprAST
 
         if (cond !is BoolLiterAST) {
-//            throw RuntimeException("Condition is not a a Boolean value. Semantic check failed")
             return ast
         }
         /** Condition is true, proceed as normal */
@@ -52,15 +45,21 @@ class ControlFlowVisitor : OptimisationVisitor() {
             return ast
         }
         /** Condition is false, skip over loop */
-        if (!cond.value) {
-            return SkipStatAST()
-        } else {
-            throw RuntimeException("If condition was neither true or false. Semantic check failed")
-        }
+        return SkipStatAST()
     }
 
     override fun visitForStatAST(ast: ForStatAST): AST {
-        TODO("Not yet implemented")
+        val cond = visit(ast.cond) as ExprAST
+
+        if (cond !is BoolLiterAST) {
+            return ast
+        }
+        /** Condition is true, proceed as normal */
+        if (cond.value) {
+            return ast
+        }
+        /** Condition is false, skip over loop */
+        return SkipStatAST()
     }
 
 }

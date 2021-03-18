@@ -23,9 +23,14 @@ import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.visitor.AstVisitor
 
 abstract class OptimisationVisitor : AstVisitor<AST> {
+
     /*
      * Visit program and function ASTs.
      */
+    open fun visitStat(item: AST, list: MutableList<StatAST>) {
+        list.add(visit(item) as StatAST)
+    }
+
     override fun visitProgramAST(ast: ProgramAST): AST {
         val funcList = mutableListOf<FuncAST>()
         ast.funcList.forEach {
@@ -33,7 +38,7 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
         }
         val stats = mutableListOf<StatAST>()
         ast.stats.forEach {
-            stats.add(visit(it) as StatAST)
+            visitStat(it, stats)
         }
         val programAST = ProgramAST(ast.imports, stats, funcList)
         programAST.symTable = ast.symTable
@@ -43,7 +48,7 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
     override fun visitFuncAST(ast: FuncAST): AST {
         val body = mutableListOf<StatAST>()
         ast.body.forEach {
-            body.add(visit(it) as StatAST)
+            visitStat(it, body)
         }
         return ast
     }
@@ -58,7 +63,7 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
     override fun visitBlockStatAST(ast: BlockStatAST): AST {
         val body = mutableListOf<StatAST>()
         ast.body.forEach {
-            body.add(visit(it) as StatAST)
+            visitStat(it, body)
         }
         val blockStatAST = BlockStatAST(body)
         blockStatAST.symTable = ast.symTable
@@ -69,8 +74,8 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
         val ifCond = visit(ast.cond) as ExprAST
         val thenStats = mutableListOf<StatAST>()
         val elseStats = mutableListOf<StatAST>()
-        ast.thenBody.forEach { thenStats.add(visit(it) as StatAST) }
-        ast.elseBody.forEach { elseStats.add(visit(it) as StatAST) }
+        ast.thenBody.forEach { visitStat(it, thenStats) }
+        ast.elseBody.forEach { visitStat(it, elseStats) }
         val ifStatAst = IfStatAST(ifCond, thenStats, elseStats)
         ifStatAst.symTable = ast.symTable
         ifStatAst.thenST = ast.thenST
@@ -84,7 +89,7 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
         val whileCond = visit(ast.cond) as ExprAST
         val bodyStats = mutableListOf<StatAST>()
         ast.body.forEach {
-            bodyStats.add(visit(it) as StatAST)
+            visitStat(it, bodyStats)
         }
         val whileAST = WhileStatAST(whileCond, bodyStats)
         whileAST.symTable = ast.symTable
