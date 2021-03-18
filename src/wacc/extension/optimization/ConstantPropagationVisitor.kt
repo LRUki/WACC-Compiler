@@ -72,15 +72,6 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         return ast
     }
 
-    override fun visitActionStatAST(ast: ActionStatAST): AST {
-        if (ast.expr is IdentAST) {
-            val actionStat = ActionStatAST(ast.action, visit(ast.expr) as ExprAST)
-            actionStat.symTable = ast.symTable
-            return actionStat
-        }
-        return ast
-    }
-
     override fun visitAssignStatAST(ast: AssignStatAST): AST {
         if (ast.lhs is IdentAST) {
             val rhs = visit(ast.rhs) as RhsAST
