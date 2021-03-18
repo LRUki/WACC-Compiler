@@ -102,9 +102,7 @@ class ConstantEvaluationVisitor : OptimisationVisitor() {
     override fun visitDeclareStatAST(ast: DeclareStatAST): AST {
         val rhs = visit(ast.rhs) as RhsAST
         val declareStatAST = DeclareStatAST(ast.type, ast.ident, rhs)
-        if (declareStatAST.type is StructTypeAST) {
-            ast.symTable.updateOptimisedVariable(ast.ident.name, rhs)
-        }
+        ast.symTable.updateOptimisedVariable(ast.ident.name, rhs)
         declareStatAST.symTable = ast.symTable
         return declareStatAST
     }

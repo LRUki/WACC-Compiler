@@ -51,7 +51,7 @@ fun main(args: Array<String>) {
     val optimize = flags.contains("-o")
     WaccConfig.controlFlow = optimize || flags.contains("-oControlFlow")
     WaccConfig.constEval = optimize || flags.contains("-oConstEval")
-
+    WaccConfig.constEval = optimize || flags.contains("-oConstPropogation")
     WaccConfig.regAlloc = optimize || flags.contains("-oRegAlloc")
     WaccConfig.parallelCompile = optimize || flags.contains("-oParallelCompile")
 
@@ -66,9 +66,10 @@ fun main(args: Array<String>) {
     if (WaccConfig.controlFlow) {
         waccFile.controlFlowAnalysis()
     }
-//    waccFile.constEvaluation()
-//    waccFile.constPropagation()
-//    waccFile.constEvaluation()
+
+    if (WaccConfig.constProp) {
+        waccFile.constPropagation()
+    }
 
     val outputString = waccFile.backend()
     var outputFileName = inputFile.nameWithoutExtension + ".s"
