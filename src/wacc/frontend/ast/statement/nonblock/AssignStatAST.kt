@@ -71,7 +71,7 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
                 name = lhs.structIdent.name
             }
         }
-        table.setAccessField(name)
+        table.setAssignedField(name)
         return true
     }
 

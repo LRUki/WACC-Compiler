@@ -1,6 +1,7 @@
 package wacc.frontend
 
 import wacc.frontend.ast.assign.LhsAST
+import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -94,25 +95,25 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     /** Called when the variable is assigned to */
-    fun setAccessField(name: String) {
+    fun setAssignedField(name: String) {
         val value = currSymbolTable[name]
         if (value != null) {
-            value.accessFlag = true
+            value.reAssignedFlag = true
             return
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.setAccessField(name)
+            return encSymbolTable.setAssignedField(name)
         }
         throw RuntimeException("Trying to test the access flag of a variable not in the symbol table ")
     }
 
-    fun getAccessField(name: String): Boolean {
+    fun getAssignedField(name: String): Boolean {
         val value = currSymbolTable[name]
         if (value != null) {
-            return value.accessFlag
+            return value.reAssignedFlag
         }
         if (encSymbolTable != null) {
-            return encSymbolTable.getAccessField(name)
+            return encSymbolTable.getAssignedField(name)
         }
         throw RuntimeException("Trying to get the access flag of a variable not in the symbol table ")
     }
@@ -125,6 +126,19 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         }
         if (encSymbolTable != null) {
             return encSymbolTable.updateConstPropVariable(name, identifiable)
+        }
+    }
+
+    fun updateConstPropVariable(name: String, rhs: RhsAST) {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            val entry = (currSymbolTable[name]?.identifiable as DeclareStatAST)
+            val declareAST = DeclareStatAST(entry.type, entry.ident, rhs)
+            currSymbolTable[name] = SymbolTableField(declareAST, value.size, true)
+            return
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.updateConstPropVariable(name, rhs)
         }
     }
 
@@ -351,6 +365,6 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
 }
 
-class SymbolTableField(val identifiable: Identifiable, val size: Int, var accessFlag: Boolean)
+class SymbolTableField(val identifiable: Identifiable, val size: Int, var reAssignedFlag: Boolean)
 
 class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

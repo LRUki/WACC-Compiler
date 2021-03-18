@@ -1,16 +1,7 @@
 package wacc.extension.optimization
 
-import antlr.WaccParser
-import org.antlr.v4.runtime.ParserRuleContext
-import wacc.backend.translate.instruction.Instruction
-import wacc.backend.translate.instruction.LoadInstr
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.MemoryType
-import wacc.backend.translate.instruction.instructionpart.Register
-import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.OptimisationVisitor
-import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
@@ -22,7 +13,6 @@ import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.nonblock.ActionStatAST
 import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
-import java.util.function.BinaryOperator
 
 class ConstantPropagationVisitor : OptimisationVisitor() {
     override fun visitProgramAST(ast: ProgramAST): AST {
@@ -72,11 +62,10 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
 //        return ast
 //    }
     override fun visitIdentAST(ast: IdentAST): AST {
-        val identInST = ast.symTable.getAccessField(ast.name)
-        if (!identInST) {
+        val assgined = ast.symTable.getAssignedField(ast.name)
+        if (!assgined) {
             val entry = ast.symTable.lookupAll(ast.name).get()
             if (entry is DeclareStatAST) {
-                ast.symTable.updateConstPropVariable(ast.name, entry)
                 return entry.rhs
             }
         }
@@ -94,17 +83,26 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
 
     override fun visitAssignStatAST(ast: AssignStatAST): AST {
         if (ast.lhs is IdentAST) {
-            val assignStat = AssignStatAST(visit(ast.lhs) as IdentAST, ast.rhs)
-            assignStat.symTable = ast.symTable
-            return assignStat
+            val rhs = visit(ast.rhs) as RhsAST
+            if (ast.rhs != rhs) {
+                val assignStat = AssignStatAST(ast.lhs, rhs)
+                ast.symTable.updateConstPropVariable(ast.lhs.name, rhs)
+                assignStat.symTable = ast.symTable
+                return assignStat
+            }
         }
         return ast
     }
 
     override fun visitDeclareStatAST(ast: DeclareStatAST): AST {
-        val declareStat = DeclareStatAST(ast.type, ast.ident, visit(ast.rhs) as RhsAST)
-        declareStat.symTable = ast.symTable
-        return declareStat
+        val rhs = visit(ast.rhs) as RhsAST
+        if (rhs != ast.rhs) {
+            val declareStat = DeclareStatAST(ast.type, ast.ident, rhs)
+            declareStat.symTable = ast.symTable
+            ast.symTable.updateConstPropVariable(ast.ident.name, rhs)
+            return declareStat
+        }
+        return ast
     }
 
     override fun visitBinOpExprAST(ast: BinOpExprAST): AST {
