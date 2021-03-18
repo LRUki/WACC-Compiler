@@ -1,0 +1,10 @@
+begin
+  int x = 5;
+  if true
+  then
+    int x = 84252;
+    println x
+  else
+    int g = 1251
+  fi
+end

@@ -140,6 +140,14 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return getField(name, SymbolTableFieldFlag.ASSIGNED)
     }
 
+    fun setAccessedField(name: String) {
+        setField(name, SymbolTableFieldFlag.ACCESSED)
+    }
+
+    fun getAccessedField(name: String): Boolean {
+        return getField(name, SymbolTableFieldFlag.ACCESSED)
+    }
+
     fun updateOptimisedVariable(name: String, rhs: RhsAST) {
         val value = currSymbolTable[name]
         if (value != null) {
@@ -163,12 +171,22 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         }
     }
 
-    fun setAccessedField(name: String) {
-        setField(name, SymbolTableFieldFlag.ACCESSED)
+    fun checkContainsSameVarNameAsEnclosing(): Boolean {
+        if (encSymbolTable != null) {
+            for (entry in currSymbolTable.keys) {
+                if (encSymbolTable.currSymbolTable.keys.contains(entry))
+                    return true
+            }
+        }
+        return false
     }
 
-    fun getAccessedField(name: String): Boolean {
-        return getField(name, SymbolTableFieldFlag.ACCESSED)
+    fun liftToUpperScope() {
+        if (encSymbolTable != null) {
+            for ((key, value) in currSymbolTable) {
+                encSymbolTable.currSymbolTable[key] = value
+            }
+        }
     }
 
     /**

@@ -23,6 +23,19 @@ class InstructionEvaluationVisitor : OptimisationVisitor() {
         }
     }
 
+    override fun visitWhileStatAST(ast: WhileStatAST): AST {
+        val whileCond = visit(ast.cond) as ExprAST
+        val bodyStats = mutableListOf<StatAST>()
+        ast.body.forEach { visitStat(it, bodyStats) }
+        if (bodyStats.isEmpty()) {
+            return SkipStatAST()
+        }
+        val whileAST = WhileStatAST(whileCond, bodyStats)
+        whileAST.symTable = ast.symTable
+        whileAST.blockST = ast.blockST
+        return whileAST
+    }
+
 
     override fun visitDeclareStatAST(ast: DeclareStatAST): AST {
         val identAst = visit(ast.ident)

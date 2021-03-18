@@ -1,6 +1,7 @@
 package wacc.extension.optimisation
 
 import wacc.frontend.ast.AST
+import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.expression.BoolLiterAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.function.FuncAST
@@ -26,11 +27,32 @@ class ControlFlowVisitor : OptimisationVisitor() {
         val branchOfChoice = mutableListOf<StatAST>()
         /** Condition is true, then branch only */
         if (cond.value) {
-            ast.thenBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
+            if (ast.thenST.checkContainsSameVarNameAsEnclosing()) {
+                return ast
+            }
+            ast.thenBody.forEach {
+                branchOfChoice.add(visit(it) as StatAST)
+                if (it is AbstractAST) {
+                    it.symTable = ast.symTable
+                }
+            }
+            ast.thenST.liftToUpperScope()
 
+        } else {
+            /** Condition is false, else branch only */
+            if (ast.elseST.checkContainsSameVarNameAsEnclosing()) {
+                return ast
+            }
+            ast.elseBody.forEach {
+                branchOfChoice.add(visit(it) as StatAST)
+                if (it is AbstractAST) {
+                    it.symTable = ast.symTable
+                }
+            }
+            ast.elseST.liftToUpperScope()
         }
-        /** Condition is false, else branch only */
-        ast.elseBody.forEach { branchOfChoice.add(visit(it) as StatAST) }
+
+
         return MultiStatAST(branchOfChoice)
     }
 
