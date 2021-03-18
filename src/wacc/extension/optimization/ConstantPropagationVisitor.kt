@@ -10,6 +10,8 @@ import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
+import wacc.frontend.ast.statement.nonblock.Action
+import wacc.frontend.ast.statement.nonblock.ActionStatAST
 import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 
@@ -81,6 +83,16 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         }
         return ast
     }
+
+    override fun visitActionStatAST(ast: ActionStatAST): AST {
+        if (ast.expr is IdentAST && (ast.action == Action.EXIT || ast.action == Action.RETURN)) {
+            val actionStat = ActionStatAST(ast.action, visit(ast.expr) as ExprAST)
+            actionStat.symTable = ast.symTable
+            return actionStat
+        }
+        return ast
+    }
+
 
     override fun visitAssignStatAST(ast: AssignStatAST): AST {
         if (ast.lhs is IdentAST) {
