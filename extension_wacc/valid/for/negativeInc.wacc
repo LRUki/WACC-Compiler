@@ -1,0 +1,22 @@
+# a for loop with negative increment
+# Output:
+## 100
+## 90
+## 80
+## 70
+## 60
+## 50
+## 40
+## 30
+## 20
+## 10
+## 0
+
+#* 0
+
+# Program:
+begin
+  for int i = 100; i >= 0; i = i - 10  do
+    println i
+  done
+end

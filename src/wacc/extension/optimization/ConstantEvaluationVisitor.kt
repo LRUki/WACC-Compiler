@@ -119,10 +119,6 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
         return readStatAST
     }
 
-    override fun visitSkipStatAST(ast: SkipStatAST): AST {
-        return ast
-    }
-
     override fun visitMultiStatAST(ast: MultiStatAST): AST {
         val stats = mutableListOf<StatAST>()
         ast.stats.forEach{
@@ -203,69 +199,4 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
         }
         return ast
     }
-
-    override fun visitArrayElemAST(ast: ArrayElemAST): AST {
-        return ast
-    }
-
-    override fun visitPairElemAST(ast: PairElemAST): AST {
-        return ast
-    }
-
-    override fun visitPointerElemAST(ast: PointerElemAST): AST {
-        return ast
-    }
-
-    override fun visitIdentAST(ast: IdentAST): AST {
-        return ast
-    }
-
-    override fun visitIntLiterAST(ast: IntLiterAST): AST {
-        return ast
-    }
-
-    override fun visitBoolLiterAST(ast: BoolLiterAST): AST {
-        return ast
-    }
-
-    override fun visitStrLiterAST(ast: StrLiterAST): AST {
-        return ast
-    }
-
-    override fun visitCharLiterAST(ast: CharLiterAST): AST {
-        return ast
-    }
-
-    override fun visitNullPairLiterAST(ast: NullPairLiterAST): AST {
-        return ast
-    }
-
-    override fun visitArrayLiterAST(ast: ArrayLiterAST): AST {
-        return ast
-    }
-
-    override fun visitTypeAST(ast: TypeAST): AST {
-        return ast
-    }
-
-    override fun visitStructDeclareAST(ast: StructDeclareAST): AST {
-        TODO("Not yet implemented")
-    }
-
-    override fun visitStructAssignAST(ast: StructAssignAST): AST {
-        TODO("Not yet implemented")
-    }
-
-    override fun visitStructAccessAST(ast: StructAccessAST): AST {
-        TODO("Not yet implemented")
-    }
-
-    override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): AST {
-        TODO("Not yet implemented")
-    }
-
-    override fun visitForStatAST(ast: ForStatAST): AST {
-        TODO("Not yet implemented")
-    }
-
 }
