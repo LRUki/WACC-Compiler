@@ -1,8 +1,12 @@
+# a basic for loop
+# Output:
+
+#Exitcode:
+#* 0
+
+# Program:
 begin
-  if true && false
-  then
-    println "got here yay"
-  else
-    int x = 69
-  fi
+for int i = 0; true && false; i = i + 1 do
+    println i
+done
 end
