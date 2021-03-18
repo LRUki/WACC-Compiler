@@ -113,6 +113,7 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                 }
             }
         }
+        ident.symTable = table
         table.add(ident.name, this)
         return true
     }

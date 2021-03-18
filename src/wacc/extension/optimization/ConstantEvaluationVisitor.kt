@@ -2,31 +2,22 @@ package wacc.extension.optimization
 
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.OptimisationVisitor
-import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.*
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
-import wacc.frontend.ast.pair.PairElemAST
-import wacc.frontend.ast.pointer.PointerElemAST
-import wacc.frontend.ast.program.ImportAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
-import wacc.frontend.ast.statement.SkipStatAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
-import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
-import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.ast.type.StructTypeAST
 
-class ConstantEvaluationVisitor: OptimisationVisitor() {
+class ConstantEvaluationVisitor : OptimisationVisitor() {
     override fun visitProgramAST(ast: ProgramAST): AST {
-        val importList = mutableListOf<ImportAST>()
-        ast.imports.forEach {
-            importList.add(visit(it) as ImportAST)
-        }
+
         val funcList = mutableListOf<FuncAST>()
         ast.funcList.forEach {
             funcList.add(visit(it) as FuncAST)
@@ -35,14 +26,14 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
         ast.stats.forEach {
             stats.add(visit(it) as StatAST)
         }
-        val programAST = ProgramAST(importList, stats, funcList)
+        val programAST = ProgramAST(ast.imports, stats, funcList)
         programAST.symTable = ast.symTable
         return programAST
     }
 
     override fun visitFuncAST(ast: FuncAST): AST {
         val body = mutableListOf<StatAST>()
-        ast.body.forEach{
+        ast.body.forEach {
             body.add(visit(it) as StatAST)
         }
         return ast
@@ -54,7 +45,7 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
 
     override fun visitBlockStatAST(ast: BlockStatAST): AST {
         val body = mutableListOf<StatAST>()
-        ast.body.forEach{
+        ast.body.forEach {
             body.add(visit(it) as StatAST)
         }
         val blockStatAST = BlockStatAST(body)
@@ -85,10 +76,10 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
     override fun visitWhileStatAST(ast: WhileStatAST): AST {
         val cond = visit(ast.cond) as ExprAST
         val body = mutableListOf<StatAST>()
-        ast.body.forEach{
+        ast.body.forEach {
             body.add(visit(it) as StatAST)
         }
-        val whileStatAST = WhileStatAST(cond ,body)
+        val whileStatAST = WhileStatAST(cond, body)
         whileStatAST.symTable = ast.symTable
         whileStatAST.blockST = ast.blockST
         return whileStatAST
@@ -107,7 +98,9 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
     }
 
     override fun visitDeclareStatAST(ast: DeclareStatAST): AST {
-        val declareStatAST = DeclareStatAST(ast.type,ast.ident,visit(ast.rhs) as RhsAST)
+        val rhs = visit(ast.rhs) as RhsAST
+        val declareStatAST = DeclareStatAST(ast.type, ast.ident, rhs)
+        ast.symTable.updateOptimisedVariable(ast.ident.name, rhs)
         declareStatAST.symTable = ast.symTable
         return declareStatAST
     }
@@ -121,7 +114,7 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
 
     override fun visitMultiStatAST(ast: MultiStatAST): AST {
         val stats = mutableListOf<StatAST>()
-        ast.stats.forEach{
+        ast.stats.forEach {
             stats.add(visit(it) as StatAST)
         }
         return MultiStatAST(stats)
@@ -187,16 +180,35 @@ class ConstantEvaluationVisitor: OptimisationVisitor() {
 
     override fun visitUnOpExprAST(ast: UnOpExprAST): AST {
         val e1 = visit(ast.expr)
-        if ((e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT)) {
+        when {
             /** evaluate not */
-            return BoolLiterAST(!(e1 as BoolLiterAST).value)
-        } else if ((e1 is IntLiterAST) and (ast.unOp == UnOp.CHR)) {
+            (e1 is BoolLiterAST) and (ast.unOp == UnOp.NOT) -> {
+                return BoolLiterAST(!(e1 as BoolLiterAST).value)
+            }
             /** evaluate chr */
-            return CharLiterAST((e1 as IntLiterAST).value.toChar())
-        } else if ((e1 is CharLiterAST) and (ast.unOp == UnOp.ORD)) {
+            (e1 is IntLiterAST) and (ast.unOp == UnOp.CHR) -> {
+                return CharLiterAST((e1 as IntLiterAST).value.toChar())
+            }
             /** evaluate ord */
-            return IntLiterAST((e1 as CharLiterAST).value.toInt())
+            (e1 is CharLiterAST) and (ast.unOp == UnOp.ORD) -> {
+                return IntLiterAST((e1 as CharLiterAST).value.toInt())
+            }
+            /** evaluate minus */
+            (e1 is IntLiterAST) and (ast.unOp == UnOp.MINUS) -> {
+                return IntLiterAST(-(e1 as IntLiterAST).value.toInt())
+            }
+            else -> return ast
         }
-        return ast
+    }
+
+    override fun visitStructAssignAST(ast: StructAssignAST): AST {
+        val assignments = mutableListOf<RhsAST>()
+        ast.assignments.forEach {
+            assignments.add(visit(it) as RhsAST)
+        }
+        val structAssign = StructAssignAST(assignments)
+        structAssign.symTable = ast.symTable
+        structAssign.symTable = ast.symTable
+        return structAssign
     }
 }

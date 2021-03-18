@@ -4,7 +4,6 @@ import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.ast.assign.StructAssignAST
-import wacc.frontend.ast.assign.StructFieldAssignAST
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -167,10 +166,6 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
     }
 
     override fun visitStructAssignAST(ast: StructAssignAST): AST {
-        return ast
-    }
-
-    override fun visitStructFieldAssignAST(ast: StructFieldAssignAST): AST {
         return ast
     }
 
