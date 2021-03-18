@@ -1,0 +1,13 @@
+# tries to infer the type of null
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  var x = null
+end

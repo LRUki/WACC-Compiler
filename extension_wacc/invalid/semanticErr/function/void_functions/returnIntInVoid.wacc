@@ -1,0 +1,16 @@
+# tries to return an int value in a void return function
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  void f() is
+    return 0
+  end
+  call f()
+end
