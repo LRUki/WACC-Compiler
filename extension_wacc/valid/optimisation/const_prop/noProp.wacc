@@ -1,7 +1,10 @@
-# simple integer calculation
+# no propagation
 
 # Output:
-#
+## s
+
+#Exitcode:
+#* 0
 
 # Program:
 
@@ -9,5 +12,6 @@ begin
   int x = 42 ;
   int y = 25 ;
   bool flag = true;
-  char letter = 's'
+  char letter = 's';
+  println letter
 end

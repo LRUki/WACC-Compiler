@@ -1,10 +1,10 @@
 # testing a complex program which can be optimised using constant propagation
 
 # Output:
-# #empty#
+## 627
 
 # Exit:
-# 558
+#* 0
 
 begin
   int x = 69;
@@ -19,12 +19,12 @@ begin
     int er = uu + y
   fi;
 
-  bool nt = false;
+  bool nt = true;
   while ty && !nt do
     bool newBool = !ty;
     string r = "fsdg";
     int[] tr = [1,54,4,7,9,9,8]
    done;
-  exit z
+  println z
 end
 
