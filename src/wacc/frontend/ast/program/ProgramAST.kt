@@ -4,11 +4,10 @@ import wacc.Main
 import wacc.WaccConfig
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.nonblock.StructDeclareAST
-import java.io.File
 
 /**
  * AST node to represent a Program

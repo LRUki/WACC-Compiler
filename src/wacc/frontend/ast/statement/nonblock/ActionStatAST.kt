@@ -2,7 +2,7 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*

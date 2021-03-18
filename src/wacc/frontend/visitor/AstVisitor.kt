@@ -1,5 +1,6 @@
-package wacc.frontend.ast
+package wacc.frontend.visitor
 
+import wacc.frontend.ast.AST
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST

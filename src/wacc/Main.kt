@@ -8,11 +8,16 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.Main.waccFile
 import wacc.WaccConfig.constEval
+import wacc.WaccConfig.constProp
+import wacc.WaccConfig.controlFlow
+import wacc.WaccConfig.instrEvaluation
+import wacc.WaccConfig.parallelCompile
+import wacc.WaccConfig.regAlloc
 import wacc.backend.generateCode
 import wacc.backend.printCode
-import wacc.extension.optimization.ConstantEvaluationVisitor
-import wacc.extension.optimization.ConstantPropagationVisitor
-import wacc.extension.optimization.ControlFlowVisitor
+import wacc.extension.optimisation.ConstantEvaluationVisitor
+import wacc.extension.optimisation.ConstantPropagationVisitor
+import wacc.extension.optimisation.ControlFlowVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -50,28 +55,32 @@ fun main(args: Array<String>) {
 
     // Set optimization flags from arguments
     val optimize = flags.contains("-o")
-    WaccConfig.controlFlow = optimize || flags.contains("-oControlFlow")
-    WaccConfig.constEval = optimize || flags.contains("-oConstEval")
-    WaccConfig.constEval = optimize || flags.contains("-oConstPropogation")
-    WaccConfig.regAlloc = optimize || flags.contains("-oRegAlloc")
-    WaccConfig.parallelCompile = optimize || flags.contains("-oParallelCompile")
+    controlFlow = optimize || flags.contains("-oControlFlow")
+    constEval = optimize || flags.contains("-oConstEval")
+    constEval = optimize || flags.contains("-oConstPropagation")
+    instrEvaluation = optimize || flags.contains("-oInstrEvaluation")
+    regAlloc = optimize || flags.contains("-oRegAlloc")
+    parallelCompile = optimize || flags.contains("-oParallelCompile")
 
     val inputFile = File(paths[0])
     waccFile = WaccFile(inputFile)
     waccFile.frontend()
 
-    if (WaccConfig.constEval) {
+    if (constEval) {
         waccFile.constEvaluation()
     }
 
-    if (WaccConfig.controlFlow) {
+    if (controlFlow) {
         waccFile.controlFlowAnalysis()
     }
 
-    if (WaccConfig.constProp) {
+    if (constProp) {
         waccFile.constPropagation()
     }
 
+    if (instrEvaluation) {
+        waccFile.instrEvalOptim = true
+    }
     val outputString = waccFile.backend()
     var outputFileName = inputFile.nameWithoutExtension + ".s"
     if (paths.size > 1) {
@@ -90,6 +99,7 @@ class WaccFile(val file: File) {
     lateinit var semanticErrorChannel: Channel<SemanticException>
     var currentFilePath: String = file.absolutePath
     lateinit var ast: AST
+    var instrEvalOptim = false
 
     init {
         waccFile = this
@@ -168,6 +178,9 @@ class WaccFile(val file: File) {
 
     fun backend(): String {
         val instrs = generateCode(ast as ProgramAST)
+        if (instrEvalOptim) {
+            instrEvaluation()
+        }
         return printCode(instrs)
     }
 
@@ -186,5 +199,9 @@ class WaccFile(val file: File) {
         }
         ast = ConstantPropagationVisitor().visit(ast)
         constEvaluation()
+    }
+
+    fun instrEvaluation() {
+
     }
 }

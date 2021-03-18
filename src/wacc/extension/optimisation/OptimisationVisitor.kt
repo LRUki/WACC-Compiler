@@ -1,5 +1,6 @@
-package wacc.frontend.ast
+package wacc.extension.optimisation
 
+import wacc.frontend.ast.AST
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
@@ -12,22 +13,38 @@ import wacc.frontend.ast.pointer.PointerElemAST
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.SkipStatAST
+import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 import wacc.frontend.ast.type.TypeAST
+import wacc.frontend.visitor.AstVisitor
 
 abstract class OptimisationVisitor : AstVisitor<AST> {
     /*
      * Visit program and function ASTs.
      */
     override fun visitProgramAST(ast: ProgramAST): AST {
-        return ast
+        val funcList = mutableListOf<FuncAST>()
+        ast.funcList.forEach {
+            funcList.add(visit(it) as FuncAST)
+        }
+        val stats = mutableListOf<StatAST>()
+        ast.stats.forEach {
+            stats.add(visit(it) as StatAST)
+        }
+        val programAST = ProgramAST(ast.imports, stats, funcList)
+        programAST.symTable = ast.symTable
+        return programAST
     }
 
     override fun visitFuncAST(ast: FuncAST): AST {
+        val body = mutableListOf<StatAST>()
+        ast.body.forEach {
+            body.add(visit(it) as StatAST)
+        }
         return ast
     }
 
@@ -39,15 +56,40 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
      * Visit statement ASTs.
      */
     override fun visitBlockStatAST(ast: BlockStatAST): AST {
-        return ast
+        val body = mutableListOf<StatAST>()
+        ast.body.forEach {
+            body.add(visit(it) as StatAST)
+        }
+        val blockStatAST = BlockStatAST(body)
+        blockStatAST.symTable = ast.symTable
+        return blockStatAST
     }
 
     override fun visitIfStatAST(ast: IfStatAST): AST {
-        return ast
+        val ifCond = visit(ast.cond) as ExprAST
+        val thenStats = mutableListOf<StatAST>()
+        val elseStats = mutableListOf<StatAST>()
+        ast.thenBody.forEach { thenStats.add(visit(it) as StatAST) }
+        ast.elseBody.forEach { elseStats.add(visit(it) as StatAST) }
+        val ifStatAst = IfStatAST(ifCond, thenStats, elseStats)
+        ifStatAst.symTable = ast.symTable
+        ifStatAst.thenST = ast.thenST
+        ifStatAst.elseST = ast.elseST
+        ifStatAst.thenHasReturn = ast.thenHasReturn
+        ifStatAst.elseHasReturn = ast.elseHasReturn
+        return ifStatAst
     }
 
     override fun visitWhileStatAST(ast: WhileStatAST): AST {
-        return ast
+        val whileCond = visit(ast.cond) as ExprAST
+        val bodyStats = mutableListOf<StatAST>()
+        ast.body.forEach {
+            bodyStats.add(visit(it) as StatAST)
+        }
+        val whileAST = WhileStatAST(whileCond, bodyStats)
+        whileAST.symTable = ast.symTable
+        whileAST.blockST = ast.blockST
+        return whileAST
     }
 
     override fun visitForStatAST(ast: ForStatAST): AST {
@@ -90,6 +132,10 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
     }
 
     override fun visitCallRhsAST(ast: CallRhsAST): AST {
+        return ast
+    }
+
+    override fun visitCallStatAST(ast: CallStatAST): AST {
         return ast
     }
 
@@ -169,7 +215,4 @@ abstract class OptimisationVisitor : AstVisitor<AST> {
         return ast
     }
 
-    override fun visitCallStatAST(ast: CallStatAST): AST {
-        return ast
-    }
 }

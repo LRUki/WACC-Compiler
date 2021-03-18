@@ -1,11 +1,8 @@
 package wacc.frontend.ast.statement.nonblock
 
-import wacc.backend.translate.instruction.LoadInstr
-import wacc.backend.translate.instruction.instructionpart.Condition
-import wacc.backend.translate.instruction.instructionpart.RegisterAddrWithOffsetMode
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST

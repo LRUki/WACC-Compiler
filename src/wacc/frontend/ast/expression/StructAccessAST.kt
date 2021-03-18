@@ -2,9 +2,8 @@ package wacc.frontend.ast.expression
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
-import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
 import wacc.frontend.ast.statement.nonblock.StructDeclareAST

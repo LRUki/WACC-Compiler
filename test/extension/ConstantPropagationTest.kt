@@ -3,8 +3,6 @@ package extension
 import frontend.actionOnFiles
 import org.junit.Test
 import wacc.WaccFile
-import wacc.backend.generateCode
-import wacc.extension.optimization.ConstantEvaluationVisitor
 import wacc.frontend.ast.expression.*
 import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.block.IfStatAST

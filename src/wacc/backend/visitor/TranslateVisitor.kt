@@ -8,7 +8,7 @@ import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
 import wacc.frontend.SymbolTable
 import wacc.frontend.SymbolTable.Companion.getBytesOfType
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST

@@ -5,10 +5,9 @@ import wacc.WaccFile
 import wacc.backend.generateCode
 import wacc.backend.translate.instruction.*
 import wacc.backend.translate.instruction.instructionpart.*
-import wacc.extension.optimization.ConstantEvaluationVisitor
+import wacc.extension.optimisation.ConstantEvaluationVisitor
 import wacc.frontend.ast.program.ProgramAST
 import java.io.File
-import java.util.function.IntBinaryOperator
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
