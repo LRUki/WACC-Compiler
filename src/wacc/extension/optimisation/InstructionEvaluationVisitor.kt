@@ -35,6 +35,7 @@ class InstructionEvaluationVisitor : OptimisationVisitor() {
     override fun visitIdentAST(ast: IdentAST): AST {
         val accessed = ast.symTable.getAccessedField(ast.name)
         if (!accessed) {
+            ast.symTable.removeOptimisedVariableFromST(ast.name)
             return SkipStatAST()
         }
         return ast

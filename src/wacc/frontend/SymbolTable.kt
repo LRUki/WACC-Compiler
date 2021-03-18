@@ -115,7 +115,14 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun getField(name: String, field: SymbolTableFieldFlag): Boolean {
         val value = currSymbolTable[name]
         if (value != null) {
-            return value.reAssignedFlag
+            return when (field) {
+                SymbolTableFieldFlag.ACCESSED -> {
+                    value.accessedFlag
+                }
+                SymbolTableFieldFlag.ASSIGNED -> {
+                    value.reAssignedFlag
+                }
+            }
         }
         if (encSymbolTable != null) {
             return encSymbolTable.getField(name, field)
@@ -138,11 +145,21 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (value != null) {
             val entry = (currSymbolTable[name]?.identifiable as DeclareStatAST)
             val declareAST = DeclareStatAST(entry.type, entry.ident, rhs)
-            currSymbolTable[name] = SymbolTableField(declareAST, value.size, value.reAssignedFlag, false)
+            currSymbolTable[name] = SymbolTableField(declareAST, value.size, value.reAssignedFlag, value.accessedFlag)
             return
         }
         if (encSymbolTable != null) {
             return encSymbolTable.updateOptimisedVariable(name, rhs)
+        }
+    }
+
+    fun removeOptimisedVariableFromST(name: String) {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            currSymbolTable.remove(name)
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.removeOptimisedVariableFromST(name)
         }
     }
 
