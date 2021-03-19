@@ -86,15 +86,15 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                 .map { TranslateVisitor(codeGenerator.clone()).visit(it) }
                 .collect(Collectors.toList())
 
-        listOfFuncInstrs.forEach{ instrs.addAll(it) }
+        listOfFuncInstrs.forEach { instrs.addAll(it) }
 
         /** Translates each statement in the program */
         instrs.add(Label("main"))
         instrs.add(PushInstr(Register.LR))
         translateScoped(ast.symTable, instrs, ast.stats)
         instrs.add(LoadInstr(Condition.AL, null, ImmediateIntMode(0), Register.R0))
-        instrs.add(PopInstr(Register.PC))
-        instrs.add(DirectiveInstr("ltorg"))
+        instrs.add(EndInstr())
+        instrs.add(LTORGDirective())
 
         /** Translates all string labels, c library functions and runtime
          * errors that have been recursively found and added */

@@ -6,4 +6,6 @@ package wacc.backend.translate.instruction
  */
 interface Instruction {
     fun toArm(): String
+
+    fun toX86(): String
 }

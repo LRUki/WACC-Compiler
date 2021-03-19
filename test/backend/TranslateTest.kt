@@ -40,7 +40,7 @@ class TranslateTest {
             val instrs = compileAndGenerate(file)
             assertTrue(instrs.contains(DirectiveInstr("text")))
             assertTrue(instrs.contains(DirectiveInstr("global main")))
-            assertTrue(instrs.contains(DirectiveInstr("ltorg")))
+            assertTrue(instrs.contains(LTORGDirective()))
         }
     }
 
@@ -70,7 +70,7 @@ class TranslateTest {
         val folder = File("ci/wacc_examples/valid/variables/stringDeclaration.wacc")
         val actionOnFiles = actionOnFiles(folder) { file ->
             assertTrue(compileAndGenerate(file)
-                    .contains(DirectiveInstr("ascii \"Hello World!\"")))
+                    .contains(MessageLabel(0, "Hello World!")))
         }
     }
 }

@@ -4,6 +4,7 @@ package wacc.backend.translate
 import wacc.backend.translate.instruction.DirectiveInstr
 import wacc.backend.translate.instruction.Instruction
 import wacc.backend.translate.instruction.Label
+import wacc.backend.translate.instruction.MessageLabel
 
 /**
  * String labels represents a list of strings in the program that
@@ -41,13 +42,7 @@ class StringLabels(val strings: MutableList<String>) {
     fun translateAll(): List<Instruction> {
         val instructions = mutableListOf<Instruction>()
         for ((index, string) in strings.withIndex()) {
-            instructions.add(Label("msg_$index"))
-            instructions.add(DirectiveInstr("word ${
-                string.length - string.filter { c -> c == '\\' }.count()
-            }"))
-
-            instructions.add(DirectiveInstr("ascii \"${string}\""))
-
+            instructions.add(MessageLabel(index, string))
         }
         return instructions
     }

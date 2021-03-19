@@ -4,21 +4,25 @@ package wacc.backend.translate.instruction.instructionpart
  * An enum to represent the 16 visible registers ARM has.
  *
  */
-enum class Register {
+enum class Register(private val x86: String) {
 
-    R0, R1, // Argument or Result
-    R2, R3, // Argument
-    R4, R5, R6, R7, R8, // Callee saves
-    R9, R10, R11, R12, // Callee saves
+    R0("rax"), R1("rdi"), // Argument or Result
+    R2("rsi"), R3("rdx"), // Argument
+    R4("rdi"), R5("rsi"), R6("rdx"), R7("rcx"), R8("r8"), // Callee saves
+    R9("r9"), R10("r12"), R11("r13"), R12("r14"), // Callee saves
 
-    SP,   // R13 or Stack pointer
-    LR,   // R14 or Link register
-    PC,   // R15 Program counter
-    CPSR, // Current Program Status Register contains condition code flags, status bits, current mode bit
+    SP("rsp"),   // R13 or Stack pointer
+    LR("rbp"),   // R14 or Link register
+    PC("rbp"),   // R15 Program counter
+    CPSR("TODO"), // Current Program Status Register contains condition code flags, status bits, current mode bit
 
-    NONE;
+    NONE("");
 
     fun toArm(): String {
         return name.toLowerCase()
+    }
+
+    fun toX86(): String {
+        return "%$x86"
     }
 }

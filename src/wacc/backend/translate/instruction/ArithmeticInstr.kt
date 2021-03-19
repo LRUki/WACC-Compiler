@@ -30,6 +30,10 @@ abstract class AbstractArithmeticInstr(val type: ArithmeticInstrType,val conditi
     override fun toArm(): String {
         return "${type.name}${if (updateFlag) "S" else ""}${condition.toArm()} ${reg1.toArm()}, ${reg2.toArm()}, ${operand.toArm()}"
     }
+
+    override fun toX86(): String {
+        return "${type.name.toLowerCase()}${condition.toX86()} ${operand.toX86()}, ${reg1.toX86()}"
+    }
 }
 
 class AddInstr(condition: Condition, reg1: Register,
@@ -58,5 +62,9 @@ class MultInstr(val condition: Condition, val rdLo: Register, val rdHi: Register
                 val rn: Register, val rm: Register, val updateFlag: Boolean = false) : ArithmeticInstr {
     override fun toArm(): String {
         return "SMULL${if (updateFlag) "S" else ""}${condition.toArm()} ${rdLo.toArm()}, ${rdHi.toArm()}, ${rn.toArm()}, ${rm.toArm()}"
+    }
+
+    override fun toX86(): String {
+        TODO("Not yet implemented")
     }
 }
