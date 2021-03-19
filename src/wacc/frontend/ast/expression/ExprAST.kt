@@ -14,9 +14,13 @@ import wacc.frontend.exception.semanticError
 import java.util.function.BiFunction
 
 interface ExprAST : RhsAST {
-    fun weight(): Int{
+    fun weight(): Int {
         return 1
     }
+}
+
+interface OpExpr {
+    fun setAllVariableAccessedFlags()
 }
 
 /**
@@ -26,7 +30,7 @@ interface ExprAST : RhsAST {
  * @property expr1 First Expression
  * @property expr2 Second Expression
  */
-class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, AbstractAST() {
+class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, OpExpr, AbstractAST() {
     var weight = -1
     var pointerOp = false
     var shiftOffset = 0
@@ -109,6 +113,24 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         return weight
     }
 
+    override fun setAllVariableAccessedFlags() {
+        if (expr1 is IdentAST) {
+            symTable.setAccessedField(expr1.name)
+        }
+        if (expr2 is IdentAST) {
+            symTable.setAccessedField(expr2.name)
+        }
+        if (expr1 is OpExpr) {
+            expr1.setAllVariableAccessedFlags()
+        }
+        if (expr2 is OpExpr) {
+            expr2.setAllVariableAccessedFlags()
+
+        }
+
+    }
+
+
 }
 
 
@@ -174,7 +196,7 @@ enum class CmpBinOp : BinOp {
  * @property unOp Operation to perform on the expression, chosen from the UnOp Enum
  * @property expr Expression to operate on
  */
-class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
+class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, OpExpr, AbstractAST() {
     var weight = -1
     override fun check(table: SymbolTable): Boolean {
         symTable = table
@@ -250,6 +272,15 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, AbstractAST() {
             weight = expr.weight()
         }
         return weight
+    }
+
+    override fun setAllVariableAccessedFlags() {
+        if (expr is IdentAST) {
+            symTable.setAccessedField(expr.name)
+        }
+        if (expr is OpExpr) {
+            expr.setAllVariableAccessedFlags()
+        }
     }
 }
 

@@ -31,9 +31,10 @@ class ControlFlowVisitor : OptimisationVisitor() {
                 return ast
             }
             ast.thenBody.forEach {
-                branchOfChoice.add(visit(it) as StatAST)
-                if (it is AbstractAST) {
-                    it.symTable = ast.symTable
+                val item = visit(it) as StatAST
+                branchOfChoice.add(item)
+                if (item is AbstractAST) {
+                    item.symTable = ast.symTable
                 }
             }
             ast.thenST.liftToUpperScope()

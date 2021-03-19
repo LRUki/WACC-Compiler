@@ -80,6 +80,9 @@ class CallRhsAST(var ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
         argTypes = mutableListOf()
         for (i in argList.indices) {
             val argType = argList[i].getRealType(table)
+            if (argList[i] is IdentAST) {
+                table.setAccessedField((argList[i] as IdentAST).name)
+            }
             argTypes.add(argType)
             val paramType = funcAst.paramList[i].type
             if (argType != paramType) {

@@ -15,6 +15,7 @@ import wacc.frontend.ast.statement.nonblock.Action
 import wacc.frontend.ast.statement.nonblock.ActionStatAST
 import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
+import wacc.frontend.ast.type.StructTypeAST
 
 class ConstantPropagationVisitor : OptimisationVisitor() {
 
@@ -23,6 +24,9 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         if (!assigned) {
             val entry = ast.symTable.lookupAll(ast.name).get()
             if (entry is DeclareStatAST) {
+                if (entry.type is StructTypeAST) {
+                    return ast
+                }
                 return entry.rhs
             }
         }
