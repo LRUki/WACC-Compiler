@@ -6,6 +6,7 @@ import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.assign.StructAssignAST
+import wacc.frontend.ast.expression.ArrayLiterAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.OpExpr
 import wacc.frontend.ast.expression.StructAccessAST
@@ -110,8 +111,14 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
             symTable.setAssignedField(ident.name)
             symTable.setAccessedField(ident.name)
         }
-
-
+        if (rhs is ArrayLiterAST) {
+            rhs.values.forEach {
+                if (it is IdentAST) {
+                    symTable.setAssignedField(it.name)
+                    symTable.setAccessedField(it.name)
+                }
+            }
+        }
         return true
     }
 

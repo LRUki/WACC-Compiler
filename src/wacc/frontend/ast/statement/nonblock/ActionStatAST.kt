@@ -2,6 +2,7 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.expression.BinOpExprAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.expression.ExprAST
@@ -27,6 +28,8 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
         val exprType = expr.getRealType(table)
         if (expr is IdentAST) {
             table.setAccessedField(expr.name)
+        } else if (expr is ArrayElemAST) {
+            table.setAccessedField(expr.ident.name)
         } else if (expr is OpExpr) {
             expr.setAllVariableAccessedFlags()
         }
