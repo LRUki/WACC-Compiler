@@ -59,7 +59,6 @@ fun main(args: Array<String>) {
     controlFlow = optimize || flags.contains("-oControlFlow")
     constEval = optimize || flags.contains("-oConstEval")
     constEval = optimize || flags.contains("-oConstPropagation")
-    instrEvaluation = optimize || flags.contains("-oInstrEvaluation")
     regAlloc = optimize || flags.contains("-oRegAlloc")
     parallelCompile = optimize || flags.contains("-oParallelCompile")
 
@@ -78,13 +77,11 @@ fun main(args: Array<String>) {
     if (constProp) {
         waccFile.constPropagation()
     }
-    waccFile.constEvaluation()
-    waccFile.constPropagation()
-    waccFile.controlFlowAnalysis()
-    waccFile.instrEvaluation()
+
     if (instrEvaluation) {
-        waccFile.instrEvalOptim = true
+        waccFile.instrEvaluation()
     }
+
     val outputString = waccFile.backend()
     var outputFileName = inputFile.nameWithoutExtension + ".s"
     if (paths.size > 1) {
@@ -103,7 +100,6 @@ class WaccFile(val file: File) {
     lateinit var semanticErrorChannel: Channel<SemanticException>
     var currentFilePath: String = file.absolutePath
     lateinit var ast: AST
-    var instrEvalOptim = false
 
     init {
         waccFile = this
@@ -182,9 +178,6 @@ class WaccFile(val file: File) {
 
     fun backend(): String {
         val instrs = generateCode(ast as ProgramAST)
-//        if (instrEvalOptim) {
-//            instrEvaluation()
-//        }
         return printCode(instrs)
     }
 
