@@ -6,6 +6,7 @@ import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.OpExpr
 import wacc.frontend.ast.expression.StructAccessAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
@@ -97,6 +98,10 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                     return false
                 }
             }
+        }
+
+        if (rhsType is PointerTypeAST) {
+            (rhs as OpExpr).setMemoryReferencesAccessed()
         }
         ident.symTable = table
         table.add(ident.name, this)

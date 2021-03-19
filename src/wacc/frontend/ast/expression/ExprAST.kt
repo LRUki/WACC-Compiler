@@ -21,6 +21,7 @@ interface ExprAST : RhsAST {
 
 interface OpExpr {
     fun setAllVariableAccessedFlags()
+    fun setMemoryReferencesAccessed()
 }
 
 /**
@@ -126,6 +127,16 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         if (expr2 is OpExpr) {
             expr2.setAllVariableAccessedFlags()
 
+        }
+
+    }
+
+    override fun setMemoryReferencesAccessed() {
+        if (expr1 is OpExpr) {
+            expr1.setMemoryReferencesAccessed()
+        }
+        if (expr2 is OpExpr) {
+            expr2.setMemoryReferencesAccessed()
         }
 
     }
@@ -281,6 +292,21 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, OpExpr, Abstract
         if (expr is OpExpr) {
             expr.setAllVariableAccessedFlags()
         }
+    }
+
+    override fun setMemoryReferencesAccessed() {
+        if (unOp == UnOp.REF) {
+            if (expr is IdentAST) {
+                symTable.setAccessedField(expr.name)
+                symTable.setAssignedField(expr.name)
+            } else if (expr is ArrayElemAST) {
+                symTable.setAccessedField(expr.ident.name)
+                symTable.setAssignedField(expr.ident.name)
+            }
+        } else if (expr is OpExpr) {
+            expr.setMemoryReferencesAccessed()
+        }
+
     }
 }
 
