@@ -35,7 +35,7 @@ class TranslateTest {
 
     @Test
     fun translateOfSkipFilesContainsDirectives() {
-        val folder = File("wacc_examples/valid/basic/skip/")
+        val folder = File("ci/wacc_examples/valid/basic/skip/")
         actionOnFiles(folder) { file ->
             val instrs = compileAndGenerate(file)
             assertTrue(instrs.contains(DirectiveInstr("text")))
@@ -46,7 +46,7 @@ class TranslateTest {
 
     @Test
     fun translateOfFileWithNoStringsHasEmptyData() {
-        val folder = File("wacc_examples/valid/basic/skip/")
+        val folder = File("ci/wacc_examples/valid/basic/skip/")
         actionOnFiles(folder) { file ->
             val instrs = compileAndGenerate(file)
             assertFalse(instrs.contains(DirectiveInstr("data")))
@@ -58,7 +58,7 @@ class TranslateTest {
 
     @Test
     fun translateOfExitFilesContainsExitBranch() {
-        val folder = File("wacc_examples/valid/basic/exit/")
+        val folder = File("ci/wacc_examples/valid/basic/exit/")
         val actionOnFiles = actionOnFiles(folder) { file ->
             assertTrue(compileAndGenerate(file)
                     .contains(BranchInstr(Condition.AL, Label("exit"), true)))
@@ -67,7 +67,7 @@ class TranslateTest {
 
     @Test
     fun translateOfStringDeclarationContainsStringDirective() {
-        val folder = File("wacc_examples/valid/variables/stringDeclaration.wacc")
+        val folder = File("ci/wacc_examples/valid/variables/stringDeclaration.wacc")
         val actionOnFiles = actionOnFiles(folder) { file ->
             assertTrue(compileAndGenerate(file)
                     .contains(DirectiveInstr("ascii \"Hello World!\"")))

@@ -2,7 +2,7 @@ package wacc.frontend.ast.type
 
 
 import wacc.frontend.ast.AST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 
 /**
  * Implemented by Type AST nodes
@@ -20,6 +20,9 @@ interface TypeAST : AST {
 
     override fun toString(): String
 
+    /**
+     * @return print the type in a format allowed in the assembly code.
+     */
     fun toLabel(): String {
         return toString()
     }

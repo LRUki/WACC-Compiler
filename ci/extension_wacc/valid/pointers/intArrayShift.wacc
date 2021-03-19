@@ -1,0 +1,17 @@
+# simple integer variable declaration and assignment
+
+# Output:
+## 2
+## 3
+
+# Exit:
+#* 0
+
+# Program:
+
+begin
+  int[] list = [1, 2, 3, 4] ;
+  int* p = &list[1] ;
+  println *(p) ;
+  println *(p + 1)
+end

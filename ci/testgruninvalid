@@ -1,0 +1,28 @@
+#!/bin/bash
+
+echo 'Testing grun for invalid files...'
+
+make
+rm -f error.out
+touch error.out
+
+# shellcheck disable=SC2044
+# shellcheck disable=SC2006
+for FILE in `find ./ci/wacc_examples/invalid/syntaxErr -type f -name '*.wacc'`
+do
+    ERROR=$(./grun antlr.Wacc program $FILE 2>&1 >/dev/null)
+    if [ -z "$ERROR" ]
+    then
+        echo "Expected failure $FILE"
+        echo "$FILE" >> error.out
+        # shellcheck disable=SC2086
+        # shellcheck disable=SC2028
+        echo $ERROR "\n" >> error.out
+    else
+        # shellcheck disable=SC2028
+        echo "Failed $FILE"
+
+    fi
+done
+
+[ -s error.out ] && exit 1 || echo "All test cases fail!" && rm error.out

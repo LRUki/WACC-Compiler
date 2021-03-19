@@ -2,7 +2,7 @@ package wacc.frontend.ast.pointer
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
@@ -10,6 +10,9 @@ import wacc.frontend.ast.type.PointerTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
+/**
+ * A LhsAST representing the dereferencing of a pointer.
+ */
 class PointerElemAST(val ident: IdentAST) : ExprAST, LhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
         if (!ident.check(table)) {

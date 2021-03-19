@@ -7,10 +7,18 @@ import kotlinx.coroutines.channels.Channel
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.Main.waccFile
+import wacc.WaccConfig.constEval
+import wacc.WaccConfig.constProp
+import wacc.WaccConfig.controlFlow
+import wacc.WaccConfig.instrEvaluation
+import wacc.WaccConfig.parallelCompile
+import wacc.WaccConfig.regAlloc
 import wacc.backend.generateCode
 import wacc.backend.printCode
-import wacc.extension.optimization.ConstantEvaluationVisitor
-import wacc.extension.optimization.ControlFlowVisitor
+import wacc.extension.optimisation.ConstantEvaluationVisitor
+import wacc.extension.optimisation.ConstantPropagationVisitor
+import wacc.extension.optimisation.ControlFlowVisitor
+import wacc.extension.optimisation.InstructionEvaluationVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -35,7 +43,7 @@ fun main(args: Array<String>) {
         println("Missing argument!")
         exitProcess(1)
     }
-
+    /** split the arguments into path and flag */
     val paths = ArrayList<String>()
     val flags = ArrayList<String>()
     for (arg in args) {
@@ -46,26 +54,40 @@ fun main(args: Array<String>) {
         }
     }
 
-    // Set optimization flags from arguments
+    /** Set optimization flags from arguments */
     val optimize = flags.contains("-o")
-    WaccConfig.controlFlow = optimize || flags.contains("-oControlFlow")
-    WaccConfig.constEval = optimize || flags.contains("-oConstEval")
-    WaccConfig.regAlloc = optimize || flags.contains("-oRegAlloc")
-    WaccConfig.parallelCompile = optimize || flags.contains("-oParallelCompile")
+    controlFlow = optimize || flags.contains("-oControlFlow")
+    constEval = optimize || flags.contains("-oConstEval")
+    constEval = optimize || flags.contains("-oConstPropagation")
+    regAlloc = optimize || flags.contains("-oRegAlloc")
+    parallelCompile = optimize || flags.contains("-oParallelCompile")
 
     val inputFile = File(paths[0])
     waccFile = WaccFile(inputFile)
     waccFile.frontend()
 
-    if (WaccConfig.constEval) {
+    /** translate the ast to assembly */
+    if (constEval) {
+        /** conduct constant evaluation optimization */
         waccFile.constEvaluation()
     }
 
-    if (WaccConfig.controlFlow) {
+    if (controlFlow) {
+        /** conduct constant flow optimization */
         waccFile.controlFlowAnalysis()
     }
 
+    if (constProp) {
+        /** conduct constant propagation optimization */
+        waccFile.constPropagation()
+    }
+
+    if (instrEvaluation) {
+        waccFile.instrEvaluation()
+    }
+
     val outputString = waccFile.backend()
+
     var outputFileName = inputFile.nameWithoutExtension + ".s"
     if (paths.size > 1) {
         outputFileName = paths[1]
@@ -75,6 +97,7 @@ fun main(args: Array<String>) {
     if (paths.size > 1) {
         Files.createDirectories(outputFile.toPath().parent)
     }
+    /** write assembly to the output file */
     outputFile.writeText(outputString)
 }
 
@@ -166,8 +189,23 @@ class WaccFile(val file: File) {
 
     fun constEvaluation() {
         ast = ConstantEvaluationVisitor().visit(ast)
+
     }
     fun controlFlowAnalysis() {
         ast = ControlFlowVisitor().visit(ast)
+    }
+
+    fun constPropagation() {
+        if (!constEval) {
+            constEvaluation()
+            constEval = true
+        }
+        ast = ConstantPropagationVisitor().visit(ast)
+        constEvaluation()
+    }
+
+    fun instrEvaluation() {
+        ast = InstructionEvaluationVisitor().visit(ast)
+        controlFlowAnalysis()
     }
 }

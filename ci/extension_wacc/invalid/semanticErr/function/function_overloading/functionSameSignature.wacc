@@ -1,0 +1,19 @@
+# Double declaration of the same function signature
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  int f(int a) is
+    return 0
+  end
+  int f(int b) is
+    return 1
+  end
+  skip
+end

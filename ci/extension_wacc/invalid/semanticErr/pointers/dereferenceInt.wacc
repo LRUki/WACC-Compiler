@@ -1,0 +1,14 @@
+# tries to dereference an int
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  int x = 42;
+  int* p = *x
+end

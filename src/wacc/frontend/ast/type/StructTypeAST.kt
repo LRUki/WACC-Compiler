@@ -2,9 +2,8 @@ package wacc.frontend.ast.type
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
-import wacc.frontend.ast.statement.nonblock.StructDeclareAST
 
 class StructTypeAST(val ident: IdentAST) : TypeAST, AbstractAST() {
     companion object {

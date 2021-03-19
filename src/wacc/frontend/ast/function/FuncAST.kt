@@ -3,7 +3,7 @@ package wacc.frontend.ast.function
 import wacc.frontend.FuncSymbolTable
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.Identifiable
@@ -57,8 +57,10 @@ class FuncAST(val type: TypeAST, var ident: IdentAST,
         val builder = StringBuilder()
         builder.append(ident.toString())
         if (paramList.isNotEmpty()) {
+            // Append all parameter types to the function label.
             paramList.forEach { builder.append("_" + it.type.toLabel()) }
         } else {
+            // To avoid clashing with variables with the same name.
             builder.append("_void")
         }
         return builder.toString()

@@ -1,5 +1,8 @@
 package wacc.frontend.ast.type
 
+/**
+ * A TypeAST representing the type of pointers.
+ */
 class PointerTypeAST(val type: TypeAST) : TypeAST, Identifiable {
     override fun equals(other: Any?): Boolean {
         if (other is AnyPairTypeAST) {

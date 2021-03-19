@@ -3,10 +3,11 @@ package wacc.frontend.ast.pair
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.ExprAST
+import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.NullPairLiterAST
 import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.TypeAST
@@ -27,7 +28,15 @@ class PairElemAST(val choice: PairChoice, val expr: ExprAST) : LhsAST, RhsAST, A
             semanticError("Attempt to access element of a null pair", ctx)
             return false
         }
-        return expr.check(table)
+        if (!expr.check(table)) {
+            return false
+        }
+        if (expr !is IdentAST || expr.getRealType(table) !is PairTypeAST) {
+            semanticError("Trying to access the fields of a non pair type", ctx)
+            return false
+        }
+        table.setAccessedField(expr.name)
+        return true
     }
 
     override fun getRealType(table: SymbolTable): TypeAST {

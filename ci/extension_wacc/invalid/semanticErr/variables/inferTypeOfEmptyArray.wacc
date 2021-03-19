@@ -1,0 +1,13 @@
+# tries to infer the type of an empty array
+
+# Output:
+# #semantic_error#
+
+# Exit:
+# 200
+
+# Program:
+
+begin
+  var x = []
+end

@@ -1,11 +1,12 @@
 package wacc.frontend
 
 import wacc.frontend.ast.assign.LhsAST
+import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
-import wacc.frontend.ast.statement.nonblock.StructDeclareAST
+import wacc.frontend.ast.statement.nonblock.StructDeclareStatAST
 import wacc.frontend.ast.type.*
 import java.util.*
 import kotlin.collections.LinkedHashMap
@@ -36,7 +37,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     }
 
     /** A symbol table consists of a HashMap */
-    val currSymbolTable: LinkedHashMap<String, Pair<Identifiable, Int>> = LinkedHashMap()
+    val currSymbolTable: LinkedHashMap<String, SymbolTableField> = LinkedHashMap()
     var offsetSize: Int = 0
 
     /** Current offset size, used in DeclareStatAST and IdentAST*/
@@ -58,7 +59,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun lookup(name: String): Optional<Identifiable> {
         val value = currSymbolTable[name]
         if (value != null) {
-            return Optional.of(value.first)
+            return Optional.of(value.identifiable)
         }
         return Optional.empty()
     }
@@ -93,6 +94,102 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         return encSymbolTable.lookupFirstFunc()
     }
 
+    fun setField(name: String, field: SymbolTableFieldFlag) {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            when (field) {
+                SymbolTableFieldFlag.ACCESSED -> {
+                    value.accessedFlag = true
+                }
+                SymbolTableFieldFlag.ASSIGNED -> {
+                    value.reAssignedFlag = true
+                }
+            }
+            return
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.setField(name, field)
+        }
+    }
+
+    fun getField(name: String, field: SymbolTableFieldFlag): Boolean {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            return when (field) {
+                SymbolTableFieldFlag.ACCESSED -> {
+                    value.accessedFlag
+                }
+                SymbolTableFieldFlag.ASSIGNED -> {
+                    value.reAssignedFlag
+                }
+            }
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.getField(name, field)
+        }
+        throw RuntimeException("Trying to get the access flag of a variable not in the symbol table ")
+    }
+
+
+    /** Called when the variable is assigned to */
+    fun setAssignedField(name: String) {
+        setField(name, SymbolTableFieldFlag.ASSIGNED)
+    }
+
+    fun getAssignedField(name: String): Boolean {
+        return getField(name, SymbolTableFieldFlag.ASSIGNED)
+    }
+
+    fun setAccessedField(name: String) {
+        setField(name, SymbolTableFieldFlag.ACCESSED)
+    }
+
+    fun getAccessedField(name: String): Boolean {
+        return getField(name, SymbolTableFieldFlag.ACCESSED)
+    }
+
+    fun updateOptimisedVariable(name: String, rhs: RhsAST) {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            val entry = (currSymbolTable[name]?.identifiable as DeclareStatAST)
+            val declareAST = DeclareStatAST(entry.type, entry.ident, rhs)
+            currSymbolTable[name] = SymbolTableField(declareAST, value.size, value.reAssignedFlag, value.accessedFlag)
+            return
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.updateOptimisedVariable(name, rhs)
+        }
+    }
+
+    fun removeOptimisedVariableFromST(name: String) {
+        val value = currSymbolTable[name]
+        if (value != null) {
+            currSymbolTable.remove(name)
+            return
+        }
+        if (encSymbolTable != null) {
+            return encSymbolTable.removeOptimisedVariableFromST(name)
+        }
+    }
+
+    fun checkContainsSameVarNameAsEnclosing(): Boolean {
+        if (encSymbolTable != null) {
+            for (entry in currSymbolTable.keys) {
+                if (encSymbolTable.currSymbolTable.keys.contains(entry))
+                    return true
+            }
+        }
+        return false
+    }
+
+    fun liftToUpperScope() {
+        if (encSymbolTable != null) {
+            for ((key, value) in currSymbolTable) {
+                encSymbolTable.currSymbolTable[key] = value
+            }
+        }
+    }
+
     /**
      * Add an element to the internal representation of the hash table
      * Calculates the size of the object and store that alongside obj
@@ -114,12 +211,12 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             is ParamAST -> {
                 getBytesOfType(obj.type)
             }
-            is StructDeclareAST -> {
+            is StructDeclareStatAST -> {
                 0
             }
             else -> 0
         }
-        currSymbolTable[name] = Pair(obj, size)
+        currSymbolTable[name] = SymbolTableField(obj, size, false, false)
     }
 
 
@@ -131,8 +228,8 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun getStackOffset(): Int {
         var offset = 0
         currSymbolTable.forEach { (name, type) ->
-            if (type.first is DeclareStatAST) {
-                offset += type.second
+            if (type.identifiable is DeclareStatAST) {
+                offset += type.size
             }
         }
         offsetSize = offset
@@ -151,7 +248,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         }
         if (encSymbolTable != null) {
             var offset = 0
-            currSymbolTable.forEach { offset += it.value.second }
+            currSymbolTable.forEach { offset += it.value.size }
             return encSymbolTable.getFuncStackOffset() + offset
         }
         throw RuntimeException("Semantic Failure: Return used outside of a function")
@@ -177,8 +274,8 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
                     /** Removes all parameters of the function and
                      * then sums the offset of the remaining identifiers */
                     currSymbolTable.toList()
-                            .dropWhile { it.second.first is ParamAST }
-                            .forEach { offset += it.second.second }
+                            .dropWhile { it.second.identifiable is ParamAST }
+                            .forEach { offset += it.second.size }
                     return offset + offsetCounter
                 }
             }
@@ -188,7 +285,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         if (encSymbolTable != null) {
             /** Sums offsets of all entries in current symbol table to add to final offset  */
             var offset = 0
-            currSymbolTable.toList().forEach { offset += it.second.second }
+            currSymbolTable.toList().forEach { offset += it.second.size }
             return encSymbolTable.findIfParamInFuncSymbolTableToAddOffset(name, currSymbolTable.size > 0, startingOffset)
         }
         return 0
@@ -213,22 +310,22 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
     fun findOffsetInStack(ident: String): Int {
         var totalOffset = 0
         val pointerOffset = 4
-        currSymbolTable.values.forEach { totalOffset += it.second }
+        currSymbolTable.values.forEach { totalOffset += it.size }
         var paramOffset = 0
         /** Computes offset being the summed offset of remaining symbol table entries
          * For parameters it is the sum of entries up till that point */
         for ((k, v) in currSymbolTable) {
-            if (v.first is StructDeclareAST) {
+            if (v.identifiable is StructDeclareStatAST) {
                 continue
             }
-            if (k == ident && v.first is ParamAST) {
+            if (k == ident && v.identifiable is ParamAST) {
                 return paramOffset + pointerOffset
             }
-            totalOffset -= v.second
+            totalOffset -= v.size
             if (k == ident) {
                 return totalOffset
             }
-            paramOffset += v.second
+            paramOffset += v.size
         }
         if (encSymbolTable != null) {
             /** Searches enclosing symbol table when not found in current table.
@@ -279,7 +376,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
     private fun findSTWithIdentifier(ident: String, correctType: TypeAST, offset: Int): Pair<SymbolTable, Int> {
         if (currSymbolTable.containsKey(ident)) {
-            val identAst = currSymbolTable[ident]?.first
+            val identAst = currSymbolTable[ident]?.identifiable
             if ((identAst is ParamAST) ||
                     ((identAst is DeclareStatAST) && (identAst.type == correctType))) {
                 return Pair(this, offset)
@@ -287,7 +384,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         }
         if (encSymbolTable != null) {
             var currentSTOffset = 0
-            currSymbolTable.forEach { currentSTOffset += it.value.second }
+            currSymbolTable.forEach { currentSTOffset += it.value.size }
             return encSymbolTable.findSTWithIdentifier(ident, correctType, offset + currentSTOffset)
         }
         throw RuntimeException("$ident is not present in any symbol table, semantic check failed")
@@ -308,12 +405,18 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
 
     fun mergeFuncsWithTable(importedST: SymbolTable) {
         for (entry in importedST.currSymbolTable) {
-            if (entry.value.first is FuncAST && !currSymbolTable.containsKey(entry.key)) {
-                add(entry.key, entry.value.first)
+            if (entry.value.identifiable is FuncAST && !currSymbolTable.containsKey(entry.key)) {
+                add(entry.key, entry.value.identifiable)
             }
         }
     }
-
 }
+
+enum class SymbolTableFieldFlag {
+    ASSIGNED,
+    ACCESSED
+}
+
+class SymbolTableField(val identifiable: Identifiable, val size: Int, var reAssignedFlag: Boolean, var accessedFlag: Boolean)
 
 class FuncSymbolTable(encSymbolTable: SymbolTable?, val funcAST: FuncAST) : SymbolTable(encSymbolTable)

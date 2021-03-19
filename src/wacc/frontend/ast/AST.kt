@@ -2,6 +2,7 @@ package wacc.frontend.ast
 
 import org.antlr.v4.runtime.ParserRuleContext
 import wacc.frontend.SymbolTable
+import wacc.frontend.visitor.AstVisitor
 
 /**
  * Implemented by all AST nodes

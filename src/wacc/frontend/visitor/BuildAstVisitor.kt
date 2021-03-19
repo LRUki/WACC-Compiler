@@ -22,6 +22,7 @@ import wacc.frontend.ast.statement.block.ForStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
+import wacc.frontend.ast.struct.StructAccessAST
 import wacc.frontend.ast.type.*
 
 class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
@@ -132,7 +133,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
 
     override fun visitCallStat(ctx: WaccParser.CallStatContext): AST {
         // Build the CallRhsAST in the same way as in visitAssignRhs()
-        var argList = emptyList<ExprAST>()
+        val argList = mutableListOf<ExprAST>()
         if (ctx.argList() != null) {
             for (expr in ctx.argList().expr()) {
                 argList += visit(expr) as ExprAST
@@ -179,7 +180,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             fieldList += StructFieldAST(visit(field.type()) as TypeAST,
                     visit(field.ident()) as IdentAST)
         }
-        val structDeclare = StructDeclareAST(visit(ctx.structType().capitalisedIdent()) as IdentAST, fieldList)
+        val structDeclare = StructDeclareStatAST(visit(ctx.structType().capitalisedIdent()) as IdentAST, fieldList)
         structDeclare.ctx = ctx
         return structDeclare
     }
@@ -189,7 +190,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
         for (rhs in ctx.assignRhs()) {
             assignments += visit(rhs) as RhsAST
         }
-        val structAssign = StructAssignAST(assignments)
+        val structAssign = StructAssignRhsAST(assignments)
         structAssign.ctx = ctx
         return structAssign
     }
@@ -243,7 +244,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
                 callRhsAST
             }
             ctx.structAssign() != null -> {
-                visit(ctx.structAssign()) as StructAssignAST
+                visit(ctx.structAssign()) as StructAssignRhsAST
             }
             else -> visitChildren(ctx)
         }
@@ -367,7 +368,7 @@ class BuildAstVisitor : WaccParserBaseVisitor<AST>() {
             "||" -> BoolBinOp.OR
             else -> throw RuntimeException()
         }
-        val binOpExprAST = BinOpExprAST(binop,
+        val binOpExprAST = BinOpExprAST(binop as BinOp,
                 visit(ctx.expr(0)) as ExprAST,
                 visit(ctx.expr(1)) as ExprAST)
         binOpExprAST.ctx = ctx
