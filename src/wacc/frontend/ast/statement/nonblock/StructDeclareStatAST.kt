@@ -10,6 +10,9 @@ import wacc.frontend.ast.type.Identifiable
 import wacc.frontend.ast.type.StructFieldAST
 import wacc.frontend.exception.semanticError
 
+/**
+ * A StatAST for struct declaration.
+ */
 class StructDeclareStatAST(val ident: IdentAST, val fields: List<StructFieldAST>) : Identifiable, StatAST, AbstractAST() {
     var totalSizeOfFields: Int = 0
     override fun check(table: SymbolTable): Boolean {

@@ -6,6 +6,9 @@ import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.type.*
 import wacc.frontend.ast.type.StructTypeAST.Companion.defStructIdent
 
+/**
+ * A RhsAST for struct assignment.
+ */
 class StructAssignRhsAST(val assignments: List<RhsAST>) : RhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
         symTable = table
