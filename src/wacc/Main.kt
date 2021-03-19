@@ -43,7 +43,7 @@ fun main(args: Array<String>) {
         println("Missing argument!")
         exitProcess(1)
     }
-
+    /** split the arguments into path and flag */
     val paths = ArrayList<String>()
     val flags = ArrayList<String>()
     for (arg in args) {
@@ -54,7 +54,7 @@ fun main(args: Array<String>) {
         }
     }
 
-    // Set optimization flags from arguments
+    /** Set optimization flags from arguments */
     val optimize = flags.contains("-o")
     controlFlow = optimize || flags.contains("-oControlFlow")
     constEval = optimize || flags.contains("-oConstEval")
@@ -66,15 +66,19 @@ fun main(args: Array<String>) {
     waccFile = WaccFile(inputFile)
     waccFile.frontend()
 
+    /** translate the ast to assembly */
     if (constEval) {
+        /** conduct constant evaluation optimization */
         waccFile.constEvaluation()
     }
 
     if (controlFlow) {
+        /** conduct constant flow optimization */
         waccFile.controlFlowAnalysis()
     }
 
     if (constProp) {
+        /** conduct constant propagation optimization */
         waccFile.constPropagation()
     }
 
@@ -83,6 +87,7 @@ fun main(args: Array<String>) {
     }
 
     val outputString = waccFile.backend()
+
     var outputFileName = inputFile.nameWithoutExtension + ".s"
     if (paths.size > 1) {
         outputFileName = paths[1]
@@ -92,6 +97,7 @@ fun main(args: Array<String>) {
     if (paths.size > 1) {
         Files.createDirectories(outputFile.toPath().parent)
     }
+    /** write assembly to the output file */
     outputFile.writeText(outputString)
 }
 
