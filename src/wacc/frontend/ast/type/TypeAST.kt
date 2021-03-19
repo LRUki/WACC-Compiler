@@ -20,6 +20,9 @@ interface TypeAST : AST {
 
     override fun toString(): String
 
+    /**
+     * @return print the type in a format allowed in the assembly code.
+     */
     fun toLabel(): String {
         return toString()
     }

@@ -57,8 +57,10 @@ class FuncAST(val type: TypeAST, var ident: IdentAST,
         val builder = StringBuilder()
         builder.append(ident.toString())
         if (paramList.isNotEmpty()) {
+            // Append all parameter types to the function label.
             paramList.forEach { builder.append("_" + it.type.toLabel()) }
         } else {
+            // To avoid clashing with variables with the same name.
             builder.append("_void")
         }
         return builder.toString()

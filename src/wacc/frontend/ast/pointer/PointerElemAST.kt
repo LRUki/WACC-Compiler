@@ -10,6 +10,9 @@ import wacc.frontend.ast.type.PointerTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
+/**
+ * A LhsAST representing the dereferencing of a pointer.
+ */
 class PointerElemAST(val ident: IdentAST) : ExprAST, LhsAST, AbstractAST() {
     override fun check(table: SymbolTable): Boolean {
         if (!ident.check(table)) {
