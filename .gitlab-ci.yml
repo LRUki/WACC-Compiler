@@ -11,7 +11,7 @@ test-antlr:
   script:
     - echo "Testing build antlr"
     - make clean rules
-    - ./testgrun
+    - ./ci/testgrun
 
 test-lexer:
   stage: test-frontend
