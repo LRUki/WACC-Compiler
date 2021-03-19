@@ -70,7 +70,7 @@ class TranslateTest {
         val folder = File("wacc_examples/valid/variables/stringDeclaration.wacc")
         val actionOnFiles = actionOnFiles(folder) { file ->
             assertTrue(compileAndGenerate(file)
-                    .contains(DirectiveInstr("ascii \"Hello World!\"")))
+                    .contains(MessageLabel(0, "Hello World!")))
         }
     }
 }
