@@ -9,7 +9,7 @@ import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.OpExpr
-import wacc.frontend.ast.expression.StructAccessAST
+import wacc.frontend.ast.struct.StructAccessAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.pointer.PointerElemAST

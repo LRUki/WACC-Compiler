@@ -1,18 +1,12 @@
 package wacc.extension.optimisation
 
 import wacc.frontend.ast.AST
-import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.ast.assign.StructAssignAST
+import wacc.frontend.ast.assign.StructAssignRhsAST
 import wacc.frontend.ast.expression.*
-import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
-import wacc.frontend.ast.program.ProgramAST
-import wacc.frontend.ast.statement.StatAST
-import wacc.frontend.ast.statement.block.BlockStatAST
-import wacc.frontend.ast.statement.block.IfStatAST
-import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
+import wacc.frontend.ast.struct.StructAccessAST
 import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.StructTypeAST
@@ -42,7 +36,7 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         if (!assigned) {
             var rhs: RhsAST? = null
             val entry = ast.symTable.lookupAll(ast.structIdent.name).get()
-            val assignments = ((entry as DeclareStatAST).rhs as StructAssignAST).assignments
+            val assignments = ((entry as DeclareStatAST).rhs as StructAssignRhsAST).assignments
             for (i in ast.structDeclare.fields.indices) {
                 if (ast.structDeclare.fields[i].ident.equals(ast.fieldIdent)) {
                     rhs = assignments[i]

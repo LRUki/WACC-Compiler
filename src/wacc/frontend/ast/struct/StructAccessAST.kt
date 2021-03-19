@@ -1,23 +1,25 @@
-package wacc.frontend.ast.expression
+package wacc.frontend.ast.struct
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
+import wacc.frontend.ast.expression.ExprAST
+import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
-import wacc.frontend.ast.statement.nonblock.StructDeclareAST
+import wacc.frontend.ast.statement.nonblock.StructDeclareStatAST
 import wacc.frontend.ast.type.AnyTypeAST
 import wacc.frontend.ast.type.StructTypeAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.exception.semanticError
 
 class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : LhsAST, ExprAST, AbstractAST() {
-    lateinit var structDeclare: StructDeclareAST
+    lateinit var structDeclare: StructDeclareStatAST
 
     override fun check(table: SymbolTable): Boolean {
         symTable = table
-        var structFromIdent = table.lookup(structIdent.name)
+        val structFromIdent = table.lookup(structIdent.name)
         val structName =
                 if (structFromIdent.get() is ParamAST) {
                     ((structFromIdent.get() as ParamAST).type as StructTypeAST).ident.name
@@ -26,7 +28,7 @@ class StructAccessAST(val structIdent: IdentAST, val fieldIdent: IdentAST) : Lhs
                     (structIdentDeclareInST.type as StructTypeAST).ident.name
                 }
         val structInST = table.lookupAll(structName)
-        structDeclare = structInST.get() as StructDeclareAST
+        structDeclare = structInST.get() as StructDeclareStatAST
         for (i in structDeclare.fields.indices) {
             if (structDeclare.fields[i].ident.equals(fieldIdent)) {
                 return true

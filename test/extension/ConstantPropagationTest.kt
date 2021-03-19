@@ -10,6 +10,7 @@ import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.ActionStatAST
 import wacc.frontend.ast.statement.nonblock.AssignStatAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
+import wacc.frontend.ast.struct.StructAccessAST
 import java.io.File
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

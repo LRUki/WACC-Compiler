@@ -7,7 +7,7 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.statement.StatAST
-import wacc.frontend.ast.statement.nonblock.StructDeclareAST
+import wacc.frontend.ast.statement.nonblock.StructDeclareStatAST
 
 /**
  * AST node to represent a Program
@@ -30,7 +30,7 @@ class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val fun
             importFuncs.addAll(it.progAST.funcList)
         }
         /* Checks all the struct declarations so they can used inside functions */
-        stats.filterIsInstance<StructDeclareAST>().forEach {
+        stats.filterIsInstance<StructDeclareStatAST>().forEach {
             if (!it.check(table)) {
                 return false
             }
@@ -41,7 +41,7 @@ class ProgramAST(val imports: List<ImportAST>, val stats: List<StatAST>, val fun
             funcList.parallelStream()
         }.forEach { it.check(table) }
         /* Checks all the remaining statements */
-        stats.filter { it !is StructDeclareAST }.forEach {
+        stats.filter { it !is StructDeclareStatAST }.forEach {
             if (!it.check(table)) {
                 return false
             }

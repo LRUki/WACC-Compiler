@@ -7,11 +7,11 @@ import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
-import wacc.frontend.ast.assign.StructAssignAST
+import wacc.frontend.ast.assign.StructAssignRhsAST
 import wacc.frontend.ast.expression.ArrayLiterAST
 import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.expression.OpExpr
-import wacc.frontend.ast.expression.StructAccessAST
+import wacc.frontend.ast.struct.StructAccessAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.pair.PairElemAST
@@ -50,7 +50,7 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                         (structDeclareInST.type as StructTypeAST).ident.name
                     }
             val structInST = table.lookupAll(structName)
-            if (structInST.isEmpty || structInST.get() !is StructDeclareAST) {
+            if (structInST.isEmpty || structInST.get() !is StructDeclareStatAST) {
                 semanticError("Declared instance of non-existing type struct $structName", ctx)
                 return false
             }
@@ -81,13 +81,13 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
 
         if (type is StructTypeAST) {
             val structInTable = table.lookupAll((type as StructTypeAST).ident.name)
-            if (structInTable.isEmpty || structInTable.get() !is StructDeclareAST) {
+            if (structInTable.isEmpty || structInTable.get() !is StructDeclareStatAST) {
                 semanticError("Struct has not been declared before use", ctx)
                 return false
             }
-            val structFields = (structInTable.get() as StructDeclareAST).fields
+            val structFields = (structInTable.get() as StructDeclareStatAST).fields
             val structFieldTypes = structFields.map { it.type }
-            if (rhs !is StructAssignAST) {
+            if (rhs !is StructAssignRhsAST) {
                 semanticError("Invalid method of assigning to a struct", ctx)
                 return false
             }

@@ -6,7 +6,7 @@ import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
 import wacc.frontend.ast.statement.nonblock.DeclareStatAST
-import wacc.frontend.ast.statement.nonblock.StructDeclareAST
+import wacc.frontend.ast.statement.nonblock.StructDeclareStatAST
 import wacc.frontend.ast.type.*
 import java.util.*
 import kotlin.collections.LinkedHashMap
@@ -211,7 +211,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
             is ParamAST -> {
                 getBytesOfType(obj.type)
             }
-            is StructDeclareAST -> {
+            is StructDeclareStatAST -> {
                 0
             }
             else -> 0
@@ -315,7 +315,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         /** Computes offset being the summed offset of remaining symbol table entries
          * For parameters it is the sum of entries up till that point */
         for ((k, v) in currSymbolTable) {
-            if (v.identifiable is StructDeclareAST) {
+            if (v.identifiable is StructDeclareStatAST) {
                 continue
             }
             if (k == ident && v.identifiable is ParamAST) {

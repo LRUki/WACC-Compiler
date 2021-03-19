@@ -3,14 +3,8 @@ package wacc.extension.optimisation
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.assign.*
 import wacc.frontend.ast.expression.*
-import wacc.frontend.ast.function.FuncAST
-import wacc.frontend.ast.function.ParamAST
-import wacc.frontend.ast.program.ProgramAST
 import wacc.frontend.ast.statement.MultiStatAST
 import wacc.frontend.ast.statement.StatAST
-import wacc.frontend.ast.statement.block.BlockStatAST
-import wacc.frontend.ast.statement.block.IfStatAST
-import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
 
 class ConstantEvaluationVisitor : OptimisationVisitor() {
@@ -142,12 +136,12 @@ class ConstantEvaluationVisitor : OptimisationVisitor() {
         }
     }
 
-    override fun visitStructAssignAST(ast: StructAssignAST): AST {
+    override fun visitStructAssignAST(ast: StructAssignRhsAST): AST {
         val assignments = mutableListOf<RhsAST>()
         ast.assignments.forEach {
             assignments.add(visit(it) as RhsAST)
         }
-        val structAssign = StructAssignAST(assignments)
+        val structAssign = StructAssignRhsAST(assignments)
         structAssign.symTable = ast.symTable
         structAssign.symTable = ast.symTable
         return structAssign
