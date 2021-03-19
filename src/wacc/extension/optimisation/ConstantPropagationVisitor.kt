@@ -22,6 +22,9 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
         val assigned = ast.symTable.getAssignedField(ast.name)
         if (!assigned) {
             val entry = ast.symTable.lookupAll(ast.name).get()
+            if (entry is ParamAST) {
+                return ast
+            }
             if (entry is DeclareStatAST) {
                 if (entry.type is StructTypeAST) {
                     return ast

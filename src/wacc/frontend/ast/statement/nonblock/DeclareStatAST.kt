@@ -11,6 +11,7 @@ import wacc.frontend.ast.expression.OpExpr
 import wacc.frontend.ast.expression.StructAccessAST
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.function.ParamAST
+import wacc.frontend.ast.pair.PairElemAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.exception.semanticError
@@ -105,10 +106,11 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         if (rhsType is PointerTypeAST && rhs is OpExpr) {
             (rhs as OpExpr).setMemoryReferencesAccessed()
         }
-        if (rhs is CallRhsAST) {
+        if (rhs is PairElemAST || rhs is CallRhsAST) {
             symTable.setAssignedField(ident.name)
             symTable.setAccessedField(ident.name)
         }
+
 
         return true
     }
