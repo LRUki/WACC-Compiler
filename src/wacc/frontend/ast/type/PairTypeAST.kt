@@ -66,7 +66,6 @@ class AnyPairTypeAST : TypeAST {
     }
 
 
-
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }

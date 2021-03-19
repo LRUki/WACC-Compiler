@@ -77,7 +77,6 @@ class AnyTypeAST : TypeAST {
     }
 
 
-
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }

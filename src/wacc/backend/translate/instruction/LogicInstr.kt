@@ -10,8 +10,8 @@ interface LogicInstr : Instruction {
 /**
  *  Represents the different types of logical instructions
  */
-enum class LogicInstrType {
-    AND, EOR, ORR, BIC
+enum class LogicInstrType(val x86: String) {
+    AND("and"), EOR("xor"), ORR("or"), BIC("")
 }
 
 /**
@@ -27,6 +27,10 @@ abstract class AbstractLogicInstr(val type: LogicInstrType, val condition: Condi
                                   val reg1: Register, val reg2: Register, val operand: Operand, val updateFlag: Boolean) : LogicInstr {
     override fun toArm(): String {
         return "${type.name}${if (updateFlag) "S" else ""}${condition.toArm()} ${reg1.toArm()}, ${reg2.toArm()}, ${operand.toArm()}"
+    }
+
+    override fun toX86(): String {
+        return "${type.x86}${condition.toX86()}  ${reg2.toX86()}, ${operand.toX86()}"
     }
 }
 

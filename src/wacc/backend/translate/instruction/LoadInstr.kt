@@ -18,4 +18,12 @@ class LoadInstr(val condition: Condition, val memType: MemoryType?,
     override fun toArm(): String {
         return "LDR${memType?.name ?: ""}${condition.toArm()} ${destRegister.toArm()}, ${mode.toArm()}"
     }
+
+    override fun toX86(): String {
+        return if (condition == Condition.AL) {
+            "mov ${mode.toX86()}, ${destRegister.toX86()}"
+        } else {
+            "cmov${condition.toX86()} ${mode.toX86()}, ${destRegister.toX86()}"
+        }
+    }
 }

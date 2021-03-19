@@ -15,4 +15,8 @@ class MoveInstr(val condition: Condition, val register: Register, val operand: O
     override fun toArm(): String {
         return "MOV${condition.toArm()} ${register.toArm()}, ${operand.toArm()}"
     }
+
+    override fun toX86(): String {
+        return "mov ${operand.toX86()}, ${register.toX86()}"
+    }
 }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wacc.Main.waccFile
+import wacc.backend.Language
 import wacc.WaccConfig.constEval
 import wacc.WaccConfig.constProp
 import wacc.WaccConfig.controlFlow
@@ -15,10 +16,11 @@ import wacc.WaccConfig.parallelCompile
 import wacc.WaccConfig.regAlloc
 import wacc.backend.generateCode
 import wacc.backend.printCode
+import wacc.extension.optimisation.InstructionEvaluationVisitor
+import wacc.backend.translate.instruction.Instruction
 import wacc.extension.optimisation.ConstantEvaluationVisitor
 import wacc.extension.optimisation.ConstantPropagationVisitor
 import wacc.extension.optimisation.ControlFlowVisitor
-import wacc.extension.optimisation.InstructionEvaluationVisitor
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AST
 import wacc.frontend.ast.program.ProgramAST
@@ -184,12 +186,11 @@ class WaccFile(val file: File) {
 
     fun backend(): String {
         val instrs = generateCode(ast as ProgramAST)
-        return printCode(instrs)
+        return printCode(instrs, Language.ARM)
     }
 
     fun constEvaluation() {
         ast = ConstantEvaluationVisitor().visit(ast)
-
     }
     fun controlFlowAnalysis() {
         ast = ControlFlowVisitor().visit(ast)
