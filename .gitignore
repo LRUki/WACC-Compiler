@@ -18,5 +18,6 @@ error.out
 .gradle
 
 wacc-1.0-SNAPSHOT.jar
-out_test
-extension_test
+ci/wacc-1.0-SNAPSHOT.jar
+ci/out_test
+ci/extension_test

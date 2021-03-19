@@ -59,13 +59,13 @@ test-backend-integration:
   stage: test-backend
   script:
     - echo "Testing backend integration"
-    - ./testassemble
+    - ./ci/testassemble
 
 test-optimization-integration:
   stage: test-extension
   script:
     - echo "Testing integrity with optimization"
-    - ./testassemble -o
+    - ./ci/testassemble -o
 
 test-const-evaluation:
   stage: test-extension
@@ -97,4 +97,4 @@ test-new-feature-integration:
   stage: test-extension
   script:
     - echo "Testing integrity with optimization"
-    - ./testextension
+    - ./ci/testextension

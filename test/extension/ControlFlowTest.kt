@@ -12,7 +12,7 @@ import java.io.File
 import kotlin.test.assertTrue
 
 class ControlFlowTest {
-    val path = "extension_wacc/valid/optimisation/control_flow"
+    val path = "ci/extension_wacc/valid/optimisation/control_flow"
 
     private fun simpleFrontend(file: File): AST {
         val waccFile = WaccFile(file)

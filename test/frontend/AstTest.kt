@@ -12,7 +12,7 @@ class AstTest {
 
     @Test
     fun `BuildAstVisitor can build AST for valid wacc files`() {
-        val folder = File("wacc_examples/valid")
+        val folder = File("ci/wacc_examples/valid")
         actionOnFiles(folder) { file ->
             val input = CharStreams.fromStream(file.inputStream())
             val lexer = WaccLexer(input)
