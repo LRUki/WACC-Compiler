@@ -23,6 +23,36 @@ class InstructionEvaluationVisitor : OptimisationVisitor() {
         }
     }
 
+    override fun visitIfStatAST(ast: IfStatAST): AST {
+        val ifStat = super.visitIfStatAST(ast)
+        if (ifStat is IfStatAST) {
+            var thenBody = ifStat.thenBody
+            var elseBody = ifStat.elseBody
+            var changed = false
+            if (ifStat.thenBody.isEmpty() && ifStat.elseBody.isEmpty()) {
+                return SkipStatAST()
+            }
+            if (ifStat.thenBody.isEmpty()) {
+                thenBody = listOf(SkipStatAST())
+                changed = true
+            }
+            if (ifStat.elseBody.isEmpty()) {
+                elseBody = listOf(SkipStatAST())
+                changed = true
+            }
+            if (changed) {
+                val ifStatAst = IfStatAST(ifStat.cond, thenBody, elseBody)
+                ifStatAst.symTable = ast.symTable
+                ifStatAst.thenST = ast.thenST
+                ifStatAst.elseST = ast.elseST
+                ifStatAst.thenHasReturn = ast.thenHasReturn
+                ifStatAst.elseHasReturn = ast.elseHasReturn
+                return ifStatAst
+            }
+        }
+        return ifStat
+    }
+
     override fun visitWhileStatAST(ast: WhileStatAST): AST {
         val whileCond = visit(ast.cond) as ExprAST
         val bodyStats = mutableListOf<StatAST>()
