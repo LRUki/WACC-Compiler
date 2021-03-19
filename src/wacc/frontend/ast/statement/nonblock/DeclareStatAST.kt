@@ -63,12 +63,14 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
             return false
         }
 
+        // Implicitly-typed means declared with "var" keyword
         if (type !is ImplicitTypeAST) {
             if (!type.equals(rhsType)) {
                 semanticError("Type mismatch - Expected type $type, Actual type $rhsType", ctx)
                 return false
             }
         } else {
+            // Make sure the RHS isn't non concrete, e.g. null or empty array.
             if (rhsType.isConcreteType()) {
                 type = rhsType // Replace the type with the inferred type
             } else {
