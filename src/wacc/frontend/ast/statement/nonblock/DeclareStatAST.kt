@@ -3,6 +3,7 @@ package wacc.frontend.ast.statement.nonblock
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.ast.assign.CallRhsAST
+import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.assign.StructAssignAST
@@ -107,7 +108,7 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
         if (rhsType is PointerTypeAST && rhs is OpExpr) {
             (rhs as OpExpr).setMemoryReferencesAccessed()
         }
-        if (rhs is PairElemAST || rhs is CallRhsAST) {
+        if (rhs is PairElemAST || rhs is NewPairRhsAST || rhs is CallRhsAST) {
             symTable.setAssignedField(ident.name)
             symTable.setAccessedField(ident.name)
         }

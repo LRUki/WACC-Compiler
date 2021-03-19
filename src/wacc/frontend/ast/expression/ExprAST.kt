@@ -41,7 +41,12 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
         if (!expr1.check(table) || !expr2.check(table)) {
             return false
         }
-
+        if (expr1 is IdentAST) {
+            symTable.setAccessedField(expr1.name)
+        }
+        if (expr2 is IdentAST) {
+            symTable.setAccessedField(expr2.name)
+        }
         val type1 = expr1.getRealType(table)
         val type2 = expr2.getRealType(table)
 
@@ -215,7 +220,9 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, OpExpr, Abstract
             return false
         }
         val exprType = expr.getRealType(table)
-
+        if (expr is IdentAST) {
+            symTable.setAccessedField(expr.name)
+        }
         when (unOp) {
             UnOp.NOT -> {
                 if (exprType == boolTypeInstance) {
