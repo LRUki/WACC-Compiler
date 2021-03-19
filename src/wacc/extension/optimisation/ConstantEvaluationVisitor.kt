@@ -88,16 +88,27 @@ class ConstantEvaluationVisitor : OptimisationVisitor() {
                     return IntLiterAST(ast.binOp.apply(v1, v2))
                 }
                 is CmpBinOp -> {
-                    val v1 = (e1 as IntLiterAST).value
-                    val v2 = (e2 as IntLiterAST).value
-                    /** evaluate <, <=, ==, !=, >, >=  */
-                    when (ast.binOp) {
-                        CmpBinOp.EQ -> BoolLiterAST(v1 == v2)
-                        CmpBinOp.NEQ -> BoolLiterAST(v1 != v2)
-                        CmpBinOp.GT -> BoolLiterAST(v1 > v2)
-                        CmpBinOp.GTE -> BoolLiterAST(v1 >= v2)
-                        CmpBinOp.LT -> BoolLiterAST(v1 < v2)
-                        CmpBinOp.LTE -> BoolLiterAST(v1 <= v2)
+                    /** Evaluates ==, != for Booleans */
+                    if (e1 is BoolLiterAST && e2 is BoolLiterAST) {
+                        val v1 = e1.value
+                        val v2 = e2.value
+                        when (ast.binOp) {
+                            CmpBinOp.EQ -> BoolLiterAST(v1 == v2)
+                            CmpBinOp.NEQ -> BoolLiterAST(v1 != v2)
+                            else -> ast
+                        }
+                    } else {
+                        /** Evaluate <, <=, ==, !=, >, >=  */
+                        val v1 = (e1 as IntLiterAST).value
+                        val v2 = (e2 as IntLiterAST).value
+                        when (ast.binOp) {
+                            CmpBinOp.EQ -> BoolLiterAST(v1 == v2)
+                            CmpBinOp.NEQ -> BoolLiterAST(v1 != v2)
+                            CmpBinOp.GT -> BoolLiterAST(v1 > v2)
+                            CmpBinOp.GTE -> BoolLiterAST(v1 >= v2)
+                            CmpBinOp.LT -> BoolLiterAST(v1 < v2)
+                            CmpBinOp.LTE -> BoolLiterAST(v1 <= v2)
+                        }
                     }
                 }
                 else -> ast

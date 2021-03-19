@@ -106,13 +106,8 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
             (rhs as OpExpr).setMemoryReferencesAccessed()
         }
         if (rhs is CallRhsAST) {
-            for (i in rhs.argList.indices) {
-                if (rhs.argTypes[i] is PointerTypeAST && rhs.argList[i] is OpExpr) {
-                    symTable.setAssignedField(ident.name)
-                    symTable.setAccessedField(ident.name)
-                    break
-                }
-            }
+            symTable.setAssignedField(ident.name)
+            symTable.setAccessedField(ident.name)
         }
 
         return true

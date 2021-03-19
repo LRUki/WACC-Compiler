@@ -1,6 +1,7 @@
 package wacc.extension.optimisation
 
 import wacc.frontend.ast.AST
+import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.assign.StructAssignAST
 import wacc.frontend.ast.expression.*
@@ -11,10 +12,8 @@ import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
-import wacc.frontend.ast.statement.nonblock.Action
-import wacc.frontend.ast.statement.nonblock.ActionStatAST
-import wacc.frontend.ast.statement.nonblock.AssignStatAST
-import wacc.frontend.ast.statement.nonblock.DeclareStatAST
+import wacc.frontend.ast.statement.nonblock.*
+import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.StructTypeAST
 
 class ConstantPropagationVisitor : OptimisationVisitor() {
@@ -54,6 +53,10 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
 
     override fun visitActionStatAST(ast: ActionStatAST): AST {
         if (ast.expr is IdentAST && (ast.action == Action.EXIT || ast.action == Action.RETURN)) {
+            val exprType = ast.expr.getRealType(ast.symTable)
+            if (exprType is PairTypeAST) {
+                return ast
+            }
             val actionStat = ActionStatAST(ast.action, visit(ast.expr) as ExprAST)
             actionStat.symTable = ast.symTable
             return actionStat

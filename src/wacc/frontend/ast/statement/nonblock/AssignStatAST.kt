@@ -78,13 +78,9 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
             (rhs as OpExpr).setMemoryReferencesAccessed()
         }
         if (rhs is CallRhsAST) {
-            for (i in rhs.argList.indices) {
-                if (rhs.argTypes[i] is PointerTypeAST && rhs.argList[i] is OpExpr) {
-                    if (lhs is IdentAST) {
-                        symTable.setAssignedField(lhs.name)
-                        break
-                    }
-                }
+            if (lhs is IdentAST) {
+                symTable.setAssignedField(lhs.name)
+                symTable.setAccessedField(lhs.name)
             }
         }
         if (lhs is PointerElemAST) {
