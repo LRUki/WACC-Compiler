@@ -165,6 +165,7 @@ open class SymbolTable(private val encSymbolTable: SymbolTable?) {
         val value = currSymbolTable[name]
         if (value != null) {
             currSymbolTable.remove(name)
+            return
         }
         if (encSymbolTable != null) {
             return encSymbolTable.removeOptimisedVariableFromST(name)

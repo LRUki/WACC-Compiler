@@ -2,6 +2,7 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.array.ArrayElemAST
 import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.NewPairRhsAST
 import wacc.frontend.visitor.AstVisitor
@@ -119,6 +120,9 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                     symTable.setAccessedField(it.name)
                 }
             }
+        } else if (rhs is ArrayElemAST) {
+            symTable.setAssignedField(rhs.ident.name)
+            symTable.setAccessedField(rhs.ident.name)
         }
         return true
     }

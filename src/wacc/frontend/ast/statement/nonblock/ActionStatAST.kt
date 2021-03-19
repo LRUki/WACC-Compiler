@@ -26,12 +26,16 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
             return false
         }
         val exprType = expr.getRealType(table)
-        if (expr is IdentAST) {
-            table.setAccessedField(expr.name)
-        } else if (expr is ArrayElemAST) {
-            table.setAccessedField(expr.ident.name)
-        } else if (expr is OpExpr) {
-            expr.setAllVariableAccessedFlags()
+        when (expr) {
+            is IdentAST -> {
+                table.setAccessedField(expr.name)
+            }
+            is ArrayElemAST -> {
+                table.setAccessedField(expr.ident.name)
+            }
+            is OpExpr -> {
+                expr.setAllVariableAccessedFlags()
+            }
         }
         when (action) {
             Action.FREE -> {

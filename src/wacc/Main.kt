@@ -78,12 +78,10 @@ fun main(args: Array<String>) {
     if (constProp) {
         waccFile.constPropagation()
     }
-    /** */
-//    waccFile.instrEvalOptim = true
-//    waccFile.constPropagation()
-//    waccFile.instrEvaluation()
-
-    /** */
+    waccFile.constEvaluation()
+    waccFile.constPropagation()
+    waccFile.controlFlowAnalysis()
+    waccFile.instrEvaluation()
     if (instrEvaluation) {
         waccFile.instrEvalOptim = true
     }
@@ -184,9 +182,9 @@ class WaccFile(val file: File) {
 
     fun backend(): String {
         val instrs = generateCode(ast as ProgramAST)
-        if (instrEvalOptim) {
-            instrEvaluation()
-        }
+//        if (instrEvalOptim) {
+//            instrEvaluation()
+//        }
         return printCode(instrs)
     }
 
@@ -209,5 +207,6 @@ class WaccFile(val file: File) {
 
     fun instrEvaluation() {
         ast = InstructionEvaluationVisitor().visit(ast)
+        controlFlowAnalysis()
     }
 }

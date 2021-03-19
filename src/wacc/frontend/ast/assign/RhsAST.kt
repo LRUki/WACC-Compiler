@@ -6,6 +6,7 @@ import wacc.frontend.ast.AbstractAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.expression.ExprAST
 import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.OpExpr
 import wacc.frontend.ast.function.FuncAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.exception.semanticError
@@ -82,6 +83,9 @@ class CallRhsAST(var ident: IdentAST, val argList: List<ExprAST>) : RhsAST, Abst
             val argType = argList[i].getRealType(table)
             if (argList[i] is IdentAST) {
                 table.setAccessedField((argList[i] as IdentAST).name)
+            }
+            if (argType is PointerTypeAST && argList[i] is OpExpr) {
+                (argList[i] as OpExpr).setMemoryReferencesAccessed()
             }
             argTypes.add(argType)
             val paramType = funcAst.paramList[i].type

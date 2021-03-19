@@ -12,7 +12,7 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class ConstantEvaluationTest {
-    val path = "extension_wacc/valid/optimization/const_eval"
+    val path = "extension_wacc/valid/optimisation/const_eval"
 
     @Test
     fun intBinOpsAreOptimized() {

@@ -7,7 +7,6 @@
 # a
 
 begin
-
   char c = chr 97;
   println c
 end

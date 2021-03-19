@@ -13,6 +13,7 @@ import wacc.frontend.ast.statement.block.BlockStatAST
 import wacc.frontend.ast.statement.block.IfStatAST
 import wacc.frontend.ast.statement.block.WhileStatAST
 import wacc.frontend.ast.statement.nonblock.*
+import wacc.frontend.ast.type.ArrayTypeAST
 import wacc.frontend.ast.type.PairTypeAST
 import wacc.frontend.ast.type.StructTypeAST
 
@@ -26,7 +27,8 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
                 return ast
             }
             if (entry is DeclareStatAST) {
-                if (entry.type is StructTypeAST) {
+                if (entry.type is StructTypeAST ||
+                        entry.type is ArrayTypeAST || entry.type is PairTypeAST) {
                     return ast
                 }
                 return entry.rhs
@@ -55,7 +57,8 @@ class ConstantPropagationVisitor : OptimisationVisitor() {
     }
 
     override fun visitActionStatAST(ast: ActionStatAST): AST {
-        if (ast.expr is IdentAST && (ast.action == Action.EXIT || ast.action == Action.RETURN)) {
+        if (ast.expr is IdentAST && (ast.action != Action.FREE)) {
+//                (ast.action == Action.EXIT || ast.action == Action.RETURN)) {
             val exprType = ast.expr.getRealType(ast.symTable)
             if (exprType is PairTypeAST) {
                 return ast
