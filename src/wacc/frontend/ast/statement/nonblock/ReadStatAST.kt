@@ -2,8 +2,9 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.LhsAST
+import wacc.frontend.ast.expression.IdentAST
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.TypeAST
 import wacc.frontend.ast.type.TypeInstance
@@ -26,6 +27,10 @@ class ReadStatAST(val expr: LhsAST) : StatAST, AbstractAST() {
         if (exprType != TypeInstance.charTypeInstance && !exprType.equals(TypeInstance.intTypeInstance)) {
             semanticError("Expected type INT or CHAR, Actual type $exprType", ctx)
             return false
+        }
+        if (expr is IdentAST) {
+            table.setAccessedField(expr.name)
+            table.setAssignedField(expr.name)
         }
         return true
     }

@@ -1,0 +1,13 @@
+# simple integer calculation
+
+# Exit:
+#* 9
+
+# Program:
+
+begin
+  int x = 4 ;
+  int y = 5 ;
+  int z = x + y;
+  exit z
+end

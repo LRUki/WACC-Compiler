@@ -1,0 +1,14 @@
+# a basic while loop with constant propagation
+# Output:
+
+#Exitcode:
+#* 0
+
+# Program:
+begin
+  int i = 0;
+  bool x = false;
+  while x do
+    i = i + 1
+  done
+end

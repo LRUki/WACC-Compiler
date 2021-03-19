@@ -2,8 +2,12 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.ast.array.ArrayElemAST
+import wacc.frontend.ast.expression.BinOpExprAST
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.expression.ExprAST
+import wacc.frontend.ast.expression.IdentAST
+import wacc.frontend.ast.expression.OpExpr
 import wacc.frontend.ast.statement.StatAST
 import wacc.frontend.ast.type.*
 import wacc.frontend.exception.semanticError
@@ -22,6 +26,17 @@ class ActionStatAST(val action: Action, val expr: ExprAST) : StatAST, AbstractAS
             return false
         }
         val exprType = expr.getRealType(table)
+        when (expr) {
+            is IdentAST -> {
+                table.setAccessedField(expr.name)
+            }
+            is ArrayElemAST -> {
+                table.setAccessedField(expr.ident.name)
+            }
+            is OpExpr -> {
+                expr.setAllVariableAccessedFlags()
+            }
+        }
         when (action) {
             Action.FREE -> {
                 if (exprType is ArrayTypeAST || exprType is PairTypeAST || exprType is StructTypeAST) {

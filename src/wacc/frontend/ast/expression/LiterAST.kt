@@ -1,7 +1,7 @@
 package wacc.frontend.ast.expression
 
 import wacc.frontend.SymbolTable
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.type.*
 
@@ -67,6 +67,10 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
             if (!value.check(table)) {
                 return false
             }
+            if (value.getRealType(table) is PointerTypeAST && value is OpExpr) {
+                (value as OpExpr).setMemoryReferencesAccessed()
+            }
+
         }
         return true
     }

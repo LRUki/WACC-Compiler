@@ -2,7 +2,7 @@ package wacc.frontend.ast.type
 
 
 import wacc.frontend.ast.AST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 
 /**
  * Implemented by Type AST nodes

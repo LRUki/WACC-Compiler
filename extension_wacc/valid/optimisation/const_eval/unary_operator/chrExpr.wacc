@@ -1,0 +1,12 @@
+# tests whether the compiler can optimize len 
+
+# Output:
+# #empty#
+
+# Prints:
+# a
+
+begin
+  char c = chr 97;
+  println c
+end

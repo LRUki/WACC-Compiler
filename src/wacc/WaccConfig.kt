@@ -7,4 +7,5 @@ object WaccConfig {
     var regAlloc = false
     var constProp = false
     var parallelCompile = false
+    var instrEvaluation = false
 }
