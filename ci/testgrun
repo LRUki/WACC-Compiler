@@ -6,7 +6,7 @@ make clean rules
 rm -f error.out
 touch error.out
 
-for FILE in `find ./wacc_examples/valid -type f -name '*.wacc'` 
+for FILE in `find ./ci/wacc_examples/valid -type f -name '*.wacc'`
 do
     ERROR=$(./grun antlr.Wacc program $FILE 2>&1 >/dev/null)
     if [ -z $ERROR ]

@@ -16,7 +16,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ConstantPropagationTest {
-    val path = "extension_wacc/valid/optimisation/const_prop"
+    val path = "ci/extension_wacc/valid/optimisation/const_prop"
 
 
     @Test

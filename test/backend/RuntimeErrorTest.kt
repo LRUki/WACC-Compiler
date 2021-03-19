@@ -12,7 +12,7 @@ import wacc.frontend.ast.program.ProgramAST
 import java.io.File
 
 class RuntimeErrorTest {
-    val PATH = "wacc_examples/valid/runtimeErr"
+    val PATH = "ci/wacc_examples/valid/runtimeErr"
 
 //    @Before
 //    @Throws(Exception::class)
