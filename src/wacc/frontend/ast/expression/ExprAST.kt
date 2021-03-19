@@ -32,8 +32,16 @@ interface OpExpr {
  * @property expr2 Second Expression
  */
 class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : ExprAST, OpExpr, AbstractAST() {
+    // Cache the weight of the expression for register allocation optimization.
+    // Initialise to -1 so that weight function would know it's weight haven't been
+    // calculated yet.
     var weight = -1
+
+    // These fields are for pointer arithmetic.
+    // Mark this BinOp as a pointer operation if the first operand is a pointer.
     var pointerOp = false
+    // Store the shift offset depending on the type of the pointer.
+    // So that, for example, an int pointer would move 4 bytes when adding 1.
     var shiftOffset = 0
 
     override fun check(table: SymbolTable): Boolean {
@@ -55,9 +63,10 @@ class BinOpExprAST(val binOp: BinOp, val expr1: ExprAST, val expr2: ExprAST) : E
                 && (binOp == IntBinOp.PLUS || binOp == IntBinOp.MINUS)) {
             pointerOp = true
             shiftOffset = when (type1.type) {
+                // char and bool need 1 byte
                 charTypeInstance -> 0
                 boolTypeInstance -> 0
-                else -> 2
+                else -> 2 // All other types need 4 bytes, so times 4
             }
             return true
         }

@@ -644,24 +644,25 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
         return instrs
     }
 
-    /** Transaltes a Binary operator */
+    /** Translates a Binary operator */
     override fun visitBinOpExprAST(ast: BinOpExprAST): List<Instruction> {
         val instrs = mutableListOf<Instruction>()
         var reg1: Register
         var reg2: Register
 
+        // This boolean value is for register allocation optimisation.
+        // Division and modulus are ignored because of their complexity in using registers.
+        // Pointer operation is ignored because its reverse is hard to accommodate
+        // the shift operation in pointer arithmetics.
         val reverse = ast.expr1.weight() <= ast.expr2.weight()
-                && ast.binOp != IntBinOp.DIV && ast.binOp != IntBinOp.MOD
-                && !ast.pointerOp
+                && ast.binOp != IntBinOp.DIV && ast.binOp != IntBinOp.MOD // Ignore division and modulus
+                && !ast.pointerOp // Ignore pointer operation
         if (!reverse) {
             instrs.addAll(visit(ast.expr1))
             reg1 = codeGenerator.seeLastUsedCalleeReg()
             instrs.addAll(visit(ast.expr2))
             reg2 = codeGenerator.seeLastUsedCalleeReg()
         } else {
-//            if (ast.binOp == IntBinOp.DIV || ast.binOp == IntBinOp.MOD) {
-//                CodeGenerator.swapFirstTwoReg()
-//            }
             instrs.addAll(visit(ast.expr2))
             reg1 = codeGenerator.seeLastUsedCalleeReg()
             instrs.addAll(visit(ast.expr1))
@@ -679,6 +680,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
         /** Add appropriate instructions depending on instruction typeAdd opUse different instructions for accumulator when required */
         when (ast.binOp) {
             IntBinOp.PLUS -> {
+                // This operator is commutative so its reverse is the same. No need for a reverse case.
                 if (!useAccumulator) {
                     if (!ast.pointerOp) {
                         instrs.add(AddInstr(Condition.AL, reg1, reg1, RegisterOperand(reg2), true))
@@ -697,6 +699,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                 codeGenerator.runtimeErrors.addOverflowError()
             }
             IntBinOp.MINUS -> {
+                // An RSB instruction is used for the reverse minus.
                 if (!reverse) {
                     if (!useAccumulator) {
                         if (!ast.pointerOp) {
@@ -733,6 +736,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                 codeGenerator.runtimeErrors.addOverflowError()
             }
             IntBinOp.MULT -> {
+                // This operator is commutative so its reverse is the same. No need for a reverse case.
                 val shiftAmount = 31
                 if (!useAccumulator) {
                     instrs.add(MultInstr(Condition.AL, reg1, reg2, reg1, reg2))
@@ -775,6 +779,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(Register.R1)))
             }
             CmpBinOp.EQ -> {
+                // This operator is commutative so its reverse is the same. No need for a reverse case.
                 if (!useAccumulator) {
                     instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 } else {
@@ -786,6 +791,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
             }
 
             CmpBinOp.NEQ -> {
+                // This operator is commutative so its reverse is the same. No need for a reverse case.
                 if (!useAccumulator) {
                     instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                 } else {
@@ -806,6 +812,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                     instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(true)))
                     instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(false)))
                 } else {
+                    // GTE is used for the reverse LTE.
                     if (!useAccumulator) {
                         instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                     } else {
@@ -828,6 +835,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                     instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(true)))
                     instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(false)))
                 } else {
+                    // GT is used for the reverse LT.
                     if (!useAccumulator) {
                         instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                     } else {
@@ -849,6 +857,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                     instrs.add(MoveInstr(Condition.GE, reg1, ImmediateBoolOperand(true)))
                     instrs.add(MoveInstr(Condition.LT, reg1, ImmediateBoolOperand(false)))
                 } else {
+                    // LTE is used for the reverse GTE.
                     if (!useAccumulator) {
                         instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                     } else {
@@ -870,6 +879,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                     instrs.add(MoveInstr(Condition.GT, reg1, ImmediateBoolOperand(true)))
                     instrs.add(MoveInstr(Condition.LE, reg1, ImmediateBoolOperand(false)))
                 } else {
+                    // LT is used for the reverse GT.
                     if (!useAccumulator) {
                         instrs.add(CompareInstr(reg1, RegisterOperand(reg2)))
                     } else {
@@ -883,6 +893,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
             }
 
             BoolBinOp.AND -> {
+                // This operator is commutative so its reverse is the same. No need for a reverse case.
                 if (!useAccumulator) {
                     instrs.add(AndInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
                 } else {
@@ -892,6 +903,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                 }
             }
             BoolBinOp.OR -> {
+                // This operator is commutative so its reverse is the same. No need for a reverse case.
                 if (!useAccumulator) {
                     instrs.add(OrInstrType(Condition.AL, reg1, reg1, RegisterOperand(reg2)))
                 } else {
@@ -944,6 +956,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                         // Intentionally leave blank
                     }
                 }
+                // Load the address of the variable to register.
                 instrs.add(MoveInstr(Condition.AL, reg1, RegisterOperand(reg1)))
             }
             UnOp.DEREF -> {
@@ -951,6 +964,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                 if (ast.expr is ArrayElemAST) {
                     instrs.add(LoadInstr(Condition.AL, null, RegisterMode(reg1), reg1))
                 }
+                // Perform action similar to PairElem
                 instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg1)))
                 instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
                 codeGenerator.runtimeErrors.addNullReferenceCheck()
@@ -958,6 +972,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
                 if ((ast.expr.getRealType(ast.symTable) as PointerTypeAST).type.isBoolOrChar()) {
                     memType = MemoryType.SB
                 }
+                // Load real value from memory.
                 instrs.add(LoadInstr(Condition.AL, memType, RegisterMode(reg1), reg1))
 
             }
@@ -1020,6 +1035,7 @@ class TranslateVisitor(private val codeGenerator: CodeGenerator = CodeGenerator(
         val instrs = mutableListOf<Instruction>()
         /** Translates the expression */
         instrs.addAll(visit(ast.ident))
+        // Perform action similar to PairElem
         val reg = codeGenerator.seeLastUsedCalleeReg()
         instrs.add(MoveInstr(Condition.AL, Register.R0, RegisterOperand(reg)))
         instrs.add(BranchInstr(Condition.AL, RuntimeErrors.nullReferenceLabel, true))
