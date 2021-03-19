@@ -1,0 +1,16 @@
+# a basic if statement with constant propagation
+# Output:
+
+#Exitcode:
+#* 0
+
+# Program:
+
+begin
+  bool x = true;
+  if x then
+    print x
+  else
+    print "your code is broken"
+  fi
+end

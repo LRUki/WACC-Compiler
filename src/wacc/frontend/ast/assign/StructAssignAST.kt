@@ -2,7 +2,7 @@ package wacc.frontend.ast.assign
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
-import wacc.frontend.ast.AstVisitor
+import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.type.*
 import wacc.frontend.ast.type.StructTypeAST.Companion.defStructIdent
 
