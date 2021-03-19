@@ -292,6 +292,9 @@ class UnOpExprAST(val unOp: UnOp, val expr: ExprAST) : ExprAST, OpExpr, Abstract
         if (expr is OpExpr) {
             expr.setAllVariableAccessedFlags()
         }
+        if (expr is ArrayElemAST) {
+            symTable.setAccessedField(expr.ident.name)
+        }
     }
 
     override fun setMemoryReferencesAccessed() {

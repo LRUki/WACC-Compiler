@@ -2,6 +2,7 @@ package wacc.frontend.ast.statement.nonblock
 
 import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
+import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.assign.StructAssignAST
@@ -99,12 +100,21 @@ class DeclareStatAST(var type: TypeAST, val ident: IdentAST, val rhs: RhsAST) : 
                 }
             }
         }
-
-        if (rhsType is PointerTypeAST) {
-            (rhs as OpExpr).setMemoryReferencesAccessed()
-        }
         ident.symTable = table
         table.add(ident.name, this)
+        if (rhsType is PointerTypeAST && rhs is OpExpr) {
+            (rhs as OpExpr).setMemoryReferencesAccessed()
+        }
+        if (rhs is CallRhsAST) {
+            for (i in rhs.argList.indices) {
+                if (rhs.argTypes[i] is PointerTypeAST && rhs.argList[i] is OpExpr) {
+                    symTable.setAssignedField(ident.name)
+                    symTable.setAccessedField(ident.name)
+                    break
+                }
+            }
+        }
+
         return true
     }
 

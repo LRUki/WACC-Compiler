@@ -4,6 +4,7 @@ import wacc.frontend.SymbolTable
 import wacc.frontend.ast.AbstractAST
 import wacc.frontend.visitor.AstVisitor
 import wacc.frontend.ast.array.ArrayElemAST
+import wacc.frontend.ast.assign.CallRhsAST
 import wacc.frontend.ast.assign.LhsAST
 import wacc.frontend.ast.assign.RhsAST
 import wacc.frontend.ast.expression.IdentAST
@@ -75,6 +76,21 @@ class AssignStatAST(val lhs: LhsAST, val rhs: RhsAST) : StatAST, AbstractAST() {
         }
         if (rightType is PointerTypeAST && rhs is OpExpr) {
             (rhs as OpExpr).setMemoryReferencesAccessed()
+        }
+        if (rhs is CallRhsAST) {
+            for (i in rhs.argList.indices) {
+                if (rhs.argTypes[i] is PointerTypeAST && rhs.argList[i] is OpExpr) {
+                    if (lhs is IdentAST) {
+                        symTable.setAssignedField(lhs.name)
+                        break
+                    }
+                }
+            }
+        }
+        if (lhs is PointerElemAST) {
+            if (rhs is IdentAST) {
+                symTable.setAccessedField(rhs.name)
+            }
         }
         table.setAssignedField(name)
         table.setAccessedField(name)

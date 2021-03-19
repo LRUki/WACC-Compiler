@@ -67,6 +67,10 @@ class ArrayLiterAST(val values: List<ExprAST>) : RhsAST {
             if (!value.check(table)) {
                 return false
             }
+            if (value.getRealType(table) is PointerTypeAST && value is OpExpr) {
+                (value as OpExpr).setMemoryReferencesAccessed()
+            }
+
         }
         return true
     }
